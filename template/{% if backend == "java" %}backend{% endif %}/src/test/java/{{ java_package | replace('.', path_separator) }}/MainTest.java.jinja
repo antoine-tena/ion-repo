@@ -1,0 +1,31 @@
+{%- set fr = language_ui == 'fr' -%}
+package {{ java_package }};
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import org.junit.jupiter.api.Test;
+
+class MainTest {
+
+    @Test
+    void writesGreetingToGivenStream() {
+        var buffer = new ByteArrayOutputStream();
+        var out = new PrintStream(buffer, true, StandardCharsets.UTF_8);
+
+        assertEquals(Main.EXIT_OK, Main.run(new String[] {"Ada"}, out));
+        assertEquals("{{ 'Bonjour, Ada !' if fr else 'Hello, Ada!' }}" + System.lineSeparator(), buffer.toString(StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void greetsWorldWithoutArgument() {
+        var buffer = new ByteArrayOutputStream();
+        var out = new PrintStream(buffer, true, StandardCharsets.UTF_8);
+
+        Main.run(new String[] {}, out);
+
+        assertEquals("{{ 'Bonjour, monde !' if fr else 'Hello, world!' }}" + System.lineSeparator(), buffer.toString(StandardCharsets.UTF_8));
+    }
+}

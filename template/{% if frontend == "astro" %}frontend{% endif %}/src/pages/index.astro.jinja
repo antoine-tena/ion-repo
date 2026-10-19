@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../constants';
+import { {% if backend in ['django', 'fastapi'] %}BACKEND_CONNECTING, {% endif %}SITE_DESCRIPTION, SITE_TITLE } from '../constants';
 ---
 
 <BaseLayout>
@@ -8,14 +8,16 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../constants';
     <h1 class="text-3xl font-bold text-brand">{SITE_TITLE}</h1>
     <p class="text-gray-600">{SITE_DESCRIPTION}</p>
 {%- if backend in ['django', 'fastapi'] %}
-    <p id="health-status" class="text-gray-500">Connexion au backend…</p>
+    <p id="health-status" class="text-gray-500">{BACKEND_CONNECTING}</p>
 {%- endif %}
   </main>
 </BaseLayout>
 {%- if backend in ['django', 'fastapi'] %}
 
 <script>
-  // Îlot minimal ([ASTRO-MODERNE]) : l'état de l'API est lu dans le navigateur, le reste est statique.
+  // Minimal island ([MODERN-ASTRO]): the state of the API is read in the browser, the rest is static.
+  import { BACKEND_DOWN, BACKEND_UNHEALTHY, BACKEND_UP } from '../constants';
+
   const healthStatus = document.getElementById('health-status');
 
   async function showHealth(): Promise<void> {
@@ -26,11 +28,11 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../constants';
       const response = await fetch('/api/health');
       const payload: unknown = await response.json();
       const isHealthy = response.ok && typeof payload === 'object' && payload !== null && 'status' in payload;
-      healthStatus.textContent = isHealthy ? 'Backend joignable.' : 'Le backend répond mal.';
+      healthStatus.textContent = isHealthy ? BACKEND_UP : BACKEND_UNHEALTHY;
     } catch (error) {
-      // [EXCEPTIONS] : backend injoignable, affiché comme tel.
+      // [EXCEPTIONS]: backend unreachable, shown as such.
       console.error('health.unreachable', error);
-      healthStatus.textContent = 'Le backend ne répond pas : lancez-le avec kiln dev.';
+      healthStatus.textContent = BACKEND_DOWN;
     }
   }
 

@@ -1,0 +1,50 @@
+# shellcheck shell=bash
+# Building blocks of a smoke test after a deployment: each check shows ✓ or ✗ without stopping the
+# next ones, and `smoke_summary` fails if one failed.
+#
+# Usage: . scripts/ops/lib/smoke.sh
+#        check "probe is ok" json_true "$API/health/" "data['status'] == 'ok'"
+#        smoke_summary
+smoke_failures=0
+
+check() {  # check <label> <command…>
+  local label="$1" output
+  shift
+  if output="$("$@" 2>&1)"; then
+    echo "  ✓ $label"
+  else
+    echo "  ✗ $label: ${output:-failed}" >&2
+    smoke_failures=$((smoke_failures + 1))
+  fi
+}
+
+fetch() {  # fetch <url> [curl options…]: body on stdout, non-zero when the status is not 2xx
+  curl -fsS --max-time 15 "$@"
+}
+
+json_true() {  # json_true <url> <python expression on `data`>
+  local url="$1" expression="$2" body
+  body="$(fetch "$url")" || return 1
+  python3 -c "
+import json, sys
+data = json.loads(sys.argv[1])
+value = $expression
+if not value:
+    raise SystemExit(f'unexpected value: {value!r}')
+" "$body"
+}
+
+cors_open() {  # cors_open <API url> <site origin>
+  local headers
+  headers="$(curl -fsS --max-time 15 -D - -o /dev/null -X OPTIONS \
+    -H "Origin: $2" -H 'Access-Control-Request-Method: GET' "$1")" || return 1
+  grep -qi "^access-control-allow-origin: $2" <<< "$headers"
+}
+
+smoke_summary() {
+  if [ "$smoke_failures" -gt 0 ]; then
+    echo "Smoke test: $smoke_failures check(s) failed." >&2
+    return 1
+  fi
+  echo "Smoke test: everything answers."
+}

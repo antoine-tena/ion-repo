@@ -1,0 +1,195 @@
+{% if language_docs == 'fr' -%}
+# Production de {{ title }}
+
+L'API tourne sur un serveur à soi, `{{ vps_host }}`, dans une pile podman-compose
+(`/opt/{{ name }}`), derrière Caddy qui sert `https://{{ api_domain }}`. Tout ce qui tourne sur le
+serveur est versionné dans `config/vps/` ; ce qui se lance depuis le poste est dans `scripts/ops/`.
+Le descripteur du serveur (adresse, branche, URL publiques) est `config/vps/project.json`.
+
+| Fichier | Rôle |
+|---|---|
+| `config/vps/compose.yaml` | Pile de production : PostgreSQL et le backend (gunicorn), en lecture seule |
+| `config/vps/Caddyfile` | TLS automatique et proxy vers `127.0.0.1:8000` |
+| `config/vps/deploy-remote.sh` | Bascule en root : image par commit, migrations, retour arrière automatique |
+| `config/vps/backup.sh` | Sauvegarde quotidienne et d'avant bascule ; copie restic hors du serveur |
+| `config/vps/restore-test.sh` | Restauration de la dernière sauvegarde chaque semaine, chronométrée |
+| `config/vps/heal.sh` | Relance des conteneurs dont la sonde échoue, toutes les 5 minutes |
+| `config/vps/setup-deploy-user.sh` | Utilisateur `deploy`, pour ne plus déployer en root |
+| `scripts/ops/deploy-backend.sh` | Déploiement depuis le poste (`--dry-run`, `--rollback`) |
+| `scripts/ops/smoke-test.sh` | Test de fumée de l'extérieur, après chaque déploiement |
+
+## Préparer le serveur (une fois)
+
+Sur un Debian ou Ubuntu récent, en root :
+
+```sh
+apt install podman caddy git curl
+# podman-compose par uv, jamais pip ([UV-PODMAN]) :
+curl -LsSf https://astral.sh/uv/install.sh | sh && uv tool install podman-compose
+ln -s /root/.local/bin/podman-compose /usr/local/bin/podman-compose
+apt install restic   # facultatif : copie des sauvegardes hors du serveur
+```
+
+Puis, dans `/opt/{{ name }}` (créé au besoin), les secrets, jamais versionnés ([SECRETS]) :
+
+- `/opt/{{ name }}/.env` : `POSTGRES_PASSWORD=<long et aléatoire>` (`openssl rand -hex 24`), en 600 ;
+- `/opt/{{ name }}/backend/.env` : d'après `backend/.env.example`, avec `DJANGO_DEBUG=False`,
+  `DJANGO_SECRET_KEY` aléatoire, `DJANGO_ALLOWED_HOSTS={{ api_domain }}` et
+  `DJANGO_CSRF_TRUSTED_ORIGINS=https://{{ api_domain }}`, en 600 ;
+- `/root/.restic-env` (facultatif) : `RESTIC_REPOSITORY`, `RESTIC_PASSWORD` et, pour un seau
+  S3, `AWS_ACCESS_KEY_ID` et `AWS_SECRET_ACCESS_KEY`, en 600.
+
+Le DNS de `{{ api_domain }}` pointe vers le serveur avant le premier déploiement : Caddy en a
+besoin pour obtenir le certificat.
+
+## Déployer
+
+```sh
+scripts/ops/deploy-backend.sh --dry-run   # image et contrôles, sans bascule
+scripts/ops/deploy-backend.sh             # bascule
+```
+
+Le script refuse un commit dont la CI n'est pas verte (`SKIP_CI=1` en cas d'urgence) et une
+branche locale qui diffère de `origin`. Sur le serveur, la bascule :
+
+1. reçoit le code en bundle git, construit l'image `{{ name | replace('-', '_') }}_backend:<sha>`
+   et vérifie qu'elle porte bien ce commit ;
+2. valide la pile compose, le Caddyfile, les scripts et `manage.py check --deploy` ;
+3. installe scripts, unités systemd et Caddyfile, puis sauvegarde la base ;
+4. applique les migrations (le backend n'est arrêté que s'il y en a) ;
+5. bascule le backend et attend que `/api/health` rende la nouvelle version ; sinon, retour
+   arrière automatique vers la précédente ;
+6. vérifie la sonde de bout en bout, par `https://{{ api_domain }}`.
+
+Le premier déploiement se fait en root. Ensuite, créer l'utilisateur `deploy`
+(`bash config/vps/setup-deploy-user.sh "<clé publique>"` sur le serveur), passer `host` de
+`project.json` à `deploy@…`, et retirer la clé SSH de root.
+
+## Revenir en arrière
+
+```sh
+scripts/ops/deploy-backend.sh --rollback
+```
+
+Remet l'image précédente en service. Les migrations ne se défont pas : si la version à défaire a
+migré le schéma, restaurer aussi la sauvegarde d'avant bascule ([REVERSIBLE-DEPLOYMENT]) :
+
+```sh
+podman exec -i {{ name }}-db pg_restore -U {{ name | replace('-', '_') }} -d {{ name | replace('-', '_') }} --clean --if-exists < /root/backups/{{ name }}-pre-deploy-<date>.dump
+```
+
+## Sauvegardes
+
+- Quotidienne à 3 h 15 (`{{ name }}-backup.timer`), 14 gardées ; une avant chaque bascule, 10
+  gardées ; dans `/root/backups`. Copie restic hors du serveur si `/root/.restic-env` existe.
+- Restauration testée chaque dimanche (`{{ name }}-restore-test.timer`) dans un PostgreSQL jetable :
+  `journalctl -u {{ name }}-restore-test` donne le nombre de tables et la durée
+  ([TESTED-BACKUPS]).
+- État des minuteries : `systemctl list-timers '{{ name }}-*'`.
+
+## Diagnostiquer
+
+```sh
+podman ps                                  # conteneurs et état des sondes
+podman logs --tail 100 {{ name }}-backend   # journaux de l'API
+ls /var/log/{{ name }}-deploy/              # journal de chaque bascule
+cat /opt/{{ name }}/deploy-history.log      # versions déployées
+```
+{%- else -%}
+# Production of {{ title }}
+
+The API runs on a server of one's own, `{{ vps_host }}`, in a podman-compose stack
+(`/opt/{{ name }}`), behind Caddy which serves `https://{{ api_domain }}`. Everything that runs on
+the server is versioned in `config/vps/`; what is run from the workstation is in `scripts/ops/`.
+The server's descriptor (address, branch, public URLs) is `config/vps/project.json`.
+
+| File | Role |
+|---|---|
+| `config/vps/compose.yaml` | Production stack: PostgreSQL and the backend (gunicorn), read-only |
+| `config/vps/Caddyfile` | Automatic TLS and proxy to `127.0.0.1:8000` |
+| `config/vps/deploy-remote.sh` | Switch as root: one image per commit, migrations, automatic rollback |
+| `config/vps/backup.sh` | Daily and pre-switch backup; restic copy off the server |
+| `config/vps/restore-test.sh` | Restore of the latest backup every week, timed |
+| `config/vps/heal.sh` | Restart of the containers whose probe fails, every 5 minutes |
+| `config/vps/setup-deploy-user.sh` | The `deploy` user, to stop deploying as root |
+| `scripts/ops/deploy-backend.sh` | Deployment from the workstation (`--dry-run`, `--rollback`) |
+| `scripts/ops/smoke-test.sh` | Smoke test from outside, after each deployment |
+
+## Prepare the server (once)
+
+On a recent Debian or Ubuntu, as root:
+
+```sh
+apt install podman caddy git curl
+# podman-compose through uv, never pip ([UV-PODMAN]):
+curl -LsSf https://astral.sh/uv/install.sh | sh && uv tool install podman-compose
+ln -s /root/.local/bin/podman-compose /usr/local/bin/podman-compose
+apt install restic   # optional: copy of the backups off the server
+```
+
+Then, in `/opt/{{ name }}` (created when needed), the secrets, never versioned ([SECRETS]):
+
+- `/opt/{{ name }}/.env`: `POSTGRES_PASSWORD=<long and random>` (`openssl rand -hex 24`), mode 600;
+- `/opt/{{ name }}/backend/.env`: from `backend/.env.example`, with `DJANGO_DEBUG=False`, a random
+  `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS={{ api_domain }}` and
+  `DJANGO_CSRF_TRUSTED_ORIGINS=https://{{ api_domain }}`, mode 600;
+- `/root/.restic-env` (optional): `RESTIC_REPOSITORY`, `RESTIC_PASSWORD` and, for an S3 bucket,
+  `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`, mode 600.
+
+The DNS of `{{ api_domain }}` points to the server before the first deployment: Caddy needs it to
+get the certificate.
+
+## Deploy
+
+```sh
+scripts/ops/deploy-backend.sh --dry-run   # image and checks, no switch
+scripts/ops/deploy-backend.sh             # switch
+```
+
+The script refuses a commit whose CI is not green (`SKIP_CI=1` in an emergency) and a local
+branch that differs from `origin`. On the server, the switch:
+
+1. receives the code as a git bundle, builds the image `{{ name | replace('-', '_') }}_backend:<sha>`
+   and checks that it carries that commit;
+2. validates the compose stack, the Caddyfile, the scripts and `manage.py check --deploy`;
+3. installs scripts, systemd units and Caddyfile, then backs up the database;
+4. applies the migrations (the backend only stops when there are some);
+5. switches the backend and waits for `/api/health` to return the new version; otherwise,
+   automatic rollback to the previous one;
+6. checks the end-to-end probe, through `https://{{ api_domain }}`.
+
+The first deployment runs as root. Then create the `deploy` user
+(`bash config/vps/setup-deploy-user.sh "<public key>"` on the server), change `host` in
+`project.json` to `deploy@…`, and remove root's SSH key.
+
+## Roll back
+
+```sh
+scripts/ops/deploy-backend.sh --rollback
+```
+
+Puts the previous image back in service. Migrations are not undone: if the version to undo
+migrated the schema, also restore the backup taken before the switch ([REVERSIBLE-DEPLOYMENT]):
+
+```sh
+podman exec -i {{ name }}-db pg_restore -U {{ name | replace('-', '_') }} -d {{ name | replace('-', '_') }} --clean --if-exists < /root/backups/{{ name }}-pre-deploy-<date>.dump
+```
+
+## Backups
+
+- Daily at 3:15 (`{{ name }}-backup.timer`), 14 kept; one before each switch, 10 kept; in
+  `/root/backups`. A restic copy off the server when `/root/.restic-env` exists.
+- Restore tested every Sunday (`{{ name }}-restore-test.timer`) in a throwaway PostgreSQL:
+  `journalctl -u {{ name }}-restore-test` gives the number of tables and the duration
+  ([TESTED-BACKUPS]).
+- State of the timers: `systemctl list-timers '{{ name }}-*'`.
+
+## Diagnose
+
+```sh
+podman ps                                  # containers and the state of their probes
+podman logs --tail 100 {{ name }}-backend   # API logs
+ls /var/log/{{ name }}-deploy/              # log of each switch
+cat /opt/{{ name }}/deploy-history.log      # deployed versions
+```
+{%- endif %}

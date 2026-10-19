@@ -1,9 +1,9 @@
-"""Bannière des commandes longues (`new`, `install`, `update`, `status`) et écran d'accueil.
+"""Banner of the long commands (`new`, `install`, `update`, `status`) and home screen.
 
-Un four rieur en pixel art (pierre et feu), dessiné en demi-blocs (deux pixels par caractère),
-à côté de la version de kiln, de la commande lancée, du projet et de son dossier.
-Hors terminal, ou avec `NO_COLOR`, une seule ligne sans dessin : les journaux et les sorties
-capturées restent lisibles.
+A laughing kiln in pixel art (stone and fire), drawn in half blocks (two pixels per character),
+next to the version of kiln, the command run, the project and its folder.
+Outside a terminal, or with `NO_COLOR`, a single line without the drawing: logs and captured
+output stay readable.
 """
 
 from collections.abc import Sequence
@@ -14,8 +14,8 @@ from kiln.shell import KilnError
 from kiln.stack import NO_FRAMEWORK, answers_if_any, load_stack
 from kiln.versions import installed_version
 
-# Un caractère = deux pixels superposés. L pierre éclairée, B pierre, b pierre dans l'ombre,
-# d socle et chapeau de brique, W/K yeux, P joues, R/F/Y flamme (bord, corps, cœur), . vide.
+# One character = two stacked pixels. L lit stone, B stone, b stone in shadow, d brick base and
+# cap, W/K eyes, P cheeks, R/F/Y flame (edge, body, heart), . empty.
 LOGO = (
     "..........dd..",
     "...LLLBBB.bb..",
@@ -43,12 +43,12 @@ UPPER_HALF, LOWER_HALF, FULL_BLOCK = "▀", "▄", "█"
 LOGO_MARGIN, TEXT_GAP, INDENT = "  ", "   ", "  "
 REPO_URL = "github.com/antoine-tena/kiln"
 
-# Écran d'accueil : sections de commandes (nom, rôle) et exemples.
+# Home screen: command sections (name, role) and examples.
 CommandGroup = tuple[str, Sequence[tuple[str, str]]]
 
 
 def show_banner(action: str, root: Path | None = None) -> None:
-    """Affiche la bannière ; `root` : le repo concerné, sinon le dossier courant sans projet."""
+    """Shows the banner; `root`: the repo concerned, otherwise the current folder, no project."""
     kiln_version = installed_version()
     details = [action, *([_project_summary(root)] if root is not None else [])]
     location = _home_relative(root or Path.cwd())
@@ -68,21 +68,21 @@ def show_banner(action: str, root: Path | None = None) -> None:
 
 
 def show_home(groups: Sequence[CommandGroup], examples: Sequence[str]) -> None:
-    """`kiln` seul ou `kiln --help` : bannière, commandes par section, exemples."""
-    show_banner("atelier de Claude Code")
+    """`kiln` alone or `kiln --help`: banner, commands by section, examples."""
+    show_banner("Claude Code's workshop")
     width = max(len(name) for _, commands in groups for name, _ in commands) + 3
-    usage = ui.paint("<commande> [options]", ui.STONE)
+    usage = ui.paint("<command> [options]", ui.STONE)
     print(f"{INDENT}{ui.paint('Usage', bold=True)}  kiln {usage}")
     for title, commands in groups:
         print(f"\n{INDENT}{ui.paint(title.upper(), ui.FIRE, bold=True)}")
         for name, role in commands:
             print(f"{INDENT}  {ui.paint(f'{name:<{width}}', ui.STONE_LIGHT, bold=True)}{role}")
-    print(f"\n{INDENT}{ui.paint('EXEMPLES', ui.FIRE, bold=True)}")
+    print(f"\n{INDENT}{ui.paint('EXAMPLES', ui.FIRE, bold=True)}")
     for example in examples:
         print(f"{INDENT}  {ui.paint('$', ui.STONE_DARK)} {example}")
     print(
-        f"\n{INDENT}{ui.paint('kiln <commande> --help', bold=True)}"
-        f"{ui.paint(f' pour les options · {REPO_URL}', ui.STONE)}\n"
+        f"\n{INDENT}{ui.paint('kiln <command> --help', bold=True)}"
+        f"{ui.paint(f' for the options · {REPO_URL}', ui.STONE)}\n"
     )
 
 
@@ -106,7 +106,7 @@ def render_logo() -> list[str]:
 
 
 def _project_summary(root: Path) -> str:
-    """Nom du projet, envergure et frameworks : `annski · flame · django + nuxt, podman`."""
+    """Project name, size and frameworks: `demo · flame · django + nuxt, podman`."""
     try:
         answers = answers_if_any(root)
         stack = load_stack(root)
@@ -114,7 +114,7 @@ def _project_summary(root: Path) -> str:
         return root.name
     frameworks = [name for name in (stack.backend, stack.frontend) if name != NO_FRAMEWORK]
     pile = " + ".join(frameworks) + (", podman" if stack.has_podman else "")
-    parts = [str(answers.get("nom", root.name)), str(answers.get("envergure", "")), pile]
+    parts = [str(answers.get("name", root.name)), str(answers.get("size", "")), pile]
     return " · ".join(part for part in parts if part)
 
 

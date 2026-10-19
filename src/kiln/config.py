@@ -1,8 +1,8 @@
-"""Configuration de kiln propre au poste : `~/.config/kiln/config.toml`.
+"""kiln's settings for this machine: `~/.config/kiln/config.toml`.
 
-Le système (Linux, WSL, macOS) est demandé une fois, à la première installation ; le
-propriétaire GitHub, l'équipe et le dossier des repos donnent leurs valeurs par défaut à
-`kiln new` et à `kiln update --all`.
+The system (Linux, WSL, macOS) is asked once, at the first install; the GitHub owner, the team
+and the code directory give their defaults to `kiln new` and `kiln update --all`. Keys and
+values written before kiln 0.4.0 (`canal = "interne"`, `statusline = "sobre"`) are still read.
 """
 
 import os
@@ -11,19 +11,23 @@ import sys
 import tomllib
 from dataclasses import dataclass, replace
 from pathlib import Path
+from typing import Any
+
+from kiln import renames
 
 CONFIG_DIR_VARIABLE = "XDG_CONFIG_HOME"
 CONFIG_RELATIVE_PATH = Path("kiln") / "config.toml"
 DEFAULT_CODE_DIR = Path.home() / "code"
 
 SYSTEMS = ("linux", "wsl", "macos")
-# Canal de versions : `public` (versions promues) ou `interne` (candidates comprises).
-PUBLIC_CHANNEL, INTERNAL_CHANNEL = "public", "interne"
+# Release channel: `public` (promoted releases) or `internal` (candidates included).
+PUBLIC_CHANNEL, INTERNAL_CHANNEL = "public", "internal"
 CHANNELS = (PUBLIC_CHANNEL, INTERNAL_CHANNEL)
-# Status line de Claude Code : un style de kiln, aucune, ou celle de l'utilisateur (`perso`).
-STATUSLINE_STYLES = ("sobre", "bandeau", "classique", "classique-fond")
-STATUSLINE_CHOICES = (*STATUSLINE_STYLES, "aucune", "perso")
-DEFAULT_STATUSLINE = "sobre"
+# Claude Code's status line: a kiln style, none, or the user's own (`custom`).
+STATUSLINE_STYLES = ("plain", "band", "classic", "classic-band")
+NO_STATUSLINE, CUSTOM_STATUSLINE = "none", "custom"
+STATUSLINE_CHOICES = (*STATUSLINE_STYLES, NO_STATUSLINE, CUSTOM_STATUSLINE)
+DEFAULT_STATUSLINE = "plain"
 SYSTEM_LABELS = {"linux": "Linux", "wsl": "Windows (WSL)", "macos": "macOS"}
 
 
@@ -34,7 +38,7 @@ class UserConfig:
     team: tuple[str, ...] = ()
     code_dir: Path = DEFAULT_CODE_DIR
     channel: str = PUBLIC_CHANNEL
-    statusline: str | None = None  # None : pas encore choisie (kiln install la pose)
+    statusline: str | None = None  # None: not chosen yet (kiln install sets it)
 
 
 def config_path() -> Path:
@@ -46,29 +50,37 @@ def load_config() -> UserConfig:
     path = config_path()
     if not path.exists():
         return UserConfig()
-    values = tomllib.loads(path.read_text())
-    team = values.get("equipe", [])
+    values = machine_settings(tomllib.loads(path.read_text()))
+    team = values.get("team", [])
+    statusline = values.get("statusline")
     return UserConfig(
-        system=values.get("systeme"),
-        owner=values.get("proprietaire"),
+        system=values.get("system"),
+        owner=values.get("owner"),
         team=tuple(str(login) for login in team) if isinstance(team, list) else (),
-        code_dir=Path(values.get("dossier_code", str(DEFAULT_CODE_DIR))).expanduser(),
-        channel=values.get("canal", PUBLIC_CHANNEL),
-        statusline=values.get("statusline"),
+        code_dir=Path(values.get("code_dir", str(DEFAULT_CODE_DIR))).expanduser(),
+        channel=renames.machine_value("channel", str(values.get("channel", PUBLIC_CHANNEL))),
+        statusline=renames.machine_value("statusline", str(statusline)) if statusline else None,
     )
 
 
+def machine_settings(values: dict[str, Any]) -> dict[str, Any]:
+    """Settings under today's keys; a current key wins over its old name."""
+    renamed = {renames.MACHINE_KEYS.get(key, key): value for key, value in values.items()}
+    renamed.update({key: value for key, value in values.items() if key not in renames.MACHINE_KEYS})
+    return renamed
+
+
 def save_config(config: UserConfig) -> None:
-    lines = ["# Configuration de kiln pour ce poste (kiln install la crée)."]
+    lines = ["# kiln's settings for this machine (created by kiln install)."]
     if config.system:
-        lines.append(f'systeme = "{config.system}"')
+        lines.append(f'system = "{config.system}"')
     if config.owner:
-        lines.append(f'proprietaire = "{config.owner}"')
+        lines.append(f'owner = "{config.owner}"')
     if config.team:
-        lines.append("equipe = [" + ", ".join(f'"{login}"' for login in config.team) + "]")
-    lines.append(f'dossier_code = "{config.code_dir}"')
+        lines.append("team = [" + ", ".join(f'"{login}"' for login in config.team) + "]")
+    lines.append(f'code_dir = "{config.code_dir}"')
     if config.channel != PUBLIC_CHANNEL:
-        lines.append(f'canal = "{config.channel}"')
+        lines.append(f'channel = "{config.channel}"')
     if config.statusline:
         lines.append(f'statusline = "{config.statusline}"')
     path = config_path()
@@ -86,19 +98,19 @@ def detect_system() -> str:
 
 
 def ask_system(detected: str) -> str:
-    """Demande le système, la valeur détectée par défaut ; hors terminal, la garde."""
+    """Asks for the system, the detected one by default; outside a terminal, keeps it."""
     if not sys.stdin.isatty():
         return detected
     choices = " / ".join(f"{key} ({SYSTEM_LABELS[key]})" for key in SYSTEMS)
-    answer = input(f"Système de ce poste ? {choices} [{detected}] : ").strip().lower()
+    answer = input(f"System of this machine? {choices} [{detected}]: ").strip().lower()
     return answer if answer in SYSTEMS else detected
 
 
 def ensure_system(config: UserConfig) -> UserConfig:
-    """Système du poste, demandé une seule fois puis gardé dans la configuration."""
+    """The machine's system, asked once then kept in the settings."""
     if config.system in SYSTEMS:
         return config
     updated = replace(config, system=ask_system(detect_system()))
     save_config(updated)
-    print(f"Système enregistré dans {config_path()} : {updated.system}.")
+    print(f"System saved in {config_path()}: {updated.system}.")
     return updated

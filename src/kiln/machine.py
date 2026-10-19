@@ -1,0 +1,88 @@
+"""`kiln set` outside a repo (or `kiln set --machine`): the settings of this machine.
+
+They live in `~/.config/kiln/config.toml`: system, default GitHub owner and team of `kiln new`,
+code directory of `kiln status` and `kiln update --all`, release channel, Claude Code's status
+line. Keys and values of before kiln 0.4.0 (`canal=interne`) are still accepted.
+"""
+
+from dataclasses import replace
+from pathlib import Path
+
+from kiln import renames, ui
+from kiln.config import (
+    CHANNELS,
+    DEFAULT_STATUSLINE,
+    STATUSLINE_CHOICES,
+    SYSTEMS,
+    UserConfig,
+    config_path,
+    load_config,
+    save_config,
+)
+from kiln.shell import KilnError
+from kiln.statusline import apply_statusline_choice
+
+MACHINE_KEYS = ("system", "owner", "team", "code_dir", "channel", "statusline")
+
+
+def show_machine(config: UserConfig) -> None:
+    statusline = config.statusline or DEFAULT_STATUSLINE
+    values = {
+        "system": config.system or "(asked at the first kiln install)",
+        "owner": config.owner or "(none)",
+        "team": ", ".join(config.team) or "(none)",
+        "code_dir": str(config.code_dir),
+        "channel": f"{config.channel} (public: promoted releases; internal: candidates too)",
+        "statusline": f"{statusline} ({' / '.join(STATUSLINE_CHOICES)})",
+    }
+    width = max(len(key) for key in MACHINE_KEYS)
+    print(ui.paint(f"Machine settings ({config_path()})", bold=True))
+    for key in MACHINE_KEYS:
+        print(f"{ui.paint(f'{key:<{width}}', ui.STONE)}  {values[key]}")
+    print()
+    ui.note("Change: kiln set key=value [key=value…] (e.g. kiln set team=alice,bob).")
+    ui.note("A repo's settings: go into the repo, then kiln set.")
+
+
+def apply_machine(config: UserConfig, assignments: list[str]) -> UserConfig:
+    """The new machine settings, once each `key=value` is checked."""
+    updated = config
+    for assignment in assignments:
+        old_key, separator, value = assignment.partition("=")
+        key = renames.MACHINE_KEYS.get(old_key, old_key)
+        value = renames.machine_value(key, value.strip())
+        if not separator or key not in MACHINE_KEYS:
+            raise KilnError(
+                f'"{assignment}": expected key=value, machine keys: {", ".join(MACHINE_KEYS)}'
+            )
+        if key == "system":
+            if value not in SYSTEMS:
+                raise KilnError(f"system: {', '.join(SYSTEMS)}")
+            updated = replace(updated, system=value)
+        elif key == "owner":
+            updated = replace(updated, owner=value or None)
+        elif key == "team":
+            team = tuple(login.strip() for login in value.strip("[]").split(",") if login.strip())
+            updated = replace(updated, team=team)
+        elif key == "channel":
+            if value not in CHANNELS:
+                raise KilnError(f"channel: {', '.join(CHANNELS)}")
+            updated = replace(updated, channel=value)
+        elif key == "statusline":
+            if value not in STATUSLINE_CHOICES:
+                raise KilnError(f"statusline: {', '.join(STATUSLINE_CHOICES)}")
+            updated = replace(updated, statusline=value)
+        else:
+            updated = replace(updated, code_dir=Path(value).expanduser())
+    return updated
+
+
+def run_machine(assignments: list[str]) -> None:
+    config = load_config()
+    if assignments:
+        previous = config.statusline
+        config = apply_machine(config, assignments)
+        save_config(config)
+        if config.statusline and config.statusline != previous:
+            ui.note(apply_statusline_choice(config.statusline))
+    show_machine(config)

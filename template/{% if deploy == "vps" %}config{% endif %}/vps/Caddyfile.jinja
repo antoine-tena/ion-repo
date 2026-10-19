@@ -1,0 +1,28 @@
+# Caddy of the server: automatic TLS (Let's Encrypt) and headers, in front of the API on
+# 127.0.0.1:8000. Installed by the switch (deploy-remote.sh) as /etc/caddy/Caddyfile, reloaded when
+# it changed.
+{
+	email admin@{{ api_domain.split('.')[-2:] | join('.') }}
+}
+
+{{ api_domain }} {
+	encode zstd gzip
+
+	# [SECURITY-HEADERS]: Django already sets HSTS, nosniff, referrer and COOP; what gives the
+	# server away goes.
+	header -Server
+
+	log {
+		output file /var/log/caddy/{{ name }}-access.log {
+			roll_size 50MiB
+			roll_keep 5
+		}
+		format json
+	}
+
+	reverse_proxy 127.0.0.1:8000 {
+		header_up X-Forwarded-Proto {scheme}
+		health_uri /api/health
+		health_interval 30s
+	}
+}

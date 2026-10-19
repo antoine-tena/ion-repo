@@ -1,5 +1,5 @@
 {% from "macros.jinja" import py_str -%}
-"""Point d'entrée de l'API : `uv run uvicorn app.main:app --reload`."""
+"""Entry point of the API: `uv run uvicorn app.main:app --reload`."""
 
 import structlog
 from fastapi import FastAPI
@@ -12,7 +12,7 @@ API_PREFIX = "/api"
 
 
 def configure_logging(is_debug: bool) -> None:
-    """[JOURNALISATION] : événements structurés `domaine.evenement`, jamais de phrase formatée."""
+    """[LOGGING]: structured `domain.event` events, never a formatted sentence."""
     renderer = structlog.dev.ConsoleRenderer() if is_debug else structlog.processors.JSONRenderer()
     structlog.configure(
         processors=[
@@ -28,7 +28,7 @@ def create_app() -> FastAPI:
     settings = get_settings()
     configure_logging(settings.debug)
     application = FastAPI(
-        title={{ py_str(titre ~ " API") }},
+        title={{ py_str(title ~ " API") }},
         version="1.0.0",
         openapi_url=f"{API_PREFIX}/openapi.json",
     )

@@ -1,0 +1,8 @@
+{
+  "name": "django",
+  "version": "0.2.1",
+  "description": "Django repos: migrations, OpenAPI contract, read-only postgres MCP server on the test database",
+  "author": {
+    "name": "antoine-tena"
+  }
+}

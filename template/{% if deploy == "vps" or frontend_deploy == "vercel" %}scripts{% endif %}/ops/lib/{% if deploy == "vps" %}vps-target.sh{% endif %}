@@ -1,0 +1,25 @@
+# shellcheck shell=bash
+# Descriptor of the production server: a versioned JSON file without secrets (address, branch,
+# public URLs), read by `vps_target <key>` rather than copying these values into each script.
+# The scripts' environment variables still win.
+#
+# Usage: . scripts/ops/lib/vps-target.sh ; HOST="${DEPLOY_HOST:-$(vps_target host)}"
+# Setting: VPS_TARGET (default <repo root>/config/vps/project.json)
+vps_target() {  # vps_target <key>: value of the descriptor; fails when the key is missing
+  local file="${VPS_TARGET:-$(git rev-parse --show-toplevel)/config/vps/project.json}"
+  python3 -c '
+import json, sys
+
+path, key = sys.argv[1], sys.argv[2]
+try:
+    with open(path, encoding="utf-8") as handle:
+        data = json.load(handle)
+except OSError as error:
+    sys.exit(f"Unreadable server descriptor ({path}): {error}")
+except ValueError as error:
+    sys.exit(f"Malformed server descriptor ({path}): {error}")
+if key not in data:
+    sys.exit(f"Key {key!r} missing from {path}.")
+print(data[key])
+' "$file" "$1"
+}

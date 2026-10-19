@@ -1,16 +1,17 @@
-name: charte (kiln)
+name: kiln charter (former name)
 description: >-
-  Installe kiln avec uv (commandes `kiln` et `charte`) et les met dans le PATH du job.
+  Name of `actions/charter` before kiln 0.4.0, kept for the workflows of that time that fall back
+  to kiln's develop branch. Installs kiln with uv (the `kiln`, `charter` and `charte` commands).
 inputs:
   ref:
-    description: Révision de kiln à installer
+    description: Revision of kiln to install
     default: develop
 runs:
   using: composite
   steps:
     - uses: astral-sh/setup-uv@v7
 
-    - name: kiln et charte
+    - name: kiln and charter
       shell: bash
       env:
         REF: ${{ inputs.ref }}

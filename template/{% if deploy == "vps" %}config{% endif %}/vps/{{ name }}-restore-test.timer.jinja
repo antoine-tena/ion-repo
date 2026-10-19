@@ -1,0 +1,10 @@
+[Unit]
+Description={{ title }}: Restore test of the latest backup (timer)
+
+[Timer]
+OnCalendar=Sun *-*-* 05:00:00
+RandomizedDelaySec=30min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

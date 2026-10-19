@@ -1,4 +1,4 @@
-/* [STYLE-3] Seul fichier CSS : Tailwind puis les jetons de thème. */
+/* [STYLE-3] The only CSS file: Tailwind, then the theme tokens. */
 @import "tailwindcss";
 
 @theme {

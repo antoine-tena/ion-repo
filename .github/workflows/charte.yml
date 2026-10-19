@@ -1,29 +1,10 @@
-name: Charte
+name: Charter (former name)
 
-# Les règles impératives de la charte du repo (CLAUDE.md), décrites dans son charte.toml, vérifiées
-# par la commande `charte` de kiln.
+# Name of charter.yml before kiln 0.4.0, kept for the repos that call kiln's workflows at
+# `develop` (an adopted repo is never converted). Runs charter.yml at this same commit.
 on:
   workflow_call:
 
 jobs:
-  charte:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          # La règle des migrations compare à la branche d'intégration.
-          fetch-depth: 0
-      # kiln à la version exacte de ce workflow : ses actions et la commande charte en viennent
-      # (retiré aussitôt, pour que les contrôles du projet ne le voient pas).
-      - uses: actions/checkout@v7
-        with:
-          repository: antoine-tena/kiln
-          ref: ${{ job.workflow_sha || 'develop' }}
-          path: .kiln
-      - uses: ./.kiln/actions/charte
-        with:
-          ref: ${{ job.workflow_sha || 'develop' }}
-      - name: Retrait de kiln du dossier du projet
-        run: rm -rf .kiln
-      - name: Charte
-        run: charte
+  charter:
+    uses: ./.github/workflows/charter.yml

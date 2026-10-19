@@ -1,6 +1,6 @@
-"""Exporte le schéma OpenAPI de l'API ([OPENAPI]), source des types du frontend.
+"""Exports the OpenAPI schema of the API ([OPENAPI]), source of the frontend's types.
 
-Lancée par `kiln contrat` (`--output ../openapi.json`) ; `--check` sert à la CI.
+Run by `kiln contract` (`--output ../openapi.json`); `--check` is for CI.
 """
 
 import json
@@ -13,14 +13,14 @@ from config.api import api
 
 
 class Command(BaseCommand):
-    help = "Exporte le schéma OpenAPI de l'API au format JSON."
+    help = "Exports the OpenAPI schema of the API as JSON."
 
     def add_arguments(self, parser: ArgumentParser) -> None:
-        parser.add_argument("--output", type=Path, required=True, help="Fichier de sortie.")
+        parser.add_argument("--output", type=Path, required=True, help="Output file.")
         parser.add_argument(
             "--check",
             action="store_true",
-            help="N'écrit rien ; échoue si le fichier diffère du schéma du code.",
+            help="Writes nothing; fails when the file differs from the code's schema.",
         )
 
     def handle(self, *args: object, **options: object) -> None:
@@ -28,14 +28,14 @@ class Command(BaseCommand):
         output_path = Path(str(options["output"]))
         if options["check"]:
             check_schema(output_path, rendered_schema)
-            self.stdout.write(f"{output_path} est à jour.")
+            self.stdout.write(f"{output_path} is up to date.")
             return
         output_path.write_text(rendered_schema, encoding="utf-8")
-        self.stdout.write(f"Schéma OpenAPI écrit dans {output_path}.")
+        self.stdout.write(f"OpenAPI schema written to {output_path}.")
 
 
 def render_schema() -> str:
-    """Rendu déterministe : deux exports du même code donnent le même fichier."""
+    """Deterministic rendering: two exports of the same code give the same file."""
     schema = api.get_openapi_schema()
     return json.dumps(schema, indent=2, ensure_ascii=False, sort_keys=True) + "\n"
 
@@ -43,9 +43,9 @@ def render_schema() -> str:
 def check_schema(output_path: Path, rendered_schema: str) -> None:
     regenerate = f"uv run python manage.py export_openapi --output {output_path}"
     if not output_path.exists():
-        raise CommandError(f"{output_path} est absent. Lancer : {regenerate}")
+        raise CommandError(f"{output_path} is missing. Run: {regenerate}")
     if output_path.read_text(encoding="utf-8") != rendered_schema:
         raise CommandError(
-            f"{output_path} a dérivé du code. Lancer : {regenerate}, "
-            "puis pnpm generate:api dans frontend/."
+            f"{output_path} has drifted from the code. Run: {regenerate}, "
+            "then pnpm generate:api in frontend/."
         )

@@ -1,4 +1,4 @@
-"""[CALLBACKS] : fonctions pures, typées, qui reçoivent les valeurs des composants."""
+"""[CALLBACKS]: pure, typed functions that receive the values of the components."""
 
 import plotly.graph_objects as go
 import polars as pl

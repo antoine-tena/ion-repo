@@ -1,4 +1,4 @@
-"""Routes du backend : l'administration et l'API."""
+"""Routes of the backend: the admin and the API."""
 
 from django.contrib import admin
 from django.urls import path

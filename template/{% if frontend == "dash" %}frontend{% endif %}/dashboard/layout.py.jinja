@@ -1,4 +1,4 @@
-"""Mise en page : une fonction qui construit l'application, évaluée au démarrage."""
+"""Layout: a function that builds the application, evaluated at start."""
 
 {% if backend == 'data' -%}
 from dash import Dash, dcc, html
@@ -9,6 +9,7 @@ from dashboard import callbacks
 from dashboard.constants import (
     ALL_CATEGORIES,
     CATEGORY_DROPDOWN_ID,
+    CATEGORY_LABEL,
     SITE_DESCRIPTION,
     SITE_TITLE,
     TOTALS_GRAPH_ID,
@@ -21,7 +22,7 @@ def build_layout() -> html.Main:
         [
             html.H1(SITE_TITLE),
             html.P(SITE_DESCRIPTION),
-            html.Label("Catégorie", htmlFor=CATEGORY_DROPDOWN_ID),
+            html.Label(CATEGORY_LABEL, htmlFor=CATEGORY_DROPDOWN_ID),
             dcc.Dropdown(
                 id=CATEGORY_DROPDOWN_ID,
                 options=[ALL_CATEGORIES, *categories.to_list()],
@@ -42,18 +43,23 @@ def create_app() -> Dash:
 from dash import Dash, html
 
 from dashboard.api import fetch_health_status
-from dashboard.constants import SITE_DESCRIPTION, SITE_TITLE
+from dashboard.constants import (
+    BACKEND_DOWN_MESSAGE,
+    BACKEND_UP_MESSAGE,
+    SITE_DESCRIPTION,
+    SITE_TITLE,
+)
 
 
 def health_message() -> str:
     health_status = fetch_health_status()
     if health_status is None:
-        return "Le backend ne répond pas : lancez-le avec kiln dev."
-    return f"Backend joignable (statut : {health_status})."
+        return BACKEND_DOWN_MESSAGE
+    return BACKEND_UP_MESSAGE.format(status=health_status)
 
 
 def build_layout() -> html.Main:
-    # Évaluée à chaque chargement de page : l'état de l'API est toujours frais.
+    # Evaluated at each page load: the state of the API is always fresh.
     return html.Main([html.H1(SITE_TITLE), html.P(SITE_DESCRIPTION), html.P(health_message())])
 
 

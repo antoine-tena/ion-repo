@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import { useHealth } from '~/composables/useHealth'
+import { BACKEND_CONNECTING, BACKEND_DOWN, BACKEND_UP } from '~/utils/constants'
 
 const { data: health, status } = await useHealth()
 </script>
 
 <template>
   <p v-if="status === 'pending'" class="text-muted">
-    Connexion au backend…
+    {{ BACKEND_CONNECTING }}
   </p>
   <p v-else-if="status === 'error'" class="text-danger">
-    Le backend ne répond pas : lancez le projet avec <code>kiln dev</code>.
+    {{ BACKEND_DOWN }}
   </p>
   <p v-else class="text-success">
-    Backend joignable (statut : {{ health?.status }}).
+    {{ BACKEND_UP }} ({{ health?.status }})
   </p>
 </template>

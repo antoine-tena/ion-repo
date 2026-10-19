@@ -1,4 +1,4 @@
-"""Chargement des jeux de données, validés à la frontière ([VALIDATION-AUX-FRONTIERES])."""
+"""Loading of the datasets, validated at the edge ([VALIDATE-AT-BOUNDARIES])."""
 
 from pathlib import Path
 
@@ -11,18 +11,16 @@ MEASUREMENTS_SCHEMA = pl.Schema({"date": pl.Date, "category": pl.String, "value"
 
 
 class DatasetSchemaError(ValueError):
-    """Colonnes ou types inattendus : le chargement échoue, pas la figure."""
+    """Unexpected columns or types: loading fails, not the figure."""
 
 
 def load_measurements(path: Path = SAMPLE_MEASUREMENTS) -> pl.DataFrame:
-    """Mesures datées par catégorie ; colonnes et types vérifiés avant tout usage."""
+    """Dated measurements by category; columns and types checked before any use."""
     measurements = pl.read_csv(path, try_parse_dates=True)
     missing_columns = set(MEASUREMENTS_SCHEMA.names()) - set(measurements.columns)
     if missing_columns:
-        raise DatasetSchemaError(
-            f"colonnes manquantes dans {path.name} : {sorted(missing_columns)}"
-        )
+        raise DatasetSchemaError(f"missing columns in {path.name}: {sorted(missing_columns)}")
     try:
         return measurements.select(MEASUREMENTS_SCHEMA.names()).cast(MEASUREMENTS_SCHEMA)
     except pl.exceptions.InvalidOperationError as error:
-        raise DatasetSchemaError(f"types inattendus dans {path.name}") from error
+        raise DatasetSchemaError(f"unexpected types in {path.name}") from error

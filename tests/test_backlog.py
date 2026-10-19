@@ -3,7 +3,8 @@
 import subprocess
 from pathlib import Path
 
-from kiln.backlog import migrate_legacy_backlog
+from kiln.backlog import add_after_update_ticket, migrate_legacy_backlog
+from kiln.versions import ReleaseNotes
 
 TEMPLATE_BACKLOG = (
     Path(__file__).parent.parent / "template/docs/backlog/backlog.md.jinja"
@@ -123,3 +124,44 @@ def test_tracker_deleted_by_copier_is_read_back_from_the_last_commit(tmp_path: P
     assert migrate_legacy_backlog(tmp_path)
 
     assert "### T-01 · Livrer la démo" in (tmp_path / "docs/backlog/backlog.md").read_text()
+
+
+BACKLOG_WITH_CRITICAL = """# Backlog
+
+- **ID** `T-NN`: stable. **Next free: T-07.**
+
+## 🔴 Critical
+
+### T-03 · Something else
+"""
+NOTES = [
+    ReleaseNotes("v0.4.1", "", ["- **After updating**: give each owner's @login"]),
+    ReleaseNotes("v0.4.0", "", ["- kiln doctor", "- **After updating**: rename the bucket"]),
+]
+
+
+def test_after_updating_lines_become_one_critical_ticket(tmp_path: Path) -> None:
+    backlog = tmp_path / "docs/backlog/backlog.md"
+    backlog.parent.mkdir(parents=True)
+    backlog.write_text(BACKLOG_WITH_CRITICAL)
+
+    assert add_after_update_ticket(tmp_path, NOTES, today="2026-10-19") == "T-07"
+    assert add_after_update_ticket(tmp_path, NOTES, today="2026-10-20") is None
+
+    text = backlog.read_text()
+    assert "**Next free: T-08.**" in text
+    assert text.index("### T-07 · Finish the kiln update to v0.4.1") < text.index("### T-03")
+    assert "- **Opened**: 2026-10-19" in text
+    assert "- [ ] rename the bucket (v0.4.0)\n- [ ] give each owner's @login (v0.4.1)" in text
+
+
+def test_nothing_to_do_no_ticket(tmp_path: Path) -> None:
+    backlog = tmp_path / "docs/backlog/backlog.md"
+    backlog.parent.mkdir(parents=True)
+    backlog.write_text(BACKLOG_WITH_CRITICAL)
+
+    assert (
+        add_after_update_ticket(tmp_path, [ReleaseNotes("v0.4.1", "", ["- x"])], today="d") is None
+    )
+    assert add_after_update_ticket(tmp_path / "elsewhere", NOTES, today="d") is None
+    assert backlog.read_text() == BACKLOG_WITH_CRITICAL

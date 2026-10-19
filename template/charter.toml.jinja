@@ -1,0 +1,163 @@
+# Rules of this repo checked by kiln's `charter` command: after each edit (Claude Code hook),
+# before each commit (pre-commit) and in CI. Bans hold everywhere. Ratchets: the existing debt
+# is a ceiling that only goes down. Floors: a value that only goes up. Values: `charter --detail`.
+# kiln keeps this file current (`kiln update`); budgets and floors are the project's to lower
+# and raise, and its own rules can be added here.
+{%- set python_files = (['backend/*.py', 'backend/**/*.py'] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + (['frontend/*.py', 'frontend/**/*.py'] if frontend in ['streamlit', 'dash'] else []) %}
+{%- set java_files = ['backend/src/**/*.java'] if backend == 'java' else [] %}
+{%- set front_files = {'nuxt': ['frontend/app/**'], 'next': ['frontend/app/**', 'frontend/components/**', 'frontend/lib/**'], 'astro': ['frontend/src/**']}.get(frontend, []) %}
+
+size = "{{ size }}"
+exclude = ["/migrations/", "/notebooks/"]
+unverified_rules = "scripts/ci/unverified-rules.txt"
+{%- if python_files %}
+
+[bans.logging]
+id = "LOGGING"
+files = {{ python_files | tojson }}
+
+[bans.constant-time]
+id = "CONSTANT-TIME"
+files = {{ python_files | tojson }}
+
+[bans.personal-data]
+id = "PERSONAL-DATA"
+files = {{ python_files | tojson }}
+{%- endif %}
+{%- if backend == 'django' %}
+
+[bans.django-signals]
+id = "NO-SIGNALS"
+
+[bans.django-migrations]
+id = "MIGRATIONS"
+branch = "develop"
+{%- endif %}
+{%- if frontend == 'nuxt' %}
+
+[bans.vue-style]
+id = "STYLE-1"
+{%- endif %}
+
+[bans.forbidden-tools]
+id = "UV-PODMAN"
+
+# References to an audit report ("audit H36", "(CART-06)") rot with it. Add to `prefixes` the
+# prefixes of the project's audit findings as they come.
+[bans.audit-references]
+id = "AUDIT-REFERENCES"
+prefixes = "AUDIT"
+exclude = '(^docs/|^charter\.toml$|/migrations/|-lock\.yaml$|\.lock$)'
+
+[ratchets.file-size]
+id = "FILE-SIZE"
+files = {{ (python_files + java_files + front_files) | tojson }}
+suffixes = [".py", {{ '".java", ' if java_files }}".ts", ".tsx", ".vue", ".astro", ".css", ".mjs"]
+budget = 0
+{%- if backend in ['django', 'fastapi'] %}
+
+[ratchets.long-routes]
+id = "VIEW-15"
+{%- if backend == 'django' %}
+decorator = '\s*@\w*(api|router)\.(get|post|put|patch|delete)'
+files = ["backend/**/api.py", "backend/**/api/*.py"]
+{%- else %}
+decorator = '\s*@\w*(app|router)\.(get|post|put|patch|delete)'
+files = ["backend/app/**/*.py"]
+{%- endif %}
+budget = 0
+
+# A real clock in a test: it passes today and breaks at midnight or on a Sunday.
+[ratchets.clock-in-tests]
+rule = "occurrences"
+id = "CLOCK"
+{%- if backend == 'django' %}
+files = ["backend/tests/*.py", "backend/**/tests/*.py"]
+pattern = "timezone.now()"
+{%- else %}
+files = ["backend/tests/*.py", "backend/tests/**/*.py"]
+pattern = "datetime.now("
+{%- endif %}
+budget = 0
+{%- endif %}
+{%- if java_files %}
+
+# Java: the JDK logger, never the console nor a raw trace; the clock is injected.
+[ratchets.console-logging]
+rule = "occurrences"
+id = "LOGGING"
+files = ["backend/src/main/**/*.java"]
+pattern = "System.out.print"
+budget = 0
+
+[ratchets.error-logging]
+rule = "occurrences"
+id = "LOGGING"
+files = ["backend/src/main/**/*.java"]
+pattern = "System.err.print"
+budget = 0
+
+[ratchets.stack-traces]
+rule = "occurrences"
+id = "LOGGING"
+files = ["backend/src/**/*.java"]
+pattern = "printStackTrace("
+budget = 0
+
+[ratchets.clock-instant]
+rule = "occurrences"
+id = "CLOCK"
+files = ["backend/src/**/*.java"]
+pattern = "Instant.now()"
+budget = 0
+
+[ratchets.clock-date]
+rule = "occurrences"
+id = "CLOCK"
+files = ["backend/src/**/*.java"]
+pattern = "LocalDate.now()"
+budget = 0
+
+[ratchets.constant-time-java]
+rule = "occurrences"
+id = "CONSTANT-TIME"
+files = ["backend/src/main/**/*.java"]
+pattern = "Token.equals("
+budget = 0
+{%- endif %}
+{%- if front_files %}
+
+# The front is where tests go missing first: its density only goes up.
+[floors.front-test-density]
+rule = "test-density"
+id = "TEST-DENSITY"
+files = {{ front_files | tojson }}
+{%- if frontend == 'next' %}
+suffixes = [".ts", ".tsx", ".mjs"]
+test_suffixes = [".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx"]
+{%- elif frontend == 'astro' %}
+suffixes = [".ts", ".astro", ".mjs"]
+test_suffixes = [".test.ts", ".spec.ts"]
+{%- endif %}
+floor = 0
+{%- endif %}
+{%- if backend == 'django' %}
+
+[ratchets.django-locks]
+id = "LOCKS"
+budget = 0
+
+# Read by the django.yml workflow (`charter types`, `charter coverage`); other Python projects run
+# mypy and pytest --cov-fail-under directly (python.yml workflow, `kiln check`).
+[types]
+directory = "backend"
+packages = ["config", "tests"]
+budget = 0
+env = { DJANGO_SECRET_KEY = "charter-types" }
+
+[coverage]
+report = "backend/coverage.xml"
+floors = { TOTAL = 80 }
+# The generated base is 100 % covered: only suggest raising the floor beyond that.
+margin = 25
+{%- endif %}

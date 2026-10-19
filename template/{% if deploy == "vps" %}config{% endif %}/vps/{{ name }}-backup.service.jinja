@@ -1,0 +1,7 @@
+[Unit]
+Description={{ title }}: Backup of the database
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/{{ name }}-backup daily

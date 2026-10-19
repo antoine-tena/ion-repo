@@ -1,6 +1,8 @@
 import datetime
+import json
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 
 import copier
@@ -16,7 +18,7 @@ from kiln.dev import service_prefix
 from kiln.doctor import Level, workstation_findings
 from kiln.install import ensure_env_file
 from kiln.release import Tag, latest_candidates, next_version, promotion_verdict
-from kiln.rules import charter_rules, verified_rules
+from kiln.rules import charter_rules, verified_rules, write_unverified_rules
 from kiln.settings import parse_assignments, remove_replaced_artifacts
 from kiln.shell import KilnError
 from kiln.stack import Stack, answers_if_any, load_stack, stack_from_answers
@@ -34,6 +36,8 @@ from kiln.versions import (
     tag_of,
     tool_release_tag,
 )
+
+REPO = Path(__file__).resolve().parent.parent
 
 
 def test_legacy_answers_mean_django_and_nuxt() -> None:
@@ -53,7 +57,7 @@ def test_checks_end_with_charter() -> None:
     assert [command.label for command in commands][-3:] == [
         "frontend lint",
         "frontend typecheck",
-        "charte",
+        "charter",
     ]
 
 
@@ -65,7 +69,7 @@ def test_java_backend_is_checked_by_the_maven_wrapper() -> None:
     assert stack.dev_commands() == []
     assert [(command.label, command.argv) for command in stack.check_commands()] == [
         ("backend maven", ("./mvnw", "-B", "-q", "verify")),
-        ("charte", ("charte",)),
+        ("charter", ("charter",)),
     ]
 
 
@@ -82,10 +86,9 @@ def test_major_bounds_keep_the_major() -> None:
 
 
 def test_team_accepts_a_comma_list() -> None:
-    assert parse_assignments(["equipe=a, b", "podman=true"]) == {
-        "equipe": ["a", "b"],
-        "podman": True,
-    }
+    assert parse_assignments(["team=a, b", "podman=true"]) == {"team": ["a", "b"], "podman": True}
+    # Names of before kiln 0.4.0 still work.
+    assert parse_assignments(["equipe=a", "frontend=aucun"]) == {"team": ["a"], "frontend": "none"}
 
 
 def test_unknown_key_is_refused() -> None:
@@ -93,14 +96,26 @@ def test_unknown_key_is_refused() -> None:
         parse_assignments(["couleur=bleu"])
 
 
-def test_rules_checked_by_charte_are_verified(tmp_path: Path) -> None:
-    (tmp_path / "CLAUDE.md").write_text("- **[SIGNAUX]** a\n- **[NOMS-INTERDITS]** b\n")
-    (tmp_path / "charte.toml").write_text('[interdictions.signaux-django]\nid = "SIGNAUX"\n')
+def test_rules_checked_by_the_charter_are_verified(tmp_path: Path) -> None:
+    rules = tmp_path / ".claude/rules/kiln"
+    rules.mkdir(parents=True)
+    (rules / "django.md").write_text("- **[NO-SIGNALS]** a\n- **[GENERIC-NAMES]** b\n")
+    (tmp_path / "charter.toml").write_text('[bans.django-signals]\nid = "NO-SIGNALS"\n')
 
     stack = Stack(backend="django", frontend="aucun", has_podman=False)
     unverified = set(charter_rules(tmp_path)) - verified_rules(tmp_path, stack)
 
-    assert unverified == {"NOMS-INTERDITS"}
+    assert unverified == {"GENERIC-NAMES"}
+
+
+def test_an_adopted_charter_of_before_0_4_still_verifies_its_rules(tmp_path: Path) -> None:
+    (tmp_path / "CLAUDE.md").write_text("- **[SIGNAUX]** a\n- **[NOMS-INTERDITS]** b\n")
+    (tmp_path / "charte.toml").write_text('[interdictions.signaux-django]\nid = "SIGNAUX"\n')
+
+    write_unverified_rules(tmp_path, Stack(backend="django", frontend="aucun", has_podman=False))
+
+    listed = (tmp_path / "scripts/ci/unverified-rules.txt").read_text()
+    assert "[NOMS-INTERDITS]" in listed and "[SIGNAUX]" not in listed
 
 
 def test_legacy_template_source_is_replaced(tmp_path: Path) -> None:
@@ -147,7 +162,7 @@ def test_adopted_repo_stack_comes_from_its_files(tmp_path: Path) -> None:
 
 def test_adopted_repo_declares_its_size_in_its_charter(tmp_path: Path) -> None:
     (tmp_path / "charte.toml").write_text('envergure = "flame"\nexclus = []\n')
-    assert answers_if_any(tmp_path) == {"envergure": "flame"}
+    assert answers_if_any(tmp_path) == {"size": "flame"}
 
 
 def test_logo_draws_two_pixel_rows_per_line(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -168,7 +183,7 @@ def test_project_summary_names_size_and_frameworks(tmp_path: Path) -> None:
 
 def test_durations_read_the_french_way() -> None:
     assert [ui.format_duration(seconds) for seconds in (0.42, 12.3, 65)] == [
-        "0,4 s",
+        "0.4 s",
         "12 s",
         "1 min 05 s",
     ]
@@ -180,24 +195,50 @@ def test_recap_outside_a_terminal_is_one_line(capsys: pytest.CaptureFixture[str]
 
     ui.recap("install", ui._steps[0].started, succeeded=True)
 
-    assert capsys.readouterr().out.splitlines()[-1].startswith("Installation terminée en ")
+    assert capsys.readouterr().out.splitlines()[-1].startswith("Install done in ")
     ui._steps.clear()
 
 
-def test_poste_settings_are_parsed_and_checked() -> None:
+def test_machine_settings_are_parsed_and_checked() -> None:
     from kiln.config import UserConfig
-    from kiln.poste import apply_poste
+    from kiln.machine import apply_machine
 
-    updated = apply_poste(
-        UserConfig(), ["systeme=wsl", "proprietaire=antoine", "equipe=a, b", "dossier_code=/srv"]
+    updated = apply_machine(
+        UserConfig(), ["system=wsl", "owner=antoine", "team=a, b", "code_dir=/srv"]
     )
 
     assert (updated.system, updated.owner, updated.team) == ("wsl", "antoine", ("a", "b"))
     assert updated.code_dir == Path("/srv")
-    with pytest.raises(KilnError, match="clés du poste"):
-        apply_poste(UserConfig(), ["backend=java"])
-    with pytest.raises(KilnError, match="systeme"):
-        apply_poste(UserConfig(), ["systeme=windows"])
+    with pytest.raises(KilnError, match="machine keys"):
+        apply_machine(UserConfig(), ["backend=java"])
+    with pytest.raises(KilnError, match="system"):
+        apply_machine(UserConfig(), ["system=windows"])
+
+
+def test_machine_keys_of_before_kiln_0_4_are_still_accepted() -> None:
+    from kiln.config import UserConfig
+    from kiln.machine import apply_machine
+
+    updated = apply_machine(UserConfig(), ["systeme=wsl", "canal=interne", "equipe=a"])
+
+    assert (updated.system, updated.channel, updated.team) == ("wsl", "internal", ("a",))
+
+
+def test_machine_config_of_before_kiln_0_4_is_read(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from kiln.config import config_path, load_config
+
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
+    config_path().parent.mkdir(parents=True)
+    config_path().write_text(
+        'systeme = "wsl"\ncanal = "interne"\nstatusline = "sobre"\ndossier_code = "/srv"\n'
+    )
+
+    config = load_config()
+
+    assert (config.system, config.channel, config.statusline) == ("wsl", "internal", "plain")
+    assert config.code_dir == Path("/srv")
 
 
 CHANGELOG = """# Nouveautés de kiln
@@ -264,9 +305,13 @@ def test_a_candidate_is_promoted_as_soon_as_the_next_is_ready() -> None:
     old = Tag("v0.3.0-rc.2", Version("0.3.0rc2"), now - datetime.timedelta(hours=2))
     young = Tag("v0.3.1-rc.1", Version("0.3.1rc1"), now - datetime.timedelta(hours=1))
 
-    assert promotion_verdict(old, [old, young])[1]
-    assert not promotion_verdict(young, [old, young])[1]
-    assert not promotion_verdict(old, [old])[1]
+    assert promotion_verdict(old, [old, young], "success")[1]
+    assert not promotion_verdict(young, [old, young], "success")[1]
+    assert not promotion_verdict(old, [old], "success")[1]
+    # A red or unfinished CI holds the candidate back, whatever comes after it.
+    for ci in ("failure", "running", "none"):
+        verdict, ready = promotion_verdict(old, [old, young], ci)
+        assert not ready and ci in verdict
     assert latest_candidates([old, young]) == [old, young]
 
 
@@ -293,16 +338,14 @@ def test_unreachable_github_gives_one_line(tmp_path: Path) -> None:
         check=True,
     )
 
-    with pytest.raises(KilnError, match=r"^GitHub injoignable"):
+    with pytest.raises(KilnError, match=r"^GitHub unreachable"):
         apply_template(tmp_path)
 
 
 def test_other_git_failure_keeps_its_last_line() -> None:
     error = ProcessExecutionError(["git", "clone"], 128, "", "fatal: ref inconnue\n\n")
 
-    assert (
-        git_failure(error) == "git a échoué pendant la mise à jour du modèle : fatal: ref inconnue"
-    )
+    assert git_failure(error) == "git failed while updating the template: fatal: ref inconnue"
 
 
 @pytest.mark.parametrize("local_edit", ["", "  local: true\n"])
@@ -363,6 +406,10 @@ class _FakeDistribution:
         return self._direct_url if name == "direct_url.json" else None
 
 
+GITHUB = '{"url": "https://github.com/antoine-tena/kiln", "vcs_info": {"vcs": "git", '
+FOLDER = '{"url": "file:///home/me/kiln", "dir_info": {}}'
+
+
 @pytest.mark.parametrize(
     ("version", "direct_url", "expected"),
     [
@@ -370,19 +417,12 @@ class _FakeDistribution:
         ("0.4.0rc2", "", "v0.4.0-rc.2"),
         (
             "0.3.3",
-            '{"url": "https://github.com/antoine-tena/kiln", '
-            '"vcs_info": {"vcs": "git", "requested_revision": "v0.3.3-rc.2", "commit_id": "abc"}}',
+            GITHUB + '"requested_revision": "v0.3.3-rc.2", "commit_id": "abc"}}',
             "v0.3.3-rc.2",
-        ),
-        (
-            "0.3.3",
-            '{"url": "https://github.com/antoine-tena/kiln", '
-            '"vcs_info": {"vcs": "git", "requested_revision": "develop", "commit_id": "abc123"}}',
-            "abc123",
         ),
     ],
 )
-def test_the_template_never_outruns_the_installed_tool(
+def test_the_template_is_taken_at_the_installed_release(
     monkeypatch: pytest.MonkeyPatch, version: str, direct_url: str, expected: str
 ) -> None:
     monkeypatch.setattr(
@@ -392,6 +432,84 @@ def test_the_template_never_outruns_the_installed_tool(
     assert tool_release_tag() == expected
     assert template_revision(DEFAULT_TEMPLATE_SOURCE) == expected
     assert template_revision("/un/dossier/local") == "HEAD"
+
+
+@pytest.mark.parametrize(
+    ("direct_url", "recorded", "shown"),
+    [
+        # A checkout installed 105 commits after its tag: its code is newer than v0.3.4's template.
+        (FOLDER, "v0.3.4-105-gd800ca1", "v0.3.4 +105 · d800ca1"),
+        (FOLDER, "v0.4.0-rc.1-dirty", "v0.4.0-rc.1 · modified"),
+        (FOLDER, None, "v0.3.4 · build unknown"),
+        (
+            GITHUB + '"requested_revision": "develop", "commit_id": "abc1234def"}}',
+            None,
+            "v0.3.4 · abc1234",
+        ),
+    ],
+)
+def test_a_tool_that_is_not_a_release_updates_no_repo(
+    monkeypatch: pytest.MonkeyPatch, direct_url: str, recorded: str | None, shown: str
+) -> None:
+    monkeypatch.setattr(
+        "kiln.versions._installed_distribution", lambda: _FakeDistribution("0.3.4", direct_url)
+    )
+    monkeypatch.setattr("kiln.versions._recorded_build", lambda: recorded)
+    monkeypatch.setattr("kiln.template.latest_release", lambda: "v0.4.0-rc.1")
+
+    assert tool_release_tag() is None
+    assert installed_version() == shown
+    with pytest.raises(
+        KilnError, match=r"not a release .*git\+https://github.com/antoine-tena/kiln@v0.4.0-rc.1"
+    ):
+        template_revision(DEFAULT_TEMPLATE_SOURCE)
+    assert template_revision("/un/dossier/local") == "HEAD"
+
+
+def test_a_folder_install_is_what_it_was_built_from_not_the_folder_today(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "kiln.versions._installed_distribution", lambda: _FakeDistribution("0.4.0", FOLDER)
+    )
+    monkeypatch.setattr("kiln.versions._recorded_build", lambda: "v0.4.0-rc.1")
+    monkeypatch.setattr("kiln.versions._describe", lambda _: pytest.fail("folder read live"))
+
+    assert tool_release_tag() == "v0.4.0-rc.1"
+    assert installed_version() == "v0.4.0-rc.1"
+
+
+def test_an_editable_checkout_is_read_live(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    editable = json.dumps({"url": f"file://{tmp_path}", "dir_info": {"editable": True}})
+    monkeypatch.setattr(
+        "kiln.versions._installed_distribution", lambda: _FakeDistribution("0.4.0", editable)
+    )
+    git = ["git", "-C", str(tmp_path)]
+    subprocess.run([*git, "init", "-q"], check=True)
+    subprocess.run([*git, "commit", "-q", "--allow-empty", "-m", "a"], check=True)
+    subprocess.run([*git, "tag", "v0.4.0-rc.2"], check=True)
+
+    assert tool_release_tag() == "v0.4.0-rc.2"
+    (tmp_path / "change").write_text("x")
+    subprocess.run([*git, "add", "change"], check=True)
+
+    assert tool_release_tag() is None
+    assert installed_version() == "v0.4.0-rc.2 · modified"
+
+
+def test_the_package_records_the_commit_it_is_built_from(tmp_path: Path) -> None:
+    subprocess.run(["uv", "build", "-q", "--wheel", "-o", str(tmp_path), str(REPO)], check=True)
+    wheel = next(tmp_path.glob("*.whl"))
+    with zipfile.ZipFile(wheel) as archive:
+        recorded = json.loads(archive.read("kiln/_build.json"))
+    head = subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True)
+    # What git says of the checkout: a tag and a distance, or the bare commit in a shallow
+    # clone without tags (GitHub's CI).
+    described = subprocess.check_output(
+        ["git", "-C", str(REPO), "describe", "--tags", "--always", "--dirty", "--match", "v[0-9]*"],
+        text=True,
+    )
+    assert recorded == {"describe": described.strip(), "commit": head.strip()}
 
 
 def test_a_tag_is_read_back_from_a_describe_output() -> None:
@@ -408,7 +526,7 @@ def test_update_refuses_to_take_a_repo_back_to_an_older_kiln(
     )
     monkeypatch.setattr("kiln.update.tool_release_tag", lambda: "v0.3.4")
 
-    with pytest.raises(KilnError, match="plus récent que l'outil"):
+    with pytest.raises(KilnError, match="newer than the installed tool"):
         check_tool_not_older(tmp_path)
 
 

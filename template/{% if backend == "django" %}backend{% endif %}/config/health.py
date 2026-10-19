@@ -1,4 +1,4 @@
-"""Vérifications de la sonde de disponibilité ([SANTE])."""
+"""Checks of the readiness probe ([HEALTH-PROBES])."""
 
 import structlog
 from django.db import DatabaseError, connection

@@ -9,7 +9,7 @@ def test_monthly_totals_sum_values_per_month_and_category() -> None:
     measurements = pl.DataFrame(
         {
             "date": [date(2025, 1, 3), date(2025, 1, 20), date(2025, 2, 1)],
-            "category": ["nord", "nord", "nord"],
+            "category": ["north", "north", "north"],
             "value": [1.0, 2.0, 5.0],
         }
     )

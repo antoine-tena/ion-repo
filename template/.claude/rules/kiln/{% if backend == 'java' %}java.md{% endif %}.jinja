@@ -1,0 +1,72 @@
+{%- set level = {'spark': 0, 'ember': 1, 'flame': 2, 'blaze': 3}[size] -%}
+---
+paths:
+  - "backend/**"
+---
+<!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten. -->
+# Backend: Java 25, Maven, no framework
+
+The JDK first: no framework, no library without a team decision ([NEW-DEPENDENCY]). Maven runs
+through the wrapper `./mvnw` (nothing to install: it downloads the version pinned in
+`.mvn/wrapper/`, checked by its SHA-256; it needs `unzip` on the machine).
+
+- Check: `./mvnw verify` in `backend/` (compilation with blocking warnings, JUnit tests, JaCoCo
+  coverage floor), or `kiln check` at the root.
+- Run: `./mvnw -q package -DskipTests && java -jar target/{{ name }}-0.1.0.jar`.
+- Sources in `src/main/java`, tests in `src/test/java`, root package `{{ java_package }}`, one
+  package per domain (`{{ java_package }}.<domain>`).
+
+## Architecture
+
+- **[LAYERS]** Entry (HTTP, command line) → service → storage. The entry receives, checks access,
+  delegates and answers; no business logic in the entry, no HTTP object in a service.
+- **[CONSTRUCTOR-INJECTION]** The dependencies of a service (storage, clock, third-party API
+  client) come through its constructor, typed by an interface: never a static singleton nor a
+  `new` of a system access in the middle of the business code. Tests pass doubles.
+- **[ONE-PUBLIC-CLASS]** One public class per file (Java demands it); no inner class that deserves
+  its own file. A class is `final` unless it is made to be extended.
+
+## Java
+
+- **[MODERN-JAVA]** `record` for immutable data objects (DTOs, values), `sealed` + pattern
+  `switch` to branch on a status, `var` only when the type reads on the right.
+- **[NO-NULL]** A method never returns `null`: `Optional<T>` for an absent value, an empty
+  collection for a list. Parameters checked with `Objects.requireNonNull` at the edges.
+- **[NO-RAW-TYPES]** No raw types (`List` without a parameter), no unchecked cast without a
+  justification in a comment: `-Xlint:all -Werror` refuses them at compile time.
+- **[DOMAIN-ERRORS]** Business errors are dedicated (unchecked) exceptions, with a machine code in
+  `UPPER_SNAKE_CASE` and a message for the user, in the project's language.
+- **[LOGGING]** Never `System.out.print…` nor `printStackTrace`: the JDK logger
+  (`System.getLogger`) with parameterised messages (`LOG.log(Level.INFO, "trip booked
+  tripId={0}", tripId)`), never concatenation. Only a command-line entry writes to the stream it
+  receives as a parameter.
+- **[CLOCK]** The clock is injected (`Clock`): never `Instant.now()`, `LocalDate.now()` nor
+  `System.currentTimeMillis()` without an argument in business code; every test tied to a date
+  uses `Clock.fixed`.
+
+## Security and data
+
+- **[VALIDATED-INPUTS]** Every piece of data that comes in (request, third-party API, URL
+  parameter, argument) is validated before use, at the edge, by the compact constructor of the
+  `record` that receives it.
+- **[SQL]** Never a SQL query built by concatenation: `PreparedStatement` and parameters.
+- **[TRANSACTIONS]** Every write touching more than one row or table runs in a transaction, with
+  the shortest scope.
+- **[LOCKS]** A contended resource (seat, stock, payment): locking in the database
+  (`SELECT … FOR UPDATE`) or a conditional update, never read-compute-write in Java.
+- **[CONSTANT-TIME]** Every comparison of a token or a secret is constant-time
+  (`MessageDigest.isEqual`), never `equals`.
+
+## Tests
+
+- **[TESTS]** Every service class has its JUnit tests, in the same package under `src/test/java`;
+  line coverage never drops below the floor of `pom.xml` (`coverage.minimum`).
+- **[NO-NETWORK]** No test sends a real network request.
+- **[REGRESSION-TEST]** Every bug fix comes with the test that would have caught it.
+{%- if level >= 1 %}
+- **[PROPERTY-TESTS]** Computations with invariants also have property-based tests (`jqwik`).
+{%- endif %}
+{%- if level >= 3 %}
+- **[MUTATION-TESTS]** Critical computation modules regularly go through mutation testing
+  (`pitest`): a mutant that survives is a missing test.
+{%- endif %}

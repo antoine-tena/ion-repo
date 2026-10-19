@@ -1,37 +1,41 @@
 name: Infra
 
-# Ce qui n'était vérifié que sur le serveur, au pire moment : images de conteneur (podman),
-# workflows GitHub (actionlint), scripts shell (shellcheck), Caddyfile et pile compose.
-# Jamais docker : podman construit et lance, podman-compose (installé par uv) lit le compose.
+# What used to be checked only on the server, at the worst moment: container images (podman),
+# GitHub workflows (actionlint), shell scripts (shellcheck), Caddyfile and compose stack.
+# Never docker: podman builds and runs, podman-compose (installed by uv) reads the compose file.
 on:
   workflow_call:
     inputs:
       image:
-        description: Dossiers des images à construire (contexte et Containerfile), séparés par des espaces
+        description: Directories of the images to build (context and Containerfile), space-separated
         type: string
         default: ""
       containerfiles:
-        description: Containerfile construits depuis la racine du dépôt, séparés par des espaces
+        description: Containerfiles built from the root of the repo, space-separated
         type: string
         default: ""
       shellcheck:
-        description: Motifs des scripts à relire, séparés par des espaces (vide = rien)
+        description: Patterns of the scripts to check, space-separated (empty = none)
         type: string
         default: ""
       caddyfile:
-        description: Caddyfile à valider (vide = rien)
+        description: Caddyfile to validate (empty = none)
         type: string
         default: ""
       compose:
-        description: Fichier compose à valider (vide = rien)
+        description: Compose file to validate (empty = none)
+        type: string
+        default: ""
+      setup:
+        description: Commands run before validating the compose file (files it expects…)
         type: string
         default: ""
       preparation:
-        description: Commandes lancées avant la validation du compose (fichiers qu'il attend…)
+        description: "Name before kiln 0.4.0 of `setup` (kept for callers at develop)"
         type: string
         default: ""
       env:
-        description: Variables pour la validation du compose, une par ligne (CLE=valeur)
+        description: Variables for the compose validation, one per line (KEY=value)
         type: string
         default: ""
 
@@ -46,37 +50,38 @@ jobs:
       - name: Images (podman)
         if: inputs.image != ''
         env:
-          DOSSIERS: ${{ inputs.image }}
+          DIRECTORIES: ${{ inputs.image }}
         run: |
-          for dossier in $DOSSIERS; do
-            echo "::group::podman build $dossier"
-            podman build --pull -t "ci-${GITHUB_RUN_ID}-$(basename "$dossier")" "$dossier"
+          for directory in $DIRECTORIES; do
+            echo "::group::podman build $directory"
+            podman build --pull -t "ci-${GITHUB_RUN_ID}-$(basename "$directory")" "$directory"
             echo "::endgroup::"
           done
 
-      - name: Images depuis la racine (podman)
+      - name: Images from the root (podman)
         if: inputs.containerfiles != ''
         env:
           CONTAINERFILES: ${{ inputs.containerfiles }}
         run: |
           for containerfile in $CONTAINERFILES; do
             echo "::group::podman build -f $containerfile ."
-            podman build --pull -f "$containerfile" -t "ci-${GITHUB_RUN_ID}-$(dirname "$containerfile")" .
+            tag="ci-${GITHUB_RUN_ID}-$(dirname "$containerfile")"
+            podman build --pull -f "$containerfile" -t "$tag" .
             echo "::endgroup::"
           done
 
-      # Un « : » nu dans un `run:` a déjà rendu un workflow illisible sans que rien ne le signale.
-      # Le shell des `run:` n'est pas relu ici ; les scripts le sont par l'étape suivante.
-      - name: actionlint (workflows GitHub)
+      # A bare ":" in a `run:` once made a workflow unreadable without anything saying so.
+      # The shell of the `run:` steps is not checked here; scripts are, by the next step.
+      - name: actionlint (GitHub workflows)
         run: uvx --from actionlint-py actionlint -color -shellcheck= -pyflakes=
 
       - name: shellcheck
         if: inputs.shellcheck != ''
         env:
-          MOTIFS: ${{ inputs.shellcheck }}
+          PATTERNS: ${{ inputs.shellcheck }}
         run: |
-          # shellcheck disable=SC2086 # motifs développés par le shell
-          uvx --from shellcheck-py shellcheck $MOTIFS
+          # shellcheck disable=SC2086 # patterns expanded by the shell
+          uvx --from shellcheck-py shellcheck $PATTERNS
 
       - name: Caddyfile
         if: inputs.caddyfile != ''
@@ -85,13 +90,13 @@ jobs:
             docker.io/library/caddy:2 \
             sh -c 'mkdir -p /var/log/caddy && caddy validate --adapter caddyfile --config /etc/caddy/Caddyfile'
 
-      - name: Pile compose
+      - name: Compose stack
         if: inputs.compose != ''
         env:
-          PREPARATION: ${{ inputs.preparation }}
+          SETUP: ${{ inputs.preparation || inputs.setup }}
           VARIABLES: ${{ inputs.env }}
         run: |
-          [ -z "$PREPARATION" ] || bash -c "$PREPARATION"
+          [ -z "$SETUP" ] || bash -c "$SETUP"
           set -a
           eval "$(printf '%s\n' "$VARIABLES" | grep -v '^\s*$')"
           set +a

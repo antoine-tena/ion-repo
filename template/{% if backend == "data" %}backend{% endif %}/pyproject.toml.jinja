@@ -1,5 +1,5 @@
 [project]
-name = "{{ nom }}-backend"
+name = "{{ name }}-backend"
 version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
@@ -26,7 +26,7 @@ dev = [
 [tool.ruff]
 line-length = 100
 target-version = "py314"
-# Les notebooks marimo sont des fichiers Python générés par l'éditeur ([NOTEBOOKS]).
+# marimo notebooks are Python files written by the editor ([NOTEBOOKS]).
 extend-exclude = ["notebooks"]
 
 [tool.ruff.lint]
@@ -36,7 +36,7 @@ select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "RUF", "ANN"]
 strict = true
 exclude = ["notebooks/"]
 
-# Plotly ne publie pas de types.
+# Plotly ships no types.
 [[tool.mypy.overrides]]
 module = ["plotly", "plotly.*"]
 ignore_missing_imports = true

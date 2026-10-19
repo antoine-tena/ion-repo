@@ -1,4 +1,4 @@
-"""Point d'entrée Streamlit : `uv run streamlit run app.py` (ou `kiln dev`)."""
+"""Streamlit entry point: `uv run streamlit run app.py` (or `kiln dev`)."""
 
 from dashboard.home import render_home
 

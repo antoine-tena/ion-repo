@@ -1,28 +1,33 @@
 name: pnpm
 
-# Qualité d'un front pnpm (Nuxt, Next.js, Astro…) : les scripts de package.json listés dans
-# `scripts`, l'un après l'autre (lint, typecheck, tests, build…), puis les rapports publiés en
-# artefact. La version de pnpm est celle du champ packageManager de package.json.
+# Quality of a pnpm front (Nuxt, Next.js, Astro…): the package.json scripts listed in `scripts`,
+# one after the other (lint, typecheck, tests, build…), then the reports published as an
+# artifact. The version of pnpm is that of the packageManager field of package.json.
 on:
   workflow_call:
     inputs:
-      dossier:
+      directory:
+        description: Directory of the front
         type: string
         default: frontend
       pnpm:
-        description: Version de pnpm (vide = champ packageManager de package.json)
+        description: Version of pnpm (empty = the packageManager field of package.json)
         type: string
         default: ""
       scripts:
-        description: Scripts pnpm à lancer dans l'ordre, un par ligne (avec leurs arguments)
+        description: pnpm scripts to run in order, one per line (with their arguments)
         type: string
         default: |
           lint
           typecheck
           test
           build
+      reports:
+        description: Paths published as an artifact, relative to the directory, one per line
+        type: string
+        default: ""
       rapports:
-        description: Chemins publiés en artefact, relatifs au dossier, un par ligne
+        description: "Name before kiln 0.4.0 of `reports` (kept for callers at develop)"
         type: string
         default: ""
 
@@ -31,22 +36,22 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./${{ inputs.dossier }}
+        working-directory: ./${{ inputs.directory }}
     steps:
       - uses: actions/checkout@v7
 
       - uses: pnpm/action-setup@v6
         with:
           version: ${{ inputs.pnpm }}
-          package_json_file: ${{ inputs.dossier }}/package.json
+          package_json_file: ${{ inputs.directory }}/package.json
 
       - uses: actions/setup-node@v7
         with:
-          node-version-file: ${{ inputs.dossier }}/.nvmrc
+          node-version-file: ${{ inputs.directory }}/.nvmrc
           cache: pnpm
-          cache-dependency-path: ${{ inputs.dossier }}/pnpm-lock.yaml
+          cache-dependency-path: ${{ inputs.directory }}/pnpm-lock.yaml
 
-      - name: Dépendances
+      - name: Dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Scripts
@@ -56,28 +61,28 @@ jobs:
           while read -r script; do
             [ -n "$script" ] || continue
             echo "::group::pnpm $script"
-            # shellcheck disable=SC2086 # le script porte ses arguments
+            # shellcheck disable=SC2086 # the script carries its arguments
             pnpm $script
             echo "::endgroup::"
           done <<< "$SCRIPTS"
 
-      - name: Chemins des rapports
-        id: rapports
-        if: always() && inputs.rapports != ''
+      - name: Paths of the reports
+        id: reports
+        if: always() && (inputs.reports != '' || inputs.rapports != '')
         env:
-          RAPPORTS: ${{ inputs.rapports }}
-          DOSSIER: ${{ inputs.dossier }}
+          REPORTS: ${{ inputs.rapports || inputs.reports }}
+          DIRECTORY: ${{ inputs.directory }}
         run: |
           {
-            echo "chemins<<FIN"
-            while read -r chemin; do [ -n "$chemin" ] && echo "$DOSSIER/$chemin"; done <<< "$RAPPORTS"
-            echo "FIN"
+            echo "paths<<END"
+            while read -r path; do [ -n "$path" ] && echo "$DIRECTORY/$path"; done <<< "$REPORTS"
+            echo "END"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Publier les rapports
-        if: always() && inputs.rapports != ''
+      - name: Publish the reports
+        if: always() && (inputs.reports != '' || inputs.rapports != '')
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ inputs.dossier }}-rapports
-          path: ${{ steps.rapports.outputs.chemins }}
+          name: ${{ inputs.directory }}-reports
+          path: ${{ steps.reports.outputs.paths }}
           if-no-files-found: ignore

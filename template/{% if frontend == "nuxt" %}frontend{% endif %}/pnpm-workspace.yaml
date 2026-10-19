@@ -1,4 +1,4 @@
-# Scripts d'installation des dépendances : refusés, les binaires précompilés suffisent.
+# Install scripts of dependencies: refused, prebuilt binaries are enough.
 allowBuilds:
   '@parcel/watcher': false
   '@tailwindcss/oxide': false
@@ -6,11 +6,11 @@ allowBuilds:
   unrs-resolver: false
   vue-demi: false
 
-# Versions exactes dans package.json, y compris après `kiln update` ([DEPENDANCES-FIGEES]).
+# Exact versions in package.json, even after `kiln update` ([LOCKED-DEPENDENCIES]).
 saveExact: true
 
-# `kiln update` ne monte pas ces dépendances d'une version majeure : TypeScript 7 casse
-# vue-tsc 3 (octobre 2026). À retirer dès qu'une version de vue-tsc le prend en charge.
+# `kiln update` does not move these dependencies to a new major: TypeScript 7 breaks vue-tsc 3
+# (October 2026). Remove once a vue-tsc release supports it.
 updateConfig:
   ignoreDependencies:
     - typescript

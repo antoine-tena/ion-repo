@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Restarts, as root, the stack's containers whose probe fails (timer {{ name }}-heal): podman only
+# restarts a stopped container by itself, not an unhealthy one.
+set -euo pipefail
+
+NAME={{ name }}
+{% raw -%}
+for name in $(podman ps --filter "name=^$NAME-" --filter health=unhealthy --format '{{.Names}}'); do
+  echo "Container $name unhealthy: restarted."
+  podman restart "$name" > /dev/null
+done
+{%- endraw %}

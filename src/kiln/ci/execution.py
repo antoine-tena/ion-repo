@@ -1,9 +1,9 @@
-"""Exécution des jobs de `kiln ci` : étapes en série, un journal par job, couloirs en parallèle.
+"""Running the jobs of `kiln ci`: steps in series, one log per job, lanes in parallel.
 
-Comme sur GitHub, un job s'arrête à sa première étape en échec (sauf une étape `should_always_run`),
-et l'échec d'un job n'empêche pas les suivants. Le couloir `back` (pytest, le plus long) tourne à
-côté du couloir `front` ; dans un couloir, les jobs se suivent, pour ne pas écrire à deux dans les
-mêmes fichiers (types générés, build du front).
+As on GitHub, a job stops at its first failed step (except a `should_always_run` step), and a
+failed job does not prevent the next ones. The `back` lane (pytest, the longest) runs beside the
+`front` lane; within a lane, jobs follow one another, so that two never write to the same files
+(generated types, frontend build).
 """
 
 import os
@@ -23,18 +23,18 @@ from kiln.ci.services import running_services
 from kiln.ci.verdict import JobOutcome
 
 LOG_TAIL_LINES = 40
-# Variables du poste qui feraient lancer les outils du worktree avec l'environnement d'un autre.
+# Machine variables that would run the worktree's tools with another one's environment.
 INHERITED_TO_DROP = ("VIRTUAL_ENV", "DATABASE_URL", "REDIS_URL", "PYTHONPATH")
-# Chrome pour Lighthouse (CHROME_PATH) : celui du poste, sinon le Chromium de Playwright. Sur
-# GitHub, l'image du runner en fournit un ; sur le poste, lhci échoue sans lui.
+# Chrome for Lighthouse (CHROME_PATH): the machine's, otherwise Playwright's Chromium. On GitHub,
+# the runner image ships one; on a machine, lhci fails without it.
 CHROME_NAMES = ("google-chrome", "google-chrome-stable", "chromium", "chromium-browser")
 PLAYWRIGHT_BROWSERS = Path.home() / ".cache" / "ms-playwright"
-# Sous WSL, chrome-launcher (Lighthouse) croit lancer le Chrome de Windows et lui passe un
-# `--user-data-dir` au format Windows : un Chromium Linux en fait un dossier
-# « C:\Users\…\lighthouse.N » dans le dossier courant. Ce lanceur retraduit le chemin.
+# Under WSL, chrome-launcher (Lighthouse) thinks it runs Windows' Chrome and passes it a
+# Windows-style `--user-data-dir`: a Linux Chromium turns it into a folder
+# "C:\Users\…\lighthouse.N" in the current folder. This launcher translates the path back.
 WSL_CHROME = Path.home() / ".cache" / "kiln" / "chrome-wsl"
 WSL_CHROME_SCRIPT = """#!/usr/bin/env bash
-# Écrit par kiln ci : Chromium Linux lancé par chrome-launcher sous WSL (voir execution.py).
+# Written by kiln ci: Linux Chromium launched by chrome-launcher under WSL (see execution.py).
 args=()
 for arg in "$@"; do
   case "$arg" in
@@ -50,7 +50,7 @@ _print_lock = threading.Lock()
 
 @dataclass(frozen=True)
 class Workspace:
-    """Le worktree du commit rejoué, le dossier des journaux et le préfixe des conteneurs."""
+    """The worktree of the replayed commit, the logs folder and the containers' prefix."""
 
     root: Path
     log_dir: Path
@@ -70,7 +70,7 @@ def base_env(extra: Mapping[str, str]) -> dict[str, str]:
 
 
 def find_chrome() -> str | None:
-    """Chrome du poste, sinon le Chromium de Playwright le plus récent ; None s'il n'y en a pas."""
+    """The machine's Chrome, otherwise the latest Playwright Chromium; None if there is none."""
     for name in CHROME_NAMES:
         if path := shutil.which(name):
             return path
@@ -86,7 +86,7 @@ def is_wsl() -> bool:
 
 
 def wsl_chrome_launcher(chrome: str) -> str:
-    """Chemin du lanceur qui retraduit pour `chrome` le profil au format Windows."""
+    """Path of the launcher that translates the Windows-style profile back for `chrome`."""
     script = WSL_CHROME_SCRIPT.replace("@CHROME@", shlex.quote(chrome))
     if not WSL_CHROME.exists() or WSL_CHROME.read_text() != script:
         WSL_CHROME.parent.mkdir(parents=True, exist_ok=True)
@@ -96,7 +96,7 @@ def wsl_chrome_launcher(chrome: str) -> str:
 
 
 def run_lanes(plans: list[Plan], workspace: Workspace) -> list[JobOutcome]:
-    """Lance chaque couloir dans son fil ; renvoie les issues dans l'ordre des plans."""
+    """Runs each lane in its thread; returns the outcomes in the order of the plans."""
     lanes: dict[str, list[Plan]] = {}
     for plan in plans:
         lanes.setdefault(plan.lane, []).append(plan)
@@ -113,7 +113,7 @@ def _run_lane(plans: list[Plan], workspace: Workspace) -> list[JobOutcome]:
 def run_job(plan: Plan, workspace: Workspace) -> JobOutcome:
     name = plan.job.name
     log_path = workspace.log_dir / f"{name}.log"
-    say(f"[{name}] démarré (journal : {log_path})")
+    say(f"[{name}] started (log: {log_path})")
     failed_step = ""
     try:
         with running_services(plan.services, f"{workspace.container_prefix}-{name}") as urls:
@@ -123,10 +123,10 @@ def run_job(plan: Plan, workspace: Workspace) -> JobOutcome:
                     continue
                 if not run_step(step, workspace.root, env, log_path, name):
                     failed_step = failed_step or step.label
-    except Exception as error:  # un service qui ne démarre pas fait échouer le job, pas la CI
+    except Exception as error:  # a service that does not start fails the job, not the CI
         _append(log_path, f"\n!! {error}\n")
         failed_step = failed_step or f"services : {error}"
-    say(f"[{name}] {'ÉCHEC à « ' + failed_step + ' »' if failed_step else 'ok'}")
+    say(f"[{name}] {'FAILED at "' + failed_step + '"' if failed_step else 'ok'}")
     if failed_step:
         say(_tail(log_path))
     return JobOutcome(name, not failed_step, failed_step)
@@ -146,7 +146,7 @@ def run_step(step: Step, root: Path, env: Mapping[str, str], log_path: Path, job
             check=False,
         )
     elapsed = round(time.monotonic() - started)
-    status = "ok" if completed.returncode == 0 else f"échec (code {completed.returncode})"
+    status = "ok" if completed.returncode == 0 else f"failed (code {completed.returncode})"
     say(f"[{job}] {step.label} : {status}, {elapsed} s")
     return completed.returncode == 0
 

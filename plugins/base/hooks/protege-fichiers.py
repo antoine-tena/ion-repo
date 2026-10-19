@@ -1,35 +1,12 @@
 #!/usr/bin/env python3
-"""PreToolUse (Edit/Write/NotebookEdit) : protège secrets, jetons, lockfiles et archives.
+"""Former path of a hook of the `base` plugin (before kiln 0.4), still called by sessions started
+before the plugin became `kiln`: runs plugins/kiln/hooks/protect_files.py."""
 
-Ces fichiers ne se modifient pas à la main.
-"""
-
-import json
-import os
-import re
+import runpy
 import sys
+from pathlib import Path
 
-path = json.load(sys.stdin).get("tool_input", {}).get("file_path") or ""
-name = os.path.basename(path)
-LOCKFILES = {
-    "uv.lock",
-    "poetry.lock",
-    "pnpm-lock.yaml",
-    "package-lock.json",
-    "yarn.lock",
-    "bun.lockb",
-    "Cargo.lock",
-}
-
-if "/docs/_archive/" in path:
-    reason = "docs/_archive/ est clos"
-elif re.fullmatch(r"\.env(\..*)?", name) and not name.endswith((".example", ".sample")):
-    reason = "fichier de secrets"
-elif re.search(r"/\.[\w-]+/token$", path):
-    reason = "jeton de service : l'utilisateur le colle lui-même"
-elif name in LOCKFILES:
-    reason = "lockfile : passer par le gestionnaire de paquets"
-else:
-    sys.exit(0)
-print(f"Modification refusée ({reason}) : {path}", file=sys.stderr)
-sys.exit(2)
+script = Path(__file__).resolve().parents[2] / "kiln" / "hooks" / "protect_files.py"
+sys.path.insert(0, str(script.parent))
+sys.argv[0] = str(script)
+runpy.run_path(str(script), run_name="__main__")

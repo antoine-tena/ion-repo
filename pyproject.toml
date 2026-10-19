@@ -1,8 +1,8 @@
 [project]
 # Sur PyPI, `kiln` est pris : la distribution s'appelle kiln-cli, la commande reste `kiln`.
 name = "kiln-cli"
-version = "0.3.4"
-description = "Make Claude Code build production-grade repos, and keep them that way"
+version = "0.4.0"
+description = "Start every project like a senior engineer would, even if you're not one: a modern repo for Claude Code in three questions, kept up to date"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
@@ -33,7 +33,9 @@ Issues = "https://github.com/antoine-tena/kiln/issues"
 kiln = "kiln.cli:main"
 # Même commande sous le nom du paquet, pour que `uvx kiln-cli new` marche sans `--from`.
 kiln-cli = "kiln.cli:main"
-charte = "kiln.charte.charte:lancer"
+charter = "kiln.charter.cli:run"
+# Its name before kiln 0.4.0, still called by adopted repos and older generated ones.
+charte = "kiln.charter.cli:run"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/kiln"]
@@ -41,6 +43,10 @@ packages = ["src/kiln"]
 # Le journal des versions voyage avec l'outil : `kiln update` en montre les nouveautés.
 [tool.hatch.build.targets.wheel.force-include]
 "CHANGELOG.md" = "kiln/CHANGELOG.md"
+
+# The commit the tool is built from (`kiln/_build.json`): a folder install says what it is.
+[tool.hatch.build.targets.wheel.hooks.custom]
+path = "hatch_build.py"
 
 [build-system]
 requires = ["hatchling"]

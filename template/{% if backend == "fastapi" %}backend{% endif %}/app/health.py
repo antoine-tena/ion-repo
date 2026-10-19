@@ -1,4 +1,4 @@
-"""Sonde de vivacité ([SANTE]) : route publique, sans donnée."""
+"""Liveness probe ([HEALTH-PROBES]): a public route, without data."""
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -12,7 +12,7 @@ class HealthResponse(BaseModel):
     status: str
 
 
-# [PERMISSIONS] : route publique, sans donnée, utilisée comme sonde de vivacité ([SANTE]).
+# [PERMISSIONS]: public route, without data, used as the liveness probe ([HEALTH-PROBES]).
 @router.get("/health", response_model=HealthResponse)
 def get_health() -> HealthResponse:
     return HealthResponse(status=HEALTH_STATUS_OK)

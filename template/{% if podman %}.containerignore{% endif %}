@@ -1,4 +1,4 @@
-# Contexte des images : la racine du dépôt, sans ce que les outils régénèrent ni les secrets.
+# Context of the images: the root of the repo, without what tools regenerate nor secrets.
 .git
 .claude/worktrees
 **/.env

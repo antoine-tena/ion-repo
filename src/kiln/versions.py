@@ -1,12 +1,11 @@
-"""Versions de kiln : semver à trois chiffres, `vMAJEUR.MINEUR.CORRECTIF`.
+"""Versions of kiln: three-number semver, `vMAJOR.MINOR.PATCH`.
 
-En 0.x, chaque version monte le correctif, cassante comprise (`0.3.4 → 0.3.5`) ; la mineure ne
-monte que pour une étape (CLAUDE.md, Versions). Deux canaux : une version sort d'abord en
-candidate (`v0.3.5-rc.1`), suivie par les postes au canal `interne` (`kiln set canal=interne`) ;
-elle est promue (`v0.3.5`, fusion
-dans `main`) quand la suivante est prête. Le canal `public`, par
-défaut, ne voit que les versions promues. Chaque version a son entrée dans `CHANGELOG.md`, que
-`kiln update` montre au passage d'une version à l'autre.
+In 0.x, each release bumps the patch, breaking ones included (`0.3.4 → 0.3.5`); the minor only
+moves for a milestone (CLAUDE.md, Versions). Two channels: a release first ships as a candidate
+(`v0.3.5-rc.1`), followed by the machines on the `internal` channel (`kiln set
+channel=internal`); it is promoted (`v0.3.5`, merged into `main`) when the next one is ready.
+The `public` channel, the default, only sees promoted releases. Each release has its entry in
+`CHANGELOG.md`, which `kiln update` shows when moving from one version to the next.
 """
 
 import json
@@ -22,15 +21,18 @@ from packaging.version import InvalidVersion, Version
 from kiln.config import INTERNAL_CHANNEL, load_config
 
 KILN_GIT_URL = "https://github.com/antoine-tena/kiln"
-# Nom du paquet sur PyPI ; `kiln` avant, encore présent sur les postes pas mis à jour.
+# Package name on PyPI; `kiln` before, still there on machines not yet updated.
 PYPI_NAME = "kiln-cli"
 DISTRIBUTIONS = (PYPI_NAME, "kiln")
 CHANGELOG_FILE = "CHANGELOG.md"
-# `v0.4.0`, `v0.4.0-rc.2`, et ce que `git describe` ajoute derrière (`v0.4.0-3-gabc1234`).
+# Written into the package by `hatch_build.py`: what a copy of a checkout was built from.
+BUILD_INFO_FILE = "_build.json"
+DIRTY_SUFFIX = "-dirty"
+# `v0.4.0`, `v0.4.0-rc.2`, and what `git describe` appends (`v0.4.0-3-gabc1234`).
 RELEASE_TAG = re.compile(r"^v(\d+\.\d+\.\d+(?:-rc\.\d+)?)(?:-(\d+)-g([0-9a-f]+))?$")
 RELEASE_HEADING = re.compile(r"^## (v\d+\.\d+\.\d+)(?:\s+[-—·]\s+(.+))?$")
 NETWORK_TIMEOUT = 5
-# Avant la première version, les projets suivaient un commit : tout est nouveau pour eux.
+# Before the first release, projects followed a commit: everything is new to them.
 BEFORE_FIRST_RELEASE = Version("0")
 
 
@@ -42,7 +44,7 @@ class ReleaseNotes:
 
 
 def release_version(ref: str) -> Version | None:
-    """Version d'un tag ou d'une sortie de `git describe` ; None pour un simple commit."""
+    """Version of a tag or of a `git describe` output; None for a plain commit."""
     match = RELEASE_TAG.match(ref.strip())
     if match is None:
         return None
@@ -53,19 +55,19 @@ def release_version(ref: str) -> Version | None:
 
 
 def tag_of(ref: str) -> str | None:
-    """Le tag de version d'une révision : `v0.4.0-rc.2` pour `v0.4.0-rc.2-3-gabc1234`."""
+    """The release tag of a revision: `v0.4.0-rc.2` for `v0.4.0-rc.2-3-gabc1234`."""
     match = RELEASE_TAG.match(ref.strip())
     return f"v{match.group(1)}" if match else None
 
 
 def follows_candidates() -> bool:
-    """Le poste suit-il les candidates (canal `interne`) ?"""
+    """Does this machine follow the candidates (`internal` channel)?"""
     return load_config().channel == INTERNAL_CHANNEL
 
 
 def latest_release(source: str = KILN_GIT_URL, *, candidates: bool | None = None) -> str | None:
-    """Tag de la version la plus récente du dépôt, candidates comprises au canal `interne` ;
-    None sans réseau ou sans version."""
+    """Tag of the repo's latest release, candidates included on the `internal` channel; None
+    without network or release."""
     if candidates is None:
         candidates = follows_candidates()
     try:
@@ -98,17 +100,17 @@ def _installed_distribution() -> Distribution | None:
 
 
 def install_source() -> str:
-    """D'où vient l'outil : `pypi`, `git` (une révision GitHub) ou `dossier` (un checkout)."""
+    """Where the tool comes from: `pypi`, `git` (a GitHub revision) or `folder` (a checkout)."""
     dist = _installed_distribution()
     direct_url = (dist.read_text("direct_url.json") or "") if dist else ""
     if not direct_url:
         return "pypi"
-    return "dossier" if _source_dir(direct_url) is not None else "git"
+    return "folder" if _source_dir(direct_url) is not None else "git"
 
 
 def upgrade_command(version: str) -> str:
-    """Commande qui installe la version `vX.Y.Z` de l'outil, par où il a été installé : PyPI
-    n'a que les versions promues, une candidate passe par GitHub."""
+    """Command that installs version `vX.Y.Z` of the tool, the way it was installed: PyPI only
+    has promoted releases, a candidate goes through GitHub."""
     release = release_version(version)
     if install_source() == "pypi" and release is not None and not release.is_prerelease:
         return f'uv tool install --force "{PYPI_NAME}=={release}"'
@@ -116,14 +118,28 @@ def upgrade_command(version: str) -> str:
 
 
 def tool_release_tag() -> str | None:
-    """Tag de la version de kiln qu'est l'outil installé : le modèle ne doit jamais être plus
-    récent que lui, car les conversions d'une version à l'autre vivent dans son code.
+    """Tag of the kiln release the installed tool is: the template is taken there, never newer
+    nor older, since the conversions from one version to the next live in its code. None when
+    the tool is not exactly a release (a checkout ahead of its tag or with changes, a branch):
+    no template matches its code."""
+    built = installed_build()
+    if built is None:
+        return None
+    match = RELEASE_TAG.match(built)
+    return built if match is not None and match.group(2) is None else None
 
-    - PyPI : `v` + la version du paquet (une pré-version PEP 440 `0.4.0rc1` vaut `v0.4.0-rc.1`) ;
-    - GitHub (`uv tool install git+…@<tag>`) : le tag demandé, sinon le commit installé ;
-    - dossier (checkout de kiln) : le tag de version le plus proche de son `HEAD`.
 
-    None quand l'outil ne se situe pas (paquet introuvable, dossier sans tag)."""
+def installed_build() -> str | None:
+    """What the installed tool is built from, as `git describe` says it: `v0.4.0-rc.1`, or
+    `v0.3.4-105-gd800ca1` (105 commits after v0.3.4), `-dirty` for uncommitted changes.
+
+    - PyPI: `v` + the package version (a PEP 440 pre-release `0.4.0rc1` is `v0.4.0-rc.1`);
+    - GitHub (`uv tool install git+…@<ref>`): the requested tag, otherwise the installed commit;
+    - folder (`uv tool install <checkout>`): a copy taken at install time, which recorded its
+      commit (`kiln/_build.json`, by `hatch_build.py`); editable (`uv run` in a checkout): the
+      checkout itself, read live.
+
+    None when the tool cannot say (package not found, folder copy from before the record)."""
     dist = _installed_distribution()
     if dist is None:
         return None
@@ -141,7 +157,48 @@ def tool_release_tag() -> str | None:
             return requested
         return str(vcs_info.get("commit_id", "")) or None
     source = _source_dir(direct_url)
-    return _nearest_tag(source) if source is not None else None
+    if source is None:
+        return None
+    dir_info = origin.get("dir_info")
+    if isinstance(dir_info, dict) and dir_info.get("editable"):
+        return _describe(source)
+    return _recorded_build()
+
+
+def _recorded_build() -> str | None:
+    """`describe` recorded in the package when it was built from a checkout."""
+    recorded = resources.files("kiln") / BUILD_INFO_FILE
+    if not recorded.is_file():
+        return None
+    try:
+        described = json.loads(recorded.read_text(encoding="utf-8")).get("describe")
+    except ValueError, AttributeError:
+        return None
+    return str(described) if described else None
+
+
+def _describe(source: Path) -> str | None:
+    try:
+        described = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(source),
+                "describe",
+                "--tags",
+                "--always",
+                "--dirty",
+                "--match",
+                "v[0-9]*",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=NETWORK_TIMEOUT,
+            check=False,
+        ).stdout.strip()
+    except subprocess.TimeoutExpired, OSError:
+        return None
+    return described or None
 
 
 def _pypi_tag(version: str) -> str | None:
@@ -155,49 +212,29 @@ def _pypi_tag(version: str) -> str | None:
     return tag if release_version(tag) is not None else None
 
 
-def _nearest_tag(source: Path) -> str | None:
-    try:
-        described = subprocess.run(
-            ["git", "-C", str(source), "describe", "--tags", "--abbrev=0", "--match", "v[0-9]*"],
-            capture_output=True,
-            text=True,
-            timeout=NETWORK_TIMEOUT,
-            check=False,
-        ).stdout.strip()
-    except subprocess.TimeoutExpired, OSError:
-        return None
-    return described if release_version(described) is not None else None
-
-
 def installed_version() -> str:
-    """Version de l'outil : `v3`, et pour un outil installé depuis un dossier, ce que dit git
-    (`v3 +4 · abc1234` : quatre commits après v3)."""
+    """Version of the tool, as it is installed: `v0.4.0-rc.1`; `v0.3.4 +4 · abc1234` for four
+    commits after v0.3.4, `· modified` for uncommitted changes."""
     dist = _installed_distribution()
     if dist is None:
         return "v?"
-    package_version = f"v{dist.version}"
-    source = _source_dir(dist.read_text("direct_url.json") or "")
-    if source is None:
-        return package_version
-    try:
-        described = subprocess.run(
-            ["git", "-C", str(source), "describe", "--tags", "--always"],
-            capture_output=True,
-            text=True,
-            timeout=NETWORK_TIMEOUT,
-            check=False,
-        ).stdout.strip()
-    except subprocess.TimeoutExpired, OSError:
-        return package_version
-    match = RELEASE_TAG.match(described)
+    built = installed_build()
+    if built is None:
+        return f"v{dist.version} · build unknown"
+    modified = built.endswith(DIRTY_SUFFIX)
+    built = built.removesuffix(DIRTY_SUFFIX)
+    match = RELEASE_TAG.match(built)
     if match is None:
-        return f"{package_version} · {described}" if described else package_version
-    tag, distance, commit = f"v{match.group(1)}", match.group(2), match.group(3)
-    return f"{tag} +{distance} · {commit}" if distance else tag
+        described = f"v{dist.version} · {built[:7]}"
+    elif match.group(2):
+        described = f"v{match.group(1)} +{match.group(2)} · {match.group(3)}"
+    else:
+        described = built
+    return f"{described} · modified" if modified else described
 
 
 def _source_dir(direct_url: str) -> Path | None:
-    """Dossier d'où l'outil a été installé (`uv tool install <dossier>`), s'il y en a un."""
+    """Folder the tool was installed from (`uv tool install <folder>`), if any."""
     try:
         origin = json.loads(direct_url) if direct_url else {}
     except ValueError:
@@ -209,7 +246,7 @@ def _source_dir(direct_url: str) -> Path | None:
 
 
 def read_changelog() -> str:
-    """`CHANGELOG.md` livré avec l'outil ; à défaut, celui du dépôt (outil en développement)."""
+    """`CHANGELOG.md` shipped with the tool; otherwise the repo's (tool in development)."""
     packaged = resources.files("kiln") / CHANGELOG_FILE
     if packaged.is_file():
         return packaged.read_text(encoding="utf-8")
@@ -218,7 +255,7 @@ def read_changelog() -> str:
 
 
 def parse_changelog(text: str) -> list[ReleaseNotes]:
-    """Entrées `## vN — date` du journal, dans l'ordre du fichier (la plus récente en tête)."""
+    """`## vN — date` entries of the changelog, in file order (latest first)."""
     notes: list[ReleaseNotes] = []
     for line in text.splitlines():
         heading = RELEASE_HEADING.match(line)
@@ -230,11 +267,11 @@ def parse_changelog(text: str) -> list[ReleaseNotes]:
 
 
 def notes_between(old_ref: str, new_ref: str, changelog: str) -> list[ReleaseNotes]:
-    """Versions passées entre deux révisions du modèle : après `old_ref`, jusqu'à `new_ref`."""
+    """Releases passed between two revisions of the template: after `old_ref`, up to `new_ref`."""
     new = release_version(new_ref)
     if new is None:
         return []
-    # Une candidate porte déjà les nouveautés de sa version : on compare les versions finales.
+    # A candidate already carries its release's changes: final versions are compared.
     old = Version((release_version(old_ref) or BEFORE_FIRST_RELEASE).base_version)
     target = Version(new.base_version)
     return [

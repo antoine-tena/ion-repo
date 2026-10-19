@@ -1,8 +1,8 @@
-"""Styles du terminal : palette pierre et feu (celle du four de la bannière) et messages.
+"""Terminal styles: stone and fire palette (the one of the banner's kiln) and messages.
 
-Les couleurs ne sortent que vers un terminal, sans `NO_COLOR` ni `TERM=dumb` : hors terminal,
-le texte reste nu, pour les journaux et les sorties capturées. 24 bits quand le terminal
-l'annonce (`COLORTERM`), sinon la palette de 256 couleurs.
+Colors only go to a terminal, without `NO_COLOR` or `TERM=dumb`: outside a terminal the text
+stays bare, for logs and captured output. 24-bit when the terminal says so (`COLORTERM`),
+otherwise the 256-color palette.
 """
 
 import os
@@ -16,8 +16,8 @@ from typing import TextIO
 
 @dataclass(frozen=True)
 class Color:
-    true_color: str  # « r;g;b »
-    palette: str  # indice dans les 256 couleurs
+    true_color: str  # "r;g;b"
+    palette: str  # index in the 256 colors
 
 
 STONE_LIGHT = Color("185;185;180", "250")
@@ -36,7 +36,7 @@ BOLD, DIM, RESET = "\033[1m", "\033[2m", "\033[0m"
 
 
 def is_styled(stream: TextIO | None = None) -> bool:
-    """`stream` : sys.stdout par défaut, lu à l'appel (pytest le remplace)."""
+    """`stream`: sys.stdout by default, read at call time (pytest replaces it)."""
     return (
         (stream or sys.stdout).isatty()
         and "NO_COLOR" not in os.environ
@@ -66,7 +66,7 @@ def paint(
     dim: bool = False,
     stream: TextIO | None = None,
 ) -> str:
-    """Le texte en couleur pour ce flux, ou tel quel s'il ne prend pas les couleurs."""
+    """The text in color for this stream, or as is if it takes no colors."""
     if not is_styled(stream):
         return text
     codes = (BOLD if bold else "") + (DIM if dim else "") + (foreground(color) if color else "")
@@ -85,12 +85,12 @@ class StepRecord:
         return (self.ended or time.monotonic()) - self.started
 
 
-# Étapes de la commande en cours, pour le récapitulatif final.
+# Steps of the running command, for the final recap.
 _steps: list[StepRecord] = []
 
 
 def step(title: str) -> None:
-    """Début d'une étape : un losange de feu et le titre en gras ; l'étape précédente se clôt."""
+    """Start of a step: a fire diamond and the title in bold; the previous step closes."""
     _close_last_step()
     _steps.append(StepRecord(title))
     if is_styled():
@@ -109,7 +109,7 @@ def note(message: str) -> None:
 
 def error(message: str) -> None:
     mark = paint("✗", EMBER, bold=True, stream=sys.stderr)
-    print(f"{mark} {paint('kiln', bold=True, stream=sys.stderr)} : {message}", file=sys.stderr)
+    print(f"{mark} {paint('kiln', bold=True, stream=sys.stderr)}: {message}", file=sys.stderr)
 
 
 def _close_last_step() -> None:
@@ -118,9 +118,9 @@ def _close_last_step() -> None:
 
 
 def format_duration(seconds: float) -> str:
-    """`0,4 s`, `12 s`, `1 min 05 s` : virgule décimale, à la française."""
+    """`0.4 s`, `12 s`, `1 min 05 s`."""
     if seconds < 10:
-        return f"{seconds:.1f} s".replace(".", ",")
+        return f"{seconds:.1f} s"
     if seconds < 60:
         return f"{seconds:.0f} s"
     minutes, rest = divmod(round(seconds), 60)
@@ -140,8 +140,8 @@ SPINNER_DELAY = 0.08
 
 
 class Spinner:
-    """Ligne animée pendant une commande externe : roue de feu, commande, dernière ligne de sa
-    sortie en gris. À la fin, une ligne fixe : ✓ ou ✗, la commande et sa durée."""
+    """Animated line during an external command: fire wheel, command, last line of its output
+    in grey. At the end, a fixed line: ✓ or ✗, the command and its duration."""
 
     def __init__(self, label: str) -> None:
         self.label = label
@@ -152,11 +152,11 @@ class Spinner:
         self._thread = threading.Thread(target=self._spin, daemon=True)
 
     def start(self) -> None:
-        sys.stdout.write("\033[?25l")  # curseur masqué pendant l'animation
+        sys.stdout.write("\033[?25l")  # cursor hidden during the animation
         self._thread.start()
 
     def stop(self) -> None:
-        """Efface la ligne animée et rend le curseur ; sans effet la seconde fois."""
+        """Clears the animated line and restores the cursor; no effect the second time."""
         if self._stopped.is_set():
             return
         self._stopped.set()
@@ -170,7 +170,7 @@ class Spinner:
                 self.detail = line.strip()
 
     def finish(self, *, succeeded: bool, output: str = "") -> None:
-        """Ligne finale ; en échec, l'étape est marquée et la sortie s'affiche dans une marge."""
+        """Final line; on failure, the step is marked and the output shown in a margin."""
         self.stop()
         if not succeeded and _steps:
             _steps[-1].failed = True
@@ -201,28 +201,28 @@ class Spinner:
 
 
 RECAP_TITLES = {
-    "new": "Projet créé",
-    "install": "Installation terminée",
-    "update": "Mise à jour terminée",
-    "check": "Contrôles terminés",
-    "set": "Paramètres appliqués",
-    "contrat": "Contrat régénéré",
-    "publish": "Dépôt publié",
+    "new": "Project created",
+    "install": "Install done",
+    "update": "Update done",
+    "check": "Checks done",
+    "set": "Settings applied",
+    "contract": "Contract regenerated",
+    "publish": "Repo published",
 }
 
 
 def recap(command: str, started: float, *, succeeded: bool) -> None:
-    """Bilan encadré de la commande : verdict, durée totale, durée de chaque étape."""
+    """Framed recap of the command: verdict, total duration, duration of each step."""
     _close_last_step()
     if not _steps:
         return
     total = format_duration(time.monotonic() - started)
     if succeeded:
-        verdict = f"{RECAP_TITLES.get(command, 'Terminé')} en {total}"
+        verdict = f"{RECAP_TITLES.get(command, 'Done')} in {total}"
     else:
-        verdict = f"Interrompu après {total}"
+        verdict = f"Interrupted after {total}"
     if not is_styled():
-        print(f"\n{verdict} ({len(_steps)} étapes)", flush=True)
+        print(f"\n{verdict} ({len(_steps)} steps)", flush=True)
         return
     durations = [format_duration(record.duration) for record in _steps]
     inner = min(
@@ -250,7 +250,7 @@ def recap(command: str, started: float, *, succeeded: bool) -> None:
 
 
 def panel(title: str, lines: list[str]) -> None:
-    """Encadré : un titre en feu, puis des lignes (une ligne `vN …` en gras, `- …` en puce)."""
+    """Frame: a title in fire, then lines (a `vN …` line in bold, `- …` as a bullet)."""
     if not is_styled():
         print(f"\n{title}", *(f"  {line}" for line in lines), sep="\n", flush=True)
         return

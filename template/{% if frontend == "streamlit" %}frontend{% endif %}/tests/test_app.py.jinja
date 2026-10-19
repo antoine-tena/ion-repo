@@ -3,9 +3,9 @@ import pytest
 {% endif -%}
 from streamlit.testing.v1 import AppTest
 
-from dashboard.constants import SITE_TITLE
+from dashboard.constants import {% if backend in ['django', 'fastapi'] %}BACKEND_DOWN_MESSAGE, {% endif %}SITE_TITLE
 
-# Relatif à ce fichier de test, comme l'attend AppTest.from_file.
+# Relative to this test file, as AppTest.from_file expects.
 APP_SCRIPT = "../app.py"
 {% if backend in ['django', 'fastapi'] %}
 
@@ -16,7 +16,7 @@ def test_home_reports_unreachable_backend(monkeypatch: pytest.MonkeyPatch) -> No
 
     assert not app.exception
     assert app.title[0].value == SITE_TITLE
-    assert "ne répond pas" in app.error[0].value
+    assert app.error[0].value == BACKEND_DOWN_MESSAGE
 {%- else %}
 
 def test_home_renders_title() -> None:

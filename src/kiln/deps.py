@@ -1,9 +1,9 @@
-"""Verrous et mises à jour des dépendances, selon la politique de kiln.
+"""Dependency locks and updates, by kiln's policy.
 
-Par défaut, des mises à jour compatibles : uv reste dans les bornes du pyproject.toml (même
-version majeure), pnpm ne monte que les dépendances dont la dernière version garde la même
-majeure. `--major` relève les bornes Python à la dernière version, prend les dernières versions
-pnpm et met à jour les crochets pre-commit. Les contrôles suivent toujours (`kiln check`).
+By default, compatible updates: uv stays within the bounds of pyproject.toml (same major
+version), pnpm only bumps the dependencies whose latest version keeps the same major.
+`--major` raises the Python bounds to the latest version, takes the latest pnpm versions and
+updates the pre-commit hooks. The checks always follow (`kiln check`).
 """
 
 import json
@@ -11,7 +11,7 @@ import subprocess
 import tomllib
 from pathlib import Path
 
-import yaml  # fourni par copier
+import yaml  # shipped with copier
 from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
 from packaging.version import Version
@@ -24,8 +24,8 @@ DEV_DEPENDENCY_TYPE = "devDependencies"
 
 
 def lock_dependencies(root: Path, stack: Stack) -> None:
-    """Verrous recalculés sans montée de version (le modèle a pu changer les dépendances)."""
-    step("Verrous des dépendances")
+    """Locks recomputed without version bumps (the template may have changed the dependencies)."""
+    step("Dependency locks")
     for directory in stack.python_dirs:
         run(["uv", "lock"], root / directory)
     if stack.pnpm_dir is not None:
@@ -41,15 +41,15 @@ def sync_dependencies(root: Path, stack: Stack) -> None:
 
 def update_dependencies(root: Path, stack: Stack, *, allow_major: bool) -> None:
     for directory in stack.python_dirs:
-        step(f"{directory} : dépendances Python{' (majeures comprises)' if allow_major else ''}")
+        step(f"{directory}: Python dependencies{' (majors included)' if allow_major else ''}")
         if allow_major:
             raise_python_bounds(root / directory)
         run(["uv", "lock", "--upgrade"], root / directory)
     if stack.pnpm_dir is not None:
-        step(f"{stack.pnpm_dir} : dépendances pnpm{' (majeures comprises)' if allow_major else ''}")
+        step(f"{stack.pnpm_dir}: pnpm dependencies{' (majors included)' if allow_major else ''}")
         update_pnpm(root / stack.pnpm_dir, allow_major=allow_major)
     if allow_major:
-        step("Crochets pre-commit")
+        step("pre-commit hooks")
         run(["pre-commit", "autoupdate"], root)
     sync_dependencies(root, stack)
 
@@ -75,7 +75,7 @@ def _bare(requirement: Requirement) -> str:
 
 
 def raise_python_bounds(project_dir: Path) -> None:
-    """Bornes retirées, dernières versions résolues, puis bornes « même majeure » reposées."""
+    """Bounds removed, latest versions resolved, then "same major" bounds put back."""
     pyproject_path = project_dir / "pyproject.toml"
     text = pyproject_path.read_text()
     bounded = [
@@ -109,7 +109,7 @@ def _ignored_pnpm_dependencies(project_dir: Path) -> set[str]:
 
 
 def update_pnpm(project_dir: Path, *, allow_major: bool) -> None:
-    """Versions exactes montées par `pnpm add`, majeures seulement si `allow_major`."""
+    """Exact versions bumped by `pnpm add`, majors only with `allow_major`."""
     completed = subprocess.run(
         ["pnpm", "outdated", "--format", "json"],
         cwd=project_dir,
@@ -134,4 +134,4 @@ def update_pnpm(project_dir: Path, *, allow_major: bool) -> None:
         if packages:
             run(["pnpm", "add", *(["--save-dev"] if is_dev else []), *packages], project_dir)
     if held_back:
-        print("Majeures disponibles (kiln update --major) : " + ", ".join(held_back))
+        print("Majors available (kiln update --major): " + ", ".join(held_back))

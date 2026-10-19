@@ -1,1 +1,1 @@
-"""Tableau de bord : mise en page et callbacks ; les calculs vivent ailleurs."""
+"""Dashboard: layout and callbacks; computations live elsewhere."""

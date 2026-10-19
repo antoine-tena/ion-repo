@@ -1,8 +1,8 @@
-{%- set base = nom | replace('-', '_') -%}
+{%- set base = name | replace('-', '_') -%}
 {%- set front_port = {'nuxt': 3000, 'next': 3000, 'astro': 4321, 'streamlit': 8501, 'dash': 8050}.get(frontend) -%}
-# Pile du projet sous podman : `kiln dev --containers` (podman-compose up --build).
-# Images construites depuis la racine du dépôt (`.containerignore`) ; jamais docker.
-name: {{ nom }}
+# The project's stack under podman: `kiln dev --containers` (podman-compose up --build).
+# Images built from the root of the repo (`.containerignore`); never docker.
+name: {{ name }}
 
 services:
 {%- if backend == 'django' %}
@@ -10,7 +10,7 @@ services:
     image: docker.io/library/postgres:16-alpine
     environment:
       POSTGRES_USER: {{ base }}
-      # Base locale du poste, jamais exposée : ce mot de passe ne protège rien d'autre.
+      # Local database of the machine, never exposed: this password protects nothing else.
       POSTGRES_PASSWORD: {{ base }}_local
       POSTGRES_DB: {{ base }}
     volumes:
@@ -30,7 +30,7 @@ services:
     env_file:
       - backend/.env
 {%- if backend == 'django' %}
-    # L'image sert gunicorn sans migrer ; en local : migrations puis serveur de développement.
+    # The image serves gunicorn without migrating; locally: migrations, then the dev server.
     command: ["sh", "-c", "python manage.py migrate && exec python manage.py runserver 0.0.0.0:8000"]
     environment:
       DATABASE_URL: postgres://{{ base }}:{{ base }}_local@db:5432/{{ base }}
@@ -50,7 +50,7 @@ services:
     ports:
       - "2718:2718"
 {%- endif %}
-{%- if frontend != 'aucun' %}
+{%- if frontend != 'none' %}
 
   frontend:
     build:

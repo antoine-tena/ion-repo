@@ -1,0 +1,8 @@
+{
+  "name": "vps",
+  "version": "0.2.1",
+  "description": "Repos deployed on a VPS with podman-compose: deployment, production diagnosis, local copy of the production database",
+  "author": {
+    "name": "antoine-tena"
+  }
+}

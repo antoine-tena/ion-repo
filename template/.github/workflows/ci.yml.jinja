@@ -1,18 +1,19 @@
-{# Version de kiln dont part le projet : ses workflows sont cités à ce tag, et `kiln update`
-    le fait avancer. Un modèle pris hors version (développement de kiln) cite develop. #}
+{# The kiln release the project comes from: its workflows are cited at that tag, and
+    `kiln update` moves it forward. A template taken outside a release (kiln's development)
+    cites develop. #}
 {%- set kiln_commit = _copier_answers._commit | default('') | string %}
 {%- set kiln_ref = kiln_commit if (kiln_commit.startswith('v') and '-g' not in kiln_commit) else 'develop' -%}
 name: CI
 
-# Les workflows réutilisables vivent dans kiln (antoine-tena/kiln, public), cités à la version
-# de kiln dont part le projet ({{ kiln_ref }}) : `kiln update` les fait passer à la suivante. Le
-# projet ne garde ici que ses paramètres.
+# The reusable workflows live in kiln (antoine-tena/kiln, public), cited at the kiln release the
+# project comes from ({{ kiln_ref }}): `kiln update` moves them to the next one. The project only
+# keeps its parameters here.
 on:
   push:
     branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
-  # Rejouée par deploy.yml avant toute mise en production.
+  # Replayed by deploy.yml before any production release.
   workflow_call:
 
 jobs:
@@ -20,20 +21,20 @@ jobs:
   backend:
     uses: antoine-tena/kiln/.github/workflows/django.yml@{{ kiln_ref }}
     with:
-      base: {{ nom | replace('-', '_') }}
+      database: {{ name | replace('-', '_') }}
       env: |
-        DJANGO_SECRET_KEY=ci-sans-valeur-secrete
+        DJANGO_SECRET_KEY=ci-without-secret-value
         DJANGO_DEBUG=True
 {%- elif backend in ['fastapi', 'data', 'cli'] %}
   backend:
     uses: antoine-tena/kiln/.github/workflows/python.yml@{{ kiln_ref }}
     with:
-      dossier: backend
+      directory: backend
 {%- elif backend == 'java' %}
   backend:
     uses: antoine-tena/kiln/.github/workflows/maven.yml@{{ kiln_ref }}
     with:
-      dossier: backend
+      directory: backend
 {%- endif %}
 {%- if frontend in ['nuxt', 'next', 'astro'] %}
 
@@ -51,42 +52,42 @@ jobs:
   frontend:
     uses: antoine-tena/kiln/.github/workflows/python.yml@{{ kiln_ref }}
     with:
-      dossier: frontend
+      directory: frontend
 {%- endif %}
 {%- if backend == 'django' and frontend == 'nuxt' %}
 
-  contrat:
-    uses: antoine-tena/kiln/.github/workflows/contrat-api.yml@{{ kiln_ref }}
+  api-contract:
+    uses: antoine-tena/kiln/.github/workflows/api-contract.yml@{{ kiln_ref }}
     with:
       env: |
-        DJANGO_SECRET_KEY=ci-sans-valeur-secrete
+        DJANGO_SECRET_KEY=ci-without-secret-value
 {%- endif %}
 
-  charte:
-    uses: antoine-tena/kiln/.github/workflows/charte.yml@{{ kiln_ref }}
+  charter:
+    uses: antoine-tena/kiln/.github/workflows/charter.yml@{{ kiln_ref }}
 
-  # [SECRETS] : tout l'historique est fouillé par gitleaks, sans licence d'organisation.
+  # [SECRETS]: gitleaks searches the whole history, with no organisation licence.
   secrets-scan:
     uses: antoine-tena/kiln/.github/workflows/secrets.yml@{{ kiln_ref }}
 
-{%- set uv_dirs = (['backend'] if backend not in ['aucun', 'java'] else []) + (['frontend'] if frontend in ['streamlit', 'dash'] else []) %}
+{%- set uv_dirs = (['backend'] if backend not in ['none', 'java'] else []) + (['frontend'] if frontend in ['streamlit', 'dash'] else []) %}
 {%- set pnpm_dir = 'frontend' if frontend in ['nuxt', 'next', 'astro'] else '' %}
 {%- if uv_dirs or pnpm_dir %}
 
-  securite:
-    uses: antoine-tena/kiln/.github/workflows/securite.yml@{{ kiln_ref }}
+  security:
+    uses: antoine-tena/kiln/.github/workflows/security.yml@{{ kiln_ref }}
     with:
       uv: "{{ uv_dirs | join(' ') }}"
       pnpm: "{{ pnpm_dir }}"
 {%- endif %}
 {%- if podman %}
 
-  conteneurs:
+  containers:
     uses: antoine-tena/kiln/.github/workflows/infra.yml@{{ kiln_ref }}
     with:
-      containerfiles: "{{ ((['backend/Containerfile'] if backend not in ['aucun', 'cli', 'java'] else []) + (['frontend/Containerfile'] if frontend != 'aucun' else [])) | join(' ') }}"
+      containerfiles: "{{ ((['backend/Containerfile'] if backend not in ['none', 'cli', 'java'] else []) + (['frontend/Containerfile'] if frontend != 'none' else [])) | join(' ') }}"
       compose: compose.yaml
 {%- if backend in ['django', 'fastapi'] %}
-      preparation: cp backend/.env.example backend/.env
+      setup: cp backend/.env.example backend/.env
 {%- endif %}
 {%- endif %}

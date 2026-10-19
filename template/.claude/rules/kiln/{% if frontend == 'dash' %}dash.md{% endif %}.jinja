@@ -1,0 +1,30 @@
+---
+paths:
+  - "frontend/**"
+---
+<!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten. -->
+# Frontend: Dash
+
+`frontend/app.py`: entry point; `frontend/dashboard/`: layout, callbacks and constants;
+`frontend/tests/`: tests. Run: `kiln dev` (or `uv run python app.py`); check: `kiln check`.
+
+- **[LAYOUT]** The layout is a function (`build_layout`), given to `app.layout`: it is evaluated
+  at each page load, never frozen at start.
+- **[COMPONENT-IDS]** Ids of components linked by a callback are constants of
+  `dashboard/constants.py`, never repeated strings.
+- **[CALLBACKS]** A callback is a pure, typed function (≤ [FUNCTION-SIZE]) that receives the
+  values of the components and returns the new ones: no global state, no module variable changed
+  elsewhere. It is registered in `dashboard/callbacks.py`.
+- **[COMPUTE-OUTSIDE-UI]** No computation, no data transformation in the layout nor in a
+  callback: it calls
+{%- if backend == 'data' %} the `pipeline/` chain of the backend{% elif backend in ['django', 'fastapi'] %} the API through `dashboard/api.py`{% else %} pure functions of a dedicated module{% endif %} and formats the result.
+{%- if backend in ['django', 'fastapi'] %}
+- **[API-CALLS]** The layout and the callbacks never call the API directly: they go through
+  `dashboard/api.py`, which validates the response before returning it.
+{%- endif %}
+- **[UI-STATES]** Every area that loads data handles the three states explicitly: loading
+  (`dcc.Loading`), error (an understandable message) and empty set.
+- **[ACCESSIBILITY]** Every control has a linked `html.Label` (`htmlFor`), every chart a title and
+  titled axes{% if backend == 'data' %} ([ACCESSIBLE-FIGURES]){% endif %}; everything works with the keyboard.
+- **[UI-TESTS]** The layout and each callback have their tests, called as plain functions,
+  without a browser. Outside calls are simulated ([NO-NETWORK]).

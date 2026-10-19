@@ -1,0 +1,77 @@
+{%- set level = {'spark': 0, 'ember': 1, 'flame': 2, 'blaze': 3}[size] -%}
+---
+paths:
+  - "frontend/**"
+---
+<!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten. -->
+# Frontend: Nuxt 4 and Vue 3
+
+`frontend/app/`: pages, components (`components/`), composables, styles (`assets/`), constants
+(`app/utils/constants.ts`){% if backend == 'django' %}, API types generated in `app/types/api.d.ts` (`kiln contract`){% endif %}.
+Run: `kiln dev`; check: `kiln check` (ESLint, `nuxt typecheck`).
+
+## Code
+
+- **[STRICT-TS]** Strict TypeScript in every `.ts` and `<script setup lang="ts">`.
+- **[NO-ANY]** No `any`: `unknown`, then a type narrowing.
+- **[ASYNC-AWAIT]** `async/await` with `try/catch` only; `.then().catch()` chains are banned.
+- **[MODERN-VUE]** Vue 3.5 / Nuxt 4 APIs: `defineModel()` for `v-model`, `useTemplateRef()` for
+  refs, reactive destructured props, `useFetch` / `useAsyncData` with an explicit key. No
+  Options API.
+- **[EXPLICIT-IMPORTS]** The project's components are imported explicitly
+  (`import UiButton from '~/components/ui/UiButton.vue'`): their auto-import is off in
+  `nuxt.config.ts`. Only Nuxt's own (`NuxtLink`, `NuxtImg`, `ClientOnly`…) stay automatic.
+{%- if backend in ['django', 'fastapi'] %}
+- **[API-CALLS]** Components and pages never call the API directly: they go through a composable
+  of their domain{% if backend == 'django' %}, which goes through `useApi()`, whose routes, bodies and responses are
+  typed by `openapi.json`. No `$fetch` nor `useApi()` in a `.vue` (ESLint rule){% else %}, which validates the response before
+  returning it{% endif %}.
+{%- endif %}
+- **[UI-STATES]** Every screen that loads data handles the three states explicitly: loading,
+  error (an understandable message, never "Error." alone) and empty list.
+- **[ACCESSIBILITY]** Every field has an associated `<label>`, every icon button an `aria-label`,
+  every informative image an `alt`. Everything works with the keyboard and focus stays visible.
+- **[TEST-DENSITY]** The front's test density (lines of tests per thousand lines of code) never
+  drops: its floor in `charter.toml` is raised as it goes up (floor).
+
+## Styling
+
+- **[STYLE-1]** No `<style>` nor `<style scoped>` tag in a `.vue` file (components and pages): a
+  `.vue` holds only markup (utility classes) and TypeScript (checked).
+- **[STYLE-2]** **Tailwind by default (95 % of cases)**, right in the template: layout and sizes,
+  backgrounds, text, borders, radii, shadows, typography, interactive states (`hover:`, `focus:`,
+  `disabled:`, `active:`), breakpoints. **Separate CSS by exception (5 %)**, required as soon as
+  one of these holds: a multi-step animation (any `@keyframes`); a native browser element
+  (`::-webkit-scrollbar`, cursors); a black-box third-party component whose HTML cannot be
+  changed (a chart or a map drawn by a library); an unreadable class string that fights the
+  engine ([STYLE-5]).
+- **[STYLE-3]** `app/assets/css/main.css` is the only file `nuxt.config.ts` references. It
+  imports Tailwind, then `tokens.css` (the **only definition of the theme tokens**: `@theme`,
+  `:root`: fonts, colours, chart palettes, sizes, letter spacing, radii, shadows, layers,
+  breakpoints, widths, durations), then the isolates in alphabetical order, and keeps only what
+  holds for the whole product (shared `@utility`, page and layout transitions, a global
+  `prefers-reduced-motion` rule). A component writes the class of a token, never an arbitrary
+  value that copies it (`text-[0.7rem]`, `z-[120]`). A new isolate is added to `main.css` in the
+  same commit.
+- **[STYLE-4]** Every rule of an isolate sits under **one parent selector** used as a namespace
+  (`.map-tooltip` in `map.css`): no bare element selector (`div`, `span`) outside a parent class;
+  the inside of a third-party component is reached by CSS nesting or `:deep()` under that parent.
+- **[STYLE-5]** Banned: bursts of arbitrary classes (`[&_div:nth-child(3)]:px-4`): turn them into
+  a class of the matching isolate; `@apply` to rebuild a component (that is a Vue component's
+  job), except a `@utility` of `main.css` naming a token the whole product shares; `!important`,
+  except to override a third-party library that forces it.
+{%- if level >= 2 %}
+
+## Performance and quality
+
+- **[CORE-WEB-VITALS]** Budgets at the 75th percentile, on mobile: **LCP < 2.5 s**,
+  **INP < 200 ms**, **CLS < 0.1**. A regression beyond them blocks the release.
+- **[JS-BUDGET]** A JavaScript budget per page, checked at build time; every heavy library
+  (chart engine, map) is loaded on demand (`defineAsyncComponent`, dynamic import).
+- **[MODERN-IMAGES]** Images in AVIF/WebP, sized (`width`/`height`), loaded lazily below the
+  first screen.
+- **[E2E-JOURNEYS]** Critical journeys have a Playwright end-to-end test, run in CI against a full
+  stack.
+- **[AUTOMATED-ACCESSIBILITY]** Main pages pass an automated `axe-core` check; target
+  **WCAG 2.2 level AA**.
+{%- endif %}

@@ -1,4 +1,4 @@
-// Règles de la charte (CLAUDE.md) vérifiables par ESLint, sur la configuration de Next.js.
+// Rules of the charter that ESLint can check, on top of Next.js's configuration.
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
@@ -8,7 +8,7 @@ const eslintConfig = defineConfig([
   ...nextTs,
   {
     rules: {
-      // [ZERO-ANY] : `unknown` puis un rétrécissement de type.
+      // [NO-ANY]: `unknown`, then a type narrowing.
       "@typescript-eslint/no-explicit-any": "error",
     },
   },

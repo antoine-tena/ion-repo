@@ -1,17 +1,20 @@
 {%- set python_dirs = (['backend'] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + (['frontend'] if frontend in ['streamlit', 'dash'] else []) -%}
-{%- set back_text = {'django': "l'API, en Django + Django Ninja", 'fastapi': "l'API, en FastAPI", 'data': "la chaîne de données (polars ou NumPy, Plotly) et les notebooks marimo", 'cli': "l'outil en ligne de commande `" ~ nom ~ "`", 'java': "le backend Java 25 (Maven, sans framework)"}.get(backend) -%}
-{%- set front_text = {'nuxt': "l'interface, en Nuxt 4 + Vue 3", 'next': "l'interface, en Next.js 16 + React 19", 'astro': "le site, en Astro 7", 'streamlit': "le tableau de bord, en Streamlit", 'dash': "le tableau de bord, en Dash"}.get(frontend) -%}
+{%- set installed = python_dirs + (['backend'] if backend == 'java' else []) + (['frontend'] if frontend in ['nuxt', 'next', 'astro'] else []) -%}
 {%- set front_url = {'nuxt': 'http://localhost:3000', 'next': 'http://localhost:3000', 'astro': 'http://localhost:4321', 'streamlit': 'http://localhost:8501', 'dash': 'http://localhost:8050'}.get(frontend) -%}
-# {{ titre }}
+{%- set open_url = front_url or ('http://localhost:2718' if backend == 'data' else 'http://localhost:8000/api/docs') -%}
+{%- set js_front = frontend in ['nuxt', 'next', 'astro'] -%}
+{%- if language_docs == 'fr' -%}
+{%- set back_text = {'django': "l'API, en Django + Django Ninja", 'fastapi': "l'API, en FastAPI", 'data': "la chaîne de données (polars ou NumPy, Plotly) et les notebooks marimo", 'cli': "l'outil en ligne de commande `" ~ name ~ "`", 'java': "le backend Java 25 (Maven, sans framework)"}.get(backend) -%}
+{%- set front_text = {'nuxt': "l'interface, en Nuxt 4 + Vue 3", 'next': "l'interface, en Next.js 16 + React 19", 'astro': "le site, en Astro 7", 'streamlit': "le tableau de bord, en Streamlit", 'dash': "le tableau de bord, en Dash"}.get(frontend) -%}
+# {{ title }}
 
 {{ description }}
 
 ## Démarrage rapide
 
 Après le clone, depuis la racine du dépôt (prérequis : [uv](https://docs.astral.sh/uv/)
-{%- if backend == 'java' %}, un JDK 25{{ ',' if frontend in ['nuxt', 'next', 'astro'] else ' et' }} `unzip`{% endif %}
-{%- if frontend in ['nuxt', 'next', 'astro'] %} et
-[pnpm](https://pnpm.io/) avec Node 24{% endif %}) :
+{%- if backend == 'java' %}, un JDK 25{{ ',' if js_front else ' et' }} `unzip`{% endif %}
+{%- if js_front %} et [pnpm](https://pnpm.io/) avec Node 24{% endif %}) :
 
 ```sh
 uv tool install kiln-cli   # une fois par poste
@@ -22,59 +25,50 @@ kiln dev
 ```
 
 {% if backend == 'cli' and not front_url -%}
-Puis lancer l'outil : `cd backend && uv run {{ nom }} --help`, ou l'installer sur le poste par
-`uv tool install --editable backend`. Détail de chaque commande ci-dessous.
+Puis lancer l'outil : `cd backend && uv run {{ name }} --help`, ou l'installer sur le poste par
+`uv tool install --editable backend`.
 {%- elif backend == 'java' and not front_url -%}
-Puis vérifier le backend : `cd backend && ./mvnw verify`. Détail de chaque commande ci-dessous.
+Puis vérifier le backend : `cd backend && ./mvnw verify`.
 {%- else -%}
-Puis ouvrir {{ front_url or ('http://localhost:2718' if backend == 'data' else 'http://localhost:8000/api/docs') }}. Détail de chaque commande ci-dessous.
+Puis ouvrir {{ open_url }}.
 {%- endif %}
 
-{% if equipe -%}
+{% if team -%}
 ## Équipe
 
-{% for login in equipe -%}
+{% for login in team -%}
 - [@{{ login }}](https://github.com/{{ login }})
 {% endfor %}
 {% endif -%}
 ## Organisation
 {% if back_text %}
-- `backend/` : {{ back_text }} ; règles dans [`backend/CLAUDE.md`](backend/CLAUDE.md).
+- `backend/` : {{ back_text }}.
 {%- endif %}
 {%- if front_text %}
-- `frontend/` : {{ front_text }} ; règles dans [`frontend/CLAUDE.md`](frontend/CLAUDE.md).
+- `frontend/` : {{ front_text }}.
 {%- endif %}
-- [`CLAUDE.md`](CLAUDE.md) : la charte commune (nommage, taille, git…), pour les humains comme
-  pour les agents.
+- [`CLAUDE.md`](CLAUDE.md) et [`.claude/rules/kiln/`](.claude/rules/kiln/) : la charte du code
+  et la façon de travailler, pour les humains comme pour les agents.
 - `.vscode/` : réglages et extensions recommandées, partagés par toute l'équipe.
 {%- if podman %}
 - `compose.yaml` et les `Containerfile` : la pile en conteneurs podman.
 {%- endif %}
-{%- if deploiement == 'vps' %}
-- `config/vps/` et `scripts/ops/` : la production sur `{{ vps_hote }}` (pile, Caddy, bascule,
-  sauvegardes) ; procédure dans [`docs/exploitation/production.md`](docs/exploitation/production.md).
+{%- if deploy == 'vps' %}
+- `config/vps/` et `scripts/ops/` : la production sur `{{ vps_host }}` (pile, Caddy, bascule,
+  sauvegardes) ; procédure dans [`docs/operations/production.md`](docs/operations/production.md).
 {%- endif %}
-{%- if front_deploiement == 'vercel' %}
+{%- if frontend_deploy == 'vercel' %}
 - `scripts/ops/deploy-frontend.sh` : déploiement du front sur Vercel, d'un commit poussé sur
   `develop` dont la CI est verte.
 {%- endif %}
 
-Le projet est généré et tenu à jour par [kiln](https://github.com/antoine-tena/kiln) (réponses
-dans `.copier-answers.yml`). Changer un paramètre (équipe, frameworks, podman…) :
-`kiln set <clé>=<valeur>`, sur une branche.
+Le projet est généré et tenu à jour par [kiln](https://github.com/antoine-tena/kiln). Changer un
+paramètre (équipe, frameworks, podman…) : `kiln set <clé>=<valeur>`, sur une branche.
 
 ## Installation
 
-Prérequis : ceux du démarrage rapide
-{%- if podman %}, plus [podman](https://podman.io/){% endif %}. Puis, après le clone, depuis la
-racine du dépôt :
-
-```sh
-kiln install
-```
-
-La commande demande une fois le système du poste (Linux, WSL ou macOS), installe les
-dépendances ({{ (python_dirs + (['backend'] if backend == 'java' else []) + (['frontend'] if frontend in ['nuxt', 'next', 'astro'] else [])) | join(', ') }})
+Prérequis : ceux du démarrage rapide{% if podman %}, plus [podman](https://podman.io/){% endif %}.
+`kiln install` installe les dépendances ({{ installed | join(', ') }})
 {%- if backend in ['django', 'fastapi'] %}, crée `backend/.env`{% endif %}
 {%- if backend == 'django' %}, applique les migrations{% endif %} et active les garde-fous du
 commit (pre-commit, dont le refus de commiter sur `main` ou `develop`). On peut la relancer sans
@@ -83,19 +77,19 @@ risque.
 ## Lancer le projet
 {% if backend == 'cli' and not front_url %}
 ```sh
-cd backend && uv run {{ nom }} --help
+cd backend && uv run {{ name }} --help
 uv tool install --editable backend   # depuis la racine : la commande sur tout le poste
 ```
 {%- elif backend == 'java' and not front_url %}
 ```sh
-cd backend && ./mvnw -q package -DskipTests && java -jar target/{{ nom }}-0.1.0.jar
+cd backend && ./mvnw -q package -DskipTests && java -jar target/{{ name }}-0.1.0.jar
 ```
 {%- else %}
 ```sh
 kiln dev
 ```
 {% endif %}
-{%- if backend == 'django' or backend == 'fastapi' %}
+{%- if backend in ['django', 'fastapi'] %}
 - Backend : http://localhost:8000/api/ (documentation de l'API sur `/api/docs`).
 {%- if backend == 'django' %}
   Sondes : `/api/health` (vivacité), `/api/ready` (disponibilité, vérifie la base).
@@ -103,32 +97,18 @@ kiln dev
 {%- elif backend == 'data' %}
 - Notebooks marimo : http://localhost:2718.
 {%- elif backend == 'cli' and front_url %}
-- Outil en ligne de commande : `cd backend && uv run {{ nom }} --help`.
+- Outil en ligne de commande : `cd backend && uv run {{ name }} --help`.
 {%- elif backend == 'java' and front_url %}
-- Backend Java : `cd backend && ./mvnw verify` (rien à servir tant qu'aucun serveur n'existe).
+- Backend Java : `cd backend && ./mvnw verify`.
 {%- endif %}
 {%- if front_url %}
 - Frontend : {{ front_url }}
-{%- if backend in ['django', 'fastapi'] and frontend in ['nuxt', 'next', 'astro'] %} (les appels `/api` sont relayés vers le backend){% endif %}.
+{%- if backend in ['django', 'fastapi'] and js_front %} (les appels `/api` sont relayés vers le backend){% endif %}.
 {%- endif %}
 {%- if podman %}
 
 `kiln dev --containers` lance toute la pile dans podman (`compose.yaml`).
 {%- endif %}
-
-## Mettre à jour
-
-Sur une branche dédiée (`chore/kiln-update`), avec un arbre propre :
-
-```sh
-kiln update            # mises à jour compatibles
-kiln update --major    # y compris les versions majeures
-```
-
-Elle rapporte les évolutions du modèle (charte, outillage, configuration) sans écraser les
-modifications locales, met à jour les dépendances, puis lance les contrôles. Relire le diff,
-puis fusionner la branche dans `develop`. Avec Claude Code, le skill `base:maj-kiln` fait tout :
-l'outil kiln, puis le dépôt.
 
 ## Vérifier le code
 
@@ -143,23 +123,24 @@ kiln check
 Ruff, mypy et pytest pour chaque projet Python
 {%- endif %}
 {%- if frontend in ['nuxt', 'next'] %}, ESLint et le contrôle des types côté frontend
-{%- elif frontend == 'astro' %}, `astro check` côté frontend{% endif %}, puis la charte.
+{%- elif frontend == 'astro' %}, `astro check` côté frontend{% endif %}, puis la charte (`charter`).
 
 {% if backend == 'django' and frontend == 'nuxt' -%}
 ## Contrat d'API
 
 Le front appelle l'API par `useApi()`, typé par `openapi.json`. Après tout changement d'une route
-ou d'un schéma du backend :
-
-```sh
-kiln contrat
-```
-
-La commande exporte `openapi.json` depuis le code Django, puis régénère
-`frontend/app/types/api.d.ts`. Les deux fichiers se commitent avec le changement ; la CI échoue
-s'ils ont dérivé du code.
+ou d'un schéma du backend, `kiln contract` exporte `openapi.json` depuis le code Django, puis
+régénère `frontend/app/types/api.d.ts`. Les deux fichiers se commitent avec le changement ; la CI
+échoue s'ils ont dérivé du code.
 
 {% endif -%}
+## Mettre à jour
+
+Sur une branche dédiée, avec un arbre propre : `kiln update` (mises à jour compatibles) ou
+`kiln update --major` (versions majeures comprises). La commande rapporte les évolutions de kiln
+sans écraser les modifications locales, met à jour les dépendances, puis lance les contrôles.
+Avec Claude Code, le skill `/kiln:update` fait tout : l'outil kiln, puis le dépôt.
+
 ## Suivi du travail
 
 Ce qui reste à faire est dans [`docs/backlog/`](docs/backlog/) : `backlog.md` (les tickets, par
@@ -167,9 +148,158 @@ priorité), `rejected.md` (ce qui a été refusé) et `urgent.md` (ce que seul u
 
 ## Contribuer
 
-1. Créer une branche depuis la branche par défaut du dépôt (`develop` quand elle existe,
-   sinon `main`) : `feat/…`, `fix/…`, voir [BRANCHES].
-2. Respecter les règles du [`CLAUDE.md`](CLAUDE.md).
+1. Créer une branche depuis `develop` : `feat/…`, `fix/…` ([BRANCHES]).
+2. Respecter la charte ([`.claude/rules/kiln/`](.claude/rules/kiln/), [`CLAUDE.md`](CLAUDE.md)).
 3. Fusionner la branche dans `develop` (`git merge --no-ff`, puis push), sans attendre
-   d'approbation : skill `base:fusion` avec Claude Code. Une pull request reste possible pour
+   d'approbation : skill `/kiln:merge` avec Claude Code. Une pull request reste possible pour
    demander un avis. On ne commite jamais directement sur `main` ou `develop`.
+{%- else -%}
+{%- set back_text = {'django': 'the API, in Django + Django Ninja', 'fastapi': 'the API, in FastAPI', 'data': 'the data chain (polars or NumPy, Plotly) and the marimo notebooks', 'cli': 'the command-line tool `' ~ name ~ '`', 'java': 'the Java 25 backend (Maven, no framework)'}.get(backend) -%}
+{%- set front_text = {'nuxt': 'the interface, in Nuxt 4 + Vue 3', 'next': 'the interface, in Next.js 16 + React 19', 'astro': 'the site, in Astro 7', 'streamlit': 'the dashboard, in Streamlit', 'dash': 'the dashboard, in Dash'}.get(frontend) -%}
+# {{ title }}
+
+{{ description }}
+
+## Quick start
+
+After cloning, from the root of the repo (requirements: [uv](https://docs.astral.sh/uv/)
+{%- if backend == 'java' %}, a JDK 25{{ ',' if js_front else ' and' }} `unzip`{% endif %}
+{%- if js_front %} and [pnpm](https://pnpm.io/) with Node 24{% endif %}):
+
+```sh
+uv tool install kiln-cli   # once per machine
+kiln install
+{%- if front_url or backend not in ['cli', 'java'] %}
+kiln dev
+{%- endif %}
+```
+
+{% if backend == 'cli' and not front_url -%}
+Then run the tool: `cd backend && uv run {{ name }} --help`, or install it on the machine with
+`uv tool install --editable backend`.
+{%- elif backend == 'java' and not front_url -%}
+Then check the backend: `cd backend && ./mvnw verify`.
+{%- else -%}
+Then open {{ open_url }}.
+{%- endif %}
+
+{% if team -%}
+## Team
+
+{% for login in team -%}
+- [@{{ login }}](https://github.com/{{ login }})
+{% endfor %}
+{% endif -%}
+## Layout
+{% if back_text %}
+- `backend/`: {{ back_text }}.
+{%- endif %}
+{%- if front_text %}
+- `frontend/`: {{ front_text }}.
+{%- endif %}
+- [`CLAUDE.md`](CLAUDE.md) and [`.claude/rules/kiln/`](.claude/rules/kiln/): the code charter
+  and the way of working, for humans and agents alike.
+- `.vscode/`: settings and recommended extensions, shared by the whole team.
+{%- if podman %}
+- `compose.yaml` and the `Containerfile`s: the stack in podman containers.
+{%- endif %}
+{%- if deploy == 'vps' %}
+- `config/vps/` and `scripts/ops/`: production on `{{ vps_host }}` (stack, Caddy, switch,
+  backups); how-to in [`docs/operations/production.md`](docs/operations/production.md).
+{%- endif %}
+{%- if frontend_deploy == 'vercel' %}
+- `scripts/ops/deploy-frontend.sh`: deployment of the front on Vercel, from a commit pushed to
+  `develop` whose CI is green.
+{%- endif %}
+
+The project is generated and kept current by [kiln](https://github.com/antoine-tena/kiln). To
+change a setting (team, frameworks, podman…): `kiln set <key>=<value>`, on a branch.
+
+## Install
+
+Requirements: those of the quick start{% if podman %}, plus [podman](https://podman.io/){% endif %}.
+`kiln install` installs the dependencies ({{ installed | join(', ') }})
+{%- if backend in ['django', 'fastapi'] %}, creates `backend/.env`{% endif %}
+{%- if backend == 'django' %}, applies the migrations{% endif %} and turns on the commit guards
+(pre-commit, which also refuses commits on `main` and `develop`). It can be run again safely.
+
+## Run the project
+{% if backend == 'cli' and not front_url %}
+```sh
+cd backend && uv run {{ name }} --help
+uv tool install --editable backend   # from the root: the command on the whole machine
+```
+{%- elif backend == 'java' and not front_url %}
+```sh
+cd backend && ./mvnw -q package -DskipTests && java -jar target/{{ name }}-0.1.0.jar
+```
+{%- else %}
+```sh
+kiln dev
+```
+{% endif %}
+{%- if backend in ['django', 'fastapi'] %}
+- Backend: http://localhost:8000/api/ (API docs on `/api/docs`).
+{%- if backend == 'django' %}
+  Probes: `/api/health` (liveness), `/api/ready` (readiness, checks the database).
+{%- endif %}
+{%- elif backend == 'data' %}
+- marimo notebooks: http://localhost:2718.
+{%- elif backend == 'cli' and front_url %}
+- Command-line tool: `cd backend && uv run {{ name }} --help`.
+{%- elif backend == 'java' and front_url %}
+- Java backend: `cd backend && ./mvnw verify`.
+{%- endif %}
+{%- if front_url %}
+- Frontend: {{ front_url }}
+{%- if backend in ['django', 'fastapi'] and js_front %} (`/api` calls are proxied to the backend){% endif %}.
+{%- endif %}
+{%- if podman %}
+
+`kiln dev --containers` runs the whole stack in podman (`compose.yaml`).
+{%- endif %}
+
+## Check the code
+
+```sh
+kiln check
+```
+
+{% if backend == 'java' -%}
+`./mvnw verify` for the Java backend (strict compilation, JUnit, coverage)
+{%- if frontend in ['streamlit', 'dash'] %}, ruff, mypy and pytest for the Python frontend{% endif %}
+{%- else -%}
+Ruff, mypy and pytest for each Python project
+{%- endif %}
+{%- if frontend in ['nuxt', 'next'] %}, ESLint and type checks for the frontend
+{%- elif frontend == 'astro' %}, `astro check` for the frontend{% endif %}, then the charter (`charter`).
+
+{% if backend == 'django' and frontend == 'nuxt' -%}
+## API contract
+
+The front calls the API through `useApi()`, typed by `openapi.json`. After any change to a route
+or a schema of the backend, `kiln contract` exports `openapi.json` from the Django code, then
+regenerates `frontend/app/types/api.d.ts`. Both files are committed with the change; CI fails
+when they drift from the code.
+
+{% endif -%}
+## Update
+
+On a dedicated branch, with a clean tree: `kiln update` (compatible upgrades) or
+`kiln update --major` (major versions too). It brings kiln's improvements without overwriting
+local changes, upgrades the dependencies, then runs the checks. With Claude Code, the
+`/kiln:update` skill does it all: the kiln tool, then the repo.
+
+## Work tracking
+
+What is left to do lives in [`docs/backlog/`](docs/backlog/): `backlog.md` (tickets, by
+priority), `rejected.md` (what was turned down) and `urgent.md` (what only a human can do).
+
+## Contributing
+
+1. Branch off `develop`: `feat/…`, `fix/…` ([BRANCHES]).
+2. Follow the charter ([`.claude/rules/kiln/`](.claude/rules/kiln/), [`CLAUDE.md`](CLAUDE.md)).
+3. Merge the branch into `develop` (`git merge --no-ff`, then push), without waiting for an
+   approval: the `/kiln:merge` skill with Claude Code. A pull request stays possible to ask for
+   an opinion. Never commit directly on `main` or `develop`.
+{%- endif %}

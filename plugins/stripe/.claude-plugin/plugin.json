@@ -1,6 +1,8 @@
 {
   "name": "stripe",
-  "version": "0.1.0",
-  "description": "MCP Stripe limité au mode test : toute clé live est refusée",
-  "author": { "name": "antoine-tena" }
+  "version": "0.2.1",
+  "description": "Stripe MCP server restricted to test mode: any live key is refused",
+  "author": {
+    "name": "antoine-tena"
+  }
 }

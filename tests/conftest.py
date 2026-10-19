@@ -11,3 +11,6 @@ def git_identity(tmp_path_factory: pytest.TempPathFactory, monkeypatch: pytest.M
     config.write_text("[user]\n\tname = Test\n\temail = test@example.com\n")
     monkeypatch.setenv("GIT_CONFIG_GLOBAL", str(config))
     monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
+    # Copier mirrors each remote template in a cache keyed by URL: a test never fills the
+    # machine's (a fake release tag there once followed the real GitHub address).
+    monkeypatch.setenv("COPIER_CACHE_DIR", str(tmp_path_factory.mktemp("copier")))

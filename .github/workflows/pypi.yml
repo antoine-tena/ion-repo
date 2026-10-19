@@ -1,15 +1,16 @@
 name: pypi
 
-# Publication de kiln sur PyPI (paquet kiln-cli) au tag d'une version promue, `vX.Y.Z` ; jamais
-# une candidate `-rc.N`, que seul le canal `interne` suit, par GitHub. Jeton PyPI dans le secret
-# `PYPI_TOKEN` de l'environnement `pypi` (posé depuis `.pypi/token`) ; sans lui, trusted
-# publishing si PyPI fait confiance à ce workflow.
+# Publishes kiln on PyPI (package kiln-cli) at the tag of a promoted release, `vX.Y.Z`; never a
+# candidate `-rc.N`, which only the internal channel follows, through GitHub. PyPI token in the
+# secret `PYPI_TOKEN` of the `pypi` environment (set from `.pypi/token`); without it, trusted
+# publishing if PyPI trusts this workflow. Then the GitHub Release of the tag, its notes taken
+# from the tag's `CHANGELOG.md` entry (what the repo page and its watchers see).
 on:
   push:
     tags: [ "v[0-9]+.[0-9]+.[0-9]+" ]
 
 jobs:
-  publier:
+  publish:
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -20,16 +21,40 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
-      - name: Version du tag = version du paquet
+      - name: Tag version = package version
         run: |
-          paquet="$(uv version --short)"
-          if [ "v${paquet}" != "${GITHUB_REF_NAME}" ]; then
-            echo "::error::tag ${GITHUB_REF_NAME}, mais pyproject.toml dit ${paquet}"
+          package="$(uv version --short)"
+          if [ "v${package}" != "${GITHUB_REF_NAME}" ]; then
+            echo "::error::tag ${GITHUB_REF_NAME}, but pyproject.toml says ${package}"
             exit 1
           fi
-      - name: Construction
+      - name: Build
         run: uv build
-      - name: Publication
+      - name: Publish
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: uv publish --trusted-publishing automatic
+
+  github-release:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Release notes from the changelog
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v heading="## v${version} — " '
+            index($0, heading) == 1 { found = 1; next }
+            found && /^## v/ { exit }
+            found { print }
+          ' CHANGELOG.md > notes.md
+          if [ ! -s notes.md ]; then
+            echo "::error::no ${GITHUB_REF_NAME} entry in CHANGELOG.md"
+            exit 1
+          fi
+      - name: GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${GITHUB_REF_NAME}" --title "kiln ${GITHUB_REF_NAME}" --notes-file notes.md --verify-tag

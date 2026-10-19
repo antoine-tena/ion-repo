@@ -1,37 +1,43 @@
 name: Django
 
-# Qualité d'un backend Django géré par uv, contre PostgreSQL et Redis réels (lancés par podman) :
-# sans eux la suite tourne sur SQLite (select_for_update omis, contraintes partielles non
-# exercées) et sur un cache local au process.
-# ruff, typage mypy en cliquet (`charte types`), migrations manquantes, pytest avec couverture,
-# planchers de couverture (`charte couverture`).
+# Quality of a Django backend managed by uv, against real PostgreSQL and Redis (run by podman):
+# without them the suite runs on SQLite (select_for_update skipped, partial constraints never
+# exercised) and on a cache local to the process.
+# ruff, mypy typing as a ratchet (`charter types`), missing migrations, pytest with coverage,
+# coverage floors (`charter coverage`).
 on:
   workflow_call:
     inputs:
-      dossier:
+      directory:
+        description: Directory of the Django project
         type: string
         default: backend
-      base:
-        description: Nom de la base, de son utilisateur et de son mot de passe (préfixe)
+      database:
+        description: Name of the test database, of its user, and prefix of its password
         type: string
         default: app
+      base:
+        description: "Name before kiln 0.4.0 of `database` (kept for callers at develop)"
+        type: string
+        default: ""
       postgres:
+        description: PostgreSQL image of the tests
         type: string
         default: docker.io/library/postgres:16-alpine
       redis:
-        description: Image Redis des tests (vide = pas de Redis)
+        description: Redis image of the tests (empty = no Redis)
         type: string
         default: docker.io/library/redis:7-alpine
       env:
-        description: Variables du projet pour toutes les étapes, une par ligne (CLE=valeur)
+        description: Project variables for every step, one per line (KEY=value)
         type: string
         default: ""
       mypy:
-        description: Lancer `charte types` (section [types] de charte.toml)
+        description: Run `charter types` (section [types] of charter.toml)
         type: boolean
         default: true
-      couverture:
-        description: Lancer `charte couverture` (section [couverture] de charte.toml)
+      coverage:
+        description: Run `charter coverage` (section [coverage] of charter.toml)
         type: boolean
         default: true
 
@@ -40,26 +46,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      # kiln à la version exacte de ce workflow : ses actions et la commande charte en viennent
-      # (retiré aussitôt, pour que les contrôles du projet ne le voient pas).
+      # kiln at the exact version of this workflow: its actions and the charter command come
+      # from there (removed at once, so that the project's checks never see it).
       - uses: actions/checkout@v7
         with:
           repository: antoine-tena/kiln
           ref: ${{ job.workflow_sha || 'develop' }}
           path: .kiln
-      - uses: ./.kiln/actions/charte
+      - uses: ./.kiln/actions/charter
         with:
           ref: ${{ job.workflow_sha || 'develop' }}
 
       - uses: ./.kiln/actions/services
         with:
-          base: ${{ inputs.base }}
+          database: ${{ inputs.base || inputs.database }}
           postgres: ${{ inputs.postgres }}
           redis: ${{ inputs.redis }}
-      - name: Retrait de kiln du dossier du projet
+      - name: Remove kiln from the project directory
         run: rm -rf .kiln
 
-      - name: Variables du projet
+      - name: Project variables
         if: inputs.env != ''
         env:
           VARIABLES: ${{ inputs.env }}
@@ -68,40 +74,40 @@ jobs:
       - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
-          package-directory: ./${{ inputs.dossier }}
+          package-directory: ./${{ inputs.directory }}
 
-      - name: Dépendances
+      - name: Dependencies
         run: uv sync --locked
-        working-directory: ./${{ inputs.dossier }}
+        working-directory: ./${{ inputs.directory }}
 
       - name: ruff
         run: |
           uv run ruff check .
           uv run ruff format --check .
-        working-directory: ./${{ inputs.dossier }}
+        working-directory: ./${{ inputs.directory }}
 
-      - name: Typage (mypy, en cliquet)
+      - name: Typing (mypy, as a ratchet)
         if: inputs.mypy
-        run: charte types
+        run: charter types
 
-      # Un modèle modifié sans `makemigrations` ne casse aucun test (Django recrée le schéma
-      # depuis les migrations existantes) : il n'apparaissait qu'au `migrate` du déploiement.
-      - name: Aucune migration manquante
+      # A model changed without `makemigrations` breaks no test (Django builds the schema from
+      # the existing migrations): it only showed up at the `migrate` of the deployment.
+      - name: No missing migration
         run: uv run python manage.py makemigrations --check --dry-run
-        working-directory: ./${{ inputs.dossier }}
+        working-directory: ./${{ inputs.directory }}
 
       - name: pytest
         run: uv run pytest --cov --cov-branch --cov-report=xml --cov-report=term:skip-covered
-        working-directory: ./${{ inputs.dossier }}
+        working-directory: ./${{ inputs.directory }}
 
-      - name: Publier la couverture
+      - name: Publish the coverage
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ inputs.dossier }}-coverage
-          path: ${{ inputs.dossier }}/coverage.xml
+          name: ${{ inputs.directory }}-coverage
+          path: ${{ inputs.directory }}/coverage.xml
           if-no-files-found: ignore
 
-      - name: Planchers de couverture
-        if: inputs.couverture
-        run: charte couverture
+      - name: Coverage floors
+        if: inputs.coverage
+        run: charter coverage

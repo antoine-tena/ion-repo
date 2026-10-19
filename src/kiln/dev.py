@@ -1,10 +1,10 @@
-"""`kiln dev` : lance les serveurs de développement de la stack ; Ctrl+C les arrête tous.
+"""`kiln dev`: runs the stack's development servers; Ctrl+C stops them all.
 
-La sortie des serveurs est entrelacée ligne à ligne, chaque ligne préfixée par son service en
-couleur (`django   │ …`, `nuxt     │ …`). Les serveurs gardent leurs couleurs (`FORCE_COLOR`)
-et Python n'attend pas pour écrire (`PYTHONUNBUFFERED`).
+The servers' output is interleaved line by line, each line prefixed by its service in color
+(`django   │ …`, `nuxt     │ …`). The servers keep their colors (`FORCE_COLOR`) and Python does
+not buffer (`PYTHONUNBUFFERED`).
 
-Avec `--containers` (projet podman), toute la pile tourne dans podman (`compose.yaml`).
+With `--containers` (podman project), the whole stack runs in podman (`compose.yaml`).
 """
 
 import os
@@ -19,7 +19,7 @@ from kiln.shell import KilnError, require_tools, run, step
 from kiln.stack import Command, load_stack
 
 COMPOSE_FILE = "compose.yaml"
-# Couleur du préfixe de chaque service, dans l'ordre de lancement.
+# Color of each service's prefix, in launch order.
 PREFIX_COLORS = (ui.FIRE, ui.MOSS, ui.GLOW, ui.CHEEK)
 _print_lock = threading.Lock()
 
@@ -31,7 +31,7 @@ def run_dev_servers(root: Path, *, in_containers: bool = False) -> None:
         return
     commands = stack.dev_commands()
     if not commands:
-        raise KilnError("rien à lancer : un outil en ligne de commande se lance par uv run")
+        raise KilnError("nothing to run: a command-line tool runs with uv run")
     step(" · ".join(f"{command.label} ({command.directory}/)" for command in commands))
     width = max(len(command.label) for command in commands)
     env = {**os.environ, "PYTHONUNBUFFERED": "1"}
@@ -50,7 +50,7 @@ def run_dev_servers(root: Path, *, in_containers: bool = False) -> None:
         for command, process in zip(commands, processes, strict=True):
             returncode = process.wait()
             if returncode not in (0, -2, -15):
-                ui.note(f"{command.label} s'est arrêté (code {returncode})")
+                ui.note(f"{command.label} stopped (code {returncode})")
     except KeyboardInterrupt:
         pass
     finally:
@@ -75,12 +75,12 @@ def _start(root: Path, command: Command, env: dict[str, str]) -> subprocess.Pope
 
 
 def service_prefix(label: str, width: int, color: ui.Color) -> str:
-    """`django   │ ` : le service en couleur, aligné sur le plus long, puis une barre."""
+    """`django   │ `: the service in color, aligned on the longest, then a bar."""
     return f"{ui.paint(f'{label:<{width}}', color, bold=True)} {ui.paint('│', ui.STONE_DARK)} "
 
 
 def _relay(stream: IO[str] | None, prefix: str) -> None:
-    """Recopie la sortie d'un serveur, ligne à ligne, derrière son préfixe."""
+    """Copies a server's output, line by line, behind its prefix."""
     for line in stream or ():
         with _print_lock:
             sys.stdout.write(f"{prefix}{line.rstrip()}\n")
@@ -89,9 +89,9 @@ def _relay(stream: IO[str] | None, prefix: str) -> None:
 
 def _run_containers(root: Path, *, has_podman: bool) -> None:
     if not has_podman or not (root / COMPOSE_FILE).exists():
-        raise KilnError("pas de podman dans ce projet : kiln set podman=true, sur une branche")
+        raise KilnError("no podman in this project: kiln set podman=true, on a branch")
     require_tools("podman", "podman-compose")
-    step("Pile podman (podman-compose up --build)")
+    step("podman stack (podman-compose up --build)")
     try:
         run(["podman-compose", "-f", COMPOSE_FILE, "up", "--build"], root, live=True)
     except KeyboardInterrupt:

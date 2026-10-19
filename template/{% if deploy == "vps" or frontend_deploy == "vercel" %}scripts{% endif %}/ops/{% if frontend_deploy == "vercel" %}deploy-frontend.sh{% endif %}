@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Deploys the front on Vercel from a pushed commit whose CI is green.
+#
+# `vercel --prod` sends the machine's files, not a commit: the script refuses a working copy with
+# changes in the front, a commit missing from the remote, or one whose CI is not green.
+#
+# Usage:    scripts/ops/deploy-frontend.sh
+# Settings: BRANCH (default develop), FRONT (default frontend), SKIP_CI=1 (emergency), CI_WORKFLOW
+set -euo pipefail
+
+BRANCH="${BRANCH:-develop}"
+FRONT="${FRONT:-frontend}"
+cd "$(git rev-parse --show-toplevel)"
+# shellcheck source=lib/green-ci.sh
+. "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/lib/green-ci.sh"
+
+if [ "$(git branch --show-current)" != "$BRANCH" ]; then
+  echo "Switch to $BRANCH before deploying." >&2
+  exit 1
+fi
+git fetch -q origin "$BRANCH"
+TARGET="$(git rev-parse HEAD)"
+if [ "$TARGET" != "$(git rev-parse "origin/$BRANCH")" ]; then
+  echo "$BRANCH and origin/$BRANCH differ: push (or update) $BRANCH before deploying." >&2
+  exit 1
+fi
+if [ -n "$(git status --porcelain -- "$FRONT")" ]; then
+  echo "$FRONT/ holds uncommitted changes: vercel --prod would send them." >&2
+  exit 1
+fi
+ci_is_green "$TARGET"
+
+echo "Front deployment: $(git log --oneline -1 "$TARGET")"
+vercel --prod   # project linked at the root (`vercel link`), root directory `frontend` on Vercel

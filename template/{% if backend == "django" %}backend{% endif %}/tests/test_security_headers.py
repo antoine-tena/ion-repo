@@ -1,4 +1,4 @@
-"""En-têtes de sécurité de toute réponse ([EN-TETES], [CSP-NONCE])."""
+"""Security headers of every response ([SECURITY-HEADERS], [CSP-NONCE])."""
 
 from django.conf import settings
 from django.test import Client
@@ -28,6 +28,6 @@ def test_csp_forbids_inline_code_and_third_party_hosts(client: Client) -> None:
 
 
 def test_inline_scripts_and_styles_need_the_request_nonce() -> None:
-    # Django n'écrit le nonce dans l'en-tête que si la page s'en sert.
+    # Django writes the nonce in the header only when the page uses it.
     assert CSP.NONCE in settings.SECURE_CSP["script-src"]
     assert CSP.NONCE in settings.SECURE_CSP["style-src"]

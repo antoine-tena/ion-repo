@@ -1,0 +1,7 @@
+[Unit]
+Description={{ title }}: Restart of the stack's containers whose probe fails
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/{{ name }}-heal

@@ -1,26 +1,34 @@
-name: Tests par mutation
+name: Mutation tests
 
-# mutmut sur un backend Django géré par uv, PostgreSQL et Redis lancés par podman (configuration [tool.mutmut] du pyproject.toml) : un
-# mutant qui survit est un test manquant. Jamais bloquant : le job réussit quel que soit le score
-# et publie le rapport (statistiques, survivants et leur diff) en artefact.
+# mutmut on a Django backend managed by uv, PostgreSQL and Redis run by podman ([tool.mutmut] of
+# pyproject.toml): a mutant that survives is a missing test. Never blocking: the job succeeds
+# whatever the score and publishes the report (statistics, survivors and their diff) as an
+# artifact.
 on:
   workflow_call:
     inputs:
-      dossier:
+      directory:
+        description: Directory of the Django project
         type: string
         default: backend
-      base:
+      database:
+        description: Name of the test database
         type: string
         default: app
+      base:
+        description: "Name before kiln 0.4.0 of `database` (kept for callers at develop)"
+        type: string
+        default: ""
       postgres:
+        description: PostgreSQL image of the tests
         type: string
         default: docker.io/library/postgres:16-alpine
-      groupe:
-        description: Groupe de dépendances uv qui apporte mutmut
+      group:
+        description: uv dependency group that brings mutmut
         type: string
         default: mutation
       env:
-        description: Variables du projet, une par ligne (CLE=valeur)
+        description: Project variables, one per line (KEY=value)
         type: string
         default: ""
 
@@ -31,12 +39,12 @@ jobs:
     continue-on-error: true
     defaults:
       run:
-        working-directory: ./${{ inputs.dossier }}
+        working-directory: ./${{ inputs.directory }}
     steps:
       - uses: actions/checkout@v7
 
-      # kiln à la version exacte de ce workflow : ses actions et la commande charte en viennent
-      # (retiré aussitôt, pour que les contrôles du projet ne le voient pas).
+      # kiln at the exact version of this workflow, for its actions (removed at once, so that
+      # the project's checks never see it).
       - uses: actions/checkout@v7
         with:
           repository: antoine-tena/kiln
@@ -44,13 +52,13 @@ jobs:
           path: .kiln
       - uses: ./.kiln/actions/services
         with:
-          base: ${{ inputs.base }}
+          database: ${{ inputs.base || inputs.database }}
           postgres: ${{ inputs.postgres }}
           redis: docker.io/library/redis:7-alpine
-      - name: Retrait de kiln du dossier du projet
+      - name: Remove kiln from the project directory
         run: rm -rf .kiln
 
-      - name: Variables du projet
+      - name: Project variables
         if: inputs.env != ''
         env:
           VARIABLES: ${{ inputs.env }}
@@ -59,16 +67,16 @@ jobs:
       - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
-          package-directory: ./${{ inputs.dossier }}
+          package-directory: ./${{ inputs.directory }}
 
-      - name: Dépendances
-        run: uv sync --locked --group ${{ inputs.groupe }}
+      - name: Dependencies
+        run: uv sync --locked --group ${{ inputs.group }}
 
-      # --max-children 1 : chaque mutant relance pytest sur la même base de test (--reuse-db).
+      # --max-children 1: each mutant runs pytest again on the same test database (--reuse-db).
       - name: mutmut
-        run: uv run mutmut run --max-children 1 || echo "::warning::mutmut s'est arrêté avant la fin"
+        run: uv run mutmut run --max-children 1 || echo "::warning::mutmut stopped before the end"
 
-      - name: Rapport
+      - name: Report
         if: always()
         run: |
           mkdir -p ../mutation-report
@@ -76,21 +84,21 @@ jobs:
           cp mutants/mutmut-cicd-stats.json ../mutation-report/ 2>/dev/null || true
           uv run mutmut results --all true > ../mutation-report/mutants.txt 2>&1 || true
           grep -E ': (survived|no tests|timeout|suspicious)$' ../mutation-report/mutants.txt \
-            > ../mutation-report/survivants.txt || true
+            > ../mutation-report/survivors.txt || true
           while read -r name _; do
-            uv run mutmut show "${name%:}" >> ../mutation-report/survivants.diff 2>&1 || true
-          done < ../mutation-report/survivants.txt
+            uv run mutmut show "${name%:}" >> ../mutation-report/survivors.diff 2>&1 || true
+          done < ../mutation-report/survivors.txt
           {
-            echo "## Tests par mutation"
+            echo "## Mutation tests"
             echo
             echo '```json'
             cat ../mutation-report/mutmut-cicd-stats.json 2>/dev/null || echo "{}"
             echo '```'
             echo
-            echo "Survivants : $(wc -l < ../mutation-report/survivants.txt)"
+            echo "Survivors: $(wc -l < ../mutation-report/survivors.txt)"
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Publier le rapport
+      - name: Publish the report
         if: always()
         uses: actions/upload-artifact@v7
         with:

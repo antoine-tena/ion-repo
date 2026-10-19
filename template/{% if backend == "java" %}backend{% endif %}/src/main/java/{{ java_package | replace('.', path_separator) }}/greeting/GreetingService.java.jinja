@@ -1,0 +1,16 @@
+{%- set fr = language_ui == 'fr' -%}
+package {{ java_package }}.greeting;
+
+import java.util.Objects;
+
+/** Example service: receives values, returns a value, never touches the terminal. */
+public final class GreetingService {
+
+    static final String DEFAULT_NAME = "{{ 'monde' if fr else 'world' }}";
+
+    public String greet(String name) {
+        Objects.requireNonNull(name, "name");
+        var trimmedName = name.strip();
+        return "{{ 'Bonjour, ' if fr else 'Hello, ' }}" + (trimmedName.isEmpty() ? DEFAULT_NAME : trimmedName) + "{{ ' !' if fr else '!' }}";
+    }
+}

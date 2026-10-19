@@ -1,0 +1,15 @@
+"""Example of a pure core: receives values, returns a value, never touches the terminal."""
+
+{% if language_ui == 'fr' -%}
+DEFAULT_NAME = "monde"
+
+
+def build_greeting(name: str) -> str:
+    return f"Bonjour, {name.strip() or DEFAULT_NAME} !"
+{%- else -%}
+DEFAULT_NAME = "world"
+
+
+def build_greeting(name: str) -> str:
+    return f"Hello, {name.strip() or DEFAULT_NAME}!"
+{%- endif %}

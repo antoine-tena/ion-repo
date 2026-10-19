@@ -1,186 +1,266 @@
-# Modèle de projet de kiln : les fichiers sont dans template/, seuls les `.jinja` sont
-# interprétés (les gabarits Vue, React et Astro gardent leurs accolades). Un dossier nommé
-# `{% if … %}nom{% endif %}` n'est créé que si la condition tient : c'est ainsi que chaque
-# framework apporte ses fichiers, et que `kiln set` les retire quand on en change.
+# kiln's project template. Files live in template/, and only `.jinja` files are rendered (Vue,
+# React and Astro templates keep their braces). A directory named `{% if … %}name{% endif %}`
+# exists only when its condition holds: that is how each framework brings its files, and how
+# `kiln set` removes them when the project changes framework.
 _subdirectory: template
 _templates_suffix: .jinja
 _answers_file: .copier-answers.yml
 _min_copier_version: "9.4"
+# Files the project owns: kiln writes them once, then never touches them again.
+_skip_if_exists:
+  - CLAUDE.md
 
-# Première question : l'envergure du projet, en quatre crans nommés d'après le feu du four.
-# Elle règle les valeurs par défaut des questions suivantes (podman pour l'instant) et se change
-# plus tard par `kiln set envergure=…`.
-envergure:
+# First question: the size of the project, four notches named after the fire of the kiln. It
+# chooses how much ceremony the project gets (rules, CI, containers), and changes later with
+# `kiln set size=…`.
+size:
   type: str
-  help: How hot does this one burn? (envergure du projet)
+  help: How hot does this one burn?
   choices:
-    "Spark : un script, un outil perso, une analyse ponctuelle": spark
-    "Ember : une petite app ou un site, une ou deux personnes, peu d'enjeu": ember
-    "Flame : une app en production, de vrais utilisateurs, plusieurs contributeurs": flame
-    "Blaze : plusieurs équipes ou services, de gros enjeux": blaze
+    "Spark: a script, a personal tool, a one-off analysis": spark
+    "Ember: a small app or site, one or two people, low stakes": ember
+    "Flame: an app in production, real users, several contributors": flame
+    "Blaze: several teams or services, high stakes": blaze
   default: ember
 
-nom:
+name:
   type: str
-  help: Nom court du projet (minuscules, chiffres, tirets), préfixe des paquets
+  help: Short name of the project (lowercase letters, digits, dashes), prefix of its packages
   validator: >-
-    {% if not (nom | regex_search('^[a-z][a-z0-9-]*$')) %}Minuscules, chiffres et tirets seulement.{% endif %}
+    {% if not (name | regex_search('^[a-z][a-z0-9-]*$')) %}Lowercase letters, digits and dashes only, starting with a letter.{% endif %}
 
-titre:
+title:
   type: str
-  help: Titre affiché du projet
-  default: "{{ nom | replace('-', ' ') | title }}"
+  help: Title of the project, as shown to people
+  default: "{{ name | replace('-', ' ') | title }}"
 
 description:
   type: str
-  help: Une phrase qui dit ce que fait le projet
-  default: "{{ titre }}."
+  help: One sentence on what the project does
+  default: "{{ title }}."
 
-# Propriétaire et équipe : kiln les pré-remplit (réglages du poste, sinon le compte connecté à
-# gh) ; vides, le projet n'a ni CODEOWNERS ni équipe dans son README.
-proprietaire:
+# The language of the team: the conversation with Claude, the docs, commit messages, comments
+# and the texts users read. Code identifiers are English whatever the answer, and so are the
+# instructions kiln writes for Claude.
+language:
   type: str
-  help: Compte ou organisation GitHub propriétaire du dépôt (vide si aucun)
+  help: Language of the team
+  choices:
+    English: en
+    Français: fr
+  default: en
+
+language_custom:
+  type: bool
+  help: Set the language per use (comments, commits, docs, tickets, user-facing texts)?
+  default: false
+
+language_comments:
+  type: str
+  help: Language of code comments
+  choices: &languages
+    English: en
+    Français: fr
+  default: "{{ language }}"
+  when: "{{ language_custom }}"
+
+language_commits:
+  type: str
+  help: Language of commit messages
+  choices: *languages
+  default: "{{ language }}"
+  when: "{{ language_custom }}"
+
+language_docs:
+  type: str
+  help: Language of the docs (README, docs/)
+  choices: *languages
+  default: "{{ language }}"
+  when: "{{ language_custom }}"
+
+language_tickets:
+  type: str
+  help: Language of the tickets of docs/backlog/
+  choices: *languages
+  default: "{{ language }}"
+  when: "{{ language_custom }}"
+
+language_ui:
+  type: str
+  help: Language of the texts users read (pages, messages, figures)
+  choices: *languages
+  default: "{{ language }}"
+  when: "{{ language_custom }}"
+
+# kiln fills the owner and the team in (machine settings, else the account gh is logged in
+# with); empty, the project has neither CODEOWNERS nor a team in its README.
+owner:
+  type: str
+  help: GitHub account or organisation that owns the repository (empty if none)
   default: ""
 
-equipe:
+team:
   type: yaml
-  help: Logins GitHub de l'équipe (relecteurs), en liste YAML
-  default: "[{{ proprietaire }}]"
+  help: GitHub logins of the team (reviewers), as a YAML list
+  default: "[{{ owner }}]"
 
-# Le type de projet ne sert qu'à conseiller : il précoche le backend et le frontend ci-dessous,
-# que l'on peut changer. Table des conseils : docs du README de kiln, « Conseil de stack ».
-type_projet:
+# The project type only advises: it preselects the backend and the frontend below, which stay
+# free. Table of advice: kiln's README, "What you get".
+project_type:
   type: str
-  help: Quel type de projet ? (sert à conseiller la stack)
+  help: What are you building? (it suggests the stack)
   choices:
-    Application complète (API et interface web): app
-    API seule: api
-    Site de contenu (vitrine, documentation, blog): site
-    Tableau de bord de données: tableau
-    Analyse de données (notebooks, figures): analyse
-    Outil en ligne de commande (script, utilitaire du poste): outil
+    "A full app (API and web interface)": app
+    "An API only": api
+    "A content site (showcase, documentation, blog)": site
+    "A data dashboard": dashboard
+    "A data analysis (notebooks, figures)": analysis
+    "A command-line tool (script, workstation utility)": cli
   default: app
 
 backend:
   type: str
   help: >-
-    Backend (conseillé pour ce type :
-    {% if type_projet == 'app' %}Django{% elif type_projet == 'api' %}FastAPI{% elif type_projet in ['tableau', 'analyse'] %}Données Python{% elif type_projet == 'outil' %}outil en ligne de commande{% else %}aucun{% endif %})
+    Backend (advised for this type:
+    {% if project_type == 'app' %}Django{% elif project_type == 'api' %}FastAPI{% elif project_type in ['dashboard', 'analysis'] %}Python data{% elif project_type == 'cli' %}Python command-line tool{% else %}none{% endif %})
   choices:
-    Django + Django Ninja (API complète, administration, ORM): django
-    FastAPI (API légère, asynchrone): fastapi
-    Données Python (polars, marimo, Plotly): data
-    Outil en ligne de commande (Python, argparse, sans serveur): cli
-    Java 25 (Maven, JUnit, sans framework): java
-    Aucun: aucun
+    "Django + Django Ninja (full API, admin, ORM)": django
+    "FastAPI (light API, async)": fastapi
+    "Python data (polars, marimo, Plotly)": data
+    "Python command-line tool (argparse, no server)": cli
+    "Java 25 (Maven, JUnit, no framework)": java
+    "None": none
   default: >-
-    {% if type_projet == 'app' %}django{% elif type_projet == 'api' %}fastapi{% elif type_projet in ['tableau', 'analyse'] %}data{% elif type_projet == 'outil' %}cli{% else %}aucun{% endif %}
+    {% if project_type == 'app' %}django{% elif project_type == 'api' %}fastapi{% elif project_type in ['dashboard', 'analysis'] %}data{% elif project_type == 'cli' %}cli{% else %}none{% endif %}
 
 frontend:
   type: str
   help: >-
-    Frontend (conseillé pour ce type :
-    {% if type_projet == 'app' %}Nuxt{% elif type_projet == 'site' %}Astro{% elif type_projet == 'tableau' %}Streamlit{% else %}aucun{% endif %})
+    Frontend (advised for this type:
+    {% if project_type == 'app' %}Nuxt{% elif project_type == 'site' %}Astro{% elif project_type == 'dashboard' %}Streamlit{% else %}none{% endif %})
   choices:
-    Nuxt + Vue (application web): nuxt
-    Next.js + React (application web): next
-    Astro (site de contenu, statique): astro
-    Streamlit (tableau de bord Python): streamlit
-    Dash (tableau de bord Python, interactif): dash
-    Aucun: aucun
+    "Nuxt + Vue (web app)": nuxt
+    "Next.js + React (web app)": next
+    "Astro (content site, static)": astro
+    "Streamlit (Python dashboard)": streamlit
+    "Dash (Python dashboard, interactive)": dash
+    "None": none
   default: >-
-    {% if type_projet == 'app' %}nuxt{% elif type_projet == 'site' %}astro{% elif type_projet == 'tableau' %}streamlit{% else %}aucun{% endif %}
+    {% if project_type == 'app' %}nuxt{% elif project_type == 'site' %}astro{% elif project_type == 'dashboard' %}streamlit{% else %}none{% endif %}
   validator: >-
-    {% if backend == 'aucun' and frontend == 'aucun' %}Il faut au moins un backend ou un frontend.{% endif %}
+    {% if backend == 'none' and frontend == 'none' %}A backend or a frontend is needed.{% endif %}
 
 podman:
   type: bool
-  help: Conteneurs podman (Containerfile, compose.yaml, PostgreSQL) ? Activable plus tard par `kiln set podman=true`.
-  default: "{{ envergure in ['flame', 'blaze'] and not (backend in ['cli', 'java'] and frontend == 'aucun') }}"
-  # Un outil en ligne de commande, ou un backend Java sans framework, n'a pas encore de serveur à
-  # conteneuriser ; son front éventuel, si.
+  help: Podman containers (Containerfile, compose.yaml, PostgreSQL)? Later with `kiln set podman=true`.
+  default: "{{ size in ['flame', 'blaze'] and not (backend in ['cli', 'java'] and frontend == 'none') }}"
+  # A command-line tool, or a Java backend without a framework, has no server to put in a
+  # container yet; its front, if any, does.
   validator: >-
-    {% if podman and backend in ['cli', 'java'] and frontend == 'aucun' %}{{ 'Un backend Java sans framework' if backend == 'java' else 'Un outil en ligne de commande' }} seul n'a rien à mettre dans podman.{% endif %}
+    {% if podman and backend in ['cli', 'java'] and frontend == 'none' %}{{ 'A Java backend without a framework' if backend == 'java' else 'A command-line tool' }} alone has nothing to put in podman.{% endif %}
 
-# Serena (plugin serena@kiln) : navigation par symboles en lecture seule, pour que Claude Code
-# lise une fonction plutôt qu'un fichier entier. Rentable sur un gros code (des milliers de
-# fichiers) ; son index et ses définitions d'outils coûtent plus qu'ils ne rapportent ailleurs.
+# Java: the root package of the sources (and their directories under src/main/java).
+java_package:
+  type: str
+  help: Root package of the Java sources
+  default: >-
+    {% if owner %}io.github.{{ owner | lower | replace('-', '') }}{% else %}com.example{% endif %}.{{ name | replace('-', '') }}
+  when: "{{ backend == 'java' }}"
+  validator: >-
+    {% if not (java_package | regex_search('^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$')) %}A Java package: lowercase words separated by dots (com.example.app).{% endif %}
+
+# Calendar notions (today, a day, the bounds of a period) are computed in this time zone; storage
+# stays in UTC. kiln proposes the machine's.
+timezone:
+  type: str
+  help: Time zone of the project's calendar notions (IANA name)
+  default: UTC
+
+# Serena (plugin serena@kiln): read-only symbol navigation, so that Claude Code reads a function
+# rather than a whole file. Pays off on a big codebase (thousands of files); elsewhere its index
+# and tool definitions cost more than they bring.
 serena:
   type: bool
-  help: Serena pour Claude Code (navigation par symboles, gros code) ? Activable plus tard par `kiln set serena=true`.
+  help: Serena for Claude Code (symbol navigation, big codebases)? Later with `kiln set serena=true`.
   default: false
 
-# Production sur un serveur à soi : `vps` ajoute config/vps/ (Caddy, pile de production, bascule
-# avec retour arrière, sauvegardes testées), scripts/ops/ et docs/exploitation/. Backend Django
-# seulement, servi par podman. Activable plus tard par `kiln set deploiement=vps`.
-deploiement:
+# Production on a server of one's own: `vps` adds config/vps/ (Caddy, production stack, switch
+# with rollback, tested backups), scripts/ops/ and docs/operations/. Django backend only, served
+# by podman. Later with `kiln set deploy=vps`.
+deploy:
   type: str
-  help: Déploiement en production ?
+  help: Production deployment?
   choices:
-    Aucun pour l'instant: aucun
-    Serveur VPS (podman, Caddy, sauvegardes): vps
-  default: aucun
+    "None for now": none
+    "VPS (podman, Caddy, backups)": vps
+  default: none
   when: "{{ backend == 'django' }}"
   validator: >-
-    {% if deploiement == 'vps' and backend != 'django' %}Le déploiement VPS est fait pour le backend Django.{% elif deploiement == 'vps' and not podman %}Le déploiement VPS demande les conteneurs : podman=true.{% endif %}
+    {% if deploy == 'vps' and backend != 'django' %}The VPS deployment is made for the Django backend.{% elif deploy == 'vps' and not podman %}The VPS deployment needs containers: podman=true.{% endif %}
 
-vps_hote:
+vps_host:
   type: str
-  help: Connexion SSH du serveur (utilisateur@adresse)
+  help: SSH connection of the server (user@address)
   default: root@203.0.113.10
-  when: "{{ deploiement == 'vps' }}"
+  when: "{{ deploy == 'vps' }}"
 
-domaine_api:
+api_domain:
   type: str
-  help: Domaine public de l'API (Caddy en obtient le certificat TLS)
-  default: "api.{{ nom }}.fr"
-  when: "{{ deploiement == 'vps' }}"
+  help: Public domain of the API (Caddy gets its TLS certificate)
+  default: "api.{{ name }}.example.com"
+  when: "{{ deploy == 'vps' }}"
 
-url_site:
+site_url:
   type: str
-  help: Adresse publique du site, autorisée par CORS et visée par le test de fumée
-  default: "https://www.{{ nom }}.fr"
-  when: "{{ deploiement == 'vps' }}"
+  help: Public address of the site, allowed by CORS and checked by the smoke test
+  default: "https://{{ name }}.example.com"
+  when: "{{ deploy == 'vps' }}"
 
-branche_deploiement:
+deploy_branch:
   type: str
-  help: Branche déployée en production
+  help: Branch deployed to production
   default: develop
-  when: "{{ deploiement == 'vps' }}"
+  when: "{{ deploy == 'vps' }}"
 
-# Front Nuxt sur Vercel : `vercel` ajoute scripts/ops/deploy-frontend.sh, qui ne déploie qu'un
-# commit poussé dont la CI est verte. Activable plus tard par `kiln set front_deploiement=vercel`.
-front_deploiement:
+# Nuxt front on Vercel: `vercel` adds scripts/ops/deploy-frontend.sh, which only deploys a pushed
+# commit whose CI is green. Later with `kiln set frontend_deploy=vercel`.
+frontend_deploy:
   type: str
-  help: Déploiement du front ?
+  help: Frontend deployment?
   choices:
-    Aucun pour l'instant: aucun
-    Vercel: vercel
-  default: aucun
+    "None for now": none
+    "Vercel": vercel
+  default: none
   when: "{{ frontend == 'nuxt' }}"
 
-# Suivi du travail, d'office dans tout repo : docs/backlog/ (skill base:backlog).
-boussole:
+# Work tracking, in every repo: docs/backlog/ (skill kiln:backlog).
+north_star:
   type: str
-  help: L'objectif qui ordonne les priorités de docs/backlog/ (north star)
-  default: "{{ titre }} en service"
+  help: The goal that orders the priorities of docs/backlog/ (north star)
+  default: "{{ title }} in service"
 
-date_creation:
+created:
   type: str
-  help: Date de création du suivi (AAAA-MM-JJ)
+  help: Date the tracking starts (YYYY-MM-DD)
   default: "{{ '%Y-%m-%d' | strftime }}"
 
-# Status line de Claude Code (plugins/base/scripts/statusline.py) : réglages posés en `git config` par
-# `kiln install`, `kiln new` et `kiln set`, jamais à la main.
+# Claude Code's status line (kiln plugin): settings set as `git config statusline.*` by
+# `kiln install`, `kiln new` and `kiln set`, never by hand.
 statusline_ci:
   type: bool
-  help: Afficher l'état de la CI dans la status line de Claude Code ?
+  help: Show the state of CI in Claude Code's status line?
   default: true
 
-url_sante_prod:
+prod_health_url:
   type: str
   help: >-
-    Sonde de santé de la production, qui renvoie {"version": "<sha>"} (vide s'il n'y a pas de
-    production) ; la status line affiche « prod ✓ » ou le retard
+    Health probe of production, answering {"version": "<sha>"} (empty when there is no
+    production); the status line shows "prod ✓" or how far behind it is
   default: ""
+
+# Path separator for directories built from a dotted name (the Java package): a path written in
+# the template cannot hold a "/" inside its braces.
+path_separator:
+  type: str
+  default: "/"
+  when: false

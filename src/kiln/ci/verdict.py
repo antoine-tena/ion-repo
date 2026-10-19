@@ -1,8 +1,9 @@
-"""Verdict de `kiln ci`, gardé en note git sur le commit (`refs/notes/ci`) et poussé sur origin.
+"""Verdict of `kiln ci`, kept as a git note on the commit (`refs/notes/ci`) and pushed to origin.
 
-La première ligne fait foi : `kiln ci : succès` ou `kiln ci : échec`. C'est elle que lit
-`scripts/ops/lib/ci-verte.sh` avant d'autoriser un déploiement. Les lignes suivantes disent quand,
-où, en combien de temps, et surtout quels jobs du `ci.yml` n'ont pas été rejoués.
+The first line is authoritative: `kiln ci: success` or `kiln ci: failure`. It is the one
+`scripts/ops/lib/green-ci.sh` reads before allowing a deployment (the French wording of kiln 0.3,
+`kiln ci : succès`, is still read). The next lines say when, where, how long, and above all which
+jobs of `ci.yml` were not replayed.
 """
 
 import socket
@@ -15,8 +16,10 @@ from kiln.shell import KilnError
 
 NOTES_REF = "refs/notes/ci"
 REMOTE_COPY_REF = "refs/notes/ci-origin"
-SUCCESS_LINE = "kiln ci : succès"
-FAILURE_LINE = "kiln ci : échec"
+SUCCESS_LINE = "kiln ci: success"
+FAILURE_LINE = "kiln ci: failure"
+# Written by kiln 0.3, still found on older commits.
+LEGACY_SUCCESS_LINE = "kiln ci : succès"
 SECONDS_PER_MINUTE = 60
 
 
@@ -43,26 +46,26 @@ class Verdict:
         minutes, seconds = divmod(round(self.duration_seconds), SECONDS_PER_MINUTE)
         lines = [
             SUCCESS_LINE if self.is_success else FAILURE_LINE,
-            f"commit : {self.sha}",
-            f"date : {self.started_at.isoformat(timespec='seconds')}",
-            f"poste : {socket.gethostname()}",
-            f"durée : {minutes} min {seconds:02d} s",
-            "jobs rejoués : " + ", ".join(_outcome_text(outcome) for outcome in self.outcomes),
+            f"commit: {self.sha}",
+            f"date: {self.started_at.isoformat(timespec='seconds')}",
+            f"machine: {socket.gethostname()}",
+            f"duration: {minutes} min {seconds:02d} s",
+            "jobs replayed: " + ", ".join(_outcome_text(outcome) for outcome in self.outcomes),
         ]
         if self.skipped:
             skipped_text = ", ".join(f"{name} ({reason})" for name, reason in self.skipped)
-            lines.append(f"non rejoués : {skipped_text}")
+            lines.append(f"not replayed: {skipped_text}")
         return "\n".join(lines) + "\n"
 
 
 def _outcome_text(outcome: JobOutcome) -> str:
     if outcome.is_success:
         return f"{outcome.name} ok"
-    return f"{outcome.name} ÉCHEC ({outcome.failed_step})"
+    return f"{outcome.name} FAILED ({outcome.failed_step})"
 
 
 def record_verdict(root: Path, verdict: Verdict, should_push: bool) -> None:
-    """Pose la note sur le commit, après avoir repris celles d'origin, puis la pousse."""
+    """Puts the note on the commit, after taking in origin's notes, then pushes it."""
     _merge_remote_notes(root)
     _git(root, "notes", f"--ref={NOTES_REF}", "add", "-f", "-m", verdict.render(), verdict.sha)
     if should_push:
@@ -70,7 +73,7 @@ def record_verdict(root: Path, verdict: Verdict, should_push: bool) -> None:
 
 
 def read_verdict(root: Path, sha: str) -> str | None:
-    """La note de `kiln ci` sur ce commit, origin comprise ; None s'il n'a jamais été rejoué."""
+    """The `kiln ci` note on this commit, origin included; None if it was never replayed."""
     _merge_remote_notes(root)
     completed = subprocess.run(
         ["git", "notes", f"--ref={NOTES_REF}", "show", sha],
@@ -83,7 +86,7 @@ def read_verdict(root: Path, sha: str) -> str | None:
 
 
 def _merge_remote_notes(root: Path) -> None:
-    """Reprend les notes d'origin ; si un commit en a des deux côtés, la locale gagne."""
+    """Takes in origin's notes; when a commit has one on both sides, the local one wins."""
     fetched = subprocess.run(
         ["git", "fetch", "-q", "origin", f"+{NOTES_REF}:{REMOTE_COPY_REF}"],
         cwd=root,
@@ -99,4 +102,4 @@ def _git(root: Path, *arguments: str) -> None:
         ["git", *arguments], cwd=root, capture_output=True, text=True, check=False
     )
     if completed.returncode != 0:
-        raise KilnError(f"échec de `git {' '.join(arguments[:2])}` : {completed.stderr.strip()}")
+        raise KilnError(f"`git {' '.join(arguments[:2])}` failed: {completed.stderr.strip()}")

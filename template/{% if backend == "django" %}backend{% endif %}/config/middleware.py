@@ -1,10 +1,10 @@
-"""En-tête Permissions-Policy ([EN-TETES]), que Django ne pose pas lui-même."""
+"""Permissions-Policy header ([SECURITY-HEADERS]), which Django does not set itself."""
 
 from collections.abc import Callable
 
 from django.http import HttpRequest, HttpResponse
 
-# Fonctions du navigateur refusées à toutes les pages : à ouvrir une par une, au besoin.
+# Browser features refused to every page: open them one by one, when needed.
 PERMISSIONS_POLICY = "camera=(), geolocation=(), microphone=(), payment=(), usb=()"
 
 

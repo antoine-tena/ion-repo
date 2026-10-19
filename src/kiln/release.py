@@ -1,14 +1,15 @@
-"""`kiln version` : où en sont les versions de kiln, et quoi sortir ensuite (dépôt de kiln).
+"""`kiln version`: where kiln's releases stand, and what to ship next (kiln's own repo).
 
-- **Numéro** (CLAUDE.md, Versions) : en 0.x, chaque version monte le correctif, cassante
-  comprise, comme Claude Code ; la mineure ne monte que pour une étape décidée
-  (`kiln version --minor`). À partir de 1.0, semver strict, comme Next.js : cassant → majeure,
-  `feat` → mineure, le reste → correctif.
-- **Promotion** : une candidate (`vX.Y.Z-rc.N`, la dernière de sa version) devient publique quand
-  une candidate d'une version plus récente existe : la suivante prête, pas un délai, évite le
-  correctif d'urgence. Les repos du dossier de code disent qui l'a déjà adoptée.
+- **Number** (CLAUDE.md, Versions): in 0.x, each release bumps the patch, breaking ones
+  included, like Claude Code; the minor only moves for a decided milestone
+  (`kiln version --minor`). From 1.0, strict semver, like Next.js: breaking → major,
+  `feat` → minor, the rest → patch.
+- **Promotion**: a candidate (`vX.Y.Z-rc.N`, the last of its version) goes public when a
+  candidate of a newer version exists and GitHub's CI of its commit is green: the next one
+  ready, not a delay, avoids the emergency fix. The repos of the code folder tell who already
+  took it.
 
-Lecture seule : les tags et les fusions se font par la skill `base:version` (CLAUDE.md, Versions).
+Read only: `kiln version cut` and `kiln version promote` (shipping.py) tag and merge.
 """
 
 import datetime
@@ -19,16 +20,17 @@ from pathlib import Path
 
 from packaging.version import Version
 
-from kiln import ui
+from kiln import github_ci, ui
 from kiln.config import load_config
 from kiln.fleet import find_repos
 from kiln.shell import KilnError, capture
 from kiln.versions import release_version
 
-# Jours d'usage d'une candidate avant promotion : plus court en 0.x, où tout bouge vite.
 BREAKING_SUBJECT = re.compile(r"^\w+(\([^)]*\))?!:")
 FEATURE_SUBJECT = re.compile(r"^feat(\([^)]*\))?:")
 INTEGRATION_REF = "origin/develop"
+BACKLOG = Path("docs") / "backlog" / "backlog.md"
+PLANNED_RELEASE = re.compile(r"^### v(\d+\.\d+\.\d+) · (.+)$")
 VERSION_MODULE = Path("src") / "kiln" / "versions.py"
 
 
@@ -41,44 +43,75 @@ class Tag:
 
 def show_release_status(root: Path, *, milestone: bool = False) -> None:
     if not (root / VERSION_MODULE).is_file():
-        raise KilnError("kiln version se lance dans le dépôt de kiln")
+        raise KilnError("kiln version runs in the kiln repo")
     capture(["git", "fetch", "-q", "--tags", "origin"], root)
     tags = read_tags(root)
     public = [tag for tag in tags if not tag.version.is_prerelease]
     candidates = latest_candidates(tags)
     now = datetime.datetime.now(datetime.UTC)
-    print(f"\n  {ui.paint('PUBLIQUE', ui.FIRE, bold=True)}")
-    print(f"    {public[-1].name if public else ui.paint('aucune encore', ui.STONE)}")
+    print(f"\n  {ui.paint('PUBLIC', ui.FIRE, bold=True)}")
+    print(f"    {public[-1].name if public else ui.paint('none yet', ui.STONE)}")
     print(f"\n  {ui.paint('CANDIDATES', ui.FIRE, bold=True)}")
     if not candidates:
-        print(f"    {ui.paint('aucune', ui.STONE)}")
+        print(f"    {ui.paint('none', ui.STONE)}")
     adopted = _adoption()
     for candidate in candidates:
-        verdict, ready = promotion_verdict(candidate, candidates)
+        ci = github_ci.verdict(root, capture(["git", "rev-list", "-n", "1", candidate.name], root))
+        verdict, ready = promotion_verdict(candidate, candidates, ci)
         mark = ui.paint("✓", ui.MOSS) if ready else ui.paint("·", ui.STONE)
         age = (now - candidate.created).days
         users = adopted.get(candidate.name, [])
         print(
-            f"    {mark} {ui.paint(f'{candidate.name:<16}', bold=True)} {age} j  {verdict}"
+            f"    {mark} {ui.paint(f'{candidate.name:<16}', bold=True)} {age} d  {verdict}"
             + (ui.paint(f"  · {', '.join(users)}", ui.STONE) if users else "")
         )
     last = tags[-1] if tags else None
     subjects = _subjects_since(root, last.name if last else None)
     baseline = last.version if last else _package_version(root)
     proposed = next_version(baseline, subjects, milestone=milestone)
-    print(f"\n  {ui.paint('PROCHAINE', ui.FIRE, bold=True)}")
+    print(f"\n  {ui.paint('NEXT', ui.FIRE, bold=True)}")
     if subjects:
-        detail = f"{len(subjects)} commits depuis {last.name}" if last else "première version"
+        detail = f"{len(subjects)} commits since {last.name}" if last else "first release"
         print(f"    v{proposed}-rc.1  {ui.paint(f'({detail})', ui.STONE)}")
         if Version(proposed).major == 0 and not milestone:
-            print(f"    {ui.paint('une étape ? kiln version --minor', ui.STONE)}")
+            print(f"    {ui.paint('a milestone? kiln version --minor', ui.STONE)}")
     else:
-        print(f"    {ui.paint('rien de neuf sur develop', ui.STONE)}")
+        print(f"    {ui.paint('nothing new on develop', ui.STONE)}")
+    cut = {Version(tag.version.base_version) for tag in tags}
+    plan = planned_release(root, cut)
+    if plan:
+        number, title, left = plan
+        print(f"\n  {ui.paint('PLAN', ui.FIRE, bold=True)}  v{number} · {title}")
+        for ticket in left:
+            print(f"    {ui.paint('·', ui.STONE)} {ticket}")
+        if not left:
+            print(f"    {ui.paint('nothing left: kiln version cut', ui.MOSS)}")
     print()
 
 
+def planned_release(root: Path, cut: set[Version]) -> tuple[str, str, list[str]] | None:
+    """The first release of the backlog's `🚀 Releases` plan not cut yet: its number, its
+    title and the tickets still listed under it (a closed ticket leaves the plan)."""
+    backlog = root / BACKLOG
+    if not backlog.is_file():
+        return None
+    section = backlog.read_text("utf-8").split("\n## 🚀 Releases\n", 1)
+    if len(section) < 2:
+        return None
+    current: tuple[str, str, list[str]] | None = None
+    for line in section[1].split("\n## ", 1)[0].splitlines():
+        if match := PLANNED_RELEASE.match(line):
+            if current:
+                return current
+            if Version(match.group(1)) not in cut:
+                current = (match.group(1), match.group(2), [])
+        elif current and line.startswith("- T-"):
+            current[2].append(line.removeprefix("- "))
+    return current
+
+
 def read_tags(root: Path) -> list[Tag]:
-    """Tags de version du dépôt, du plus ancien au plus récent."""
+    """Release tags of the repo, oldest first."""
     listing = capture(
         ["git", "tag", "-l", "v*", "--format=%(refname:short) %(creatordate:iso-strict)"], root
     )
@@ -92,7 +125,7 @@ def read_tags(root: Path) -> list[Tag]:
 
 
 def latest_candidates(tags: list[Tag]) -> list[Tag]:
-    """Dernière candidate de chaque version pas encore promue."""
+    """Last candidate of each version not yet promoted."""
     promoted = {tag.version for tag in tags if not tag.version.is_prerelease}
     latest: dict[Version, Tag] = {}
     for tag in tags:
@@ -103,18 +136,22 @@ def latest_candidates(tags: list[Tag]) -> list[Tag]:
     return [latest[final] for final in sorted(latest)]
 
 
-def promotion_verdict(candidate: Tag, candidates: list[Tag]) -> tuple[str, bool]:
+def promotion_verdict(candidate: Tag, candidates: list[Tag], ci: str) -> tuple[str, bool]:
+    """Ready when a newer candidate exists and GitHub's CI of this one is green (`ci`, from
+    `github_ci.verdict`)."""
+    if ci != github_ci.SUCCESS:
+        return f"CI not green ({ci}): not promotable", False
     if not any(other.version > candidate.version for other in candidates):
-        return "attend une version suivante prête", False
-    return f"prête : promouvoir en v{candidate.version.base_version}", True
+        return "waiting for a next release ready", False
+    return f"ready: promote to v{candidate.version.base_version}", True
 
 
 def next_version(last: Version, subjects: list[str], *, milestone: bool = False) -> str:
-    """Numéro de la prochaine version, d'après les commits depuis `last` (la dernière version,
-    ou celle de `pyproject.toml` avant la première). En 0.x, le correctif suivant, sauf pour une
-    étape (`milestone`) ; à partir de 1.0, le semver strict."""
-    # Une candidate compte comme sa version : ses correctifs à elle vont en `-rc.N+1` sur sa
-    # branche, ce qui vient de develop prépare la version d'après.
+    """Number of the next release, from the commits since `last` (the last release, or the
+    `pyproject.toml` version before the first). In 0.x, the next patch, except for a milestone
+    (`milestone`); from 1.0, strict semver."""
+    # A candidate counts as its version: its own fixes go to `-rc.N+1` on its branch, what
+    # comes from develop prepares the release after.
     major, minor, patch = Version(last.base_version).release[:3]
     is_breaking = any(BREAKING_SUBJECT.match(s) or "BREAKING CHANGE" in s for s in subjects)
     has_feature = any(FEATURE_SUBJECT.match(s) for s in subjects)
@@ -126,16 +163,16 @@ def next_version(last: Version, subjects: list[str], *, milestone: bool = False)
 
 
 def _package_version(root: Path) -> Version:
-    """Version de `pyproject.toml`, point de départ tant qu'aucune version n'est taguée ; la
-    première est cassante par principe (rien ne la précède publiquement)."""
+    """Version of `pyproject.toml`, the starting point while no release is tagged; the first
+    one is breaking by principle (nothing precedes it publicly)."""
     project = tomllib.loads((root / "pyproject.toml").read_text())["project"]
     return Version(str(project["version"]))
 
 
 def _subjects_since(root: Path, tag: str | None) -> list[str]:
     if tag is None:
-        # Avant la première version, tout est nouveau : elle compte comme cassante.
-        return ["feat!: première version"]
+        # Before the first release, everything is new: it counts as breaking.
+        return ["feat!: first release"]
     log = capture(
         ["git", "log", "--no-merges", "--format=%s%n%b%x00", f"{tag}..{INTEGRATION_REF}"], root
     )
@@ -143,7 +180,7 @@ def _subjects_since(root: Path, tag: str | None) -> list[str]:
 
 
 def _adoption() -> dict[str, list[str]]:
-    """Version du modèle de chaque repo du dossier de code : qui a adopté quelle candidate."""
+    """Template version of each repo of the code folder: who took which candidate."""
     code_dir = load_config().code_dir
     adopted: dict[str, list[str]] = {}
     if not code_dir.is_dir():

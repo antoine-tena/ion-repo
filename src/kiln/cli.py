@@ -1,4 +1,4 @@
-"""kiln : l'atelier de Claude Code. Génère un projet, règle ses paramètres et le tient à jour."""
+"""kiln: Claude Code's workshop. Generates a project, tunes its settings and keeps it up to date."""
 
 import argparse
 import re
@@ -19,34 +19,46 @@ if TYPE_CHECKING:
 EXIT_FAILURE = 1
 PROJECT_NAME = re.compile(r"[a-z][a-z0-9-]*")
 SIZES = ("spark", "ember", "flame", "blaze")
-PROJECT_TYPES = ("app", "api", "site", "tableau", "analyse", "outil")
-BACKENDS = ("django", "fastapi", "data", "cli", "java", "aucun")
-FRONTENDS = ("nuxt", "next", "astro", "streamlit", "dash", "aucun")
+PROJECT_TYPES = ("app", "api", "site", "dashboard", "analysis", "cli")
+BACKENDS = ("django", "fastapi", "data", "cli", "java", "none")
+FRONTENDS = ("nuxt", "next", "astro", "streamlit", "dash", "none")
+LANGUAGES = ("en", "fr")
 
 
-# Écran d'accueil : commandes par section ; le rôle de chacune vient de son aide argparse.
+# Home screen: commands by section; the role of each comes from its argparse help.
 COMMAND_GROUPS = (
-    ("Projet", ("new", "adopt", "install", "publish", "update", "set", "waive")),
-    ("Au quotidien", ("dev", "check", "ci", "contrat", "doctor", "completion")),
-    ("Tous les repos", ("status", "update --all", "version")),
+    ("Project", ("new", "adopt", "install", "publish", "update", "set", "waive")),
+    ("Day to day", ("dev", "check", "ci", "contract", "doctor", "completion")),
+    ("All repos", ("status", "update --all", "version")),
 )
-FLEET_UPDATE_ROLE = "mettre à jour chaque repo kiln, fusion directe"
+FLEET_UPDATE_ROLE = "update every kiln repo, merged straight away"
 EXAMPLES = (
     "kiln new atelier --size ember --backend fastapi",
     "kiln update --major",
     "kiln set podman=true",
-    "kiln set equipe=alice,bob     # hors d'un repo : réglages du poste",
+    "kiln set --global             # this machine's settings",
 )
+# French names of kiln 0.3, still accepted with a warning until the next minor release.
+LEGACY_COMMANDS = {"contrat": "contract"}
+LEGACY_OPTIONS = {
+    "ci": {
+        "--sauter": "--skip",
+        "--sans-pousser": "--no-push",
+        "--garder": "--keep",
+        "--statut": "--status",
+    },
+    "set": {"--poste": "--global"},
+}
 NO_RECAP_COMMANDS = frozenset({"dev", "ci", "status", "doctor", "version", "waive"})
 HELP_FLAGS: tuple[list[str], ...] = ([], ["-h"], ["--help"])
 
 
 class _VersionAction(argparse.Action):
-    """`--version`, calculée seulement quand on la demande : `installed_version()` lance git
-    sur une installation depuis un dossier, ce que les autres commandes n'ont pas à payer."""
+    """`--version`, computed only when asked: `installed_version()` runs git on an install
+    from a folder, a cost the other commands need not pay."""
 
     def __init__(self, option_strings: Sequence[str], dest: str, **_: object) -> None:
-        super().__init__(option_strings, dest, nargs=0, help="afficher la version de kiln")
+        super().__init__(option_strings, dest, nargs=0, help="show the version of kiln")
 
     def __call__(
         self,
@@ -59,48 +71,79 @@ class _VersionAction(argparse.Action):
         parser.exit()
 
 
+def modernize(arguments: Sequence[str]) -> list[str]:
+    """The arguments with the names of kiln 0.3 replaced by today's, each one flagged."""
+    modern = list(arguments)
+    if modern and modern[0] in LEGACY_COMMANDS:
+        modern[0] = _flag_legacy(modern[0], LEGACY_COMMANDS[modern[0]])
+    options = LEGACY_OPTIONS.get(modern[0], {}) if modern else {}
+    for index, argument in enumerate(modern[1:], start=1):
+        name, equals, value = argument.partition("=")
+        if name in options:
+            modern[index] = _flag_legacy(name, options[name]) + equals + value
+    return modern
+
+
+def _flag_legacy(old: str, new: str) -> str:
+    print(
+        f"kiln: `{old}` is now `{new}`; the old name goes away at the next minor release.",
+        file=sys.stderr,
+    )
+    return new
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="kiln", description=__doc__)
     parser.add_argument("--version", action=_VersionAction)
     commands = parser.add_subparsers(dest="command")
     _add_new_command(commands)
-    adopt_parser = commands.add_parser("adopt", help="faire suivre kiln à un repo existant")
-    adopt_parser.add_argument("--size", choices=SIZES, help="envergure du projet (défaut : ember)")
-    adopt_parser.add_argument("--template", help="source du modèle (chemin ou URL git)")
-    commands.add_parser("install", help="préparer le poste après un clone")
-    commands.add_parser("publish", help="créer le dépôt GitHub privé et protéger ses branches")
+    adopt_parser = commands.add_parser("adopt", help="bring an existing repo under kiln")
+    adopt_parser.add_argument("--size", choices=SIZES, help="size of the project (default: ember)")
+    adopt_parser.add_argument("--template", help="template source (path or git URL)")
+    commands.add_parser("install", help="set up this machine after a clone")
+    commands.add_parser("publish", help="create the private GitHub repo and protect its branches")
     _add_update_command(commands)
-    dev_parser = commands.add_parser("dev", help="lancer le projet en local")
-    dev_parser.add_argument("--containers", action="store_true", help="toute la pile dans podman")
-    commands.add_parser("check", help="lancer les contrôles du projet")
+    dev_parser = commands.add_parser("dev", help="run the project locally")
+    dev_parser.add_argument("--containers", action="store_true", help="the whole stack in podman")
+    commands.add_parser("check", help="run the project's checks")
     _add_ci_command(commands)
-    commands.add_parser("contrat", help="régénérer openapi.json et les types du front")
+    commands.add_parser("contract", help="regenerate openapi.json and the frontend types")
     version_parser = commands.add_parser(
-        "version", help="versions de kiln : publique, candidates, prochaine"
+        "version", help="versions of kiln: public, candidates, next"
     )
     version_parser.add_argument(
-        "--minor", action="store_true", help="la prochaine est une étape : monter la mineure"
+        "action",
+        nargs="?",
+        choices=["cut", "promote"],
+        help="cut: release branch, then candidate; promote: the candidate ready, made public",
     )
-    commands.add_parser("doctor", help="diagnostiquer le poste et le repo, avec les corrections")
-    status_parser = commands.add_parser("status", help="état des repos kiln du dossier de code")
-    status_parser.add_argument("--all", action="store_true", help="(par défaut) tous les repos")
+    version_parser.add_argument("number", nargs="?", help="promote: the version (vX.Y.Z)")
+    version_parser.add_argument(
+        "--minor", action="store_true", help="the next one is a milestone: bump the minor"
+    )
+    commands.add_parser("doctor", help="diagnose this machine and the repo, with the fixes")
+    status_parser = commands.add_parser("status", help="state of the kiln repos of the code folder")
+    status_parser.add_argument("--all", action="store_true", help="(default) every repo")
     set_parser = commands.add_parser(
-        "set", help="afficher ou changer les paramètres du repo (hors d'un repo : du poste)"
+        "set", help="show or change the repo's settings (outside a repo: this machine's)"
     )
-    set_parser.add_argument("assignments", nargs="*", metavar="clé=valeur")
+    set_parser.add_argument("assignments", nargs="*", metavar="key=value")
     set_parser.add_argument(
-        "--poste", action="store_true", help="réglages du poste, même depuis un repo"
+        "--global",
+        dest="machine",
+        action="store_true",
+        help="this machine's settings, even from a repo",
     )
     _add_waive_command(commands)
     completion_parser = commands.add_parser(
-        "completion", help="script de complétion du shell (eval dans ~/.bashrc)"
+        "completion", help="shell completion script (eval it in ~/.bashrc)"
     )
-    completion_parser.add_argument("shell", choices=["bash"], help="shell visé")
+    completion_parser.add_argument("shell", choices=["bash"], help="target shell")
     return parser
 
 
 def generate_bash_completion() -> str:
-    """Script de complétion bash tiré du parser : commandes, puis options et choix de chacune."""
+    """Bash completion script drawn from the parser: commands, then their options and choices."""
     subparsers = next(
         action
         for action in build_parser()._actions
@@ -134,67 +177,95 @@ _kiln_completion() {{
 complete -F _kiln_completion kiln"""
 
 
+def _dispatch_version(arguments: argparse.Namespace, root: Path) -> None:
+    if arguments.action == "cut":
+        from kiln import shipping
+
+        shipping.cut(root, milestone=arguments.minor)
+    elif arguments.action == "promote":
+        from kiln import shipping
+
+        shipping.promote(root, arguments.number)
+    else:
+        from kiln import release
+
+        release.show_release_status(root, milestone=arguments.minor)
+
+
 def _add_waive_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
     waive_parser = commands.add_parser(
-        "waive", help="déroger à une règle de kiln, ou figer un fichier (sans argument : lister)"
+        "waive", help="waive a rule of kiln, or freeze a file (no argument: list)"
     )
     waive_parser.add_argument(
-        "target", nargs="?", metavar="RÈGLE|fichier", help="identifiant de règle, ou fichier généré"
+        "target", nargs="?", metavar="RULE|file", help="rule identifier, or generated file"
     )
-    waive_parser.add_argument("--reason", default="", help="pourquoi (obligatoire)")
-    waive_parser.add_argument("--paths", nargs="+", default=[], help="motifs git couverts")
+    waive_parser.add_argument("--reason", default="", help="why (required)")
+    waive_parser.add_argument("--paths", nargs="+", default=[], help="git patterns covered")
     waive_parser.add_argument(
-        "--renew", action="store_true", help="renouveler : palier suivant, raison redemandée"
+        "--renew", action="store_true", help="renew: next step, reason asked again"
     )
-    waive_parser.add_argument("--permanent", action="store_true", help="écart sans échéance")
-    waive_parser.add_argument("--upstream", default="", help="issue ou PR ouverte chez kiln")
+    waive_parser.add_argument("--permanent", action="store_true", help="waiver with no deadline")
+    waive_parser.add_argument("--upstream", default="", help="issue or PR opened on kiln")
 
 
 def _add_new_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
-    new_parser = commands.add_parser("new", help="générer un nouveau projet complet")
+    new_parser = commands.add_parser("new", help="generate a complete new project")
     new_parser.add_argument(
-        "directory", type=Path, nargs="?", help="dossier du projet (sinon demandé : nom du projet)"
+        "directory", type=Path, nargs="?", help="project folder (otherwise asked: project name)"
     )
-    new_parser.add_argument("--name", help="nom court (par défaut : nom du dossier)")
-    new_parser.add_argument("--title", help="titre affiché")
-    new_parser.add_argument("--description", help="une phrase sur le projet")
-    new_parser.add_argument("--owner", help="compte GitHub propriétaire")
-    new_parser.add_argument("--team", help="logins GitHub séparés par des virgules")
-    new_parser.add_argument("--size", choices=SIZES, help="envergure du projet")
-    new_parser.add_argument("--type", dest="project_type", choices=PROJECT_TYPES, help="conseil")
-    new_parser.add_argument("--backend", choices=BACKENDS, help="backend (sinon conseillé)")
-    new_parser.add_argument("--frontend", choices=FRONTENDS, help="frontend (sinon conseillé)")
-    new_parser.add_argument("--podman", action="store_true", help="conteneurs podman")
+    new_parser.add_argument("--name", help="short name (default: folder name)")
+    new_parser.add_argument("--title", help="displayed title")
+    new_parser.add_argument("--description", help="one sentence about the project")
+    new_parser.add_argument("--owner", help="owning GitHub account")
+    new_parser.add_argument("--team", help="comma-separated GitHub logins")
+    new_parser.add_argument("--size", choices=SIZES, help="size of the project")
     new_parser.add_argument(
-        "--vps", metavar="UTILISATEUR@ADRESSE", help="déploiement sur ce serveur (Django + podman)"
+        "--type", dest="project_type", choices=PROJECT_TYPES, help="what you are building"
     )
-    new_parser.add_argument("--goal", help="boussole (north star) du suivi docs/backlog/")
-    new_parser.add_argument("--prod-url", help="sonde de santé de la production (status line)")
+    new_parser.add_argument("--backend", choices=BACKENDS, help="backend (otherwise suggested)")
+    new_parser.add_argument("--frontend", choices=FRONTENDS, help="frontend (otherwise suggested)")
+    new_parser.add_argument("--podman", action="store_true", help="podman containers")
     new_parser.add_argument(
-        "--no-github", action="store_true", help="ne pas créer le dépôt GitHub (créé par défaut)"
+        "--vps", metavar="USER@HOST", help="deploy to this server (Django + podman)"
     )
-    new_parser.add_argument("--no-install", action="store_true", help="ne rien installer")
-    new_parser.add_argument("--template", help="source du modèle (chemin ou URL git)")
+    new_parser.add_argument("--goal", help="north star of docs/backlog/")
+    new_parser.add_argument("--language", choices=LANGUAGES, help="language of the team (en, fr)")
+    new_parser.add_argument("--prod-url", help="health probe of production (status line)")
+    new_parser.add_argument(
+        "--no-github",
+        action="store_true",
+        help="do not create the GitHub repo (created by default)",
+    )
+    new_parser.add_argument("--no-install", action="store_true", help="install nothing")
+    new_parser.add_argument("--template", help="template source (path or git URL)")
+    new_parser.add_argument(
+        "--all-questions", action="store_true", help="ask every question of the template"
+    )
 
 
 def _add_ci_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
-    ci_parser = commands.add_parser("ci", help="rejouer la CI d'un commit sur le poste")
-    ci_parser.add_argument("revision", nargs="?", default="HEAD", help="commit (défaut : HEAD)")
+    ci_parser = commands.add_parser("ci", help="replay a commit's CI on this machine")
+    ci_parser.add_argument("revision", nargs="?", default="HEAD", help="commit (default: HEAD)")
     ci_parser.add_argument(
-        "--sauter", action="append", default=[], metavar="JOB", help="job du ci.yml à écarter"
+        "--skip", action="append", default=[], metavar="JOB", help="job of ci.yml to leave out"
     )
-    ci_parser.add_argument("--sans-pousser", action="store_true", help="note gardée en local")
-    ci_parser.add_argument("--garder", action="store_true", help="garder le worktree du commit")
-    ci_parser.add_argument("--statut", action="store_true", help="verdict seul, sans rejouer")
+    ci_parser.add_argument("--no-push", action="store_true", help="keep the note local")
+    ci_parser.add_argument("--keep", action="store_true", help="keep the commit's worktree")
+    ci_parser.add_argument("--status", action="store_true", help="verdict only, no replay")
 
 
 def _add_update_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
-    update_parser = commands.add_parser("update", help="mettre à jour modèle et dépendances")
-    update_parser.add_argument("--no-template", action="store_true", help="garder l'architecture")
-    update_parser.add_argument("--no-deps", action="store_true", help="garder les dépendances")
-    update_parser.add_argument("--major", action="store_true", help="versions majeures comprises")
+    update_parser = commands.add_parser("update", help="update the template and dependencies")
+    update_parser.add_argument("--no-template", action="store_true", help="keep the architecture")
+    update_parser.add_argument("--no-deps", action="store_true", help="keep the dependencies")
+    update_parser.add_argument("--major", action="store_true", help="major versions included")
     update_parser.add_argument(
-        "--all", action="store_true", help="tous les repos kiln, fusion directe"
+        "--all", action="store_true", help="every kiln repo, merged straight away"
+    )
+    update_parser.add_argument(
+        "--rehearse",
+        action="store_true",
+        help="play the update on a throwaway clone first, the repo left untouched",
     )
 
 
@@ -202,14 +273,14 @@ def _new_project_request(arguments: argparse.Namespace) -> new.NewProjectRequest
     from kiln import new
 
     directory = arguments.directory or Path(arguments.name or _ask_project_name())
-    answers: dict[str, object] = {"nom": arguments.name or directory.name}
+    answers: dict[str, object] = {"name": arguments.name or directory.name}
     if arguments.title:
-        answers["titre"] = arguments.title
+        answers["title"] = arguments.title
     if arguments.description:
         answers["description"] = arguments.description
     for key, value in (
-        ("envergure", arguments.size),
-        ("type_projet", arguments.project_type),
+        ("size", arguments.size),
+        ("project_type", arguments.project_type),
         ("backend", arguments.backend),
         ("frontend", arguments.frontend),
     ):
@@ -218,80 +289,84 @@ def _new_project_request(arguments: argparse.Namespace) -> new.NewProjectRequest
     if arguments.podman:
         answers["podman"] = True
     if arguments.vps:
-        answers.update(deploiement="vps", vps_hote=arguments.vps)
+        answers.update(deploy="vps", vps_host=arguments.vps)
     if arguments.goal:
-        answers["boussole"] = arguments.goal
+        answers["north_star"] = arguments.goal
+    if arguments.language:
+        answers["language"] = arguments.language
     if arguments.prod_url:
-        answers["url_sante_prod"] = arguments.prod_url
+        answers["prod_health_url"] = arguments.prod_url
     if arguments.owner:
-        answers["proprietaire"] = arguments.owner
+        answers["owner"] = arguments.owner
     if arguments.team:
-        answers["equipe"] = [login.strip() for login in arguments.team.split(",")]
+        answers["team"] = [login.strip() for login in arguments.team.split(",")]
+    if not arguments.all_questions:
+        from kiln import questions
+
+        answers = questions.ask_essentials(answers)
     return new.NewProjectRequest(
         destination=directory,
         answers=answers,
         template=arguments.template,
         should_install=not arguments.no_install,
         should_publish=not arguments.no_github,
+        all_questions=arguments.all_questions,
     )
 
 
 def _ask_project_name() -> str:
-    """`kiln new` sans dossier : le nom est demandé, le projet est créé dans le dossier courant."""
+    """`kiln new` without a folder: the name is asked, the project lands in the current folder."""
     if not sys.stdin.isatty():
-        raise KilnError("kiln new <dossier> : le dossier du projet est requis hors terminal")
+        raise KilnError("kiln new <folder>: the project folder is required outside a terminal")
     while True:
-        name = input("Nom du projet (minuscules, chiffres, tirets) : ").strip()
+        name = input("Project name (lowercase, digits, dashes): ").strip()
         if PROJECT_NAME.fullmatch(name):
             return name
-        print("Minuscules, chiffres et tirets seulement, en commençant par une lettre.")
+        print("Lowercase letters, digits and dashes only, starting with a letter.")
 
 
 BANNER_ACTIONS = {
-    "new": "nouveau projet",
+    "new": "new project",
     "adopt": "adoption",
-    "install": "installation",
-    "update": "mise à jour",
-    "status": "état des repos",
-    "doctor": "diagnostic",
+    "install": "install",
+    "update": "update",
+    "status": "state of the repos",
+    "doctor": "diagnosis",
 }
 
 
-def dispatch(arguments: argparse.Namespace) -> None:
-    """Lance la commande ; chaque module est importé à la demande (copier, que tirent `new` et
-    `update`, coûte à lui seul 0,4 s, que `status`, `doctor` ou `--version` n'ont pas à payer)."""
+def dispatch(arguments: argparse.Namespace) -> list[str]:
+    """Runs the command; each module is imported on demand (copier, pulled by `new` and
+    `update`, costs 0.4 s on its own, which `status`, `doctor` or `--version` need not pay).
+    Returns the next steps to show after the recap, if any."""
     if arguments.command == "completion":
         print(generate_bash_completion())
-        return
+        return []
     _show_banner(arguments)
     if arguments.command == "new":
         from kiln import new
 
-        new.create_project(_new_project_request(arguments))
-        return
+        request = _new_project_request(arguments)
+        return new.next_steps(request, new.create_project(request))
     if arguments.command == "doctor":
         from kiln import doctor
 
         doctor.run_doctor(Path.cwd())
-        return
-    if arguments.command == "version":
-        from kiln import release
-
-        release.show_release_status(repo_root(Path.cwd()), milestone=arguments.minor)
-        return
-    if arguments.command == "status" or (arguments.command == "update" and arguments.all):
+    elif arguments.command == "version":
+        _dispatch_version(arguments, repo_root(Path.cwd()))
+    elif arguments.command == "status" or (arguments.command == "update" and arguments.all):
         _dispatch_fleet(arguments)
-        return
-    if arguments.command == "set" and (arguments.poste or not _is_in_repo()):
-        from kiln import poste
+    elif arguments.command == "set" and (arguments.machine or not _is_in_repo()):
+        from kiln import machine
 
-        poste.run_poste(arguments.assignments)
-        return
-    _dispatch_in_repo(arguments, _repo_root_or_hint())
+        machine.run_machine(arguments.assignments)
+    else:
+        _dispatch_in_repo(arguments, _repo_root_or_hint())
+    return []
 
 
 def _dispatch_in_repo(arguments: argparse.Namespace, root: Path) -> None:
-    """Commandes qui travaillent dans le repo courant."""
+    """Commands that work in the current repo."""
     command = arguments.command
     if command == "adopt":
         from kiln import adopt
@@ -307,6 +382,12 @@ def _dispatch_in_repo(arguments: argparse.Namespace, root: Path) -> None:
         from kiln import new
 
         new.publish_project(root)
+    elif command == "update" and arguments.rehearse:
+        from kiln import rehearsal
+
+        rehearsal.rehearse_project(
+            root, should_update_deps=not arguments.no_deps, allow_major=arguments.major
+        )
     elif command == "update":
         from kiln import update
 
@@ -326,7 +407,7 @@ def _dispatch_in_repo(arguments: argparse.Namespace, root: Path) -> None:
         check.check_project(root)
     elif command == "ci":
         _dispatch_ci(root, arguments)
-    elif command == "contrat":
+    elif command == "contract":
         from kiln import contract
         from kiln.stack import load_stack
 
@@ -351,7 +432,7 @@ def _is_in_repo() -> bool:
 
 
 def _repo_root_or_hint() -> Path:
-    """Racine du repo courant ; hors d'un repo, l'erreur dit où aller et quoi lancer d'ici."""
+    """Root of the current repo; outside one, the error says where to go and what to run here."""
     try:
         return repo_root(Path.cwd())
     except KilnError:
@@ -363,20 +444,21 @@ def _repo_root_or_hint() -> Path:
             if code_dir.is_dir()
             else []
         )
-        repos_line = f" Repos kiln de {code_dir} : {', '.join(names)}." if names else ""
+        repos_line = f" kiln repos in {code_dir}: {', '.join(names)}." if names else ""
         raise KilnError(
-            f"{Path.cwd()} n'est pas dans un repo : s'y placer d'abord (cd <repo>).{repos_line} "
-            "D'ici : kiln status, kiln update --all, kiln set (réglages du poste), kiln new."
+            f"{Path.cwd()} is not in a repo: go into one first (cd <repo>).{repos_line} "
+            "From here: kiln status, kiln update --all, kiln set (this machine's settings), "
+            "kiln new."
         ) from None
 
 
 def _show_banner(arguments: argparse.Namespace) -> None:
-    """Bannière des commandes longues ; les repos de la flotte sont dans le dossier de code."""
+    """Banner of the long commands; the fleet's repos are in the code folder."""
     action = BANNER_ACTIONS.get(arguments.command)
     if action is None:
         return
     if arguments.command in ("new", "status", "doctor") or getattr(arguments, "all", False):
-        banner.show_banner(action if arguments.command != "update" else "mise à jour des repos")
+        banner.show_banner(action if arguments.command != "update" else "update of the repos")
         return
     banner.show_banner(action, _repo_root_or_hint())
 
@@ -384,18 +466,18 @@ def _show_banner(arguments: argparse.Namespace) -> None:
 def _dispatch_ci(root: Path, arguments: argparse.Namespace) -> None:
     from kiln import ci
 
-    if arguments.statut:
+    if arguments.status:
         if not ci.show_verdict(root, arguments.revision):
             sys.exit(EXIT_FAILURE)
         return
-    skipped_jobs = frozenset(arguments.sauter)
+    skipped_jobs = frozenset(arguments.skip)
     ci.require_known_jobs(root, skipped_jobs)
     verdict = ci.run_local_ci(
         root,
         arguments.revision,
         skipped_jobs,
-        should_push=not arguments.sans_pousser,
-        should_keep=arguments.garder,
+        should_push=not arguments.no_push,
+        should_keep=arguments.keep,
     )
     print("\n" + verdict.render(), end="")
     if not verdict.is_success:
@@ -429,7 +511,7 @@ def _dispatch_fleet(arguments: argparse.Namespace) -> None:
     if arguments.command == "status":
         fleet.show_status(code_dir)
     else:
-        fleet.update_all(code_dir, allow_major=arguments.major)
+        fleet.update_all(code_dir, allow_major=arguments.major, rehearse=arguments.rehearse)
 
 
 def show_home(parser: argparse.ArgumentParser) -> None:
@@ -452,20 +534,22 @@ def main() -> None:
         if sys.argv[1:] in HELP_FLAGS:
             show_home(parser)
             return
-        arguments = parser.parse_args()
+        arguments = parser.parse_args(modernize(sys.argv[1:]))
         started = time.monotonic()
         try:
-            dispatch(arguments)
+            steps = dispatch(arguments)
         except KilnError:
             _recap(arguments, started, succeeded=False)
             raise
         _recap(arguments, started, succeeded=True)
+        if steps:
+            ui.panel("Next steps", steps)
     except KilnError as error:
         ui.error(str(error))
         sys.exit(EXIT_FAILURE)
 
 
 def _recap(arguments: argparse.Namespace, started: float, *, succeeded: bool) -> None:
-    """Bilan des commandes à étapes ; `dev` tourne jusqu'à l'arrêt, `ci` a son verdict."""
+    """Recap of the commands with steps; `dev` runs until stopped, `ci` has its verdict."""
     if arguments.command not in NO_RECAP_COMMANDS:
         ui.recap(arguments.command, started, succeeded=succeeded)

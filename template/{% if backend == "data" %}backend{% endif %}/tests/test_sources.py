@@ -23,7 +23,7 @@ def test_missing_column_fails_at_load(tmp_path: Path) -> None:
 
 def test_wrong_type_fails_at_load(tmp_path: Path) -> None:
     wrong_type_csv = tmp_path / "wrong_type.csv"
-    wrong_type_csv.write_text("date,category,value\n2025-01-15,nord,beaucoup\n")
+    wrong_type_csv.write_text("date,category,value\n2025-01-15,north,plenty\n")
 
     with pytest.raises(DatasetSchemaError):
         load_measurements(wrong_type_csv)

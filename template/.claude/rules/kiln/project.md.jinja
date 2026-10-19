@@ -1,0 +1,100 @@
+{%- set level = {'spark': 0, 'ember': 1, 'flame': 2, 'blaze': 3}[size] %}
+{%- set languages = {'en': 'English', 'fr': 'French'} %}
+{%- set size_text = {'spark': 'a script, a personal tool, a one-off analysis', 'ember': 'a small app or site, one or two people, low stakes', 'flame': 'an app in production, real users, several contributors', 'blaze': 'several teams or services, high stakes'}[size] %}
+{%- set back_text = {'django': 'Django + Django Ninja', 'fastapi': 'FastAPI', 'data': 'Python data: polars or NumPy, marimo, Plotly', 'cli': 'a Python command-line tool', 'java': 'Java 25, Maven, no framework'}.get(backend) %}
+{%- set front_text = {'nuxt': 'Nuxt 4 + Vue 3', 'next': 'Next.js 16 + React 19', 'astro': 'Astro 7', 'streamlit': 'Streamlit', 'dash': 'Dash'}.get(frontend) %}
+{%- set front_url = {'nuxt': 'http://localhost:3000', 'next': 'http://localhost:3000', 'astro': 'http://localhost:4321', 'streamlit': 'http://localhost:8501', 'dash': 'http://localhost:8050'}.get(frontend) %}
+{%- set python_dirs = (['backend'] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + (['frontend'] if frontend in ['streamlit', 'dash'] else []) %}
+{%- set uses = [language_comments, language_commits, language_docs, language_tickets, language_ui] -%}
+<!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten.
+Project rules go in CLAUDE.md or in .claude/rules/ outside kiln/. -->
+# {{ title }}: working here
+
+{{ description }}
+
+Size: **{{ size | capitalize }}**, {{ size_text }} (`kiln set size=…` changes it).
+{% if back_text and front_text -%}
+Backend {{ back_text }} in `backend/`, frontend {{ front_text }} in `frontend/`.
+{%- elif back_text -%}
+Backend {{ back_text }} in `backend/`.
+{%- else -%}
+Frontend {{ front_text }} in `frontend/`.
+{%- endif %}
+The repo is generated and kept current by [kiln](https://github.com/antoine-tena/kiln).
+
+## Commands
+
+{%- if front_url or backend in ['django', 'fastapi', 'data'] %}
+- `kiln dev`: start the dev servers
+{%- if backend in ['django', 'fastapi'] %} (API on http://localhost:8000/api/, docs on `/api/docs`
+{%- if front_url %}; {% else %}){% endif %}{% elif backend == 'data' %} (marimo notebooks on http://localhost:2718{% if front_url %}; {% else %}){% endif %}{% endif %}
+{%- if front_url %}{{ ' (' if backend not in ['django', 'fastapi', 'data'] }}front on {{ front_url }}){% endif %}.
+{%- endif %}
+{%- if backend == 'cli' %}
+- `cd backend && uv run {{ name }} --help`: run the tool; `uv tool install --editable backend`
+  installs it on the machine.
+{%- elif backend == 'java' %}
+- `cd backend && ./mvnw verify`: compile (warnings are errors), run JUnit, check coverage.
+{%- endif %}
+- `kiln check`: every check of the stack ({% if python_dirs %}ruff, mypy, pytest{% endif %}
+{%- if backend == 'java' %}{{ ', ' if python_dirs }}Maven{% endif %}
+{%- if frontend in ['nuxt', 'next'] %}, ESLint, type checks{% elif frontend == 'astro' %}, `astro check`{% endif %}), then `charter`.
+  Run it before saying a change is done.
+{%- if backend == 'django' and frontend == 'nuxt' %}
+- `kiln contract`: export `openapi.json` from the Django code and regenerate the front's types
+  (`frontend/app/types/api.d.ts`), after any change to a route or a schema; commit both.
+{%- endif %}
+{%- if python_dirs %}
+- A Python dependency: `uv add <package>` in its directory (`--dev` for a tool); never pip.
+{%- endif %}
+{%- if frontend in ['nuxt', 'next', 'astro'] %}
+- A JavaScript dependency: `pnpm add <package>` in `frontend/` (`-D` for a tool); never npm.
+{%- endif %}
+- `kiln update`: kiln's improvements and compatible dependency upgrades, on a branch, checks
+  included; `kiln set key=value` changes a setting of the project (stack, team, podman…).
+
+## Language
+
+{%- if uses | unique | list | length == 1 and uses[0] == language %}
+- Talk with the user in {{ languages[language] }}. Docs (README, `docs/`), commit messages, code
+  comments, tickets and the texts users read are in {{ languages[language] }} too.
+{%- else %}
+- Talk with the user in {{ languages[language] }}.
+- Docs (README, `docs/`): {{ languages[language_docs] }}. Commit messages:
+  {{ languages[language_commits] }}. Code comments: {{ languages[language_comments] }}. Tickets of
+  `docs/backlog/`: {{ languages[language_tickets] }}. Texts users read (pages, messages,
+  figures): {{ languages[language_ui] }}.
+{%- endif %}
+- Code identifiers are always English. The keywords of `docs/backlog/` (`Type`, `Status`,
+  `todo`, section titles) stay English whatever the language.
+
+## Where the state of the project lives
+
+- `docs/backlog/` is the only up-to-date list of work: `backlog.md` (tickets `T-NN` by
+  priority, done ones in its "Done" log), `rejected.md` (what was turned down), `urgent.md`
+  (what only a human of the team can do). Skill `/kiln:backlog`.
+- `charter.toml`: the checked rules and their budgets; `kiln-waivers.toml`: deliberate
+  deviations; `.copier-answers.yml`: the project's settings for kiln (changed by `kiln set`,
+  never by hand).
+{%- if deploy == 'vps' %}
+- `docs/operations/production.md`: deployment, rollback, backups.
+{%- endif %}
+
+## Git
+
+- **[NO-COMMIT-ON-MAIN]** Never commit on `main` nor on `develop`: always a dedicated branch,
+  preferably in its own worktree (`/kiln:worktree`, under `.claude/worktrees/`), so that two
+  sessions never cross in the main tree. It is merged into `develop` by `/kiln:merge`, directly:
+  no pull request nor approval required (a PR stays possible to ask for an opinion). Enforced by
+  the `no-commit-to-branch` pre-commit hook, kiln's branch guard, and GitHub rulesets (`develop`
+  can be neither deleted nor force-pushed; `main` only takes releases, through `/kiln:release`).
+- **[BRANCHES]** Prefixes `feat/`, `fix/`, `refactor/`, `test/`, `chore/`, `docs/`; lowercase,
+  no spaces (`feat/station-map`).
+- **[COMMITS]** Small and atomic: {% if level >= 1 %}10 files at most, {% endif %}a title of 50
+  characters at most, prefixed by its type with an optional scope (`feat:`, `fix:`,
+  `refactor:`, `style:`, `docs:`, `perf:`, `test:`, `build:`, `ci:`, `chore:`, `revert:`;
+  `fix(map): …`){% if backend in ['django', 'fastapi'] %}; a migration commit never mixes schema
+  and business logic{% endif %}. Never a `Co-Authored-By: Claude` nor `Claude-Session:` line,
+  never `--author`: the author stays the one of `git config`.
+- **[MERGE]** Merge commits (`git merge --no-ff`), never squash nor rebase onto the integration
+  branch; then the branch goes, local and remote, with its worktree (`/kiln:merge`).

@@ -1,4 +1,4 @@
-"""Status line : le choix du poste (`kiln set statusline=…`) et le script du plugin `base`."""
+"""Status line : le choix du poste (`kiln set statusline=…`) et le script du plugin `kiln`."""
 
 import importlib.util
 import json
@@ -10,11 +10,11 @@ from typing import Any
 import pytest
 
 from kiln.config import UserConfig
-from kiln.poste import apply_poste
+from kiln.machine import apply_machine
 from kiln.shell import KilnError
 from kiln.statusline import apply_statusline_choice, is_kiln_statusline
 
-SCRIPT = Path(__file__).parent.parent / "plugins" / "base" / "scripts" / "statusline.py"
+SCRIPT = Path(__file__).parent.parent / "plugins" / "kiln" / "scripts" / "statusline.py"
 OWN = {"type": "command", "command": "~/bin/ma-ligne.sh"}
 X = "\u00d7"  # signe de multiplication des compteurs
 
@@ -32,8 +32,8 @@ def home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """Un poste avec le catalogue kiln déclaré là où Claude Code le range."""
     monkeypatch.setenv("HOME", str(tmp_path))
     kiln = tmp_path / "kiln"
-    (kiln / "plugins" / "base" / "scripts").mkdir(parents=True)
-    (kiln / "plugins" / "base" / "scripts" / "statusline.py").write_text("")
+    (kiln / "plugins" / "kiln" / "scripts").mkdir(parents=True)
+    (kiln / "plugins" / "kiln" / "scripts" / "statusline.py").write_text("")
     plugins = tmp_path / ".claude" / "plugins"
     plugins.mkdir(parents=True)
     (plugins / "known_marketplaces.json").write_text(
@@ -48,31 +48,36 @@ def settings(home: Path) -> dict[str, Any]:
 
 
 def test_statusline_choice_is_checked() -> None:
-    assert apply_poste(UserConfig(), ["statusline=bandeau"]).statusline == "bandeau"
+    assert apply_machine(UserConfig(), ["statusline=band"]).statusline == "band"
     with pytest.raises(KilnError, match="statusline"):
-        apply_poste(UserConfig(), ["statusline=arc-en-ciel"])
+        apply_machine(UserConfig(), ["statusline=arc-en-ciel"])
+
+
+def test_styles_named_before_kiln_0_4_are_still_accepted() -> None:
+    assert apply_machine(UserConfig(), ["statusline=classique-fond"]).statusline == "classic-band"
+    assert apply_machine(UserConfig(), ["statusline=perso"]).statusline == "custom"
 
 
 def test_a_kiln_style_installs_the_script_and_keeps_other_settings(home: Path) -> None:
     (home / ".claude" / "settings.json").write_text(json.dumps({"model": "opus"}))
 
-    apply_statusline_choice("sobre")
+    apply_statusline_choice("plain")
 
     assert settings(home)["model"] == "opus"
     assert is_kiln_statusline(settings(home)["statusLine"])
 
 
-def test_perso_never_touches_the_users_own_statusline(home: Path) -> None:
+def test_custom_never_touches_the_users_own_statusline(home: Path) -> None:
     (home / ".claude" / "settings.json").write_text(json.dumps({"statusLine": OWN}))
 
-    apply_statusline_choice("perso")
+    apply_statusline_choice("custom")
 
     assert settings(home)["statusLine"] == OWN
 
 
-def test_aucune_removes_the_statusline(home: Path) -> None:
-    apply_statusline_choice("classique")
-    apply_statusline_choice("aucune")
+def test_none_removes_the_statusline(home: Path) -> None:
+    apply_statusline_choice("classic")
+    apply_statusline_choice("none")
 
     assert "statusLine" not in settings(home)
 
@@ -84,7 +89,7 @@ def test_switching_styles_keeps_the_kiln_command(home: Path) -> None:
         )
     )
 
-    apply_statusline_choice("bandeau")
+    apply_statusline_choice("band")
 
     assert "$HOME" in settings(home)["statusLine"]["command"]  # écrite à la main, gardée
 
@@ -117,7 +122,7 @@ def test_integration_branch_is_not_counted_as_unmerged(tmp_path: Path) -> None:
 
 def sample(script: ModuleType) -> object:
     item, status = script.Item, script.Status()
-    status.repo = [[item("annski", role="title"), item("⎇ develop")], [item("~2", 1)]]
+    status.repo = [[item("demo", role="title"), item("⎇ develop")], [item("~2", 1)]]
     status.session = [[item("Opus", role="strong")], [item("ctx", 0, gauge=34.0)]]
     status.tasks = [[item("65 tasks"), item(f"urgent{X}10", 3), item(f"blocked{X}14", short="")]]
     status.env = [
@@ -128,7 +133,7 @@ def sample(script: ModuleType) -> object:
     return status
 
 
-@pytest.mark.parametrize("style", ["sobre", "bandeau", "classique", "classique-fond"])
+@pytest.mark.parametrize("style", ["plain", "band", "classic", "classic-band"])
 @pytest.mark.parametrize("columns", [60, 90, 140])
 def test_no_line_overflows(style: str, columns: int) -> None:
     script = load_script()
@@ -141,7 +146,7 @@ def test_no_line_overflows(style: str, columns: int) -> None:
 def test_signals_put_tasks_first_and_drop_grey_before_compacting_colour() -> None:
     script = load_script()
 
-    signals = script.render(sample(script), "sobre", 40)[2]
+    signals = script.render(sample(script), "plain", 40)[2]
     plain = script.re.sub(r"\033\[[0-9;]*m", "", signals)
 
     assert plain.startswith(f"65 tasks urgent{X}10")  # le total reste devant ses sous-comptes

@@ -1,20 +1,19 @@
-# Garde-fous et contrôles de la CI rejoués avant chaque commit.
+# Guards and CI checks replayed before each commit.
 #
-# Installation, une fois, à la racine du dépôt :
-#   kiln install       (ou : uv tool install pre-commit && pre-commit install)
-# Le crochet vaut pour l'arbre principal et tous les worktrees. Tout rejouer :
+# Installed once, at the root of the repo: kiln install (or: uv tool install pre-commit &&
+# pre-commit install). The hook holds for the main tree and every worktree. Replay everything:
 #   pre-commit run --all-files
-# Les crochets locaux appellent les outils du projet (uv) et `charte`, installée avec kiln.
-# Le typage, trop lent pour chaque commit, se joue avant chaque push : `develop` ne reçoit plus
-# la CI complète, qui ne tourne qu'au passage d'une version (skill `base:version`).
+# Local hooks call the project's tools (uv) and `charter`, installed with kiln. Typing, too slow
+# for each commit, runs before each push: `develop` no longer gets the full CI, which only runs
+# when a release goes out (skill /kiln:release).
 default_install_hook_types: [pre-commit, pre-push]
 default_stages: [pre-commit]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
-      # [PAS-SUR-MAIN] : refuse tout commit fait sur main ou develop. GitHub refuse aussi
-      # tout push direct sur ces branches (ruleset « Protection main et develop »).
+      # [NO-COMMIT-ON-MAIN]: refuses any commit made on main or develop. GitHub also refuses a
+      # force-push of develop and any push on main (rulesets).
       - id: no-commit-to-branch
         args: [--branch, main, --branch, develop]
       - id: check-added-large-files
@@ -25,27 +24,27 @@ repos:
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
       - id: check-yaml
-        # Le lockfile de pnpm contient plusieurs documents YAML.
+        # The pnpm lockfile holds several YAML documents.
         args: [--allow-multiple-documents]
       - id: check-json
 
   - repo: local
     hooks:
 {%- set python_dirs = (['backend'] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + (['frontend'] if frontend in ['streamlit', 'dash'] else []) %}
-{%- for dossier in python_dirs %}
-      - id: ruff-check-{{ dossier }}
-        name: ruff check ({{ dossier }})
-        entry: bash -c 'cd {{ dossier }} && uv run ruff check --fix --force-exclude "${@#{{ dossier }}/}"' --
+{%- for directory in python_dirs %}
+      - id: ruff-check-{{ directory }}
+        name: ruff check ({{ directory }})
+        entry: bash -c 'cd {{ directory }} && uv run ruff check --fix --force-exclude "${@#{{ directory }}/}"' --
         language: system
         types: [python]
-        files: ^{{ dossier }}/
+        files: ^{{ directory }}/
 
-      - id: ruff-format-{{ dossier }}
-        name: ruff format ({{ dossier }})
-        entry: bash -c 'cd {{ dossier }} && uv run ruff format --force-exclude "${@#{{ dossier }}/}"' --
+      - id: ruff-format-{{ directory }}
+        name: ruff format ({{ directory }})
+        entry: bash -c 'cd {{ directory }} && uv run ruff format --force-exclude "${@#{{ directory }}/}"' --
         language: system
         types: [python]
-        files: ^{{ dossier }}/
+        files: ^{{ directory }}/
 {% endfor %}
 {%- if frontend in ['nuxt', 'next'] %}
       - id: eslint
@@ -55,17 +54,17 @@ repos:
         files: ^frontend/.*\.(vue|ts|tsx|mjs)$
 {% endif %}
 {%- if backend in ['django', 'fastapi', 'data', 'cli'] %}
-      - id: typage-backend
-        name: typage mypy (backend, avant push)
-        entry: {% if backend == 'django' %}charte types{% else %}bash -c 'cd backend && uv run mypy .'{% endif %}
+      - id: typing-backend
+        name: mypy typing (backend, before push)
+        entry: {% if backend == 'django' %}charter types{% else %}bash -c 'cd backend && uv run mypy .'{% endif %}
         language: system
         pass_filenames: false
         always_run: true
         stages: [pre-push]
 {% endif %}
 {%- if backend == 'java' %}
-      - id: compilation-backend
-        name: compilation Java (backend, avant push)
+      - id: compile-backend
+        name: Java compilation (backend, before push)
         entry: bash -c 'cd backend && ./mvnw -q -B -DskipTests compile'
         language: system
         pass_filenames: false
@@ -73,17 +72,17 @@ repos:
         stages: [pre-push]
 {% endif %}
 {%- if frontend in ['nuxt', 'next', 'astro'] %}
-      - id: typage-frontend
-        name: typage TypeScript (frontend, avant push)
+      - id: typing-frontend
+        name: TypeScript typing (frontend, before push)
         entry: pnpm --dir frontend typecheck
         language: system
         pass_filenames: false
         always_run: true
         stages: [pre-push]
 {% endif %}
-      - id: charte
-        name: charte (charte.toml)
-        entry: charte
+      - id: charter
+        name: charter (charter.toml)
+        entry: charter
         language: system
         pass_filenames: false
         always_run: true

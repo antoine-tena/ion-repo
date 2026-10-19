@@ -1,4 +1,4 @@
-"""Export du schéma OpenAPI et détection de sa dérive ([OPENAPI], [DERIVE])."""
+"""Export of the OpenAPI schema and detection of its drift ([OPENAPI], [CONTRACT-DRIFT])."""
 
 from io import StringIO
 from pathlib import Path
@@ -25,11 +25,11 @@ def test_check_fails_when_schema_drifted(tmp_path: Path) -> None:
     schema_path = tmp_path / "openapi.json"
     schema_path.write_text("{}\n")
 
-    with pytest.raises(CommandError, match="a dérivé"):
+    with pytest.raises(CommandError, match="has drifted"):
         export(schema_path, "--check")
 
 
 def test_committed_schema_matches_the_code() -> None:
     if not COMMITTED_SCHEMA.exists():
-        pytest.skip("openapi.json pas encore généré (kiln update le crée)")
+        pytest.skip("openapi.json not generated yet (kiln update creates it)")
     export(COMMITTED_SCHEMA, "--check")

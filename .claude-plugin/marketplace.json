@@ -1,39 +1,45 @@
 {
   "name": "kiln",
-  "description": "Plugins Claude Code des repos kiln",
+  "description": "Claude Code plugins of kiln projects",
   "owner": {
     "name": "antoine-tena"
   },
   "plugins": [
     {
-      "name": "base",
-      "source": "./plugins/base",
-      "description": "Pour tous les projets : worktrees, fusion, nettoyage, backlog, garde de branche, fichiers protégés, contrôle du fichier modifié, context7"
+      "name": "kiln",
+      "source": "./plugins/kiln",
+      "description": "For every project: worktrees, merge, release, cleanup, backlog, branch guard, protected files, per-file check, context7"
     },
     {
-      "name": "pile-nuxt",
-      "source": "./plugins/pile-nuxt",
-      "description": "Nuxt, Vue, Vitest, audit visuel (polish) et le serveur MCP playwright"
+      "name": "nuxt",
+      "source": "./plugins/nuxt",
+      "description": "Nuxt, Vue, Vitest, preview and visual audit, playwright MCP server"
     },
     {
-      "name": "pile-django",
-      "source": "./plugins/pile-django",
-      "description": "Django : migrations, contrat OpenAPI, MCP postgres en lecture seule"
+      "name": "django",
+      "source": "./plugins/django",
+      "description": "Django: migrations, OpenAPI contract, read-only postgres MCP server"
     },
     {
-      "name": "vps-podman",
-      "source": "./plugins/vps-podman",
-      "description": "VPS en podman-compose : déploiement, diagnostic, copie de la base de prod"
+      "name": "vps",
+      "source": "./plugins/vps",
+      "description": "VPS with podman-compose: deployment, diagnosis, copy of the production database"
     },
     {
       "name": "stripe",
       "source": "./plugins/stripe",
-      "description": "MCP Stripe en mode test seulement"
+      "description": "Stripe MCP server, test mode only"
     },
     {
       "name": "serena",
       "source": "./plugins/serena",
-      "description": "MCP Serena en lecture seule : navigation par symboles pour les gros repos"
+      "description": "Read-only Serena MCP server: symbol navigation for large repos"
     }
-  ]
+  ],
+  "renames": {
+    "base": "kiln",
+    "pile-django": "django",
+    "pile-nuxt": "nuxt",
+    "vps-podman": "vps"
+  }
 }

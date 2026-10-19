@@ -2,7 +2,7 @@
 import { Suspense } from "react";
 
 import HealthStatus from "@/components/HealthStatus";
-import { SITE_TITLE } from "@/lib/constants";
+import { BACKEND_CONNECTING, SITE_TITLE } from "@/lib/constants";
 {%- else -%}
 import { SITE_DESCRIPTION, SITE_TITLE } from "@/lib/constants";
 {%- endif %}
@@ -12,7 +12,7 @@ export default function Home() {
     <main className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center gap-4 p-6">
       <h1 className="text-3xl font-bold text-brand">{SITE_TITLE}</h1>
 {%- if backend in ['django', 'fastapi'] %}
-      <Suspense fallback={<p className="text-gray-500">Connexion au backend…</p>}>
+      <Suspense fallback={<p className="text-gray-500">{BACKEND_CONNECTING}</p>}>
         <HealthStatus />
       </Suspense>
 {%- else %}

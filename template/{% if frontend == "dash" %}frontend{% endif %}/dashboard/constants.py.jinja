@@ -1,17 +1,26 @@
 {% from "macros.jinja" import py_str -%}
-"""[ZERO-MAGIE] : textes, identifiants de composants et réglages, nommés une seule fois."""
+"""[NO-MAGIC-VALUES]: texts, component ids and settings, named once."""
 
-SITE_TITLE = {{ py_str(titre) }}
+SITE_TITLE = {{ py_str(title) }}
 SITE_DESCRIPTION = {{ py_str(description) }}
 {%- if backend == 'data' %}
 
-# [IDS] : identifiants des composants reliés par les callbacks.
+# [COMPONENT-IDS]: ids of the components linked by callbacks.
 CATEGORY_DROPDOWN_ID = "category-dropdown"
 TOTALS_GRAPH_ID = "totals-graph"
-ALL_CATEGORIES = "toutes"
-{%- elif backend in ['django', 'fastapi'] %}
+ALL_CATEGORIES = "{{ 'toutes' if language_ui == 'fr' else 'all' }}"
+CATEGORY_LABEL = "{{ 'Catégorie' if language_ui == 'fr' else 'Category' }}"
+{%- endif %}
+{%- if backend in ['django', 'fastapi'] %}
 
 API_URL_VARIABLE = "API_URL"
 DEFAULT_API_URL = "http://localhost:8000"
 HEALTH_TIMEOUT_SECONDS = 2.0
+{%- if language_ui == 'fr' %}
+BACKEND_DOWN_MESSAGE = "Le backend ne répond pas : lancez-le avec kiln dev."
+BACKEND_UP_MESSAGE = "Backend joignable (statut : {status})."
+{%- else %}
+BACKEND_DOWN_MESSAGE = "The backend does not answer: start it with kiln dev."
+BACKEND_UP_MESSAGE = "Backend reachable (status: {status})."
+{%- endif %}
 {%- endif %}

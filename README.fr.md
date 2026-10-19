@@ -2,6 +2,8 @@
 
 *[English](README.md) · Français*
 
+**Chaque projet démarré comme le ferait un ingénieur expérimenté, même sans l'être soi-même.**
+
 L'atelier de Claude Code : kiln lui donne de quoi construire des repos de qualité production et
 les garder ainsi. Le savoir (stacks à jour, consignes par repo, documentation des bibliothèques),
 les garde-fous (règles vérifiées par la machine, hooks, branches protégées), les façons de
@@ -12,15 +14,17 @@ pnpm pour JavaScript, podman pour les conteneurs.
 Un projet généré contient :
 
 - la stack choisie, conseillée selon le type de projet (voir ci-dessous) ;
-- sa charte de code (`CLAUDE.md` à la racine, dans `backend/` et `frontend/`), dont les règles
-  contrôlables sont décrites dans `charte.toml` et vérifiées par la commande `charte` ;
-- l'outillage partagé : `.claude/` (plugins et variables `PROJET_*`), `.vscode/`, `.editorconfig`,
+- les consignes de kiln pour Claude dans `.claude/rules/kiln/` : celles du projet et de la
+  charte toujours chargées, celles de chaque stack seulement quand Claude touche ses fichiers ;
+  les règles contrôlables sont décrites dans `charter.toml` et vérifiées par la commande
+  `charter`. Le `CLAUDE.md` racine appartient au projet ;
+- l'outillage partagé : `.claude/` (plugins et variables `KILN_*`), `.vscode/`, `.editorconfig`,
   `.gitattributes`, `.gitignore`, modèle de PR, `CODEOWNERS`, pre-commit (ruff, ESLint, charte,
   refus de commiter sur `main` et `develop`) ;
 - la CI GitHub (`.github/workflows/ci.yml`), qui appelle les workflows réutilisables de kiln ;
 - le suivi du travail, d'office : `docs/backlog/` (`backlog.md`, `rejected.md`, `urgent.md`,
-  en anglais, skill `base:backlog`), que la status line de Claude Code compte ;
-- les réglages de la status line propres au repo (`statusline_ci`, `url_sante_prod`), posés en
+  en anglais, skill `kiln:backlog`), que la status line de Claude Code compte ;
+- les réglages de la status line propres au repo (`statusline_ci`, `prod_health_url`), posés en
   `git config statusline.*` par `kiln install`, `kiln new` et `kiln set` ;
 - d'office (`--no-github` pour s'en passer) : le dépôt GitHub privé, avec `main` verrouillée (seul le commit initial)
   et `develop` protégée (ni suppression ni réécriture), et les correctifs de sécurité Dependabot ;
@@ -29,34 +33,37 @@ Un projet généré contient :
 Les plugins Claude Code vivent dans [`plugins/`](plugins/), catalogue `kiln`
 ([`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json)) :
 
-- `base`, pour tous les projets, installé au niveau utilisateur : skills `worktree`, `fusion`,
-  `version` (release/vN, contrôle complet, annonce, main tagué, déploiement), `nettoyage`,
-  `relecture` (commits et diff d'une branche relus et rangés avant la fusion, dépôt entier avant une version), `backlog`,
-  `maj-kiln` (l'outil kiln et ses plugins, puis le repo ouvert), `adoption` (`kiln adopt` dans un repo existant, passif de la charte trié avec l'utilisateur), `report-to-kiln` (un défaut de kiln remonté en issue ou en PR, avec l'accord de l'utilisateur), `contribution` (la PR d'un contributeur extérieur : code relu avant d'en rien lancer, tri, revue, fusion qui le crédite, rien publié sans accord), `good-first-issues` (un petit stock d'issues `good first issue` tiré du backlog et réservé aux contributeurs extérieurs, regarni à chaque fusion) ; hooks garde de branche (et refus d'un message de commit signé Claude), fichiers protégés, contrôle du fichier
+- `kiln`, pour tous les projets, installé au niveau utilisateur : skills `worktree`, `merge`
+  (fusion dans `develop`), `release` (release/vN, contrôle complet, annonce, main tagué,
+  déploiement), `cleanup` (ménage des worktrees), `review` (commits et diff d'une branche relus
+  et rangés avant la fusion, dépôt entier avant une version), `backlog`, `update` (l'outil kiln
+  et ses plugins, puis le repo ouvert), `adopt` (`kiln adopt` dans un repo existant, passif de la
+  charte trié avec l'utilisateur), `report` (un défaut de kiln remonté en issue ou en PR, avec l'accord de l'utilisateur), `contribution` (la PR d'un contributeur extérieur : code relu avant d'en rien lancer, tri, revue, fusion qui le crédite, rien publié sans accord), `good-first-issues` (un petit stock d'issues `good first issue` tiré du backlog et réservé aux contributeurs extérieurs, regarni à chaque fusion), `token` (le jeton d'un service collé une fois dans un dossier `.<service>/` ignoré par git, jamais affiché) ; hooks garde de branche (et refus d'un message de commit signé Claude), fichiers protégés, contrôle du fichier
   modifié, questions à l'ouverture de session : dans un repo kiln, sa mise à jour (l'outil kiln s'il
   est en retard sur GitHub, puis le repo par `kiln update` ; un « non » repousse la question de
   5, 10, 30 puis 50 sessions, après quoi désinstaller kiln ou délier le repo est proposé) ; dans
   un repo à soi qui ne suit pas kiln, son adoption (« Oui », « Plus tard », « Jamais pour ce
   repo »), dès la 3e session, au plus une fois toutes les 10 sessions du poste. Toutes passent
-  par `relances.py` : une note de bienveillance du poste monte à chaque « oui » et baisse à
+  par `reminders.py` : une note de bienveillance du poste monte à chaque « oui » et baisse à
   chaque « non », et étire ou raccourcit tous les délais (doublés au plus méfiant, de moitié au
-  plus enthousiaste) ; `git config kiln-a-jour.desactive true` pour s'en passer, sorties de commandes condensées par [rtk](https://github.com/rtk-ai/rtk) quand il
-  est installé (`mise use -g github:rtk-ai/rtk`, sans `rtk init` : le hook est fourni ici) ; MCP context7 ; status line commune (`plugins/base/scripts/statusline.py`,
+  plus enthousiaste) ; `git config kiln.update-check false` pour s'en passer, sorties de commandes condensées par [rtk](https://github.com/rtk-ai/rtk) quand il
+  est installé (`mise use -g github:rtk-ai/rtk`, sans `rtk init` : le hook est fourni ici) ; MCP context7 ; status line commune (`plugins/kiln/scripts/statusline.py`,
   en anglais, aux couleurs de kiln), posée par `kiln install` dans `~/.claude/settings.json` ; son
-  style se choisit par poste : `kiln set statusline=sobre|bandeau|classique|classique-fond`,
-  `aucune` (retirée) ou `perso` (kiln ne touche plus à la `statusLine` de l'utilisateur, choix
+  style se choisit par poste : `kiln set statusline=plain|band|classic|classic-band`,
+  `none` (retirée) ou `custom` (kiln ne touche plus à la `statusLine` de l'utilisateur, choix
   automatique s'il en a déjà une) ;
-- `pile-nuxt` (skills Nuxt, Vue, Vitest, `polish`, `apercu` — captures sur trois téléphones et un ordinateur ; MCP playwright) et `pile-django` (skills
-  `migration`, `regen-api`, `postgres-lecture`), activés par le `.claude/settings.json` généré
+- `nuxt` (skills `nuxt`, `vue-best-practices`, `vue-testing-best-practices`, `vitest`, `polish`,
+  `preview` — captures sur trois téléphones et un ordinateur ; MCP playwright) et `django` (skills
+  `migration`, `regen-api`, `postgres-read`), activés par le `.claude/settings.json` généré
   selon la stack ;
-- `vps-podman` (skills `deployer`, `prod-logs`, `prod-dump`) et `stripe` (MCP en mode test),
+- `vps` (skills `deploy`, `prod-logs`, `prod-dump`) et `stripe` (MCP en mode test),
   activés à la main par le repo qui en a besoin.
 - `serena` (MCP [Serena](https://github.com/oraios/serena) en lecture seule : plan d'un
   fichier, définition et références d'un symbole), activé par `kiln set serena=true` sur un gros
-  repo ; les éditions restent aux outils de Claude Code, où sont branchés les hooks de `base`.
+  repo ; les éditions restent aux outils de Claude Code, où sont branchés les hooks de `kiln`.
 
 Installation : `claude plugin marketplace add antoine-tena/kiln`, puis
-`claude plugin install base@kiln`.
+`claude plugin install kiln@kiln`.
 
 Le modèle vit dans [`template/`](template/), servi par [Copier](https://copier.readthedocs.io) :
 chaque projet garde dans `.copier-answers.yml` ses réponses et la version du modèle dont il
@@ -74,41 +81,43 @@ connexion et affiche le lien https://github.com/login/device).
 uv tool install kiln-cli
 ```
 
-Installe deux commandes, `kiln` et `charte`, à la dernière version publiée sur PyPI (le paquet
+Installe deux commandes, `kiln` et `charter` (`charte`, son nom d'avant 0.4.0, reste accepté),
+à la dernière version publiée sur PyPI (le paquet
 s'appelle `kiln-cli`, `kiln` y étant pris ; `uvx kiln-cli new mon-app` l'essaie sans
-l'installer). Pour suivre les candidates (canal `interne`) ou un commit précis :
+l'installer). Pour suivre les candidates (canal `internal`) ou un commit précis :
 `uv tool install git+https://github.com/antoine-tena/kiln@<tag>`. macOS, Linux, et Windows par
 WSL. Quand une version sort, le hook de début de session propose de mettre à jour l'outil, puis
 chaque repo ; à la main : `uv tool upgrade kiln-cli`, puis `kiln update` dans le repo.
 Complétion dans bash : `eval "$(kiln completion bash)"` dans `~/.bashrc`.
 Python 3.14 est requis ; uv le télécharge au besoin. Au premier `kiln install`, kiln demande le
 système du poste (Linux, WSL ou macOS) et le garde dans `~/.config/kiln/config.toml`, avec
-`proprietaire` et `equipe` par défaut si on les y ajoute.
+`owner` et `team` par défaut si on les y ajoute.
 
 ## Commandes
 
 | Commande | Rôle |
 |---|---|
-| `kiln new [dossier]` | Questionnaire (envergure, type de projet, stack conseillée, podman…), génération, verrous, installation, premier commit sur `main`, puis `develop` où tout le travail se fait. |
-| `kiln adopt` | Fait suivre kiln à un repo existant qu'il n'a pas généré, sur une branche de travail : `charte.toml` (envergure par `--size`, règles valables partout, vérifiées après chaque édition), `docs/backlog/` s'il n'existe pas, puis le passif que la charte relève. Ne touche à aucun fichier existant ; le repo apparaît dans `kiln status` comme adopté, `kiln update` le laisse. |
+| `kiln new [dossier]` | Trois questions (ce qu'on construit, l'envergure, la langue de l'équipe ; `--all-questions` pour le questionnaire complet), génération, verrous, installation, premier commit sur `main`, puis `develop` où tout le travail se fait. |
+| `kiln adopt` | Fait suivre kiln à un repo existant qu'il n'a pas généré, sur une branche de travail : `charter.toml` (envergure par `--size`, règles valables partout, vérifiées après chaque édition), `docs/backlog/` s'il n'existe pas, puis le passif que la charte relève. Ne touche à aucun fichier existant ; le repo apparaît dans `kiln status` comme adopté, `kiln update` le laisse. |
+| `kiln publish` | Crée le dépôt GitHub privé et protège ses branches, pour un projet généré sans `gh`. |
 | `kiln install` | Prépare un poste après un clone : outils (pre-commit avec pre-commit-uv, podman-compose), dépendances, `backend/.env`, migrations, pre-commit. Relançable. |
 | `kiln dev` | Lance les serveurs de la stack, leurs sorties entrelacées et préfixées par service en couleur (`django │ …`) ; `--containers` : toute la pile dans podman. |
 | `kiln check` | Ruff, mypy et pytest pour chaque projet Python, ESLint et les types côté front, puis la charte. |
-| `kiln ci [commit]` | Rejoue sur le poste la CI du `ci.yml` pour ce commit (défaut `HEAD`) et pose le verdict en note git sur origin, que le script de déploiement accepte comme une CI verte. `--statut` : le verdict seul. Voir « CI rejouée sur le poste ». |
-| `kiln contrat` | Django + Nuxt : exporte `openapi.json` depuis le code, puis régénère les types du front (`app/types/api.d.ts`). `kiln update` le fait aussi. |
+| `kiln ci [commit]` | Rejoue sur le poste la CI du `ci.yml` pour ce commit (défaut `HEAD`) et pose le verdict en note git sur origin, que le script de déploiement accepte comme une CI verte. `--status` : le verdict seul. Voir « CI rejouée sur le poste ». |
+| `kiln contract` | Django + Nuxt : exporte `openapi.json` depuis le code, puis régénère les types du front (`app/types/api.d.ts`). `kiln update` le fait aussi. |
 | `kiln waive [RÈGLE\|fichier]` | Déroge à une règle de kiln (`--paths`, `--reason`, `--upstream`), ou fige un fichier généré que `kiln update` ne touchera plus ; `--renew` passe au palier suivant (une semaine, un mois, trois mois, six mois), `--permanent` sans échéance. Sans argument : liste les dérogations. Voir [Moteur de charte](#moteur-de-charte). |
-| `kiln set` | Dans un repo : sans argument, affiche ses paramètres ; `kiln set clé=valeur…` les change (équipe, frameworks, podman, boussole…) : le repo est régénéré, un framework retiré emporte ses fichiers. Hors d'un repo, ou avec `--poste` : les réglages du poste (`systeme`, `proprietaire`, `equipe`, `dossier_code`, dans `~/.config/kiln/config.toml`). |
-| `kiln update` | Évolutions du modèle, mises à jour compatibles des dépendances, puis contrôles. `--major` : versions majeures comprises. `--no-template`, `--no-deps` pour n'en faire qu'une partie. |
-| `kiln update --all` | Tous les repos kiln du dossier de code (`~/code`, réglable par `dossier_code`) : pour chacun, un worktree depuis la branche d'intégration, la mise à jour, des commits de dix fichiers au plus, puis la fusion directe dans l'intégration (commit de fusion poussé) ; contrôles en échec, la branche est poussée sans être fusionnée. L'arbre principal ne change jamais de branche. |
+| `kiln set` | Dans un repo : sans argument, affiche ses paramètres ; `kiln set clé=valeur…` les change (`team`, `backend`, `frontend`, `podman`, `north_star`…) : le repo est régénéré, un framework retiré emporte ses fichiers. Hors d'un repo, ou avec `--global` : les réglages du poste (`system`, `owner`, `team`, `code_dir`, `channel`, `statusline`, dans `~/.config/kiln/config.toml`). |
+| `kiln update` | Évolutions du modèle, mises à jour compatibles des dépendances, puis contrôles. `--major` : versions majeures comprises. `--no-template`, `--no-deps` pour n'en faire qu'une partie. `--rehearse` : la mise à jour jouée d'abord sur un clone jetable, le repo intact, seul le bilan revient. |
+| `kiln update --all` | Tous les repos kiln du dossier de code (`~/code`, réglable par `code_dir`) : pour chacun, un worktree depuis la branche d'intégration, la mise à jour, des commits de dix fichiers au plus, puis la fusion directe dans l'intégration (commit de fusion poussé) ; contrôles en échec, la branche est poussée sans être fusionnée. L'arbre principal ne change jamais de branche. `--all --rehearse` : chaque mise à jour répétée sur un clone, rien n'est touché, un bilan par repo. |
 | `kiln doctor` | Diagnostic du poste (git, uv, gh connecté, pnpm, podman, Java, pre-commit, version de kiln, plugin Claude, configuration) et du repo courant (version du modèle, crochet pre-commit, dépendances, `backend/.env`) : ✓, ! à regarder ou ✗ bloquant, chaque fois avec la commande qui corrige. Ne modifie rien. |
 | `kiln completion bash` | Script de complétion bash tiré des commandes et options de kiln ; l'activer par `eval "$(kiln completion bash)"` dans `~/.bashrc`. |
 | `kiln status` | État des repos kiln du dossier de code : branche, arbre propre ou non, version du modèle (`v0.3.2 → v0.3.5` en retard), dérogations (`!` si l'une est échue), stack ; puis les règles dérogées, par nombre de repos. |
-| `kiln version` | Dans le dépôt de kiln : dernière version publique, candidates (âge, repos qui les ont adoptées, prêtes à promouvoir) et numéro de la prochaine. |
-| `charte` | Vérifie le repo contre son `charte.toml` (`charte --detail`, `charte types`, `charte couverture`). |
+| `kiln version` | Dans le dépôt de kiln : dernière version publique, candidates (âge, repos qui les ont adoptées, prêtes à promouvoir), numéro de la prochaine et tickets du plan (`docs/backlog/`) qui restent avant elle. `kiln version cut` : branche `release/vX.Y.Z`, ébauche de la note de version et numéros, puis (une fois la note relue) contrôles, CI de GitHub attendue et, au vert seulement, tag `-rc.N` ; `kiln version promote` : tag public sur la dernière candidate dont la CI est verte, fusion dans `main` et `develop` (PyPI et GitHub Release suivent). |
+| `charter` | Vérifie le repo contre son `charter.toml` (`charter --detail`, `charter --unverified`, `charter types`, `charter coverage`, `charter file <chemin>`). |
 
 `set` et `update` travaillent sur une branche, arbre propre ; les conflits entre le modèle et une
 modification locale sont marqués dans le fichier (`<<<<<<<`). Relire, commiter, fusionner dans
-`develop` (skill `base:fusion`, sans PR ni approbation à attendre).
+`develop` (skill `kiln:merge`, sans PR ni approbation à attendre).
 
 `new`, `install`, `update` et `status` s'ouvrent sur une bannière : un four en pixel art, la
 version de kiln, la commande, le projet (envergure, stack) et son dossier. Hors terminal ou avec
@@ -125,41 +134,41 @@ Options de `new` : `--size`, `--type`, `--backend`, `--frontend`, `--podman`,
 `--vps <utilisateur@adresse>`, `--name`, `--title`,
 `--description`, `--owner`, `--team login1,login2`, `--goal "<boussole>"`, `--prod-url <url>`,
 `--no-github` (pas de dépôt GitHub),
-`--no-install`, `--template <chemin ou URL>`. Les questions sans option sont posées dans le
-terminal.
+`--no-install`, `--all-questions`, `--template <chemin ou URL>`. Au-delà des trois questions, ce qu'aucune option ne fixe prend sa valeur conseillée, sauf avec
+`--all-questions`.
 
 ## Envergure
 
-Première question de `kiln new` : « How hot does this one burn? ». Quatre crans, nommés d'après
+Deuxième question de `kiln new`, après ce qu'on construit : « How hot does this one burn? ». Quatre crans, nommés d'après
 le feu du four :
 
 | Cran | Projet |
 |---|---|
 | `spark` | un script, un outil perso, une analyse ponctuelle |
 | `ember` | une petite app ou un site, une ou deux personnes, peu d'enjeu (par défaut) |
-| `flame` | une app en production, de vrais utilisateurs, plusieurs contributeurs (AnnSki) |
+| `flame` | une app en production, de vrais utilisateurs, plusieurs contributeurs |
 | `blaze` | plusieurs équipes ou services, de gros enjeux |
 
-L'envergure est écrite dans le `CLAUDE.md` du projet et règle les valeurs par défaut des
+L'envergure est écrite dans `.claude/rules/kiln/project.md` et règle les valeurs par défaut des
 questions suivantes : à partir de `flame`, les conteneurs podman sont précochés. Elle se change
-par `kiln set envergure=…` et `kiln status` l'affiche.
+par `kiln set size=…` et `kiln status` l'affiche.
 
 ## Conseil de stack
 
-Le type de projet précoche une stack, que l'on change à la question suivante ou plus tard par
-`kiln set backend=… frontend=…`.
+Le type de projet choisit une stack, que l'on change par `--backend` et `--frontend` (ou
+`--all-questions`), ou plus tard par `kiln set backend=… frontend=…`.
 
 | Type de projet | Backend conseillé | Frontend conseillé |
 |---|---|---|
 | Application complète (`app`) | Django + Django Ninja | Nuxt + Vue |
 | API seule (`api`) | FastAPI | aucun |
 | Site de contenu (`site`) | aucun | Astro |
-| Tableau de bord de données (`tableau`) | Données Python (polars, marimo, Plotly) | Streamlit |
-| Analyse de données (`analyse`) | Données Python | aucun |
-| Outil en ligne de commande (`outil`) | Outil Python (`cli` : argparse, commande installable) | aucun |
+| Tableau de bord de données (`dashboard`) | Données Python (polars, marimo, Plotly) | Streamlit |
+| Analyse de données (`analysis`) | Données Python | aucun |
+| Outil en ligne de commande (`cli`) | Outil Python (`cli` : argparse, commande installable) | aucun |
 
-Backends : `django`, `fastapi`, `data`, `cli`, `java`, `aucun`. Frontends : `nuxt`, `next`, `astro`,
-`streamlit`, `dash`, `aucun`. Toutes les combinaisons sont générées et vérifiées par les tests.
+Backends : `django`, `fastapi`, `data`, `cli`, `java`, `none`. Frontends : `nuxt`, `next`, `astro`,
+`streamlit`, `dash`, `none`. Toutes les combinaisons sont générées et vérifiées par les tests.
 
 `java` n'est conseillé pour aucun type : Java 25 sans framework, construit par Maven via son
 wrapper `./mvnw` (version et somme SHA-256 figées), tests JUnit 6, couverture JaCoCo, enforcer
@@ -168,8 +177,8 @@ du `pom.xml` se changent à la main.
 
 ## Déploiement sur un serveur à soi
 
-`deploiement=vps` (`kiln new --vps root@<adresse>`, ou `kiln set deploiement=vps` plus tard), pour
-un backend Django avec podman, ajoute la production reprise d'AnnSki :
+`deploy=vps` (`kiln new --vps root@<adresse>`, ou `kiln set deploy=vps` plus tard), pour
+un backend Django avec podman, ajoute une production éprouvée :
 
 - `config/vps/` : pile de production (PostgreSQL et gunicorn, système de fichiers en lecture
   seule), Caddyfile (TLS automatique), script de bascule exécuté en root sur le serveur (une image
@@ -179,19 +188,19 @@ un backend Django avec podman, ajoute la production reprise d'AnnSki :
   malades (unités systemd) ;
 - `scripts/ops/` : `deploy-backend.sh` (`--dry-run`, `--rollback`) et `smoke-test.sh`, depuis le
   poste ; le serveur reçoit le code en bundle git, sans accès au dépôt ;
-- `docs/exploitation/production.md` : préparation du serveur, déploiement, retour arrière,
+- `docs/operations/production.md` : préparation du serveur, déploiement, retour arrière,
   sauvegardes.
 
-Réglages : `vps_hote`, `domaine_api`, `url_site`, `branche_deploiement` (par `kiln set`). Quel
+Réglages : `vps_host`, `api_domain`, `site_url`, `deploy_branch` (par `kiln set`). Quel
 que soit le déploiement, l'image du backend Django sert gunicorn et ses fichiers statiques
 (WhiteNoise) sans migrer au démarrage, et `/api/health` rend la version en service.
 
 ## Front sur Vercel
 
-`front_deploiement=vercel` (front Nuxt, `kiln set front_deploiement=vercel`) ajoute
+`frontend_deploy=vercel` (front Nuxt, `kiln set frontend_deploy=vercel`) ajoute
 `scripts/ops/deploy-frontend.sh` : `vercel --prod` envoie les fichiers du poste, le script ne
 l'autorise que depuis `develop` à jour avec `origin`, front sans modification locale et CI verte
-(`SAUTER_CI=1` en cas d'urgence). Le projet Vercel se lie une fois par `vercel link`.
+(`SKIP_CI=1` en cas d'urgence). Le projet Vercel se lie une fois par `vercel link`.
 
 ## Mises à jour des dépendances
 
@@ -211,8 +220,8 @@ leur note et convertis par `kiln update` ; la mineure ne monte que pour une éta
 Le travail s'intègre dans `develop` ; `main` ne reçoit que des versions.
 
 - **Candidate** (`v0.3.5-rc.1`) : tirée de `develop` sur une branche `release/v0.3.5`, avec son
-  entrée en tête de [`CHANGELOG.md`](CHANGELOG.md). Seuls les postes au canal `interne` la
-  suivent (`kiln set canal=interne`).
+  entrée en tête de [`CHANGELOG.md`](CHANGELOG.md). Seuls les postes au canal `internal` la
+  suivent (`kiln set channel=internal`).
 - **Promotion** (`v0.3.5`) : dès qu'une candidate plus récente est prête (pas de délai fixe :
   c'est la suivante prête qui évite le correctif d'urgence), le même commit est tagué et fusionné
   dans `main`. `kiln version` montre les candidates, leur âge, qui les a adoptées, lesquelles
@@ -225,6 +234,10 @@ Le travail s'intègre dans `develop` ; `main` ne reçoit que des versions.
   prend aussi les candidates ;
   `kiln status` dit de quelle version part chaque repo (`v0.3.2 → v0.3.5`), la bannière celle
   de l'outil (`v0.3.5 +3 · abc1234` : trois commits après v0.3.5, installé depuis un dossier).
+  Seule une version met un repo à jour : un outil qui n'en est pas une (un dossier en avance sur
+  son tag ou modifié, une branche) est refusé par `kiln update`, `kiln new` et `kiln adopt`, qui
+  donnent la commande d'installation de la version ; pour essayer le code de kiln sur un repo
+  jetable, `KILN_TEMPLATE=<dossier de kiln>`.
 
 ## Faire évoluer le modèle
 
@@ -232,8 +245,8 @@ Modifier `template/` sur une branche, puis la fusionner dans `develop` : les pro
 reçoivent à la version suivante, par `kiln update` (le hook de début de session le propose).
 Pour essayer un modèle pas encore publié : `KILN_TEMPLATE=~/code/kiln kiln new …`.
 
-Depuis un projet, un défaut de kiln remonte ici ([REMONTER-A-KILN] de la charte générée), par
-le skill `base:report-to-kiln` :
+Depuis un projet, un défaut de kiln remonte ici ([REPORT-TO-KILN] de la charte générée), par
+le skill `kiln:report` :
 
 - **pull request** vers `develop` quand la correction est claire et localisée, depuis un fork :
   kiln n'appartient qu'à antoine-tena, seul à y écrire et à fusionner ;
@@ -243,7 +256,8 @@ le skill `base:report-to-kiln` :
 Le skill vérifie d'abord que kiln est à jour et que personne ne l'a déjà signalé, rédige en
 anglais sans rien de privé du projet, et ne publie qu'avec l'accord explicite de l'utilisateur :
 c'est public, sous son compte GitHub.
- Seuls les fichiers en `.jinja` sont interprétés ; un dossier
+
+Dans `template/`, seuls les fichiers en `.jinja` sont interprétés ; un dossier
 `{% if … %}nom{% endif %}` n'existe que si la condition tient ; les questions sont dans
 [`copier.yml`](copier.yml) et les macros partagées (chaînes Python au format de ruff) dans
 [`macros.jinja`](macros.jinja).
@@ -255,30 +269,30 @@ uv run ruff check . && uv run mypy src tests
 
 ## Moteur de charte
 
-`src/kiln/charte/` lit le `charte.toml` à la racine du repo. Interdictions (`signaux-django`,
-`journalisation`, `migrations-django`, `temps-constant`, `donnees-perso`, `style-vue`,
-`renvois-audit`, `fichiers-interdits`, `copies`, `compose-profils`, `outils-interdits` : jamais
-pip ni docker, ni leurs fichiers), cliquets et planchers
-(`taille-fichier`, `routes-longues`, `verrous-django`, `occurrences`, `densite-tests`),
-`[types]` (mypy en cliquet) et `[couverture]` (planchers de pytest-cov) ; paramètres dans la
-docstring de chaque règle. Règle propre à un repo : un module listé dans `regles_locales`,
-avec `verifier(depot, params) -> list[str]`. La liste des règles non vérifiées
-(`scripts/ci/charte-non-verifiee.txt`) est recalculée par kiln à chaque `set` et `update`.
+`src/kiln/charter/` lit le `charter.toml` à la racine du repo. Interdictions (`[bans]` :
+`django-signals`, `logging`, `django-migrations`, `constant-time`, `personal-data`, `vue-style`,
+`audit-references`, `forbidden-files`, `identical-copies`, `compose-profiles`,
+`forbidden-tools` : jamais pip ni docker, ni leurs fichiers), cliquets et planchers
+(`[ratchets]`, `[floors]` : `file-size`, `long-routes`, `django-locks`, `occurrences`,
+`test-density`), `[types]` (mypy en cliquet) et `[coverage]` (planchers de pytest-cov) ;
+paramètres dans la docstring de chaque règle. Règle propre à un repo : un module listé dans
+`local_rules`, avec `check(repo, params) -> list[str]`. La liste des règles non vérifiées
+(`scripts/ci/unverified-rules.txt`) est recalculée par kiln à chaque `set` et `update`.
 
 Dérogations : `kiln-waivers.toml` à la racine du repo (jamais réécrit par kiln) écarte une
 règle de tout le repo ou de certains chemins (`[[waiver]]` : `rule`, `paths`, `reason`, `by`,
 `since`, `until`, `renewals`). Une semaine au plus la première fois, puis un mois, trois mois,
 six mois à chaque renouvellement ; `until = "never"` pour un écart permanent, toujours affiché.
-`charte` liste les dérogations actives, prévient dans la seconde moitié de la période, et
+`charter` liste les dérogations actives, prévient dans la seconde moitié de la période, et
 échoue sur une dérogation échue, mal formée, qui ne vise plus rien, ou qui porte sur une règle
-non dérogeable (`DONNEES-PERSO`, `SECRETS`, `PAS-SUR-MAIN`, `DEPENDANCES-FIGEES`).
+non dérogeable (`PERSONAL-DATA`, `SECRETS`, `NO-COMMIT-ON-MAIN`, `LOCKED-DEPENDENCIES`).
 Une dérogation `file = "…"` (au lieu de `rule`) fige un fichier généré : `kiln update` et
 `kiln set` n'y touchent plus, et `kiln update` montre ce que kiln y a changé entre les deux
 versions, à reporter à la main ou à reprendre en levant la dérogation.
 
 ```toml
 [[waiver]]
-rule = "TAILLE-FICHIER"
+rule = "FILE-SIZE"
 paths = ["backend/app/import_x/*.py"]
 reason = "module repris tel quel du projet X, découpage prévu au T-31"
 by = "antoine"
@@ -289,24 +303,28 @@ until = 2026-10-23
 ## Workflows réutilisables
 
 kiln est public : ses workflows servent à n'importe quel dépôt, quel que soit son compte
-(`uses: antoine-tena/kiln/.github/workflows/<nom>.yml@main`). Jamais pip ni docker : uv pour
+(`uses: antoine-tena/kiln/.github/workflows/<nom>.yml@<tag>`, au tag exact d'une version). Jamais pip ni docker : uv pour
 Python, podman pour les conteneurs (bases de test comprises), podman-compose installé par uv.
 
 | Workflow | Rôle |
 |---|---|
-| `django.yml` | Backend Django : ruff, `charte types`, migrations manquantes, pytest et couverture, contre PostgreSQL et Redis lancés par podman. |
+| `django.yml` | Backend Django : ruff, `charter types`, migrations manquantes, pytest et couverture, contre PostgreSQL et Redis lancés par podman. |
 | `python.yml` | Tout projet uv (FastAPI, données, Streamlit, Dash) : ruff, mypy, pytest avec un plancher de couverture ; PostgreSQL en option. |
 | `maven.yml` | Backend Java : `./mvnw verify` (compilation stricte, JUnit, plancher de couverture JaCoCo) sur un JDK Temurin. |
 | `pnpm.yml` | Front pnpm (Nuxt, Next.js, Astro) : scripts de `package.json` dans l'ordre ; pnpm pris dans `packageManager`. |
-| `charte.yml` | Règles de `charte.toml`. |
-| `securite.yml` | `uv audit` et `pnpm audit`. |
-| `contrat-api.yml` | `openapi.json` et types du front à jour du code. |
+| `charter.yml` | Règles de `charter.toml`. |
+| `security.yml` | `uv audit` et `pnpm audit`. |
+| `secrets.yml` | Secrets commités (gitleaks, version figée et vérifiée). |
+| `api-contract.yml` | `openapi.json` et types du front à jour du code. |
 | `infra.yml` | Images (`podman build`), actionlint, shellcheck, Caddyfile, compose (podman-compose). |
 | `sbom.yml` | Nomenclatures CycloneDX du back et du front. |
 | `mutation.yml` | Tests par mutation (mutmut), jamais bloquants. |
 | `vercel.yml` | Déploiement du front sur Vercel. |
 
-Actions : `actions/charte` (installe kiln et `charte`), `actions/services` (PostgreSQL et Redis
+`charte.yml`, `securite.yml` et `contrat-api.yml`, leurs noms d'avant 0.4.0, renvoient aux
+nouveaux.
+
+Actions : `actions/charter` (installe kiln et `charter` ; `actions/charte` y renvoie), `actions/services` (PostgreSQL et Redis
 par podman, `DATABASE_URL` et `REDIS_URL` posées).
 
 ## CI rejouée sur le poste
@@ -316,17 +334,17 @@ la rejoue sur le poste, depuis le même `ci.yml` :
 
 - le commit est extrait dans un worktree détaché hors du dépôt (`~/.cache/kiln/ci/`), les
   dépendances installées depuis les verrous (`uv sync --locked`, `pnpm install --frozen-lockfile`) ;
-- chaque job qui appelle un workflow de kiln (`django`, `contrat-api`, `charte`, `pnpm`,
-  `securite`) est rejoué avec ses paramètres `with:`, contre un PostgreSQL et un Redis jetables
+- chaque job qui appelle un workflow de kiln (`django`, `api-contract`, `charter`, `pnpm`,
+  `security`) est rejoué avec ses paramètres `with:`, contre un PostgreSQL et un Redis jetables
   (podman, ports libres) ; un job écrit dans le projet l'est s'il ne fait que des `run:` ;
-- le back (pytest) tourne à côté du reste ; un journal par job dans `~/.cache/kiln/ci/journaux/` ;
+- le back (pytest) tourne à côté du reste ; un journal par job dans `~/.cache/kiln/ci/logs/` ;
 - le verdict part en note git (`refs/notes/ci`) poussée sur origin. Sa première ligne,
-  `kiln ci : succès`, est ce que `scripts/ops/lib/ci-verte.sh` accepte avant un déploiement ; la
+  `kiln ci: success`, est ce que `scripts/ops/lib/green-ci.sh` accepte avant un déploiement ; la
   note liste aussi les jobs **non rejoués** (services propres au job, `infra`, `sbom`…).
 
-`--sauter <job>` écarte un job (noté dans le verdict), `--sans-pousser` garde la note en local,
-`--garder` laisse le worktree pour enquêter. Avec `git config statusline.ci locale`, la status
+`--skip <job>` écarte un job (noté dans le verdict), `--no-push` garde la note en local,
+`--keep` laisse le worktree pour enquêter. Avec `git config statusline.ci locale`, la status
 line affiche ce verdict pour la branche d'intégration. `kiln ci` ne tourne plus à chaque fusion
-dans `develop` : seulement sur la branche `release/vN` d'une version (skill `base:version`), dont
+dans `develop` : seulement sur la branche `release/vN` d'une version (skill `kiln:release`), dont
 le verdict vaut pour le commit de fusion dans `main` (mêmes fichiers). Entre deux versions, le
 typage se joue avant chaque push (crochet pre-push de `.pre-commit-config.yaml`).

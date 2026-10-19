@@ -1,24 +1,34 @@
-"""Dérogations de `kiln-waivers.toml` : paliers, échéance, cibles, effet sur la charte, fichiers
-figés laissés tels quels par `kiln update`."""
+"""Waivers of `kiln-waivers.toml`: tiers, expiry, targets, effect on the charter, frozen files
+left alone by `kiln update`; and the charter of an adopted repo of before kiln 0.4.0, still read
+under its French names."""
 
 import datetime
 import json
 import subprocess
-import tomllib
 from pathlib import Path
 from typing import Any
 
 import copier
 import pytest
 
-from kiln.charte.charte import verifier
-from kiln.charte.moteur import Depot
-from kiln.charte.waivers import load
+from kiln.charter.cli import check
+from kiln.charter.config import load as load_charter
+from kiln.charter.repo import Repo
+from kiln.charter.waivers import load
 from kiln.frozen import report_frozen_drift
 from kiln.update import apply_template, template_commit
 
 TODAY = datetime.date(2026, 10, 16)
-CHARTE = """
+CHARTER = """
+[ratchets.file-size]
+id = "FILE-SIZE"
+files = ["src/*.py"]
+suffixes = [".py"]
+max_lines = 3
+budget = 0
+"""
+# The same, as a repo adopted before kiln 0.4.0 still writes it.
+LEGACY_CHARTER = """
 [cliquets.taille-fichier]
 id = "TAILLE-FICHIER"
 fichiers = ["src/*.py"]
@@ -29,9 +39,9 @@ budget = 0
 
 
 def waiver(**fields: object) -> str:
-    """Une entrée `[[waiver]]` ; un champ à None est omis."""
+    """One `[[waiver]]` entry; a field set to None is left out."""
     entry = {
-        "rule": "TAILLE-FICHIER",
+        "rule": "FILE-SIZE",
         "reason": "repris tel quel",
         "by": "antoine",
         "since": datetime.date(2026, 10, 14),
@@ -52,7 +62,7 @@ def write(root: Path, *waivers: str) -> None:
 @pytest.fixture
 def repo(tmp_path: Path) -> Path:
     subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
-    (tmp_path / "charte.toml").write_text(CHARTE)
+    (tmp_path / "charter.toml").write_text(CHARTER)
     (tmp_path / "src").mkdir()
     (tmp_path / "src" / "long.py").write_text("a = 1\n" * 5)
     (tmp_path / "src" / "court.py").write_text("a = 1\n")
@@ -64,7 +74,7 @@ def test_first_period_is_one_week(tmp_path: Path) -> None:
 
     waivers = load(tmp_path, TODAY)
 
-    assert not waivers.actives and "au plus 7" in waivers.errors[0]
+    assert not waivers.actives and "at most 7" in waivers.errors[0]
 
 
 def test_each_renewal_lengthens_the_period(tmp_path: Path) -> None:
@@ -83,7 +93,7 @@ def test_expired_waiver_no_longer_applies(tmp_path: Path) -> None:
 
     waivers = load(tmp_path, TODAY)
 
-    assert not waivers.actives and "échue" in waivers.errors[0]
+    assert not waivers.actives and "expired" in waivers.errors[0]
 
 
 def test_warns_in_the_second_half_of_the_period(tmp_path: Path) -> None:
@@ -91,7 +101,7 @@ def test_warns_in_the_second_half_of_the_period(tmp_path: Path) -> None:
 
     waivers = load(tmp_path, TODAY)
 
-    assert waivers.actives and "dans 2 jour(s)" in waivers.warnings[0]
+    assert waivers.actives and "in 2 day(s)" in waivers.warnings[0]
 
 
 def test_permanent_waiver_is_always_shown(tmp_path: Path) -> None:
@@ -99,16 +109,17 @@ def test_permanent_waiver_is_always_shown(tmp_path: Path) -> None:
 
     waivers = load(tmp_path, TODAY)
 
-    assert waivers.actives[0].until is None and "permanente" in waivers.warnings[0]
+    assert waivers.actives[0].until is None and "permanent" in waivers.warnings[0]
 
 
 @pytest.mark.parametrize(
     ("fields", "message"),
     [
-        ({"rule": "DONNEES-PERSO"}, "ne se déroge pas"),
-        ({"reason": None}, "`reason` manquant"),
-        ({"file": "ci.yml"}, "une seule"),
-        ({"motif": "x"}, "clé inconnue"),
+        ({"rule": "PERSONAL-DATA"}, "cannot be waived"),
+        ({"rule": "DONNEES-PERSO"}, "[PERSONAL-DATA] cannot be waived"),
+        ({"reason": None}, "`reason` missing"),
+        ({"file": "ci.yml"}, "only one"),
+        ({"motif": "x"}, "unknown key"),
     ],
 )
 def test_malformed_waiver_is_refused(tmp_path: Path, fields: dict[str, Any], message: str) -> None:
@@ -123,32 +134,44 @@ def test_waiver_excludes_its_paths_from_the_rule(
     today = datetime.date.today()
     write(repo, waiver(paths=["src/long.py"], since=today, until=today))
 
-    assert verifier(Depot(repo, _config(repo))) == 0
-    assert "TAILLE-FICHIER (src/long.py)" in capsys.readouterr().out
+    assert check(Repo(repo, load_charter(repo))) == 0
+    assert "FILE-SIZE (src/long.py)" in capsys.readouterr().out
 
 
 def test_without_waiver_the_rule_fails(repo: Path) -> None:
-    assert verifier(Depot(repo, _config(repo))) == 1
+    assert check(Repo(repo, load_charter(repo))) == 1
+
+
+def test_a_charter_of_before_0_4_is_read_under_its_french_names(
+    repo: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    (repo / "charter.toml").unlink()
+    (repo / "charte.toml").write_text('envergure = "flame"\n' + LEGACY_CHARTER)
+    today = datetime.date.today()
+    write(repo, waiver(rule="TAILLE-FICHIER", paths=["src/long.py"], since=today, until=today))
+
+    config = load_charter(repo)
+
+    assert config["size"] == "flame"
+    assert config["ratchets"]["file-size"]["max_lines"] == 3
+    assert check(Repo(repo, config)) == 0
+    assert "FILE-SIZE (src/long.py)" in capsys.readouterr().out
 
 
 def test_waiver_matching_nothing_fails(repo: Path, capsys: pytest.CaptureFixture[str]) -> None:
     today = datetime.date.today()
-    write(repo, waiver(paths=["src/disparu.py"], since=today, until=today))
+    write(repo, waiver(paths=["src/gone.py"], since=today, until=today))
 
-    assert verifier(Depot(repo, _config(repo))) == 1
-    assert "aucun fichier pour src/disparu.py" in capsys.readouterr().out
+    assert check(Repo(repo, load_charter(repo))) == 1
+    assert "no file for src/gone.py" in capsys.readouterr().out
 
 
 def test_waiver_of_an_unknown_rule_fails(repo: Path, capsys: pytest.CaptureFixture[str]) -> None:
     today = datetime.date.today()
-    write(repo, waiver(rule="INVENTEE", since=today, until=today))
+    write(repo, waiver(rule="MADE-UP", since=today, until=today))
 
-    assert verifier(Depot(repo, _config(repo))) == 1
-    assert "règle inconnue" in capsys.readouterr().out
-
-
-def _config(repo: Path) -> dict[str, Any]:
-    return tomllib.loads((repo / "charte.toml").read_text())
+    assert check(Repo(repo, load_charter(repo))) == 1
+    assert "no such rule" in capsys.readouterr().out
 
 
 def git(root: Path, *args: str) -> None:
@@ -165,7 +188,8 @@ def template_version(template: Path, tag: str, ci: str) -> None:
 
 @pytest.fixture
 def generated(tmp_path: Path) -> Path:
-    """Un repo généré à la v1 d'un petit modèle, `ci.yml` modifié et figé ; le modèle est en v2."""
+    """A repo generated from v1 of a small template, `ci.yml` edited and frozen; the template is
+    at v2."""
     template, project = tmp_path / "modele", tmp_path / "projet"
     template.mkdir()
     git(template, "init", "-q")

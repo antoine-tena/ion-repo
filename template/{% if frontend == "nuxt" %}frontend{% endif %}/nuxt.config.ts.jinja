@@ -3,7 +3,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 {%- if backend in ['django', 'fastapi'] %}
 
-// Origine du backend en développement, cible du proxy '/api/**' ci-dessous.
+// Origin of the backend in development, target of the '/api/**' proxy below.
 const DEFAULT_BACKEND_ORIGIN = 'http://localhost:8000'
 
 const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {}
@@ -14,11 +14,12 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   modules: ['@nuxt/eslint'],
-  // [IMPORTS-EXPLICITES] : les composants du projet s'importent à la main.
+  // [EXPLICIT-IMPORTS]: the project's components are imported by hand.
   components: { dirs: [] },
   css: ['~/assets/css/main.css'],
   vite: { plugins: [tailwindcss()] },
   typescript: { strict: true, typeCheck: false },
+  app: { head: { htmlAttrs: { lang: '{{ 'fr' if language_ui == 'fr' else 'en' }}' } } },
 {%- if backend == 'fastapi' %}
   runtimeConfig: {
     public: { apiBase: '/api' }

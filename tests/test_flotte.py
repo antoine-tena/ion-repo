@@ -93,7 +93,7 @@ def test_develop_wins_without_origin_head(tmp_path: Path) -> None:
 
 
 def test_template_state_compares_releases() -> None:
-    assert template_state("v0.4.0", "v0.4.0") == "v0.4.0 à jour"
+    assert template_state("v0.4.0", "v0.4.0") == "v0.4.0 up to date"
     assert template_state("v0.3.2", "v0.4.0") == "v0.3.2 → v0.4.0"
     assert template_state("v0.4.0-rc.1", "v0.4.0") == "v0.4.0-rc.1 → v0.4.0"
     assert template_state("f611f82", "v0.3.0") == "f611f82 → v0.3.0"
@@ -101,7 +101,7 @@ def test_template_state_compares_releases() -> None:
 
 
 def test_missing_code_dir_is_explained(tmp_path: Path) -> None:
-    with pytest.raises(KilnError, match="dossier_code"):
+    with pytest.raises(KilnError, match="code_dir"):
         fleet.require_code_dir(tmp_path / "code")
 
 
@@ -146,7 +146,8 @@ def test_status_counts_waivers_across_the_fleet(
 
     fleet.show_status(tmp_path)
 
-    assert "TAILLE-FICHIER (2)" in capsys.readouterr().out
+    # A waiver written with a rule name of before kiln 0.4.0 counts under the current one.
+    assert "FILE-SIZE (2)" in capsys.readouterr().out
 
 
 def _clone_with_develop(tmp_path: Path) -> Path:
@@ -176,6 +177,6 @@ def test_worktree_with_changes_is_never_touched(tmp_path: Path) -> None:
     fleet._create_worktree(clone, worktree, "chore/kiln-update", "develop")
     (worktree / "travail.txt").write_text("à garder\n")
 
-    with pytest.raises(KilnError, match="a laissé du travail"):
+    with pytest.raises(KilnError, match="left work in"):
         fleet._create_worktree(clone, worktree, "chore/kiln-update", "develop")
     assert (worktree / "travail.txt").read_text() == "à garder\n"

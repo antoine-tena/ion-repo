@@ -1,29 +1,28 @@
-{%- set paquet = 'fr.' ~ (nom | replace('-', '')) -%}
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Build Maven du backend : `./mvnw verify` compile (avertissements bloquants), lance les tests
-  JUnit et vérifie la couverture. Versions exactes partout ([DEPENDANCES-FIGEES]) : l'enforcer
-  refuse toute plage ou version dynamique, et .mvn/maven.config exige les sommes de contrôle.
+  Maven build of the backend: `./mvnw verify` compiles (warnings are errors), runs the JUnit
+  tests and checks coverage. Exact versions everywhere ([LOCKED-DEPENDENCIES]): the enforcer
+  refuses any range or dynamic version, and .mvn/maven.config requires checksums.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>{{ paquet }}</groupId>
-  <artifactId>{{ nom }}</artifactId>
+  <groupId>{{ java_package }}</groupId>
+  <artifactId>{{ name }}</artifactId>
   <version>0.1.0</version>
-  <name>{{ titre | e }}</name>
+  <name>{{ title | e }}</name>
   <description>{{ description | e }}</description>
 
   <properties>
     <java.version>25</java.version>
     <maven.compiler.release>${java.version}</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <!-- Builds reproductibles : date fixe dans les archives produites. -->
+    <!-- Reproducible builds: a fixed date in the archives produced. -->
     <project.build.outputTimestamp>2026-01-01T00:00:00Z</project.build.outputTimestamp>
-    <main.class>{{ paquet }}.Main</main.class>
-    <!-- Couverture minimale des lignes (0.80 = 80 %), comme les projets Python de kiln. -->
+    <main.class>{{ java_package }}.Main</main.class>
+    <!-- Minimum line coverage (0.80 = 80 %), like kiln's Python projects. -->
     <coverage.minimum>0.80</coverage.minimum>
 
     <junit.version>6.1.3</junit.version>
@@ -68,7 +67,7 @@
         <version>${enforcer-plugin.version}</version>
         <executions>
           <execution>
-            <id>regles-du-build</id>
+            <id>build-rules</id>
             <goals>
               <goal>enforce</goal>
             </goals>
@@ -103,7 +102,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${compiler-plugin.version}</version>
         <configuration>
-          <!-- Types bruts et casts non vérifiés ([TYPES-BRUTS]) : tout avertissement bloque. -->
+          <!-- Raw types and unchecked casts ([NO-RAW-TYPES]): every warning blocks. -->
           <compilerArgs>
             <arg>-Xlint:all</arg>
             <arg>-Werror</arg>

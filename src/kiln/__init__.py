@@ -1,1 +1,1 @@
-"""kiln : génère un projet complet et le tient à jour."""
+"""kiln: generates a complete project and keeps it up to date."""

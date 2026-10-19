@@ -1,0 +1,5 @@
+{
+  "mcpServers": {
+    "postgres": { "command": "sh", "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/postgres-mcp.sh"] }
+  }
+}

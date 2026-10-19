@@ -1,9 +1,9 @@
-"""Suivi du travail : passage de l'ancien `docs/a-faire/` (en français) à `docs/backlog/`.
+"""Work tracking: moving the former `docs/a-faire/` (in French) to `docs/backlog/`.
 
-`kiln update` l'appelle après Copier : le modèle a posé un `docs/backlog/` vierge, que le suivi
-du repo remplace, converti (titres, champs et états en anglais, `AF-NN` devenu `T-NN`) ; le
-texte des tickets reste tel qu'écrit. Copier a déjà supprimé `docs/a-faire/`, même modifié :
-son contenu se relit dans le dernier commit (`kiln update` part d'un arbre propre).
+`kiln update` calls it after Copier: the template laid down a blank `docs/backlog/`, which the
+repo's tracking replaces, converted (headings, fields and statuses in English, `AF-NN` become
+`T-NN`); the text of the tickets stays as written. Copier already deleted `docs/a-faire/`, even
+changed: its content is read back from the last commit (`kiln update` starts from a clean tree).
 """
 
 import re
@@ -11,6 +11,7 @@ import shutil
 from pathlib import Path
 
 from kiln.shell import KilnError, capture
+from kiln.versions import ReleaseNotes
 
 LEGACY_DIR = Path("docs/a-faire")
 BACKLOG_DIR = Path("docs/backlog")
@@ -42,7 +43,7 @@ LEGACY_INTROS = (
 
 
 def migrate_legacy_backlog(root: Path) -> bool:
-    """Convertit `docs/a-faire/` en `docs/backlog/` s'il existe encore ; dit s'il l'a fait."""
+    """Converts `docs/a-faire/` to `docs/backlog/` if it still exists; says whether it did."""
     old_backlog = read_legacy(root, "a-faire.md")
     if old_backlog is None:
         return False
@@ -70,7 +71,7 @@ def migrate_legacy_backlog(root: Path) -> bool:
 
 
 def read_legacy(root: Path, name: str) -> str | None:
-    """Un fichier de l'ancien suivi : sur le disque, sinon dans le dernier commit."""
+    """A file of the former tracking: on disk, otherwise in the last commit."""
     path = root / LEGACY_DIR / name
     if path.exists():
         return path.read_text()
@@ -81,7 +82,7 @@ def read_legacy(root: Path, name: str) -> str | None:
 
 
 def opened(root: Path, path: str) -> dict[str, str]:
-    """Date d'ouverture de chaque ticket : le premier commit où son titre apparaît."""
+    """Opening date of each ticket: the first commit where its title appears."""
     dates: dict[str, str] = {}
     try:
         log = capture(["git", "log", "--reverse", "--format=commit %as", "-p", "--", path], root)
@@ -97,7 +98,7 @@ def opened(root: Path, path: str) -> dict[str, str]:
 
 
 def convert_backlog(text: str, template_text: str, dates: dict[str, str]) -> str:
-    """`a-faire.md` en `backlog.md` : en-tête et mode d'emploi du modèle, tickets convertis."""
+    """`a-faire.md` to `backlog.md`: the template's header and how-to, tickets converted."""
     next_free = re.search(r"Prochain libre : AF-(\d+)", text)
     compass = re.search(r"La boussole est \*\*(.+?)\*\*", text, re.S)
     started = re.search(r"Créée le\s+\*\*(.+?)\*\*", text)
@@ -160,9 +161,50 @@ def convert_rejected(text: str) -> str:
 
 
 def convert_urgent(text: str, intro: str) -> str:
-    """Les cases d'`urgent.md` sous l'introduction du modèle, en anglais."""
+    """The checkboxes of `urgent.md` under the template's introduction, in English."""
     lines = text.splitlines()
     first_box = next((i for i, line in enumerate(lines) if line.startswith("- [")), len(lines))
     boxes = "\n".join(lines[first_box:]).strip("\n")
     body = intro.rstrip("\n") + "\n"
     return body + f"\n{boxes}\n" if boxes else body
+
+
+# A line of a changelog entry: what each repo crossing that release must do after updating.
+AFTER_UPDATING = "- **After updating**: "
+CRITICAL_HEADING = "## 🔴 Critical\n"
+NEXT_FREE = re.compile(r"Next free: T-(\d+)")
+
+
+def add_after_update_ticket(root: Path, notes: list[ReleaseNotes], *, today: str) -> str | None:
+    """A 🔴 ticket that gathers the `After updating` lines of the releases crossed: what only the
+    team knows, to fill in right after the update. Its ID, or None when there is nothing to do
+    (or no backlog to put it in)."""
+    path = root / BACKLOG_DIR / "backlog.md"
+    actions = [
+        f"- [ ] {line.removeprefix(AFTER_UPDATING)} ({release.tag})"
+        for release in reversed(notes)
+        for line in release.lines
+        if line.startswith(AFTER_UPDATING)
+    ]
+    text = path.read_text() if path.exists() else ""
+    next_free = NEXT_FREE.search(text)
+    title = f"Finish the kiln update to {notes[0].tag}" if notes else ""
+    if not actions or next_free is None or CRITICAL_HEADING not in text or title in text:
+        return None
+    number = int(next_free[1])
+    ticket_id = f"T-{number:02d}"
+    ticket = "\n".join([
+        f"### {ticket_id} · {title}",
+        "- **Type**: task",
+        "- **Status**: todo",
+        f"- **Opened**: {today}",
+        "- **Effort**: XS · **Owner**: — · **Due**: —",
+        "- **Origin**: release notes of the kiln releases crossed (`kiln update`)",
+        "",
+        "What kiln cannot guess, to fill in right after the update (`/kiln:update`):",
+        *actions,
+    ])  # fmt: skip
+    text = NEXT_FREE.sub(f"Next free: T-{number + 1:02d}", text, count=1)
+    text = text.replace(CRITICAL_HEADING, f"{CRITICAL_HEADING}\n{ticket}\n", 1)
+    path.write_text(text)
+    return ticket_id

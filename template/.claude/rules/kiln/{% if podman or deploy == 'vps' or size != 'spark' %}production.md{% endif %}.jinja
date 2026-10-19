@@ -1,0 +1,48 @@
+{%- set level = {'spark': 0, 'ember': 1, 'flame': 2, 'blaze': 3}[size] -%}
+{%- set server = backend in ['django', 'fastapi'] or frontend in ['nuxt', 'next', 'streamlit', 'dash'] -%}
+---
+paths:
+  - "**/Containerfile"
+  - "compose.yaml"
+  - "config/**"
+  - "scripts/**"
+  - ".github/**"
+  - "docs/operations/**"
+---
+<!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten. -->
+# Delivery and operations
+
+- **[FAST-CI]** The full CI runs in under 10 minutes; a flaky test is quarantined and fixed within
+  the week, never re-run until it passes.
+{%- if podman %}
+- **[IMAGES-BY-DIGEST]** Every container base image is pinned by its `@sha256:` digest, never by
+  a moving tag alone.
+- **[HARDENED-CONTAINERS]** Rootless containers and a non-root user, a read-only file system
+  outside declared volumes, `cap_drop: ALL`, no secret in the image nor in its layers.
+{%- endif %}
+{%- if server %}
+- **[HEALTH-PROBES]** Each service exposes a liveness probe and a readiness probe; the second one
+  really checks its dependencies (database, cache).
+{%- endif %}
+{%- if level >= 2 or deploy == 'vps' %}
+- **[TESTED-BACKUPS]** A backup never restored does not exist: the restore is repeated at regular
+  intervals and timed.
+- **[REVERSIBLE-DEPLOYMENT]** Every deployment can be undone in one command, without data loss: a
+  deployment that migrates the schema is undone by restoring the backup taken just before.
+{%- endif %}
+{%- if level >= 2 %}
+- **[SBOM]** Each deployed image produces its bill of materials (CycloneDX or SPDX), kept with
+  the release.
+- **[ALERT-ON-SYMPTOMS]** Alerts fire on what users suffer (error rate, latency, a job queue that
+  grows), not on internal causes (CPU, memory).
+{%- endif %}
+{%- if level >= 3 %}
+- **[SLO]** Each critical journey has a service level objective in numbers (availability, p95
+  latency) and an error budget. An exhausted budget freezes features in favour of reliability.
+- **[OPENTELEMETRY]** OpenTelemetry distributed traces (W3C `traceparent` propagation) from the
+  request to background jobs and third-party APIs
+{%- if backend in ['django', 'fastapi'] %}; the `X-Request-ID` ([CORRELATION]) is their
+  correlation attribute{% endif %}.
+- **[FEATURE-FLAGS]** A risky feature ships off behind a flag, then turns on without a
+  redeployment. A flag has a removal date; past it, it goes.
+{%- endif %}

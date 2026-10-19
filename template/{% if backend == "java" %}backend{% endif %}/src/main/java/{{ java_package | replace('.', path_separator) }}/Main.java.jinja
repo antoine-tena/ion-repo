@@ -1,0 +1,30 @@
+package {{ java_package }};
+
+import {{ java_package }}.greeting.GreetingService;
+import java.io.PrintStream;
+import java.util.Objects;
+
+/**
+ * Entry point: reads the arguments, delegates to the service and writes the answer ([LAYERS]).
+ * No business logic here.
+ */
+public final class Main {
+
+    static final int EXIT_OK = 0;
+
+    private Main() {
+    }
+
+    public static void main(String[] args) {
+        System.exit(run(args, System.out));
+    }
+
+    static int run(String[] args, PrintStream out) {
+        Objects.requireNonNull(args, "args");
+        Objects.requireNonNull(out, "out");
+        var greetingService = new GreetingService();
+        var name = args.length == 0 ? "" : args[0];
+        out.println(greetingService.greet(name));
+        return EXIT_OK;
+    }
+}

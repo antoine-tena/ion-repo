@@ -1,33 +1,34 @@
 name: Python
 
-# Qualité d'un projet Python géré par uv, quel que soit son framework (FastAPI, données,
-# Streamlit, Dash) : ruff, mypy (configuration stricte du pyproject.toml), pytest avec un plancher
-# de couverture. PostgreSQL lancé par podman au besoin. Un dépôt peut en appeler plusieurs, un par
-# dossier (backend Python et frontend Streamlit, par exemple).
+# Quality of a Python project managed by uv, whatever its framework (FastAPI, data, Streamlit,
+# Dash): ruff, mypy (strict configuration of pyproject.toml), pytest with a coverage floor.
+# PostgreSQL run by podman when needed. A repo may call it several times, once per directory (a
+# Python backend and a Streamlit frontend, for example).
 on:
   workflow_call:
     inputs:
-      dossier:
+      directory:
+        description: Directory of the uv project
         type: string
         default: backend
-      base:
-        description: Nom de la base PostgreSQL de test
+      database:
+        description: Name of the PostgreSQL test database
         type: string
         default: app
       postgres:
-        description: Image PostgreSQL (vide = pas de base)
+        description: PostgreSQL image (empty = no database)
         type: string
         default: ""
       env:
-        description: Variables du projet pour toutes les étapes, une par ligne (CLE=valeur)
+        description: Project variables for every step, one per line (KEY=value)
         type: string
         default: ""
       mypy:
-        description: Lancer mypy dans le dossier
+        description: Run mypy in the directory
         type: boolean
         default: true
-      plancher:
-        description: Couverture minimale des lignes, en pour cent (0 = pas de plancher)
+      coverage-floor:
+        description: Minimum line coverage, in percent (0 = no floor)
         type: number
         default: 80
 
@@ -37,8 +38,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      # kiln à la version exacte de ce workflow : ses actions et la commande charte en viennent
-      # (retiré aussitôt, pour que les contrôles du projet ne le voient pas).
+      # kiln at the exact version of this workflow, for its actions (removed at once, so that
+      # the project's checks never see it).
       - uses: actions/checkout@v7
         with:
           repository: antoine-tena/kiln
@@ -47,12 +48,12 @@ jobs:
       - uses: ./.kiln/actions/services
         if: inputs.postgres != ''
         with:
-          base: ${{ inputs.base }}
+          database: ${{ inputs.database }}
           postgres: ${{ inputs.postgres }}
-      - name: Retrait de kiln du dossier du projet
+      - name: Remove kiln from the project directory
         run: rm -rf .kiln
 
-      - name: Variables du projet
+      - name: Project variables
         if: inputs.env != ''
         env:
           VARIABLES: ${{ inputs.env }}
@@ -61,33 +62,33 @@ jobs:
       - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
-          package-directory: ./${{ inputs.dossier }}
+          package-directory: ./${{ inputs.directory }}
 
-      - name: Dépendances
+      - name: Dependencies
         run: uv sync --locked
-        working-directory: ./${{ inputs.dossier }}
+        working-directory: ./${{ inputs.directory }}
 
       - name: ruff
         run: |
           uv run ruff check .
           uv run ruff format --check .
-        working-directory: ./${{ inputs.dossier }}
+        working-directory: ./${{ inputs.directory }}
 
       - name: mypy
         if: inputs.mypy
         run: uv run mypy .
-        working-directory: ./${{ inputs.dossier }}
+        working-directory: ./${{ inputs.directory }}
 
       - name: pytest
         run: >-
           uv run pytest --cov --cov-branch --cov-report=xml --cov-report=term:skip-covered
-          --cov-fail-under=${{ inputs.plancher }}
-        working-directory: ./${{ inputs.dossier }}
+          --cov-fail-under=${{ inputs.coverage-floor }}
+        working-directory: ./${{ inputs.directory }}
 
-      - name: Publier la couverture
+      - name: Publish the coverage
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ inputs.dossier }}-coverage
-          path: ${{ inputs.dossier }}/coverage.xml
+          name: ${{ inputs.directory }}-coverage
+          path: ${{ inputs.directory }}/coverage.xml
           if-no-files-found: ignore

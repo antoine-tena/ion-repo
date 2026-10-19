@@ -1,8 +1,8 @@
-"""`kiln waive` : liste, ajoute ou renouvelle une dérogation de `kiln-waivers.toml`.
+"""`kiln waive`: lists, adds or renews a waiver of `kiln-waivers.toml`.
 
-La commande remplit ce qu'on oublie à la main (auteur, dates, palier) et refuse ce que `charte`
-refuserait. Elle ne touche qu'à l'entrée visée : le reste du fichier, commentaires compris,
-reste tel quel.
+The command fills in what one forgets by hand (author, dates, tier) and refuses what `charter`
+would refuse. It only touches the entry concerned: the rest of the file, comments included,
+stays as is.
 """
 
 import datetime
@@ -13,23 +13,25 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from kiln import ui
-from kiln.charte.charte import derogations
-from kiln.charte.moteur import Depot
-from kiln.charte.waivers import NEVER, NOT_WAIVABLE, TIERS_DAYS, WAIVERS_FILE, max_days
+from kiln.charter.cli import waivers_of
+from kiln.charter.config import load
+from kiln.charter.repo import Repo
+from kiln.charter.waivers import NEVER, TIERS_DAYS, WAIVERS_FILE, is_waivable, max_days
+from kiln.renames import rule_id
 from kiln.shell import KilnError
 
 RULE_ID = re.compile(r"[A-Z0-9+-]+")
-TIERS = ", ".join(map(str, TIERS_DAYS[:-1])) + f" puis {TIERS_DAYS[-1]}"
+TIERS = ", ".join(map(str, TIERS_DAYS[:-1])) + f" then {TIERS_DAYS[-1]}"
 HEADER = f"""\
-# Dérogations de ce repo aux règles de kiln (CLAUDE.md [DEROGATIONS]), vérifiées par `charte`.
-# kiln ne réécrit jamais ce fichier ; `kiln waive` y ajoute ou renouvelle une entrée.
-# Durée au plus : {TIERS} jours, palier suivant à chaque renouvellement.
+# This repo's waivers of kiln's rules ([WAIVERS]), checked by `charter`.
+# kiln never rewrites this file; `kiln waive` adds or renews an entry.
+# Duration at most: {TIERS} days, next tier at each renewal.
 """
 
 
 @dataclass(frozen=True)
 class WaiveRequest:
-    target: str  # identifiant de règle, ou chemin d'un fichier à figer
+    target: str  # rule identifier, or path of a file to freeze
     reason: str
     paths: tuple[str, ...] = ()
     renew: bool = False
@@ -38,28 +40,27 @@ class WaiveRequest:
 
 
 def show_waivers(root: Path) -> None:
-    waivers = derogations(_depot(root))
+    waivers = waivers_of(_repo(root))
     if not (waivers.actives or waivers.errors):
-        ui.note(f"Aucune dérogation ({WAIVERS_FILE}). Ajouter : kiln waive <RÈGLE> --reason …")
+        ui.note(f"No waiver ({WAIVERS_FILE}). To add one: kiln waive <RULE> --reason …")
         return
     lines = [
-        f"- {w.label} : {w.reason} ({w.by}, jusqu'au {w.until or 'jamais'}, "
-        f"{w.renewals} renouvellement(s))"
+        f"- {w.label}: {w.reason} ({w.by}, until {w.until or 'never'}, {w.renewals} renewal(s))"
         for w in waivers.actives
     ]
     lines += [f"! {message}" for message in waivers.warnings + waivers.errors]
-    ui.panel(f"Dérogations ({WAIVERS_FILE})", lines)
+    ui.panel(f"Waivers ({WAIVERS_FILE})", lines)
 
 
 def waive(root: Path, request: WaiveRequest, today: datetime.date | None = None) -> None:
     today = today or datetime.date.today()
     if not request.reason.strip():
-        raise KilnError("une dérogation se justifie : --reason « pourquoi »")
+        raise KilnError('a waiver needs a reason: --reason "why"')
     is_rule = RULE_ID.fullmatch(request.target) is not None
-    if is_rule and request.target in NOT_WAIVABLE:
-        raise KilnError(f"[{request.target}] ne se déroge pas")
+    if is_rule and not is_waivable(request.target):
+        raise KilnError(f"[{request.target}] cannot be waived")
     if not is_rule and request.paths:
-        raise KilnError("--paths ne va qu'avec une règle ; un fichier se fige en entier")
+        raise KilnError("--paths only goes with a rule; a file is frozen whole")
     path = root / WAIVERS_FILE
     text = path.read_text("utf-8") if path.exists() else HEADER
     blocks = _split(text)
@@ -73,9 +74,9 @@ def waive(root: Path, request: WaiveRequest, today: datetime.date | None = None)
         None,
     )
     if request.renew and index is None:
-        raise KilnError(f"aucune dérogation à renouveler pour {request.target}")
+        raise KilnError(f"no waiver to renew for {request.target}")
     if not request.renew and index is not None:
-        raise KilnError(f"{request.target} est déjà dérogée : --renew pour la prolonger")
+        raise KilnError(f"{request.target} is already waived: --renew to extend it")
     renewals = 0 if index is None else _renewals(blocks[index]) + 1
     until = NEVER if request.permanent else today + datetime.timedelta(days=max_days(renewals))
     entry = {
@@ -95,23 +96,23 @@ def waive(root: Path, request: WaiveRequest, today: datetime.date | None = None)
         blocks[index] = block
     previous = path.read_text("utf-8") if path.exists() else None
     path.write_text(_join(blocks), "utf-8")
-    problems = [e for e in derogations(_depot(root)).errors if request.target in e]
+    target = rule_id(request.target) if is_rule else request.target
+    problems = [error for error in waivers_of(_repo(root)).errors if target in error]
     if problems:
         _restore(path, previous)
-        raise KilnError("dérogation refusée : " + " ; ".join(problems))
+        raise KilnError("waiver refused: " + "; ".join(problems))
     ui.note(
-        f"{request.target} dérogée jusqu'au {until} ({WAIVERS_FILE}, à commiter). Si la règle "
-        "est fausse pour tout le monde : skill base:report-to-kiln, puis --upstream <lien>."
+        f"{request.target} waived until {until} ({WAIVERS_FILE}, to commit). If the rule is "
+        "wrong for everyone: skill /kiln:report, then --upstream <link>."
     )
 
 
-def _depot(root: Path) -> Depot:
-    config = root / "charte.toml"
-    return Depot(root, tomllib.loads(config.read_text("utf-8")) if config.exists() else {})
+def _repo(root: Path) -> Repo:
+    return Repo(root, load(root))
 
 
 def _split(text: str) -> list[str]:
-    """En-tête, puis un bloc par `[[waiver]]` (commentaires qui le suivent compris)."""
+    """Header, then one block per `[[waiver]]` (the comments that follow it included)."""
     parts = re.split(r"(?m)^(?=\[\[waiver\]\]\s*$)", text)
     return parts if parts else [""]
 
@@ -165,8 +166,8 @@ def _restore(path: Path, previous: str | None) -> None:
 
 
 def _git_user(root: Path) -> str:
-    """Auteur de la dérogation : `user.name` de git, « inconnu » s'il n'est pas réglé."""
+    """Author of the waiver: git's `user.name`, "unknown" if it is not set."""
     found = subprocess.run(
         ["git", "config", "user.name"], cwd=root, capture_output=True, text=True, check=False
     )
-    return found.stdout.strip() or "inconnu"
+    return found.stdout.strip() or "unknown"

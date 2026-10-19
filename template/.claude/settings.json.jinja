@@ -1,32 +1,39 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "env": {
-    "PROJET_NOM": "{{ nom }}",
-    "PROJET_BACK": "{{ 'backend' if backend != 'aucun' else '' }}",
-    "PROJET_FRONT": "{{ 'frontend' if frontend != 'aucun' else '' }}",
-    "PROJET_ENV_TEST": "{{ 'backend/.env' if backend in ['django', 'fastapi'] else '' }}"
+    "KILN_PROJECT": "{{ name }}",
+    "KILN_BACKEND_DIR": "{{ 'backend' if backend != 'none' else '' }}",
+    "KILN_FRONTEND_DIR": "{{ 'frontend' if frontend != 'none' else '' }}",
+    "KILN_TEST_ENV": "{{ 'backend/.env' if backend in ['django', 'fastapi'] else '' }}"
+{%- if deploy == 'vps' %},
+    "KILN_VPS": "{{ vps_host }}",
+    "KILN_VPS_DIR": "/opt/{{ name }}",
+    "KILN_VPS_BACKUPS": "/root/backups",
+    "KILN_SITE": "{{ site_url }}",
+    "KILN_API_HEALTH": "{{ prod_health_url or 'https://' ~ api_domain ~ '/api/health' }}",
+    "KILN_PROD_DOC": "docs/operations/production.md"
+{%- endif %}
   },
-{#- La marketplace kiln, sur GitHub (dépôt public), et le plugin base : Claude Code les propose à
-    qui ouvre le dépôt, puis les met à jour en arrière-plan à chaque lancement (autoUpdate, désactivé
-    par défaut pour une marketplace tierce). Une marketplace « kiln » déjà installée depuis un
-    dossier local garde sa source. #}
+{#- kiln's marketplace, on GitHub (public repository), at `main`, the state of its latest release:
+    Claude Code offers it with its plugins to whoever opens the repo, then updates them in the
+    background at each launch (autoUpdate, off by default for a third-party marketplace). A
+    "kiln" marketplace already installed from a local directory keeps its source. #}
   "extraKnownMarketplaces": {
     "kiln": {
       "source": {
         "source": "github",
-        "repo": "antoine-tena/kiln"
+        "repo": "antoine-tena/kiln",
+        "ref": "main"
       },
       "autoUpdate": true
     }
   },
-{%- set plugins = ['base@kiln'] + (['pile-django@kiln'] if backend == 'django' else []) + (['pile-nuxt@kiln'] if frontend == 'nuxt' else []) + (['serena@kiln'] if serena else []) %}
-{%- if plugins %}
+{%- set plugins = ['kiln@kiln'] + (['django@kiln'] if backend == 'django' else []) + (['nuxt@kiln'] if frontend == 'nuxt' else []) + (['vps@kiln'] if deploy == 'vps' else []) + (['serena@kiln'] if serena else []) %}
   "enabledPlugins": {
 {%- for plugin in plugins %}
     "{{ plugin }}": true{{ "," if not loop.last }}
 {%- endfor %}
   },
-{%- endif %}
   "permissions": {
     "deny": [
       "Read(./.env)",

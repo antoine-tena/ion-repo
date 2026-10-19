@@ -1,8 +1,8 @@
-"""PostgreSQL et Redis jetables pour `kiln ci`, comme l'action `actions/services` de kiln.
+"""Throwaway PostgreSQL and Redis for `kiln ci`, like kiln's `actions/services` action.
 
-Ports libres choisis au lancement et conteneurs nommés d'après le commit : deux `kiln ci` (ou la
-base de test du poste) ne se croisent jamais. Les conteneurs sont retirés en sortie, échec compris ;
-ceux d'un `kiln ci` tué (SIGKILL, fenêtre fermée) portent son PID et le suivant les retire.
+Free ports picked at launch and containers named after the commit: two `kiln ci` runs (or the
+machine's test database) never collide. Containers are removed on exit, failure included; those
+of a killed `kiln ci` (SIGKILL, closed window) carry its PID and the next run removes them.
 """
 
 import os
@@ -23,7 +23,7 @@ OWNER_LABEL = "kiln.ci.pid"
 
 @contextmanager
 def running_services(services: Services | None, prefix: str) -> Iterator[dict[str, str]]:
-    """Lance les bases du job et renvoie DATABASE_URL / REDIS_URL ; les retire en sortie."""
+    """Starts the job's databases and returns DATABASE_URL / REDIS_URL; removes them on exit."""
     containers: list[str] = []
     service_env: dict[str, str] = {}
     try:
@@ -40,7 +40,7 @@ def running_services(services: Services | None, prefix: str) -> Iterator[dict[st
 
 
 def remove_orphan_containers() -> int:
-    """Retire les conteneurs dont le `kiln ci` lanceur est mort ; renvoie leur nombre."""
+    """Removes the containers whose launching `kiln ci` is dead; returns their number."""
     listing = subprocess.run(
         ["podman", "ps", "-a", "--filter", f"label={OWNER_LABEL}",
          "--format", f'{{{{.Names}}}} {{{{index .Labels "{OWNER_LABEL}"}}}}'],
@@ -68,7 +68,7 @@ def is_alive(pid: int) -> bool:
 
 def _start_postgres(services: Services, container: str) -> str:
     port = free_port()
-    base = services.base
+    base = services.database
     _start(
         container,
         port,
@@ -97,7 +97,7 @@ def _start(
     ]  # fmt: skip
     completed = subprocess.run(command, capture_output=True, text=True, check=False)
     if completed.returncode != 0:
-        raise KilnError(f"podman n'a pas lancé {container} : {completed.stderr.strip()}")
+        raise KilnError(f"podman did not start {container}: {completed.stderr.strip()}")
 
 
 def _wait_until_ready(container: str, probe: list[str]) -> None:
@@ -106,7 +106,7 @@ def _wait_until_ready(container: str, probe: list[str]) -> None:
         if probe_run.returncode == 0:
             return
         time.sleep(READY_PAUSE_SECONDS)
-    raise KilnError(f"{container} ne répond pas après {READY_ATTEMPTS * READY_PAUSE_SECONDS} s")
+    raise KilnError(f"{container} does not answer after {READY_ATTEMPTS * READY_PAUSE_SECONDS} s")
 
 
 def free_port() -> int:

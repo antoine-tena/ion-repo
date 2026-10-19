@@ -1,16 +1,19 @@
-name: Services de test (podman)
+name: Test services (podman)
 description: >-
-  Lance PostgreSQL et, au besoin, Redis avec podman (jamais docker), attend qu'ils répondent et
-  pose DATABASE_URL et REDIS_URL dans l'environnement du job.
+  Runs PostgreSQL and, when asked, Redis with podman (never docker), waits until they answer and
+  sets DATABASE_URL and REDIS_URL in the environment of the job.
 inputs:
-  base:
-    description: Nom de la base, de son utilisateur et préfixe de son mot de passe
+  database:
+    description: Name of the database, of its user, and prefix of its password
     default: app
+  base:
+    description: Name before kiln 0.4.0 of `database`
+    default: ""
   postgres:
-    description: Image PostgreSQL (vide = pas de base)
+    description: PostgreSQL image (empty = no database)
     default: docker.io/library/postgres:16-alpine
   redis:
-    description: Image Redis (vide = pas de Redis)
+    description: Redis image (empty = no Redis)
     default: ""
 runs:
   using: composite
@@ -19,18 +22,19 @@ runs:
       if: inputs.postgres != ''
       shell: bash
       env:
-        BASE: ${{ inputs.base }}
+        DATABASE: ${{ inputs.base || inputs.database }}
         IMAGE: ${{ inputs.postgres }}
       run: |
         podman run -d --name ci-postgres -p 5432:5432 \
-          -e POSTGRES_USER="$BASE" -e POSTGRES_PASSWORD="${BASE}_password" -e POSTGRES_DB="$BASE" \
-          "$IMAGE"
+          -e POSTGRES_USER="$DATABASE" -e POSTGRES_PASSWORD="${DATABASE}_password" \
+          -e POSTGRES_DB="$DATABASE" "$IMAGE"
         for _ in $(seq 1 30); do
-          podman exec ci-postgres pg_isready -U "$BASE" >/dev/null 2>&1 && break
+          podman exec ci-postgres pg_isready -U "$DATABASE" >/dev/null 2>&1 && break
           sleep 2
         done
-        podman exec ci-postgres pg_isready -U "$BASE"
-        echo "DATABASE_URL=postgres://${BASE}:${BASE}_password@localhost:5432/${BASE}" >> "$GITHUB_ENV"
+        podman exec ci-postgres pg_isready -U "$DATABASE"
+        url="postgres://${DATABASE}:${DATABASE}_password@localhost:5432/${DATABASE}"
+        echo "DATABASE_URL=$url" >> "$GITHUB_ENV"
 
     - name: Redis
       if: inputs.redis != ''

@@ -1,4 +1,4 @@
-"""Création du dépôt GitHub, protection de main et develop, invitations de l'équipe."""
+"""Creation of the GitHub repo, protection of main and develop, invitations of the team."""
 
 import json
 import shutil
@@ -17,8 +17,8 @@ MAIN_RULESET_NAME = "Protection main"
 DEVELOP_RULESET_NAME = "Protection develop"
 REPOSITORY_ADMIN_ROLE_ID = 5
 
-# main garde le seul commit initial : verrouillée, personne n'y pousse, sauf l'admin qui peut la
-# réécrire. develop, branche de travail et d'intégration, ne se supprime ni ne se réécrit.
+# main keeps the single initial commit: locked, nobody pushes to it, except the admin who may
+# rewrite it. develop, the work and integration branch, can be neither deleted nor rewritten.
 DEVELOP_RULESET = {
     "name": DEVELOP_RULESET_NAME,
     "target": "branch",
@@ -45,7 +45,7 @@ MAIN_RULESET = {
 
 
 def login() -> str | None:
-    """Compte GitHub connecté à gh ; None sans gh, sans connexion ou sans réseau."""
+    """GitHub account logged in to gh; None without gh, login or network."""
     if shutil.which("gh") is None:
         return None
     try:
@@ -64,34 +64,34 @@ def login() -> str | None:
 
 
 def can_publish() -> bool:
-    """GitHub est-il joignable pour créer le dépôt ? Sans gh, ou hors terminal sans connexion, on
-    s'en passe en le disant (`kiln publish` le fera plus tard) ; au terminal, la connexion est
-    proposée."""
+    """Can GitHub be reached to create the repo? Without gh, or outside a terminal without a
+    login, kiln goes without and says so (`kiln publish` will do it later); in a terminal, the
+    login is offered."""
     if shutil.which("gh") is None:
-        ui.note(f"GitHub : gh absent, dépôt non créé. Plus tard : {INSTALL_GH}, puis kiln publish.")
+        ui.note(f"GitHub: no gh, repo not created. Later: {INSTALL_GH}, then kiln publish.")
         return False
     if _is_logged_in():
         return True
     if not sys.stdin.isatty():
-        ui.note("GitHub : gh n'est pas connecté, dépôt non créé. Plus tard : kiln publish.")
+        ui.note("GitHub: gh is not logged in, repo not created. Later: kiln publish.")
         return False
     ensure_logged_in()
     return True
 
 
 def ensure_logged_in() -> None:
-    """Vérifie la connexion de gh avant de générer quoi que ce soit ; au terminal, la propose."""
+    """Checks gh's login before generating anything; in a terminal, offers it."""
     if _is_logged_in():
         return
     if not sys.stdin.isatty():
         raise KilnError(
-            f"gh n'est pas connecté à GitHub : lancer `gh auth login --web` ({LOGIN_URL}), "
-            "ou `kiln new … --no-github`"
+            f"gh is not logged in to GitHub: run `gh auth login --web` ({LOGIN_URL}), "
+            "or `kiln new … --no-github`"
         )
-    step(f"GitHub : connexion (ouvrir {LOGIN_URL} et saisir le code affiché)")
+    step(f"GitHub: login (open {LOGIN_URL} and enter the code shown)")
     run(["gh", "auth", "login", "--web", "--git-protocol", "https"], Path.cwd(), live=True)
     if not _is_logged_in():
-        raise KilnError(f"connexion à GitHub non aboutie : réessayer sur {LOGIN_URL}")
+        raise KilnError(f"GitHub login did not complete: try again at {LOGIN_URL}")
 
 
 def _is_logged_in() -> bool:
@@ -100,19 +100,19 @@ def _is_logged_in() -> bool:
 
 
 def publish(root: Path, repository: str, team_logins: list[str]) -> None:
-    step(f"GitHub : dépôt privé {repository}")
+    step(f"GitHub: private repo {repository}")
     run(["gh", "repo", "create", repository, "--private", "--source", "."], root)
     run(["git", "push", "-q", "-u", "origin", "main", "develop"], root)
     run(["gh", "repo", "edit", repository, "--default-branch", "develop"], root)
-    step("GitHub : protection de main et develop")
+    step("GitHub: protection of main and develop")
     _post_ruleset(root, repository, MAIN_RULESET)
     _post_ruleset(root, repository, DEVELOP_RULESET)
-    step("GitHub : alertes et correctifs de sécurité (Dependabot)")
+    step("GitHub: security alerts and fixes (Dependabot)")
     _enable_security_updates(root, repository)
     owner = repository.split("/")[0]
     for login in team_logins:
         if login != owner:
-            step(f"GitHub : invitation de {login}")
+            step(f"GitHub: inviting {login}")
             _gh_put(root, f"repos/{repository}/collaborators/{login}", "permission=push")
 
 
@@ -122,7 +122,7 @@ def _gh_put(root: Path, endpoint: str, *fields: str) -> None:
 
 
 def _enable_security_updates(root: Path, repository: str) -> None:
-    """Dependabot ne propose que les correctifs de sécurité ; le reste passe par kiln update."""
+    """Dependabot only offers security fixes; the rest goes through kiln update."""
     _gh_put(root, f"repos/{repository}/vulnerability-alerts")
     _gh_put(root, f"repos/{repository}/automated-security-fixes")
 
@@ -136,4 +136,4 @@ def _post_ruleset(root: Path, repository: str, ruleset: Mapping[str, object]) ->
         check=False,
     )
     if completed.returncode != 0:
-        raise KilnError("création du ruleset refusée par GitHub")
+        raise KilnError("GitHub refused to create the ruleset")

@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 MARKETPLACE = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text())
 PLUGINS = [plugin["name"] for plugin in MARKETPLACE["plugins"]]
-# Ce qui renvoie à un skill (`base:fusion`) : la charte et les fichiers générés, les plugins
+# Ce qui renvoie à un skill (`/kiln:merge`) : la charte et les fichiers générés, les plugins
 # eux-mêmes, les messages de la commande, la documentation.
 CITING = ("template", "plugins", "src", "README.md", "README.fr.md", "CONTRIBUTING.md", "CLAUDE.md")
 TEXT_SUFFIXES = {".md", ".py", ".jinja", ".json", ".yml", ".yaml", ".toml", ".sh", ".txt"}
@@ -39,3 +39,27 @@ def test_each_skill_is_named_after_its_folder() -> None:
         front_matter = skill.read_text().split("---")[1]
         assert re.search(rf"^name: {re.escape(skill.parent.name)}$", front_matter, re.M), skill
         assert re.search(r"^description: \S", front_matter, re.M), skill
+
+
+# Paths of the `base` plugin before kiln 0.4: sessions started before an update keep calling
+# them in the main tree, and a missing hook blocks every tool call.
+LEGACY_PATHS = (
+    "plugins/base/hooks/garde-branche.py",
+    "plugins/base/hooks/rtk.py",
+    "plugins/base/hooks/protege-fichiers.py",
+    "plugins/base/hooks/controle-fichier.py",
+    "plugins/base/hooks/kiln-a-jour.py",
+    "plugins/base/hooks/relances.py",
+    "plugins/base/scripts/statusline.py",
+    "plugins/base/scripts/preparer-worktree.sh",
+)
+
+
+def test_former_plugin_paths_still_exist() -> None:
+    assert [path for path in LEGACY_PATHS if not (ROOT / path).is_file()] == []
+
+
+def test_hooks_point_at_existing_files() -> None:
+    for hooks in (ROOT / "plugins").glob("*/hooks/hooks.json"):
+        for path in re.findall(r"\$\{CLAUDE_PLUGIN_ROOT\}/([^\"\\]+)", hooks.read_text()):
+            assert (hooks.parent.parent / path).is_file(), (hooks, path)

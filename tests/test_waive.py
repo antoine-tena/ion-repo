@@ -17,7 +17,7 @@ TODAY = datetime.date(2026, 10, 16)
 @pytest.fixture
 def repo(tmp_path: Path) -> Path:
     subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
-    (tmp_path / "charte.toml").write_text('[cliquets.taille-fichier]\nid = "TAILLE-FICHIER"\n')
+    (tmp_path / "charter.toml").write_text('[ratchets.file-size]\nid = "FILE-SIZE"\n')
     (tmp_path / "ci.yml").write_text("a\n")
     return tmp_path
 
@@ -44,7 +44,7 @@ def test_author_is_unknown_without_git_user(repo: Path, monkeypatch: pytest.Monk
 
     waive(repo, WaiveRequest("TAILLE-FICHIER", "repris tel quel"), TODAY)
 
-    assert entries(repo)[0]["by"] == "inconnu"
+    assert entries(repo)[0]["by"] == "unknown"
 
 
 def test_renewal_moves_to_the_next_tier_and_keeps_comments(repo: Path) -> None:
@@ -77,11 +77,11 @@ def test_file_is_frozen(repo: Path) -> None:
 @pytest.mark.parametrize(
     ("request_", "message"),
     [
-        (WaiveRequest("SECRETS", "pressé"), "ne se déroge pas"),
-        (WaiveRequest("TAILLE-FICHIER", " "), "se justifie"),
-        (WaiveRequest("TAILLE-FICHIER", "x", renew=True), "aucune dérogation à renouveler"),
-        (WaiveRequest("INVENTEE", "x"), "règle inconnue"),
-        (WaiveRequest("absent.yml", "x"), "aucun fichier"),
+        (WaiveRequest("SECRETS", "pressé"), "cannot be waived"),
+        (WaiveRequest("TAILLE-FICHIER", " "), "needs a reason"),
+        (WaiveRequest("TAILLE-FICHIER", "x", renew=True), "no waiver to renew"),
+        (WaiveRequest("INVENTEE", "x"), "no such rule"),
+        (WaiveRequest("absent.yml", "x"), "no file for"),
     ],
 )
 def test_refused_waiver_leaves_no_file(repo: Path, request_: WaiveRequest, message: str) -> None:

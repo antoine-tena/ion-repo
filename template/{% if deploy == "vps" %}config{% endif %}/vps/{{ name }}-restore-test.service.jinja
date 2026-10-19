@@ -1,0 +1,7 @@
+[Unit]
+Description={{ title }}: Restore test of the latest backup
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/{{ name }}-restore-test

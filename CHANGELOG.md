@@ -1,45 +1,67 @@
-# Nouveautés de kiln
+# What's new in kiln
 
-Une entrée par version, la plus récente en tête : `## vX.Y.Z — date`, puis une ligne par
-changement visible (`- …`), cassants en tête. `kiln update` montre les entrées des versions
-qu'un projet passe ; la skill `base:version` rédige celle de la version qu'elle sort, sur la
-branche `release/vX.Y.Z`, avant sa première candidate.
+One entry per release, the most recent first: `## vX.Y.Z — date`, then one line per visible
+change (`- …`), breaking changes first (`**Breaking**`). `kiln update` shows the entries of the
+releases a project crosses; `kiln version cut` drafts the entry of the release it cuts, on the
+`release/vX.Y.Z` branch, rewritten before its first candidate. Names are those of their release:
+entries before v0.4.0 quote kiln's former French names.
+
+## v0.4.0 — 2026-10-19
+- **Breaking**: kiln speaks English. `kiln update` converts a generated project in one go, and the names of 0.3 are still read until the next minor.
+- **Breaking**: the template's questions are in English (`size`, `name`, `owner`, `team`, `project_type`…); `kiln update` hands Copier the new names and still reads the old answers.
+- **Breaking**: the charter is in English: `charte.toml` becomes `charter.toml` (bans, ratchets, floors) and rules take English identifiers. `kiln update` rewrites the file with its budgets and the project's own rules, and the rule identifiers cited in waivers and in the code; an adopted repo keeps its `charte.toml`, read under its French names, and `charte` stays an alias of the `charter` command.
+- **Breaking**: commands and options in English: `contrat` → `contract`, `set --poste` → `set --global`, `ci --sauter/--sans-pousser/--garder/--statut` → `--skip/--no-push/--keep/--status`; the old names still work, with a warning.
+- **Breaking**: kiln's instructions for Claude move to `.claude/rules/kiln/`: the project and charter rules always loaded, each stack's rules only when Claude touches its files, production and browser security rules from the `ember` size on. The root `CLAUDE.md` now belongs to the project; `kiln update` carries over what the project added to the old one.
+- **Breaking**: plugins renamed: `base`, `pile-django`, `pile-nuxt`, `vps-podman` become `kiln`, `django`, `nuxt`, `vps`, with English skill names (`/kiln:merge`, `/kiln:release`, `/kiln:cleanup`, `/kiln:review`, `/kiln:update`, `/kiln:adopt`, `/kiln:report`…). The catalogue moves existing installs to the new names, and the former hook and status line paths keep working.
+- **Breaking**: reusable workflows `charter.yml`, `security.yml` and `api-contract.yml`, with English inputs; `charte.yml`, `securite.yml` and `contrat-api.yml` stay as relays, and the old inputs are still accepted. The `kiln ci` note starts with `kiln ci: success` or `kiln ci: failure`; notes of 0.3 are still read.
+- **Breaking**: machine settings and status line styles in English (`channel=internal`, `plain`, `band`, `classic`…); the old keys and values are still read in `config.toml` and accepted by `kiln set`.
+- `kiln new` in three questions (what you build, the size, the team's language), then the next steps; `--all-questions` for the whole questionnaire.
+- Generated code, comments, scripts and workflows in English; what users read (pages, messages, README) follows the project's language.
+- The hook after each edit checks the edited file alone (`charter file`, about 0.15 s), and says how to waive a rule; ratchets and floors run at commit and in CI.
+- At session start, kiln's logo shows the new release and its main changes above a shorter update question.
+- `kiln version cut` and `kiln version promote`: kiln's own release in two commands, with a GitHub Release for each promoted version.
+- Only a release of kiln updates a repo: a kiln installed from a checkout ahead of its tag (or with changes, or from a branch) is refused by `kiln update`, `new` and `adopt`, with the command that installs the release, instead of mixing its code with an older template. `kiln --version` says what is installed, not what the checkout became since, and the session start replaces such a tool by the release.
+- `kiln update --rehearse` plays the update on a throwaway clone with its checks and only reports, the repo untouched; `kiln update --all --rehearse` does it for every repo.
+- At session start, Claude is told when the last CI of the integration branch is red, to say so before any new work.
+- `/kiln:merge` runs the repo's checks before merging and reads GitHub's verdict on the merge.
+- `kiln update` opens a ticket for what only the team can complete after an update (`After updating:` in a commit), and a backlog ticket can be reserved for one GitHub account.
+- `kiln version cut` waits for GitHub's CI of the release branch and tags only on green; `kiln version` and `promote` hold back a candidate whose CI is not green; a fix of a candidate bumps the plugins it touches.
 
 ## v0.3.4 — 2026-10-16
-- Le modèle n'est jamais plus récent que l'outil installé : `kiln update` applique la version de kiln installée (les conversions d'une version à l'autre vivent dans l'outil), refuse de ramener un repo à une version plus ancienne que la sienne, et signale qu'une version plus récente est sortie.
-- `kiln new` sans `gh`, ou hors terminal sans connexion, crée le projet en local, et `kiln publish` crée ensuite le dépôt GitHub. Le propriétaire par défaut vient des réglages du poste ou du compte connecté à gh ; un projet sans équipe n'a ni CODEOWNERS ni section « Équipe ».
-- La CI générée cherche les secrets par le workflow `secrets.yml` (gitleaks figé et vérifié, sans la licence qu'exige gitleaks-action pour une organisation) ; `kiln ci` le rejoue avec le gitleaks du poste.
-- `kiln` répond en 0,12 s au lieu de 0,5 s (commandes importées à la demande) ; le README généré installe kiln depuis PyPI.
-- Fiabilité : tests de bout en bout (chaque framework généré, installé et contrôlé ; un projet des versions précédentes mis à jour sans conflit), joués sur chaque branche de version ; CI de kiln aussi sous macOS.
+- The template is never newer than the installed tool: `kiln update` applies the installed kiln release (conversions from one release to the next live in the tool), refuses to take a repo back to a release older than its own, and says when a newer release is out.
+- `kiln new` without `gh`, or outside a terminal without a login, creates the project locally, and `kiln publish` creates the GitHub repository afterwards. The default owner comes from the machine's settings or from the account logged in to gh; a project without a team has neither CODEOWNERS nor a "Team" section.
+- The generated CI looks for secrets through the `secrets.yml` workflow (gitleaks pinned and verified, without the license gitleaks-action requires for an organization); `kiln ci` replays it with the machine's gitleaks.
+- `kiln` answers in 0.12 s instead of 0.5 s (commands imported on demand); the generated README installs kiln from PyPI.
+- Reliability: end-to-end tests (each framework generated, installed and checked; a project of the previous releases updated without conflict), run on every release branch; kiln's CI on macOS too.
 
 ## v0.3.3 — 2026-10-16
-- `kiln completion bash` : script de complétion tiré des commandes et options de kiln, à activer par `eval "$(kiln completion bash)"` dans `~/.bashrc` (#41, merci @HarshRajSinghania).
-- Skill `good-first-issues` : garde ouvertes sur GitHub quelques issues pour débutants, tirées du backlog et réservées aux contributeurs extérieurs.
-- Correctifs : `kiln update` ne s'arrête plus sur un conflit dans `ci.yml` après la promotion d'une version (seul le `@<tag>` des workflows de kiln différait) ; `base:worktree` ne bute plus sur un repo sans fichier `.env` ; la mise à jour d'un kiln installé depuis un dossier retire aussi l'ancien outil `kiln`.
+- `kiln completion bash`: completion script drawn from kiln's commands and options, enabled by `eval "$(kiln completion bash)"` in `~/.bashrc` (#41, thanks @HarshRajSinghania).
+- `good-first-issues` skill: keeps a few beginner issues open on GitHub, drawn from the backlog and reserved for outside contributors.
+- Fixes: `kiln update` no longer stops on a conflict in `ci.yml` after a release is promoted (only the `@<tag>` of kiln's workflows differed); `base:worktree` no longer trips on a repo without a `.env` file; updating a kiln installed from a folder also removes the former `kiln` tool.
 
 ## v0.3.2 — 2026-10-16
-- `kiln adopt` fait suivre kiln à un repo existant, sans le régénérer ; le skill `adoption` trie avec l'utilisateur ce que la charte y trouve à redire, et l'ouverture de session le propose dans un repo à soi qui ne suit pas encore kiln.
-- Dérogations à la charte dans `kiln-waivers.toml`, avec un motif et une échéance croissante à chaque renouvellement : `kiln waive` les ajoute, renouvelle ou liste, `kiln update` épargne les fichiers figés et dit ce qu'il y aurait changé, `kiln status` compte celles de chaque repo.
-- Skill `relecture` : commits et diff d'une branche relus et rangés avant la fusion (`fusion` le lance), dépôt entier avant une version (`version` le lance) ; le hook `garde-branche` refuse un message de commit signé Claude.
-- Les questions de kiln en début de session suivent une politique commune : chaque « non » espace la suivante, chaque « oui » la rapproche.
-- `kiln --version` (#39, merci @SakarPaisen, première contribution extérieure).
-- Correctifs : `kiln update --all` dit « GitHub injoignable » en une ligne au lieu d'une trace Python, et un passage raté ne bloque plus le suivant avec un worktree laissé vide.
+- `kiln adopt` makes an existing repo follow kiln, without regenerating it; the `adoption` skill sorts out with the user what the charter finds there, and the session start offers it in a repo of one's own that does not follow kiln yet.
+- Charter waivers in `kiln-waivers.toml`, with a reason and a deadline that grows at each renewal: `kiln waive` adds, renews or lists them, `kiln update` spares frozen files and says what it would have changed, `kiln status` counts each repo's.
+- `relecture` skill: a branch's commits and diff reviewed and tidied before the merge (`fusion` runs it), the whole repo before a release (`version` runs it); the `garde-branche` hook refuses a commit message signed by Claude.
+- kiln's questions at session start follow a common policy: each "no" spaces out the next one, each "yes" brings it closer.
+- `kiln --version` (#39, thanks @SakarPaisen, first outside contribution).
+- Fixes: `kiln update --all` says "GitHub unreachable" in one line instead of a Python traceback, and a failed run no longer blocks the next one with a worktree left empty.
 
 ## v0.3.1 — 2026-10-16
-- **Cassant** : le suivi du travail passe en anglais, `docs/a-faire/` devient `docs/backlog/` (tickets `T-NN`, skill `base:backlog` à la place de `base:a-faire`) ; `kiln update` déplace l'ancien dossier.
-- Numérotation comme Claude Code : en 0.x, chaque version monte le correctif, cassante comprise ; la mineure ne monte que pour une étape (`kiln version --minor`). Une version est promue dès que la suivante est prête en candidate, sans délai d'attente.
-- kiln s'installe depuis PyPI : paquet `kiln-cli` (la commande reste `kiln`), publié au tag de chaque version promue ; `kiln doctor` et `maj-kiln` proposent la mise à jour par là.
-- Nouveaux skills : `report-to-kiln` (un défaut de kiln rencontré dans un repo devient une issue ou une PR, publiée seulement avec l'accord de l'utilisateur), `token` (jeton d'un service dans `.<service>/`, collé sans s'afficher), `contribution` (traiter la PR d'un contributeur extérieur).
-- La CI générée lance gitleaks et peut être appelée par d'autres workflows (`workflow_call`).
-- Status line : quatre styles aux couleurs de kiln, en anglais (`kiln set statusline=…`), nom de session, RAM et cœurs occupés.
-- Correctifs : `kiln doctor` propose la mise à jour au tag de la version, colonne du modèle de `kiln status` assez large.
+- **Breaking**: work tracking moves to English, `docs/a-faire/` becomes `docs/backlog/` (tickets `T-NN`, skill `base:backlog` instead of `base:a-faire`); `kiln update` moves the old folder.
+- Numbering like Claude Code: in 0.x, each release bumps the patch, breaking ones included; the minor only moves for a milestone (`kiln version --minor`). A release is promoted as soon as the next one is ready as a candidate, without a waiting period.
+- kiln installs from PyPI: package `kiln-cli` (the command stays `kiln`), published at the tag of each promoted release; `kiln doctor` and `maj-kiln` offer the update that way.
+- New skills: `report-to-kiln` (a defect of kiln met in a repo becomes an issue or a PR, posted only with the user's consent), `token` (a service's token in `.<service>/`, pasted without showing), `contribution` (handling an outside contributor's PR).
+- The generated CI runs gitleaks and can be called by other workflows (`workflow_call`).
+- Status line: four styles in kiln's colours, in English (`kiln set statusline=…`), session name, RAM and busy cores.
+- Fixes: `kiln doctor` offers the update at the release's tag, `kiln status` template column wide enough.
 
 ## v0.3.0 — 2026-10-15
-- Première version publiée. Semver en 0.x : une version sort d'abord en candidate (`-rc.N`) pour les postes au canal `interne`, puis est promue quand la suivante est prête et qu'elle a tenu trois jours ; `kiln version` dit où en sont les candidates.
-- Les projets citent les workflows de kiln au tag exact dont ils partent ; `kiln update` le fait avancer et montre les nouveautés de chaque version passée. Le hook de début de session propose l'outil puis le repo à chaque version.
-- `kiln status` dit de quelle version part chaque repo (`f611f82 → v0.3.0`) ; `kiln set canal=interne` (réglage du poste) fait suivre les candidates.
-- Nouvelle interface : four rieur en bannière, écran d'accueil par sections, roue animée et durée pour chaque commande externe, bilan encadré des étapes ; aucune couleur hors terminal, `KILN_VERBOSE=1` pour la sortie complète.
-- `kiln doctor` : diagnostic du poste et du repo, chaque problème avec la commande qui le corrige.
-- `kiln dev` : sorties des serveurs entrelacées, préfixées par service en couleur.
-- `kiln update --all` fusionne directement chaque repo dont les contrôles passent, sans PR.
-- Backend Java (Maven), skill `maj-kiln`, lien `.claude/kiln` vers le plugin, réglages du poste par `kiln set`.
+- First published release. Semver in 0.x: a release first comes out as a candidate (`-rc.N`) for machines on the `interne` channel, then is promoted when the next one is ready and it has held for three days; `kiln version` says where the candidates stand.
+- Projects quote kiln's workflows at the exact tag they start from; `kiln update` moves it forward and shows what is new in each release crossed. The session-start hook offers the tool, then the repo, at each release.
+- `kiln status` says which release each repo starts from (`f611f82 → v0.3.0`); `kiln set canal=interne` (machine setting) follows the candidates.
+- New interface: laughing kiln as a banner, sectioned welcome screen, spinner and duration for each external command, boxed recap of the steps; no colour outside a terminal, `KILN_VERBOSE=1` for the full output.
+- `kiln doctor`: diagnosis of the machine and the repo, each problem with the command that fixes it.
+- `kiln dev`: servers' output interleaved, prefixed by service in colour.
+- `kiln update --all` merges each repo whose checks pass directly, without a PR.
+- Java backend (Maven), `maj-kiln` skill, `.claude/kiln` link to the plugin, machine settings through `kiln set`.

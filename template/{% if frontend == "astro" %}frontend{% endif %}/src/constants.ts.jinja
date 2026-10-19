@@ -1,4 +1,8 @@
-// [ZERO-MAGIE] : textes, seuils, statuts, couleurs et délais du site, nommés une seule fois.
-export const SITE_LOCALE = 'fr';
-export const SITE_TITLE = "{{ titre | replace('\\', '\\\\') | replace('"', '\\"') }}";
+// [NO-MAGIC-VALUES]: texts, thresholds, statuses, colours and delays of the site, named once.
+export const SITE_LOCALE = '{{ 'fr' if language_ui == 'fr' else 'en' }}';
+export const BACKEND_CONNECTING = '{{ 'Connexion au backend…' if language_ui == 'fr' else 'Connecting to the backend…' }}';
+export const BACKEND_DOWN = '{{ 'Le backend ne répond pas : lancez-le avec kiln dev.' if language_ui == 'fr' else 'The backend does not answer: start it with kiln dev.' }}';
+export const BACKEND_UP = '{{ 'Backend joignable.' if language_ui == 'fr' else 'Backend reachable.' }}';
+export const BACKEND_UNHEALTHY = '{{ 'Le backend répond mal.' if language_ui == 'fr' else 'The backend answers badly.' }}';
+export const SITE_TITLE = "{{ title | replace('\\', '\\\\') | replace('"', '\\"') }}";
 export const SITE_DESCRIPTION = "{{ description | replace('\\', '\\\\') | replace('"', '\\"') }}";

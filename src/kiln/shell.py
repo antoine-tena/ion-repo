@@ -1,4 +1,4 @@
-"""Lancement des commandes externes (git, uv, pnpm, gh) et messages à l'utilisateur."""
+"""Running external commands (git, uv, pnpm, gh) and messages to the user."""
 
 import os
 import shutil
@@ -9,32 +9,32 @@ from kiln import ui
 
 
 class KilnError(Exception):
-    """Erreur attendue, affichée sans trace à l'utilisateur."""
+    """Expected error, shown to the user without a traceback."""
 
 
 def step(title: str) -> None:
     ui.step(title)
 
 
-# Sortie complète des commandes, sans roue animée (diagnostic).
+# Full output of the commands, without the spinner (diagnosis).
 VERBOSE_VARIABLE = "KILN_VERBOSE"
 
 
 def run(
     command: list[str], cwd: Path, env: dict[str, str] | None = None, *, live: bool = False
 ) -> None:
-    """Lance une commande ; échoue si elle échoue. `live` : sortie affichée telle quelle, pour
-    une commande interactive ou dont la sortie est le résultat."""
+    """Runs a command; fails if it fails. `live`: output shown as is, for an interactive command
+    or one whose output is the result."""
     returncode = run_status(command, cwd, env, live=live)
     if returncode != 0:
-        raise KilnError(f"échec de `{' '.join(command)}` (code {returncode})")
+        raise KilnError(f"`{' '.join(command)}` failed (code {returncode})")
 
 
 def run_status(
     command: list[str], cwd: Path, env: dict[str, str] | None = None, *, live: bool = False
 ) -> int:
-    """Lance une commande et renvoie son code. Dans un terminal, une roue animée remplace sa
-    sortie, affichée en entier seulement si elle échoue."""
+    """Runs a command and returns its code. In a terminal, a spinner replaces its output, shown
+    in full only if it fails."""
     if live or not ui.is_styled() or os.environ.get(VERBOSE_VARIABLE):
         return subprocess.run(command, cwd=cwd, env=env, check=False).returncode
     spinner = ui.Spinner(" ".join(command))
@@ -62,32 +62,30 @@ def run_status(
 
 
 def capture(command: list[str], cwd: Path) -> str:
-    """Lance une commande et renvoie sa sortie standard, sans espaces autour."""
+    """Runs a command and returns its standard output, stripped."""
     completed = subprocess.run(command, cwd=cwd, capture_output=True, text=True, check=False)
     if completed.returncode != 0:
-        raise KilnError(f"échec de `{' '.join(command)}` : {completed.stderr.strip()}")
+        raise KilnError(f"`{' '.join(command)}` failed: {completed.stderr.strip()}")
     return completed.stdout.strip()
 
 
 INSTALL_HINTS = {
     "git": "https://git-scm.com/downloads",
     "uv": "curl -LsSf https://astral.sh/uv/install.sh | sh",
-    "pnpm": "npm install -g pnpm (Node 24 requis)",
-    "gh": "https://cli.github.com, puis gh auth login",
+    "pnpm": "npm install -g pnpm (Node 24 required)",
+    "gh": "https://cli.github.com, then gh auth login",
 }
 
 
 def require_tools(*tool_names: str) -> None:
     missing_tools = [name for name in tool_names if shutil.which(name) is None]
     if missing_tools:
-        hints = "\n".join(f"  {name} : {INSTALL_HINTS.get(name, '')}" for name in missing_tools)
-        raise KilnError(f"outils manquants :\n{hints}")
+        hints = "\n".join(f"  {name}: {INSTALL_HINTS.get(name, '')}" for name in missing_tools)
+        raise KilnError(f"missing tools:\n{hints}")
 
 
 def repo_root(start: Path) -> Path:
     try:
         return Path(capture(["git", "rev-parse", "--show-toplevel"], start))
     except KilnError:
-        raise KilnError(
-            f"{start} n'est pas dans un dépôt git : se placer dans un repo, ou kiln new"
-        ) from None
+        raise KilnError(f"{start} is not in a git repo: go into a repo, or kiln new") from None

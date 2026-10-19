@@ -1,4 +1,4 @@
-"""Réglages du backend, lus dans l'environnement et `.env` ([SECRETS])."""
+"""Settings of the backend, read from the environment and `.env` ([SECRETS])."""
 
 from functools import lru_cache
 

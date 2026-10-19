@@ -1,1 +1,1 @@
-"""Chaîne de données : charger et valider (sources), transformer (transforms), tracer (figures)."""
+"""Data chain: load and validate (sources), transform (transforms), draw (figures)."""

@@ -1,4 +1,4 @@
-"""`kiln install` : prépare un poste après le clone, selon la stack ; relançable sans risque."""
+"""`kiln install`: sets up a machine after the clone, by stack; safe to run again."""
 
 import os
 import secrets
@@ -16,27 +16,27 @@ SECRET_KEY_VARIABLE = "DJANGO_SECRET_KEY"
 SECRET_KEY_BYTES = 50
 ENV_FILE_MODE = 0o600
 
-# Conseils d'installation par système (jamais pip ni docker).
+# Install hints by system (never pip or docker).
 SYSTEM_HINTS: dict[str, dict[str, str]] = {
     "java": {
         "linux": "sudo apt install openjdk-25-jdk",
         "wsl": "sudo apt install openjdk-25-jdk",
         "macos": "brew install openjdk@25",
     },
-    # Le wrapper Maven décompresse sa distribution avec unzip.
+    # The Maven wrapper unpacks its distribution with unzip.
     "unzip": {
         "linux": "sudo apt install unzip",
         "wsl": "sudo apt install unzip",
-        "macos": "unzip est fourni par macOS",
+        "macos": "unzip ships with macOS",
     },
     "pnpm": {
-        "linux": "corepack enable pnpm (Node 24, par mise ou le gestionnaire de paquets)",
-        "wsl": "corepack enable pnpm (Node 24, par mise ou apt)",
+        "linux": "corepack enable pnpm (Node 24, from mise or the package manager)",
+        "wsl": "corepack enable pnpm (Node 24, from mise or apt)",
         "macos": "brew install node@24 && corepack enable pnpm",
     },
     "podman": {
         "linux": "sudo apt install podman",
-        "wsl": "sudo apt install podman (dans WSL, pas Podman Desktop sous Windows)",
+        "wsl": "sudo apt install podman (inside WSL, not Podman Desktop on Windows)",
         "macos": "brew install podman && podman machine init && podman machine start",
     },
 }
@@ -50,26 +50,26 @@ def install_project(root: Path) -> None:
     if stack.has_podman:
         _ensure_uv_tool("podman-compose")
     for directory in stack.python_dirs:
-        step(f"{directory} : dépendances Python")
+        step(f"{directory}: Python dependencies")
         run(["uv", "sync", "--locked"], root / directory)
     if stack.maven_dir is not None:
-        step(f"{stack.maven_dir} : Maven et dépendances (wrapper)")
+        step(f"{stack.maven_dir}: Maven and dependencies (wrapper)")
         run([MAVEN_WRAPPER, "-B", "-q", "-DskipTests", "package"], root / stack.maven_dir)
     if stack.has_api:
-        step("backend : .env")
+        step("backend: .env")
         ensure_env_file(root / BACKEND_DIR)
     if stack.backend == "django":
-        step("backend : migrations")
+        step("backend: migrations")
         run(["uv", "run", "python", "manage.py", "migrate"], root / BACKEND_DIR)
     if stack.pnpm_dir is not None:
-        step(f"{stack.pnpm_dir} : dépendances pnpm")
+        step(f"{stack.pnpm_dir}: pnpm dependencies")
         run(["pnpm", "install", "--frozen-lockfile"], root / stack.pnpm_dir)
-    step("Garde-fous git (pre-commit) et status line")
+    step("git guards (pre-commit) and status line")
     run(["pre-commit", "install"], root)
     apply_statusline_settings(root)
     ensure_statusline(config)
-    command_name = answers_if_any(root).get("nom", "<commande>")
-    ui.success(f"Prêt. Lancer le projet : {_launch_hint(stack, command_name)}")
+    command_name = answers_if_any(root).get("name", "<command>")
+    ui.success(f"Ready. Run the project: {_launch_hint(stack, command_name)}")
 
 
 def _launch_hint(stack: Stack, command_name: object) -> str:
@@ -90,8 +90,8 @@ def _require_stack_tools(stack: Stack, config: UserConfig) -> None:
     missing = [tool for tool in needed if shutil.which(tool) is None]
     if missing:
         system = config.system or "linux"
-        hints = "\n".join(f"  {tool} : {SYSTEM_HINTS[tool][system]}" for tool in missing)
-        raise KilnError(f"outils manquants :\n{hints}")
+        hints = "\n".join(f"  {tool}: {SYSTEM_HINTS[tool][system]}" for tool in missing)
+        raise KilnError(f"missing tools:\n{hints}")
     if stack.has_podman and config.system == "macos":
         _require_podman_machine()
 
@@ -99,23 +99,23 @@ def _require_stack_tools(stack: Stack, config: UserConfig) -> None:
 def _require_podman_machine() -> None:
     completed = subprocess.run(["podman", "info"], capture_output=True, check=False)
     if completed.returncode != 0:
-        raise KilnError("podman ne répond pas : podman machine start (ou podman machine init)")
+        raise KilnError("podman does not answer: podman machine start (or podman machine init)")
 
 
 def _ensure_uv_tool(tool: str, *extras: str) -> None:
-    """Outil en ligne de commande installé par uv (jamais pip), avec ses greffons."""
+    """Command-line tool installed by uv (never pip), with its plugins."""
     if shutil.which(tool) is not None and not extras:
         return
-    step(f"Outil {tool} (uv tool)")
+    step(f"{tool} tool (uv tool)")
     with_options = [option for extra in extras for option in ("--with", extra)]
     run(["uv", "tool", "install", tool, *with_options], Path.cwd())
 
 
 def ensure_env_file(backend_dir: Path) -> None:
-    """backend/.env tiré de .env.example, avec une clé secrète locale ; conservé s'il existe."""
+    """backend/.env drawn from .env.example, with a local secret key; kept if it exists."""
     env_file = backend_dir / ".env"
     if env_file.exists():
-        print("backend/.env existe déjà, conservé.")
+        print("backend/.env already exists, kept.")
         return
     template_lines = (backend_dir / ".env.example").read_text().splitlines()
     secret_key = secrets.token_urlsafe(SECRET_KEY_BYTES)
@@ -127,4 +127,4 @@ def ensure_env_file(backend_dir: Path) -> None:
     ]
     env_file.write_text("\n".join(env_lines) + "\n")
     os.chmod(env_file, ENV_FILE_MODE)
-    print("backend/.env créé avec une clé secrète locale.")
+    print("backend/.env created with a local secret key.")

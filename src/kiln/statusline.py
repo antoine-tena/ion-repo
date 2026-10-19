@@ -1,10 +1,10 @@
-"""Status line de Claude Code : le style choisi pour le poste et les réglages propres au repo.
+"""Claude Code's status line: the style chosen for this machine and the repo's own settings.
 
-Le style (`kiln set statusline=…`, clé du poste) est lu par le script du plugin `base` à chaque
-affichage ; kiln ne touche à la `statusLine` de `~/.claude/settings.json` que pour y poser son
-script ou l'en retirer, jamais avec `perso`. Les réglages du repo vivent dans les réponses de
-kiln (`statusline_ci`, `url_sante_prod`), donc partagés par l'équipe, et sont posés en
-`git config statusline.*` à chaque `kiln install`, `kiln new` et `kiln set`.
+The style (`kiln set statusline=…`, a machine key) is read by the `kiln` plugin's script at each
+render; kiln touches the `statusLine` of `~/.claude/settings.json` only to set its script or to
+remove it, never with `custom`. The repo's settings live in kiln's answers (`statusline_ci`,
+`prod_health_url`), so the team shares them, and are set as `git config statusline.*` at each
+`kiln install`, `kiln new` and `kiln set`.
 """
 
 import json
@@ -12,7 +12,9 @@ from dataclasses import replace
 from pathlib import Path
 
 from kiln.config import (
+    CUSTOM_STATUSLINE,
     DEFAULT_STATUSLINE,
+    NO_STATUSLINE,
     STATUSLINE_STYLES,
     UserConfig,
     config_path,
@@ -21,14 +23,16 @@ from kiln.config import (
 from kiln.shell import KilnError, run
 from kiln.stack import answers_if_any
 
-SCRIPT = Path("plugins") / "base" / "scripts" / "statusline.py"
+SCRIPT = Path("plugins") / "kiln" / "scripts" / "statusline.py"
+# Its path before kiln 0.4 (plugin `base`), still recognized.
+LEGACY_SCRIPT = Path("plugins") / "base" / "scripts" / "statusline.py"
 
 
 def apply_statusline_settings(root: Path) -> None:
     answers = answers_if_any(root)
     show_ci = answers.get("statusline_ci", True) is not False
     run(["git", "config", "statusline.ci", "true" if show_ci else "false"], root)
-    prod_url = str(answers.get("url_sante_prod") or "")
+    prod_url = str(answers.get("prod_health_url") or "")
     if prod_url:
         run(["git", "config", "statusline.prod-url", prod_url], root)
 
@@ -38,60 +42,61 @@ def claude_settings_path() -> Path:
 
 
 def kiln_script() -> Path:
-    """Le script du plugin `base`, là où Claude Code a posé le catalogue kiln."""
+    """The `kiln` plugin's script, where Claude Code put the kiln marketplace."""
     known = Path.home() / ".claude" / "plugins" / "known_marketplaces.json"
     try:
         location = json.loads(known.read_text())["kiln"]["installLocation"]
     except (OSError, ValueError, KeyError) as error:
         raise KilnError(
-            "catalogue de plugins kiln absent : claude plugin marketplace add antoine-tena/kiln"
+            "kiln plugin marketplace missing: claude plugin marketplace add antoine-tena/kiln"
         ) from error
     script = Path(location) / SCRIPT
     if not script.exists():
-        raise KilnError(f"script de status line introuvable : {script}")
+        raise KilnError(f"status line script not found: {script}")
     return script
 
 
 def is_kiln_statusline(entry: object) -> bool:
-    return isinstance(entry, dict) and SCRIPT.as_posix() in str(entry.get("command", ""))
+    command = str(entry.get("command", "")) if isinstance(entry, dict) else ""
+    return any(script.as_posix() in command for script in (SCRIPT, LEGACY_SCRIPT))
 
 
 def apply_statusline_choice(choice: str, settings_path: Path | None = None) -> str:
-    """Accorde la `statusLine` de Claude Code au choix ; renvoie ce qui a été fait."""
+    """Aligns Claude Code's `statusLine` with the choice; returns what was done."""
     path = settings_path or claude_settings_path()
-    if choice == "perso":
-        return "statusLine de Claude Code laissée telle quelle (perso)."
+    if choice == CUSTOM_STATUSLINE:
+        return f"Claude Code's statusLine left as is ({CUSTOM_STATUSLINE})."
     settings = json.loads(path.read_text()) if path.exists() else {}
     current = settings.get("statusLine")
-    previous = "" if current is None or is_kiln_statusline(current) else f" (remplace : {current})"
-    if choice == "aucune":
+    previous = "" if current is None or is_kiln_statusline(current) else f" (replaces: {current})"
+    if choice == NO_STATUSLINE:
         if current is None:
-            return "Aucune status line."
+            return "No status line."
         del settings["statusLine"]
-        message = f"statusLine retirée de {path}{previous}."
+        message = f"statusLine removed from {path}{previous}."
     elif choice in STATUSLINE_STYLES:
         if is_kiln_statusline(current):
-            return f"Status line kiln, style {choice}."
+            return f"kiln status line, {choice} style."
         settings["statusLine"] = {"type": "command", "command": f'python3 "{kiln_script()}"'}
-        message = f"Status line kiln, style {choice}, posée dans {path}{previous}."
+        message = f"kiln status line, {choice} style, set in {path}{previous}."
     else:
-        raise KilnError(f"statusline inconnue : {choice}")
+        raise KilnError(f"unknown statusline: {choice}")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(settings, indent=2, ensure_ascii=False) + "\n")
     return message
 
 
 def ensure_statusline(config: UserConfig) -> UserConfig:
-    """Au premier `kiln install` : le style par défaut, ou `perso` si l'utilisateur a déjà sa
-    propre status line ; le choix est gardé dans la configuration du poste."""
+    """At the first `kiln install`: the default style, or `custom` when the user already has a
+    status line of their own; the choice is kept in the machine settings."""
     if config.statusline is not None:
         return config
     path = claude_settings_path()
     settings = json.loads(path.read_text()) if path.exists() else {}
     current = settings.get("statusLine")
     own = current is not None and not is_kiln_statusline(current)
-    updated = replace(config, statusline="perso" if own else DEFAULT_STATUSLINE)
+    updated = replace(config, statusline=CUSTOM_STATUSLINE if own else DEFAULT_STATUSLINE)
     print(apply_statusline_choice(str(updated.statusline)))
     save_config(updated)
-    print(f"Choix enregistré dans {config_path()} (changer : kiln set statusline=…).")
+    print(f"Choice saved in {config_path()} (change: kiln set statusline=…).")
     return updated
