@@ -244,3 +244,19 @@ def test_a_released_template_pins_its_workflows_to_its_version(tmp_path: Path) -
 
     workflow = yaml.safe_load((tmp_path / "demo/.github/workflows/ci.yml").read_text())
     assert workflow["jobs"]["contrat"]["uses"].endswith("contrat-api.yml@v9.9.9")
+
+
+def test_a_project_without_owner_has_no_codeowners_nor_team(tmp_path: Path) -> None:
+    project_dir = tmp_path / "demo"
+    copier.run_copy(
+        str(TEMPLATE_DIR),
+        project_dir,
+        data={"nom": "demo", "backend": "fastapi", "frontend": "aucun"},
+        defaults=True,
+        vcs_ref="HEAD",
+        quiet=True,
+    )
+
+    assert not (project_dir / ".github/CODEOWNERS").exists()
+    assert "## Équipe" not in (project_dir / "README.md").read_text()
+    assert "proprietaire: ''" in (project_dir / ".copier-answers.yml").read_text()

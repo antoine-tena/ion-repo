@@ -1,7 +1,7 @@
 [project]
 # Sur PyPI, `kiln` est pris : la distribution s'appelle kiln-cli, la commande reste `kiln`.
 name = "kiln-cli"
-version = "0.3.3"
+version = "0.3.4"
 description = "Make Claude Code build production-grade repos, and keep them that way"
 readme = "README.md"
 license = "MIT"
@@ -56,8 +56,10 @@ dev = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-# Le rendu du modèle (une génération par stack) se répartit sur tous les cœurs.
-addopts = "-n auto"
+# Le rendu du modèle (une génération par stack) se répartit sur tous les cœurs. Les tests de
+# bout en bout (lents, en réseau) ne tournent que demandés : `uv run pytest -m e2e`.
+addopts = "-n auto -m 'not e2e'"
+markers = ["e2e: end to end, slow and networked (uv run pytest -m e2e)"]
 
 [tool.ruff]
 line-length = 100

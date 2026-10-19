@@ -8,7 +8,7 @@ import pytest
 from packaging.version import Version
 from plumbum import ProcessExecutionError
 
-from kiln import cli, ui
+from kiln import cli, github, ui
 from kiln.banner import LOGO, _project_summary, render_logo
 from kiln.config import UserConfig
 from kiln.deps import _major_bounds
@@ -20,12 +20,20 @@ from kiln.rules import charter_rules, verified_rules
 from kiln.settings import parse_assignments, remove_replaced_artifacts
 from kiln.shell import KilnError
 from kiln.stack import Stack, answers_if_any, load_stack, stack_from_answers
+from kiln.template import DEFAULT_TEMPLATE_SOURCE, template_revision
 from kiln.update import (
     apply_template,
+    check_tool_not_older,
     git_failure,
     replace_legacy_source,
 )
-from kiln.versions import installed_version, notes_between, release_version
+from kiln.versions import (
+    installed_version,
+    notes_between,
+    release_version,
+    tag_of,
+    tool_release_tag,
+)
 
 
 def test_legacy_answers_mean_django_and_nuxt() -> None:
@@ -344,3 +352,71 @@ def test_promoted_candidate_does_not_conflict_on_kiln_workflow_refs(
         assert "ci.yml" not in subprocess.check_output(
             ["git", "diff", "--name-only", "--diff-filter=U"], cwd=project, text=True
         )
+
+
+class _FakeDistribution:
+    def __init__(self, version: str, direct_url: str = "") -> None:
+        self.version = version
+        self._direct_url = direct_url
+
+    def read_text(self, name: str) -> str | None:
+        return self._direct_url if name == "direct_url.json" else None
+
+
+@pytest.mark.parametrize(
+    ("version", "direct_url", "expected"),
+    [
+        ("0.3.4", "", "v0.3.4"),
+        ("0.4.0rc2", "", "v0.4.0-rc.2"),
+        (
+            "0.3.3",
+            '{"url": "https://github.com/antoine-tena/kiln", '
+            '"vcs_info": {"vcs": "git", "requested_revision": "v0.3.3-rc.2", "commit_id": "abc"}}',
+            "v0.3.3-rc.2",
+        ),
+        (
+            "0.3.3",
+            '{"url": "https://github.com/antoine-tena/kiln", '
+            '"vcs_info": {"vcs": "git", "requested_revision": "develop", "commit_id": "abc123"}}',
+            "abc123",
+        ),
+    ],
+)
+def test_the_template_never_outruns_the_installed_tool(
+    monkeypatch: pytest.MonkeyPatch, version: str, direct_url: str, expected: str
+) -> None:
+    monkeypatch.setattr(
+        "kiln.versions._installed_distribution", lambda: _FakeDistribution(version, direct_url)
+    )
+
+    assert tool_release_tag() == expected
+    assert template_revision(DEFAULT_TEMPLATE_SOURCE) == expected
+    assert template_revision("/un/dossier/local") == "HEAD"
+
+
+def test_a_tag_is_read_back_from_a_describe_output() -> None:
+    assert tag_of("v0.4.0-rc.2-3-gabc1234") == "v0.4.0-rc.2"
+    assert tag_of("v0.3.4") == "v0.3.4"
+    assert tag_of("abc1234") is None
+
+
+def test_update_refuses_to_take_a_repo_back_to_an_older_kiln(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    (tmp_path / ".copier-answers.yml").write_text(
+        f"_commit: v0.3.5\n_src_path: {DEFAULT_TEMPLATE_SOURCE}\n"
+    )
+    monkeypatch.setattr("kiln.update.tool_release_tag", lambda: "v0.3.4")
+
+    with pytest.raises(KilnError, match="plus récent que l'outil"):
+        check_tool_not_older(tmp_path)
+
+
+def test_without_gh_the_project_is_created_without_github(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr("kiln.github.shutil.which", lambda _: None)
+
+    assert github.can_publish() is False
+    assert github.login() is None
+    assert "kiln publish" in capsys.readouterr().out

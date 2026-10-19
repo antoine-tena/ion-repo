@@ -36,10 +36,12 @@ description:
   help: Une phrase qui dit ce que fait le projet
   default: "{{ titre }}."
 
+# Propriétaire et équipe : kiln les pré-remplit (réglages du poste, sinon le compte connecté à
+# gh) ; vides, le projet n'a ni CODEOWNERS ni équipe dans son README.
 proprietaire:
   type: str
-  help: Compte ou organisation GitHub propriétaire du dépôt
-  default: antoine-tena
+  help: Compte ou organisation GitHub propriétaire du dépôt (vide si aucun)
+  default: ""
 
 equipe:
   type: yaml

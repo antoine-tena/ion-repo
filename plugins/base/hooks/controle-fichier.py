@@ -60,7 +60,7 @@ def charter_command(path: Path) -> tuple[list[str], Path] | None:
     if not top:
         return None
     if (Path(top) / "charte.toml").exists():
-        # `charte` vient de kiln (uv tool install git+https://github.com/antoine-tena/kiln).
+        # `charte` vient de kiln (uv tool install kiln-cli).
         moteur = shutil.which("charte")
         return ([moteur], Path(top)) if moteur else None
     script = os.environ.get("PROJET_CHARTE")

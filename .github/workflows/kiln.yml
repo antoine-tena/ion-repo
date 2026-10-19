@@ -1,21 +1,30 @@
 name: kiln
 
-# Contrôles de kiln lui-même : ruff, mypy, tests du modèle (génération de chaque combinaison).
+# Checks of kiln itself: ruff, mypy, the test suite (every stack combination is rendered), on
+# Linux and macOS. End-to-end tests (every framework generated, installed and checked; projects
+# of earlier releases updated to this one) run on release branches, every night, and on demand.
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, "release/**" ]
   pull_request:
     branches: [ main, develop ]
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
 
 jobs:
   kiln:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
-      - name: Dépendances
+      - name: Dependencies
         run: uv sync --locked
       - name: ruff
         run: |
@@ -25,3 +34,31 @@ jobs:
         run: uv run mypy src tests
       - name: Tests
         run: uv run pytest -q
+
+  e2e:
+    if: >-
+      github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+      || startsWith(github.ref, 'refs/heads/release/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Earlier releases are rendered from their tags.
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: pnpm
+        run: corepack enable pnpm
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+      - name: Dependencies
+        run: uv sync --locked
+      - name: End-to-end tests
+        run: uv run pytest -m e2e -n 4 -q

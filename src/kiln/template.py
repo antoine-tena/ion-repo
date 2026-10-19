@@ -2,6 +2,8 @@
 
 import os
 
+from kiln.versions import tool_release_tag
+
 DEFAULT_TEMPLATE_SOURCE = "https://github.com/antoine-tena/kiln.git"
 TEMPLATE_SOURCE_VARIABLE = "KILN_TEMPLATE"
 # Révision d'un modèle local ou explicite (développement de kiln) : son dernier commit.
@@ -16,6 +18,10 @@ def template_source(explicit_source: str | None) -> str:
 
 
 def template_revision(source: str) -> str | None:
-    """Le modèle publié se prend à sa dernière version (None : Copier choisit le tag le plus
-    récent) ; un modèle local ou explicite, à son dernier commit."""
-    return None if source == DEFAULT_TEMPLATE_SOURCE else LOCAL_TEMPLATE_REVISION
+    """Le modèle publié se prend à la version de l'outil installé, jamais plus récent : les
+    conversions d'une version à l'autre vivent dans le code de l'outil. Si l'outil ne se situe
+    pas, la dernière version (None : Copier choisit le tag le plus récent). Un modèle local ou
+    explicite se prend à son dernier commit."""
+    if source != DEFAULT_TEMPLATE_SOURCE:
+        return LOCAL_TEMPLATE_REVISION
+    return tool_release_tag()

@@ -6,30 +6,15 @@ import sys
 import time
 from collections.abc import Sequence
 from pathlib import Path
-from typing import NoReturn
+from typing import TYPE_CHECKING, NoReturn
 
-from kiln import (
-    adopt,
-    banner,
-    check,
-    ci,
-    contract,
-    dev,
-    doctor,
-    fleet,
-    install,
-    new,
-    poste,
-    release,
-    settings,
-    ui,
-    update,
-    waive,
-)
+from kiln import banner, ui
 from kiln.config import load_config
 from kiln.shell import KilnError, repo_root
-from kiln.stack import load_stack
 from kiln.versions import installed_version
+
+if TYPE_CHECKING:
+    from kiln import new
 
 EXIT_FAILURE = 1
 PROJECT_NAME = re.compile(r"[a-z][a-z0-9-]*")
@@ -41,7 +26,7 @@ FRONTENDS = ("nuxt", "next", "astro", "streamlit", "dash", "aucun")
 
 # Écran d'accueil : commandes par section ; le rôle de chacune vient de son aide argparse.
 COMMAND_GROUPS = (
-    ("Projet", ("new", "adopt", "install", "update", "set", "waive")),
+    ("Projet", ("new", "adopt", "install", "publish", "update", "set", "waive")),
     ("Au quotidien", ("dev", "check", "ci", "contrat", "doctor", "completion")),
     ("Tous les repos", ("status", "update --all", "version")),
 )
@@ -83,6 +68,7 @@ def build_parser() -> argparse.ArgumentParser:
     adopt_parser.add_argument("--size", choices=SIZES, help="envergure du projet (défaut : ember)")
     adopt_parser.add_argument("--template", help="source du modèle (chemin ou URL git)")
     commands.add_parser("install", help="préparer le poste après un clone")
+    commands.add_parser("publish", help="créer le dépôt GitHub privé et protéger ses branches")
     _add_update_command(commands)
     dev_parser = commands.add_parser("dev", help="lancer le projet en local")
     dev_parser.add_argument("--containers", action="store_true", help="toute la pile dans podman")
@@ -213,6 +199,8 @@ def _add_update_command(commands: argparse._SubParsersAction[argparse.ArgumentPa
 
 
 def _new_project_request(arguments: argparse.Namespace) -> new.NewProjectRequest:
+    from kiln import new
+
     directory = arguments.directory or Path(arguments.name or _ask_project_name())
     answers: dict[str, object] = {"nom": arguments.name or directory.name}
     if arguments.title:
@@ -270,50 +258,84 @@ BANNER_ACTIONS = {
 
 
 def dispatch(arguments: argparse.Namespace) -> None:
+    """Lance la commande ; chaque module est importé à la demande (copier, que tirent `new` et
+    `update`, coûte à lui seul 0,4 s, que `status`, `doctor` ou `--version` n'ont pas à payer)."""
     if arguments.command == "completion":
         print(generate_bash_completion())
         return
     _show_banner(arguments)
     if arguments.command == "new":
+        from kiln import new
+
         new.create_project(_new_project_request(arguments))
         return
     if arguments.command == "doctor":
+        from kiln import doctor
+
         doctor.run_doctor(Path.cwd())
         return
     if arguments.command == "version":
+        from kiln import release
+
         release.show_release_status(repo_root(Path.cwd()), milestone=arguments.minor)
         return
     if arguments.command == "status" or (arguments.command == "update" and arguments.all):
         _dispatch_fleet(arguments)
         return
     if arguments.command == "set" and (arguments.poste or not _is_in_repo()):
+        from kiln import poste
+
         poste.run_poste(arguments.assignments)
         return
-    root = _repo_root_or_hint()
-    if arguments.command == "adopt":
+    _dispatch_in_repo(arguments, _repo_root_or_hint())
+
+
+def _dispatch_in_repo(arguments: argparse.Namespace, root: Path) -> None:
+    """Commandes qui travaillent dans le repo courant."""
+    command = arguments.command
+    if command == "adopt":
+        from kiln import adopt
+
         adopt.adopt_project(
             root, size=arguments.size or adopt.DEFAULT_SIZE, template=arguments.template
         )
-    elif arguments.command == "install":
+    elif command == "install":
+        from kiln import install
+
         install.install_project(root)
-    elif arguments.command == "update":
+    elif command == "publish":
+        from kiln import new
+
+        new.publish_project(root)
+    elif command == "update":
+        from kiln import update
+
         update.update_project(
             root,
             should_update_template=not arguments.no_template,
             should_update_deps=not arguments.no_deps,
             allow_major=arguments.major,
         )
-    elif arguments.command == "dev":
+    elif command == "dev":
+        from kiln import dev
+
         dev.run_dev_servers(root, in_containers=arguments.containers)
-    elif arguments.command == "check":
+    elif command == "check":
+        from kiln import check
+
         check.check_project(root)
-    elif arguments.command == "ci":
+    elif command == "ci":
         _dispatch_ci(root, arguments)
-    elif arguments.command == "contrat":
+    elif command == "contrat":
+        from kiln import contract
+        from kiln.stack import load_stack
+
         contract.generate_api_contract(root, load_stack(root))
-    elif arguments.command == "waive":
+    elif command == "waive":
         _dispatch_waive(root, arguments)
-    elif arguments.command == "set":
+    elif command == "set":
+        from kiln import settings
+
         if arguments.assignments:
             settings.apply_settings(root, arguments.assignments)
         else:
@@ -333,6 +355,8 @@ def _repo_root_or_hint() -> Path:
     try:
         return repo_root(Path.cwd())
     except KilnError:
+        from kiln import fleet
+
         code_dir = load_config().code_dir
         names = (
             [str(repo.root.relative_to(code_dir)) for repo in fleet.find_repos(code_dir)]
@@ -358,6 +382,8 @@ def _show_banner(arguments: argparse.Namespace) -> None:
 
 
 def _dispatch_ci(root: Path, arguments: argparse.Namespace) -> None:
+    from kiln import ci
+
     if arguments.statut:
         if not ci.show_verdict(root, arguments.revision):
             sys.exit(EXIT_FAILURE)
@@ -377,6 +403,8 @@ def _dispatch_ci(root: Path, arguments: argparse.Namespace) -> None:
 
 
 def _dispatch_waive(root: Path, arguments: argparse.Namespace) -> None:
+    from kiln import waive
+
     if arguments.target is None:
         waive.show_waivers(root)
         return
@@ -394,6 +422,8 @@ def _dispatch_waive(root: Path, arguments: argparse.Namespace) -> None:
 
 
 def _dispatch_fleet(arguments: argparse.Namespace) -> None:
+    from kiln import fleet
+
     code_dir = load_config().code_dir
     fleet.require_code_dir(code_dir)
     if arguments.command == "status":

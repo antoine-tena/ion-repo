@@ -20,7 +20,16 @@ from kiln.rules import write_unverified_rules
 from kiln.shell import KilnError, capture, require_tools, run, step
 from kiln.stack import ANSWERS_FILE, load_stack, read_answers
 from kiln.template import DEFAULT_TEMPLATE_SOURCE, template_revision
-from kiln.versions import follows_candidates, notes_between, read_changelog
+from kiln.versions import (
+    follows_candidates,
+    latest_release,
+    notes_between,
+    read_changelog,
+    release_version,
+    tag_of,
+    tool_release_tag,
+    upgrade_command,
+)
 
 PROTECTED_BRANCHES = ("main", "develop")
 # Début d'un conflit laissé par Copier (`git merge-file`).
@@ -42,11 +51,13 @@ def update_project(
     require_tools("git", "uv")
     check_working_branch(root)
     if should_update_template:
+        check_tool_not_older(root)
         step("Architecture : évolutions du modèle")
         previous = template_commit(root)
         apply_template(root)
         show_release_notes(previous, template_commit(root))
         report_frozen_drift(root, _template_source(root), previous, template_commit(root))
+        mention_newer_release()
     stack = load_stack(root)
     if should_update_deps:
         update_dependencies(root, stack, allow_major=allow_major)
@@ -58,6 +69,30 @@ def update_project(
     report_changes(root)
     if should_check:
         check_project(root)
+
+
+def check_tool_not_older(root: Path) -> None:
+    """Refuse de ramener un repo à une version de kiln plus ancienne que celle dont il part
+    (mis à jour par un équipier qui a un kiln plus récent) : il faut d'abord monter l'outil."""
+    if _template_source(root) != DEFAULT_TEMPLATE_SOURCE:
+        return
+    project_ref = template_commit(root)
+    tool_tag = tool_release_tag()
+    project, tool = release_version(project_ref), release_version(tool_tag or "")
+    if project is not None and tool is not None and project > tool:
+        raise KilnError(
+            f"ce repo suit kiln {project_ref}, plus récent que l'outil installé ({tool_tag}) : "
+            f"{upgrade_command(tag_of(project_ref) or project_ref)}"
+        )
+
+
+def mention_newer_release() -> None:
+    """Une version de kiln plus récente que l'outil est sortie : le dire, avec la commande."""
+    tool = release_version(tool_release_tag() or "")
+    latest = latest_release()
+    newer = release_version(latest or "")
+    if tool is not None and newer is not None and newer > tool and latest is not None:
+        ui.note(f"kiln {latest} est sorti : {upgrade_command(latest)}, puis kiln update.")
 
 
 def apply_template(root: Path, answers: Mapping[str, object] | None = None) -> None:

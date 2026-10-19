@@ -37,7 +37,16 @@ DEFAULTS: Mapping[str, Mapping[str, str]] = {
         "rapports": "",
     },
     "securite": {"uv": "backend", "pnpm": "frontend", "version-pnpm": "", "niveau": "high"},
+    "secrets": {},
 }
+# gitleaks on the workstation (`mise use -g gitleaks`, `brew install gitleaks`): the same scan as
+# the `secrets` workflow, over the whole history.
+GITLEAKS_SCAN = """\
+if ! command -v gitleaks >/dev/null; then
+  echo "gitleaks absent : mise use -g gitleaks (ou brew install gitleaks)" >&2
+  exit 1
+fi
+gitleaks git --redact --no-banner --verbose ."""
 BACK_LANE = "back"
 FRONT_LANE = "front"
 
@@ -157,10 +166,15 @@ def _security(job: Job, inputs: Mapping[str, str]) -> Plan:
     return Plan(job, tuple(steps))
 
 
+def _secrets(job: Job, inputs: Mapping[str, str]) -> Plan:
+    return Plan(job, (Step("gitleaks (historique complet)", GITLEAKS_SCAN),))
+
+
 PLANNERS: Mapping[str, Callable[[Job, Mapping[str, str]], Plan]] = {
     "django": _django,
     "contrat-api": _contract,
     "charte": _charter,
     "pnpm": _pnpm,
     "securite": _security,
+    "secrets": _secrets,
 }

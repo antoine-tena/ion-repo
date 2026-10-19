@@ -13,7 +13,10 @@ sinon la branche par défaut d'`origin`.
    fusionnée (`git merge-base --is-ancestor <branche> origin/<intégration>`). Un worktree
    détaché (agents) : regarder si son HEAD est dans `origin/<intégration>`.
 3. Montrer un tableau : worktree, branche, fusionnée ?, modifications ?, dernier commit.
-   Classer en « supprimable » (fusionné et propre) et « à garder / à décider ».
+   Classer en « supprimable » (fusionné et propre) et « à garder / à décider » ; dans ce
+   dernier, signaler comme probablement oublié un worktree non fusionné sans commit depuis plus
+   de deux semaines, ou avec des modifications non commitées, et demander quoi en faire
+   (finir, garder, supprimer).
 4. **Demander confirmation**, puis pour les supprimables : `git worktree remove <wt>` et
    `git branch -d <branche>` (jamais `-D`, jamais `--force` sur un worktree modifié).
 5. Branches locales sans worktree fusionnées : proposer `git branch -d` de la même façon.

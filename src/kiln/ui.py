@@ -207,6 +207,7 @@ RECAP_TITLES = {
     "check": "Contrôles terminés",
     "set": "Paramètres appliqués",
     "contrat": "Contrat régénéré",
+    "publish": "Dépôt publié",
 }
 
 

@@ -5,6 +5,13 @@ changement visible (`- …`), cassants en tête. `kiln update` montre les entré
 qu'un projet passe ; la skill `base:version` rédige celle de la version qu'elle sort, sur la
 branche `release/vX.Y.Z`, avant sa première candidate.
 
+## v0.3.4 — 2026-10-16
+- Le modèle n'est jamais plus récent que l'outil installé : `kiln update` applique la version de kiln installée (les conversions d'une version à l'autre vivent dans l'outil), refuse de ramener un repo à une version plus ancienne que la sienne, et signale qu'une version plus récente est sortie.
+- `kiln new` sans `gh`, ou hors terminal sans connexion, crée le projet en local, et `kiln publish` crée ensuite le dépôt GitHub. Le propriétaire par défaut vient des réglages du poste ou du compte connecté à gh ; un projet sans équipe n'a ni CODEOWNERS ni section « Équipe ».
+- La CI générée cherche les secrets par le workflow `secrets.yml` (gitleaks figé et vérifié, sans la licence qu'exige gitleaks-action pour une organisation) ; `kiln ci` le rejoue avec le gitleaks du poste.
+- `kiln` répond en 0,12 s au lieu de 0,5 s (commandes importées à la demande) ; le README généré installe kiln depuis PyPI.
+- Fiabilité : tests de bout en bout (chaque framework généré, installé et contrôlé ; un projet des versions précédentes mis à jour sans conflit), joués sur chaque branche de version ; CI de kiln aussi sous macOS.
+
 ## v0.3.3 — 2026-10-16
 - `kiln completion bash` : script de complétion tiré des commandes et options de kiln, à activer par `eval "$(kiln completion bash)"` dans `~/.bashrc` (#41, merci @HarshRajSinghania).
 - Skill `good-first-issues` : garde ouvertes sur GitHub quelques issues pour débutants, tirées du backlog et réservées aux contributeurs extérieurs.

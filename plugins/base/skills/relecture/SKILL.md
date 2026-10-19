@@ -86,6 +86,11 @@ Run by `base:version` before the tag: the release note and the tag point to all 
   abandoned, open PR, in progress. Propose to delete the merged ones and to close or finish
   the abandoned ones; delete nothing on GitHub without the user's yes.
 - **Local branches and worktrees** already merged: `base:nettoyage`.
+- **Unmerged worktrees and local branches**: list each one with the age of its last commit and
+  whether it has uncommitted changes; flag as likely forgotten one untouched for more than two
+  weeks, or with uncommitted changes. Ask what to do with each (finish, keep for later, delete
+  with the user's yes). A warning only: work in progress never blocks the release, which ships
+  from the integration branch.
 - **Tags**: well formed for the project (`vX.Y.Z`, `-rc.N`), none on a commit outside
   `main` or a release branch.
 

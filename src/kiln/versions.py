@@ -52,6 +52,12 @@ def release_version(ref: str) -> Version | None:
         return None
 
 
+def tag_of(ref: str) -> str | None:
+    """Le tag de version d'une révision : `v0.4.0-rc.2` pour `v0.4.0-rc.2-3-gabc1234`."""
+    match = RELEASE_TAG.match(ref.strip())
+    return f"v{match.group(1)}" if match else None
+
+
 def follows_candidates() -> bool:
     """Le poste suit-il les candidates (canal `interne`) ?"""
     return load_config().channel == INTERNAL_CHANNEL
@@ -107,6 +113,60 @@ def upgrade_command(version: str) -> str:
     if install_source() == "pypi" and release is not None and not release.is_prerelease:
         return f'uv tool install --force "{PYPI_NAME}=={release}"'
     return f'uv tool install --force "git+{KILN_GIT_URL}@{version}"'
+
+
+def tool_release_tag() -> str | None:
+    """Tag de la version de kiln qu'est l'outil installé : le modèle ne doit jamais être plus
+    récent que lui, car les conversions d'une version à l'autre vivent dans son code.
+
+    - PyPI : `v` + la version du paquet (une pré-version PEP 440 `0.4.0rc1` vaut `v0.4.0-rc.1`) ;
+    - GitHub (`uv tool install git+…@<tag>`) : le tag demandé, sinon le commit installé ;
+    - dossier (checkout de kiln) : le tag de version le plus proche de son `HEAD`.
+
+    None quand l'outil ne se situe pas (paquet introuvable, dossier sans tag)."""
+    dist = _installed_distribution()
+    if dist is None:
+        return None
+    direct_url = dist.read_text("direct_url.json") or ""
+    if not direct_url:
+        return _pypi_tag(dist.version)
+    try:
+        origin = json.loads(direct_url)
+    except ValueError:
+        return None
+    vcs_info = origin.get("vcs_info")
+    if isinstance(vcs_info, dict):
+        requested = str(vcs_info.get("requested_revision", ""))
+        if release_version(requested) is not None:
+            return requested
+        return str(vcs_info.get("commit_id", "")) or None
+    source = _source_dir(direct_url)
+    return _nearest_tag(source) if source is not None else None
+
+
+def _pypi_tag(version: str) -> str | None:
+    try:
+        parsed = Version(version)
+    except InvalidVersion:
+        return None
+    tag = f"v{parsed.base_version}"
+    if parsed.pre is not None and parsed.pre[0] == "rc":
+        tag += f"-rc.{parsed.pre[1]}"
+    return tag if release_version(tag) is not None else None
+
+
+def _nearest_tag(source: Path) -> str | None:
+    try:
+        described = subprocess.run(
+            ["git", "-C", str(source), "describe", "--tags", "--abbrev=0", "--match", "v[0-9]*"],
+            capture_output=True,
+            text=True,
+            timeout=NETWORK_TIMEOUT,
+            check=False,
+        ).stdout.strip()
+    except subprocess.TimeoutExpired, OSError:
+        return None
+    return described if release_version(described) is not None else None
 
 
 def installed_version() -> str:

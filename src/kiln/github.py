@@ -1,14 +1,18 @@
 """Création du dépôt GitHub, protection de main et develop, invitations de l'équipe."""
 
 import json
+import shutil
 import subprocess
 import sys
 from collections.abc import Mapping
 from pathlib import Path
 
+from kiln import ui
 from kiln.shell import KilnError, run, step
 
 LOGIN_URL = "https://github.com/login/device"
+LOGIN_TIMEOUT = 5
+INSTALL_GH = "https://cli.github.com"
 MAIN_RULESET_NAME = "Protection main"
 DEVELOP_RULESET_NAME = "Protection develop"
 REPOSITORY_ADMIN_ROLE_ID = 5
@@ -38,6 +42,41 @@ MAIN_RULESET = {
     ],
     "rules": [{"type": "deletion"}, {"type": "update"}],
 }
+
+
+def login() -> str | None:
+    """Compte GitHub connecté à gh ; None sans gh, sans connexion ou sans réseau."""
+    if shutil.which("gh") is None:
+        return None
+    try:
+        found = subprocess.run(
+            ["gh", "api", "user", "--jq", ".login"],
+            capture_output=True,
+            text=True,
+            timeout=LOGIN_TIMEOUT,
+            check=False,
+        )
+    except subprocess.TimeoutExpired, OSError:
+        return None
+    if found.returncode != 0:
+        return None
+    return found.stdout.strip() or None
+
+
+def can_publish() -> bool:
+    """GitHub est-il joignable pour créer le dépôt ? Sans gh, ou hors terminal sans connexion, on
+    s'en passe en le disant (`kiln publish` le fera plus tard) ; au terminal, la connexion est
+    proposée."""
+    if shutil.which("gh") is None:
+        ui.note(f"GitHub : gh absent, dépôt non créé. Plus tard : {INSTALL_GH}, puis kiln publish.")
+        return False
+    if _is_logged_in():
+        return True
+    if not sys.stdin.isatty():
+        ui.note("GitHub : gh n'est pas connecté, dépôt non créé. Plus tard : kiln publish.")
+        return False
+    ensure_logged_in()
+    return True
 
 
 def ensure_logged_in() -> None:

@@ -5,3 +5,6 @@ __pycache__/
 .ruff_cache/
 .pytest_cache/
 dist/
+# Worktrees des sessions (base:worktree) : jamais suivis, et invisibles de Copier quand il copie
+# le modèle depuis ce dépôt (sinon il les prend pour des sous-modules, T-09).
+.claude/worktrees/
