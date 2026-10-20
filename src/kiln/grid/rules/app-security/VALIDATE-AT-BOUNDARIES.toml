@@ -1,0 +1,14 @@
+id = "VALIDATE-AT-BOUNDARIES"
+title = "Every input from outside is validated against a schema"
+pillar = "methods"
+theme = "app-security"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "Inside the boundary, the code can trust its data; outside, nothing can be trusted."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "VALIDATE-AT-BOUNDARIES"

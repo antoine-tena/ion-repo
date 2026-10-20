@@ -1,0 +1,13 @@
+id = "TRANSACTIONS"
+title = "Writes touching several rows or tables are wrapped in a transaction"
+pillar = "methods"
+theme = "data-migrations"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "Half a write is worse than none: the data stops making sense."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"

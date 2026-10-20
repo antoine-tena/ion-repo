@@ -1,0 +1,13 @@
+id = "CSP-NONCE"
+title = "A strict Content-Security-Policy by nonce, no unsafe-inline"
+pillar = "methods"
+theme = "app-security"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["association", "company", "university", "enterprise"]
+why = "A strict policy turns most injected scripts into blocked ones."
+detectable = "script"
+fixable = "judgment"
+since = "0.4.1"

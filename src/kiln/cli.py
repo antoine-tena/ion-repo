@@ -29,6 +29,7 @@ LANGUAGES = ("en", "fr")
 COMMAND_GROUPS = (
     ("Project", ("new", "adopt", "install", "publish", "update", "set", "waive")),
     ("Day to day", ("dev", "check", "ci", "contract", "doctor", "completion")),
+    ("The grid", ("grid",)),
     ("All repos", ("status", "update --all", "version")),
 )
 FLEET_UPDATE_ROLE = "update every kiln repo, merged straight away"
@@ -49,7 +50,7 @@ LEGACY_OPTIONS = {
     },
     "set": {"--poste": "--global"},
 }
-NO_RECAP_COMMANDS = frozenset({"dev", "ci", "status", "doctor", "version", "waive"})
+NO_RECAP_COMMANDS = frozenset({"dev", "ci", "status", "doctor", "version", "waive", "grid"})
 HELP_FLAGS: tuple[list[str], ...] = ([], ["-h"], ["--help"])
 
 
@@ -122,6 +123,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--minor", action="store_true", help="the next one is a milestone: bump the minor"
     )
     commands.add_parser("doctor", help="diagnose this machine and the repo, with the fixes")
+    _add_grid_command(commands)
     status_parser = commands.add_parser("status", help="state of the kiln repos of the code folder")
     status_parser.add_argument("--all", action="store_true", help="(default) every repo")
     set_parser = commands.add_parser(
@@ -190,6 +192,18 @@ def _dispatch_version(arguments: argparse.Namespace, root: Path) -> None:
         from kiln import release
 
         release.show_release_status(root, milestone=arguments.minor)
+
+
+def _add_grid_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+    from kiln.grid.model import LEVELS, THEMES
+
+    grid_parser = commands.add_parser("grid", help="the rules kiln holds as the best, with sources")
+    grid_parser.add_argument("rule", nargs="?", help="one rule, in full (its ID)")
+    grid_parser.add_argument("--theme", choices=THEMES, help="only this theme")
+    grid_parser.add_argument(
+        "--scope", help="universal, language, framework, tool, domain, or a name"
+    )
+    grid_parser.add_argument("--level", choices=LEVELS, help="only this level")
 
 
 def _add_waive_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
@@ -352,6 +366,13 @@ def dispatch(arguments: argparse.Namespace) -> list[str]:
         from kiln import doctor
 
         doctor.run_doctor(Path.cwd())
+    elif arguments.command == "grid":
+        from kiln.grid import show
+
+        if arguments.rule:
+            show.show_rule(arguments.rule)
+        else:
+            show.list_rules(theme=arguments.theme, scope=arguments.scope, level=arguments.level)
     elif arguments.command == "version":
         _dispatch_version(arguments, repo_root(Path.cwd()))
     elif arguments.command == "status" or (arguments.command == "update" and arguments.all):

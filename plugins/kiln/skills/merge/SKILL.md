@@ -35,9 +35,12 @@ step 4. Talk to the user in their language.
    Then `git worktree remove .claude/worktrees/<name>` (never `--force`), `git branch -d
    <branch>` (never `-D`) and, if it exists on GitHub (`git ls-remote --heads origin <branch>`),
    `git push origin --delete <branch>`. If a check fails: delete nothing, say which one and why.
-6. GitHub's verdict on the merge: when the repo has a workflow on push and `gh` is there,
-   `gh run list --commit <merge sha>` then `gh run watch <id> --exit-status --compact`. Red: say
-   so and fix it right away, on a new branch, before any other work (a red integration branch
-   hides the next failure; the session start reports it too). `kiln ci`, the full CI replayed
-   on the machine, only runs when a release goes into `main` (`/kiln:release`).
+6. The CI's verdict on the merge commit, where the repo runs it:
+   - on the machine (`git config statusline.ci` says `locale`, answer `ci_runner: local`: a
+     private repo spends no GitHub minute): `kiln ci <merge sha>`, which replays `ci.yml` and
+     pushes its verdict as a git note, read by the status line and the session start;
+   - on GitHub otherwise, when `gh` is there: `gh run list --commit <merge sha>` then
+     `gh run watch <id> --exit-status --compact`.
+   Red: say so and fix it right away, on a new branch, before any other work (a red integration
+   branch hides the next failure; the session start reports it too).
 7. Sum up: merge commit, files touched, checks and GitHub's verdict.

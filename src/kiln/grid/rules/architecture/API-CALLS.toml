@@ -1,0 +1,14 @@
+id = "API-CALLS"
+title = "Components never call the API directly: a typed client layer does"
+pillar = "readability"
+theme = "architecture"
+scope = { kind = "framework", name = "vue" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["association", "company", "university", "enterprise"]
+why = "One client layer handles errors, auth and types once for every page."
+detectable = "script"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "API-CALLS"

@@ -1,0 +1,14 @@
+id = "NO-MAGIC-VALUES"
+title = "No business literal in the code: named constants or enums"
+pillar = "standards"
+theme = "code-standards"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "A status or a threshold written twice drifts apart the day one changes."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "NO-MAGIC-VALUES"

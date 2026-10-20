@@ -56,6 +56,13 @@ BACKEND_DEV_COMMANDS: Mapping[str, tuple[str, ...]] = {
     "fastapi": ("uv", "run", "uvicorn", "app.main:app", "--reload", "--port", "8000"),
     "data": ("uv", "run", "marimo", "edit", "notebooks", "--port", "2718", "--headless"),
 }
+# A Java backend with a frontend serves its API: packaged, then its jar runs (`main.class` of
+# pom.xml). Alone, it is a library or a command-line tool, with nothing to keep running.
+JAVA_DEV_COMMAND = (
+    "sh",
+    "-c",
+    f'{MAVEN_WRAPPER} -q -B -DskipTests package && set -- target/*.jar && exec java -jar "$1"',
+)
 FRONTEND_DEV_COMMANDS: Mapping[str, tuple[str, ...]] = {
     "nuxt": ("pnpm", "dev"),
     "next": ("pnpm", "dev"),
@@ -138,6 +145,8 @@ class Stack:
         commands = []
         if self.backend in BACKEND_DEV_COMMANDS:
             commands.append(Command(self.backend, BACKEND_DIR, BACKEND_DEV_COMMANDS[self.backend]))
+        elif self.backend in MAVEN_BACKENDS and self.frontend in FRONTEND_DEV_COMMANDS:
+            commands.append(Command(self.backend, BACKEND_DIR, JAVA_DEV_COMMAND))
         if self.frontend in FRONTEND_DEV_COMMANDS:
             argv = FRONTEND_DEV_COMMANDS[self.frontend]
             commands.append(Command(self.frontend, FRONTEND_DIR, argv))

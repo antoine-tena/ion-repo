@@ -1,0 +1,14 @@
+id = "IDEMPOTENT-HANDLER"
+title = "A background handler can be replayed without harm"
+pillar = "methods"
+theme = "background-tasks"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["association", "company", "university", "enterprise"]
+why = "At-least-once delivery means the same message arrives twice one day."
+detectable = "judgment"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "IDEMPOTENT-HANDLER"

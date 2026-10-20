@@ -1,0 +1,14 @@
+id = "FAST-CI"
+title = "The full CI runs in under ten minutes; a flaky test is quarantined"
+pillar = "methods"
+theme = "ci-cd"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "ratchet"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "A slow CI is skipped; a flaky one is ignored."
+detectable = "script"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "FAST-CI"

@@ -1,0 +1,14 @@
+id = "REGRESSION-TEST"
+title = "Each bug fix comes with the test that would have caught it"
+pillar = "methods"
+theme = "tests"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "The same bug should never come back unnoticed."
+detectable = "judgment"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "REGRESSION-TEST"

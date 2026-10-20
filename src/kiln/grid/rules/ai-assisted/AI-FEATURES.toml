@@ -1,0 +1,14 @@
+id = "AI-FEATURES"
+title = "A feature that calls a language model has evaluations, limits and a fallback"
+pillar = "methods"
+theme = "ai-assisted"
+scope = { kind = "tool", name = "llm" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["association", "company", "university", "enterprise"]
+why = "A model answers differently tomorrow; the product must not break with it."
+detectable = "judgment"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "AI-FEATURES"

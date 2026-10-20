@@ -167,7 +167,7 @@ java_package:
     {% if owner %}io.github.{{ owner | lower | replace('-', '') }}{% else %}com.example{% endif %}.{{ name | replace('-', '') }}
   when: "{{ backend == 'java' }}"
   validator: >-
-    {% if not (java_package | regex_search('^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$')) %}A Java package: lowercase words separated by dots (com.example.app).{% endif %}
+    {% if not (java_package | regex_search('^[a-z][a-z0-9_]*([.][a-z][a-z0-9_]*)+$')) %}A Java package: lowercase words separated by dots (com.example.app).{% endif %}
 
 # Calendar notions (today, a day, the bounds of a period) are computed in this time zone; storage
 # stays in UTC. kiln proposes the machine's.
@@ -243,6 +243,18 @@ created:
   type: str
   help: Date the tracking starts (YYYY-MM-DD)
   default: "{{ '%Y-%m-%d' | strftime }}"
+
+# Where the CI of each push runs. A private repo on GitHub's free plan has 2,000 minutes a
+# month (a macOS minute counts ten): its CI runs on the machine, `kiln ci`, verdict kept as a git
+# note. A public repo runs on GitHub, free and unlimited. `kiln new` and `kiln update` pick it
+# from the repo's visibility when the answer is missing.
+ci_runner:
+  type: str
+  help: Where does the CI of each push run?
+  choices:
+    "On this machine, with kiln ci (no GitHub minutes: a private repo)": local
+    "On GitHub (free and unlimited for a public repo)": github
+  default: local
 
 # Claude Code's status line (kiln plugin): settings set as `git config statusline.*` by
 # `kiln install`, `kiln new` and `kiln set`, never by hand.

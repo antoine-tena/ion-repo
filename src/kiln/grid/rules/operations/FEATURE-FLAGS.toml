@@ -1,0 +1,13 @@
+id = "FEATURE-FLAGS"
+title = "A risky feature ships off behind a flag, then is turned on"
+pillar = "methods"
+theme = "operations"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["company", "enterprise"]
+why = "Turning a feature off is faster than rolling a release back."
+detectable = "judgment"
+fixable = "judgment"
+since = "0.4.1"

@@ -1,0 +1,13 @@
+id = "WORK-TRACKING"
+title = "Work tracked in the repo: one backlog, ordered, with a done log"
+pillar = "methods"
+theme = "docs-tracking"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "What is left to do, and why, lives next to the code that does it."
+detectable = "script"
+fixable = "script"
+since = "0.4.1"

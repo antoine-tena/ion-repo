@@ -1,0 +1,14 @@
+id = "NEW-DEPENDENCY"
+title = "A new dependency is justified: maintained, needed, light"
+pillar = "slimming"
+theme = "supply-chain"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "Each dependency is code to update, audit and trust for as long as the project lives."
+detectable = "judgment"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "NEW-DEPENDENCY"

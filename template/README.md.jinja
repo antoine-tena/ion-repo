@@ -99,7 +99,7 @@ kiln dev
 {%- elif backend == 'cli' and front_url %}
 - Outil en ligne de commande : `cd backend && uv run {{ name }} --help`.
 {%- elif backend == 'java' and front_url %}
-- Backend Java : `cd backend && ./mvnw verify`.
+- API Java : son jar, reconstruit à chaque lancement ; réglages locaux dans `backend/.env`.
 {%- endif %}
 {%- if front_url %}
 - Frontend : {{ front_url }}
@@ -248,7 +248,7 @@ kiln dev
 {%- elif backend == 'cli' and front_url %}
 - Command-line tool: `cd backend && uv run {{ name }} --help`.
 {%- elif backend == 'java' and front_url %}
-- Java backend: `cd backend && ./mvnw verify`.
+- Java API: its jar, rebuilt at each start; local settings in `backend/.env`.
 {%- endif %}
 {%- if front_url %}
 - Frontend: {{ front_url }}

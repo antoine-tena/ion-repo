@@ -1,0 +1,14 @@
+id = "FUNCTION-SIZE"
+title = "A function does one thing, in a few dozen lines at most"
+pillar = "readability"
+theme = "code-standards"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "ratchet"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "A short function says what it does in its name and can be tested alone."
+detectable = "script"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "FUNCTION-SIZE"

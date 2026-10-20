@@ -1,0 +1,27 @@
+id = "UPDATE-COOLDOWN"
+title = "New dependency versions wait a few days before they are proposed"
+pillar = "versions"
+theme = "supply-chain"
+scope = { kind = "universal" }
+level = "adopt"
+regime = "strict"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "A brand-new release is not proposed at once: a broken or compromised one has days to be withdrawn first."
+applies = []
+fixer = ""
+since = "0.4.1"
+switch_when = "Renovate's minimumReleaseAge and Dependabot's cooldown are both read; uv's exclude-newer counts once it can be relative."
+
+[detector]
+kind = "regex"
+files = [
+    ".github/dependabot.yml", ".github/dependabot.yaml", "renovate.json", "renovate.json5",
+    ".github/renovate.json", ".github/renovate.json5", ".renovaterc", ".renovaterc.json",
+]
+pattern = '''(^\s+cooldown:|"?minimumReleaseAge"?\s*:)'''
+expect = "match"
+
+[[sources]]
+url = "https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference"
+kind = "docs"
+checked = 2026-10-19

@@ -1,0 +1,14 @@
+id = "ALERT-ON-SYMPTOMS"
+title = "Alerts on what users suffer (errors, latency), not on causes"
+pillar = "methods"
+theme = "observability"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["association", "company", "university", "enterprise"]
+why = "Cause alerts fire at night for nothing; symptom alerts fire when it matters."
+detectable = "judgment"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "ALERT-ON-SYMPTOMS"

@@ -12,7 +12,7 @@ from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
-from kiln import rehearsal, ui
+from kiln import adopted, rehearsal, ui
 from kiln.charter.config import CHARTER_FILE, LEGACY_CHARTER_FILE
 from kiln.charter.waivers import Waivers, load
 from kiln.check import run_checks
@@ -118,12 +118,24 @@ def show_status(code_dir: Path) -> None:
     for repo in find_repos(code_dir):
         state = template_state(repo.template_commit, latest)
         waived.update(_print_status(code_dir, repo.root, state))
+    public = latest_release(candidates=False)
     for root in find_adopted(code_dir):
-        waived.update(_print_status(code_dir, root, "adopted"))
+        waived.update(_print_status(code_dir, root, adopted_state(root, public)))
     if waived:
         # A rule waived in several repos probably needs another look in kiln.
         counts = ", ".join(f"{target} ({n})" for target, n in waived.most_common())
         print(f"\n  Waivers (kiln-waivers.toml), by number of repos: {counts}")
+
+
+def adopted_state(root: Path, public: str | None) -> str:
+    """`adopted v0.4.0`, `adopted v0.3.4 → v0.4.0` when its workflows quote an older release."""
+    refs = adopted.quoted_refs(root)
+    if not refs:
+        return "adopted"
+    quoted = ", ".join(sorted(refs))
+    if public is not None and refs != {public}:
+        return f"adopted {quoted} → {public}"
+    return f"adopted {quoted}"
 
 
 def _state_color(state: str) -> ui.Color:
@@ -165,18 +177,20 @@ def update_all(code_dir: Path, *, allow_major: bool, rehearse: bool = False) -> 
     """Every repo updated and merged; with `rehearse`, each update played on a clone, nothing
     touched (before a promotion or an `update --all`)."""
     require_tools("git", "uv")
+    # Generated repos replay the template; adopted ones only move kiln's workflows' tag.
+    roots = [repo.root for repo in find_repos(code_dir)] + find_adopted(code_dir)
     results = [
         (
-            repo,
-            rehearse_one(repo.root, allow_major=allow_major)
+            root,
+            rehearse_one(root, allow_major=allow_major)
             if rehearse
-            else update_one(repo.root, allow_major=allow_major),
+            else update_one(root, allow_major=allow_major),
         )
-        for repo in find_repos(code_dir)
+        for root in roots
     ]
     step("Summary")
-    for repo, outcome in results:
-        print(f"{repo.root.relative_to(code_dir)!s:<30} {outcome}")
+    for root, outcome in results:
+        print(f"{root.relative_to(code_dir)!s:<30} {outcome}")
 
 
 def rehearse_one(root: Path, *, allow_major: bool) -> str:

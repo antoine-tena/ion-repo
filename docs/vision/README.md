@@ -16,6 +16,7 @@
 | [Comment ça marche](fonctionnement.md) | Le script trouve, Claude juge ; le circuit des mises à jour et des remontées ; les tests au moindre coût |
 | [La grille de référence](grille.md) | Le cœur du produit : ce que contient une règle, et le classement par thème et par portée |
 | [Le marché et la concurrence](marche.md) | Le paysage, ce qui nous protège, ce qui fait percer un outil, les besoins des utilisateurs de Claude |
+| [Le nom](nom.md) | Qui répond à « kiln », ce qu'un changement de nom touche, trois noms libres (T-143) |
 | [Risques, validation et prochaines étapes](plan.md) | Pistes écartées, idées en réserve, risques, plan de validation, prochaines étapes |
 
 ## En une phrase

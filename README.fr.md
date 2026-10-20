@@ -21,7 +21,10 @@ Un projet généré contient :
 - l'outillage partagé : `.claude/` (plugins et variables `KILN_*`), `.vscode/`, `.editorconfig`,
   `.gitattributes`, `.gitignore`, modèle de PR, `CODEOWNERS`, pre-commit (ruff, ESLint, charte,
   refus de commiter sur `main` et `develop`) ;
-- la CI GitHub (`.github/workflows/ci.yml`), qui appelle les workflows réutilisables de kiln ;
+- la CI (`.github/workflows/ci.yml`), qui appelle les workflows réutilisables de kiln : sur GitHub à chaque
+  push pour un dépôt public (gratuit et illimité), sur le poste par `kiln ci` pour un dépôt privé
+  (`ci_runner: local` : aucune minute GitHub, dont le plan gratuit ne donne que 2 000 par mois) ;
+  `kiln update` choisit d'après la visibilité du dépôt, `kiln set ci_runner=github` ou `local` change ;
 - le suivi du travail, d'office : `docs/backlog/` (`backlog.md`, `rejected.md`, `urgent.md`,
   en anglais, skill `kiln:backlog`), que la status line de Claude Code compte ;
 - les réglages de la status line propres au repo (`statusline_ci`, `prod_health_url`), posés en
@@ -38,15 +41,15 @@ Les plugins Claude Code vivent dans [`plugins/`](plugins/), catalogue `kiln`
   déploiement), `cleanup` (ménage des worktrees), `review` (commits et diff d'une branche relus
   et rangés avant la fusion, dépôt entier avant une version), `backlog`, `update` (l'outil kiln
   et ses plugins, puis le repo ouvert), `adopt` (`kiln adopt` dans un repo existant, passif de la
-  charte trié avec l'utilisateur), `report` (un défaut de kiln remonté en issue ou en PR, avec l'accord de l'utilisateur), `contribution` (la PR d'un contributeur extérieur : code relu avant d'en rien lancer, tri, revue, fusion qui le crédite, rien publié sans accord), `good-first-issues` (un petit stock d'issues `good first issue` tiré du backlog et réservé aux contributeurs extérieurs, regarni à chaque fusion), `token` (le jeton d'un service collé une fois dans un dossier `.<service>/` ignoré par git, jamais affiché) ; hooks garde de branche (et refus d'un message de commit signé Claude), fichiers protégés, contrôle du fichier
-  modifié, questions à l'ouverture de session : dans un repo kiln, sa mise à jour (l'outil kiln s'il
+  charte trié avec l'utilisateur), `report` (un défaut de kiln remonté en issue ou en PR, avec l'accord de l'utilisateur), `contribution` (la PR d'un contributeur extérieur : code relu avant d'en rien lancer, tri, revue, fusion qui le crédite, rien publié sans accord), `good-first-issues` (un petit stock d'issues `good first issue` tiré du backlog et réservé aux contributeurs extérieurs, regarni à chaque fusion), `token` (le jeton d'un service collé une fois dans un dossier `.<service>/` ignoré par git, jamais affiché) ; hooks garde de branche (`branch_guard.py`, et refus d'un message de commit signé Claude), fichiers protégés (`protect_files.py`), contrôle du fichier
+  modifié (`check_file.py`), questions à l'ouverture de session (`session_start.py`, logo et nouveautés au premier message par `first_prompt.py`, et CI rouge de la branche d'intégration signalée à Claude) : dans un repo kiln, sa mise à jour (l'outil kiln s'il
   est en retard sur GitHub, puis le repo par `kiln update` ; un « non » repousse la question de
   5, 10, 30 puis 50 sessions, après quoi désinstaller kiln ou délier le repo est proposé) ; dans
   un repo à soi qui ne suit pas kiln, son adoption (« Oui », « Plus tard », « Jamais pour ce
   repo »), dès la 3e session, au plus une fois toutes les 10 sessions du poste. Toutes passent
   par `reminders.py` : une note de bienveillance du poste monte à chaque « oui » et baisse à
   chaque « non », et étire ou raccourcit tous les délais (doublés au plus méfiant, de moitié au
-  plus enthousiaste) ; `git config kiln.update-check false` pour s'en passer, sorties de commandes condensées par [rtk](https://github.com/rtk-ai/rtk) quand il
+  plus enthousiaste) ; `git config kiln.update-check false` pour s'en passer, sorties de commandes condensées par [rtk](https://github.com/rtk-ai/rtk) (`rtk.py`) quand il
   est installé (`mise use -g github:rtk-ai/rtk`, sans `rtk init` : le hook est fourni ici) ; MCP context7 ; status line commune (`plugins/kiln/scripts/statusline.py`,
   en anglais, aux couleurs de kiln), posée par `kiln install` dans `~/.claude/settings.json` ; son
   style se choisit par poste : `kiln set statusline=plain|band|classic|classic-band`,
@@ -106,12 +109,13 @@ système du poste (Linux, WSL ou macOS) et le garde dans `~/.config/kiln/config.
 | `kiln ci [commit]` | Rejoue sur le poste la CI du `ci.yml` pour ce commit (défaut `HEAD`) et pose le verdict en note git sur origin, que le script de déploiement accepte comme une CI verte. `--status` : le verdict seul. Voir « CI rejouée sur le poste ». |
 | `kiln contract` | Django + Nuxt : exporte `openapi.json` depuis le code, puis régénère les types du front (`app/types/api.d.ts`). `kiln update` le fait aussi. |
 | `kiln waive [RÈGLE\|fichier]` | Déroge à une règle de kiln (`--paths`, `--reason`, `--upstream`), ou fige un fichier généré que `kiln update` ne touchera plus ; `--renew` passe au palier suivant (une semaine, un mois, trois mois, six mois), `--permanent` sans échéance. Sans argument : liste les dérogations. Voir [Moteur de charte](#moteur-de-charte). |
-| `kiln set` | Dans un repo : sans argument, affiche ses paramètres ; `kiln set clé=valeur…` les change (`team`, `backend`, `frontend`, `podman`, `north_star`…) : le repo est régénéré, un framework retiré emporte ses fichiers. Hors d'un repo, ou avec `--global` : les réglages du poste (`system`, `owner`, `team`, `code_dir`, `channel`, `statusline`, dans `~/.config/kiln/config.toml`). |
-| `kiln update` | Évolutions du modèle, mises à jour compatibles des dépendances, puis contrôles. `--major` : versions majeures comprises. `--no-template`, `--no-deps` pour n'en faire qu'une partie. `--rehearse` : la mise à jour jouée d'abord sur un clone jetable, le repo intact, seul le bilan revient. |
+| `kiln set` | Dans un repo : sans argument, affiche ses paramètres ; `kiln set clé=valeur…` les change : le repo est régénéré, un framework retiré emporte ses fichiers. Clés : `name`, `title`, `description`, `project_type`, `size`, `backend`, `frontend`, `podman`, `language` (et par usage : `language_comments`, `language_commits`, `language_docs`, `language_tickets`, `language_ui`), `owner`, `team`, `java_package`, `timezone` (fuseau des notions calendaires ; les dates sont stockées en UTC), `serena`, `deploy`, `vps_host`, `api_domain`, `site_url`, `deploy_branch`, `frontend_deploy`, `north_star`, `ci_runner`, `statusline_ci`, `prod_health_url`. Hors d'un repo, ou avec `--global` : les réglages du poste (`system`, `owner`, `team`, `code_dir`, `channel`, `statusline`, dans `~/.config/kiln/config.toml`). |
+| `kiln update` | Évolutions du modèle, mises à jour compatibles des dépendances, puis contrôles. `--major` : versions majeures comprises. `--no-template`, `--no-deps` pour n'en faire qu'une partie. `--rehearse` : la mise à jour jouée d'abord sur un clone jetable, le repo intact, seul le bilan revient. Dans un repo adopté (`kiln adopt`), seules les références aux workflows de kiln avancent à la dernière version publique, entrées vérifiées. |
 | `kiln update --all` | Tous les repos kiln du dossier de code (`~/code`, réglable par `code_dir`) : pour chacun, un worktree depuis la branche d'intégration, la mise à jour, des commits de dix fichiers au plus, puis la fusion directe dans l'intégration (commit de fusion poussé) ; contrôles en échec, la branche est poussée sans être fusionnée. L'arbre principal ne change jamais de branche. `--all --rehearse` : chaque mise à jour répétée sur un clone, rien n'est touché, un bilan par repo. |
+| `kiln grid [ID]` | La grille : les pratiques que kiln tient pour les meilleures aujourd'hui, un petit fichier TOML par règle, avec son pourquoi, ses sources vérifiées et datées, son niveau (adopt, trial, assess, hold), sa détection et sa correction. `--theme`, `--scope`, `--level` filtrent ; un identifiant montre la règle en entier, et comment y déroger. |
 | `kiln doctor` | Diagnostic du poste (git, uv, gh connecté, pnpm, podman, Java, pre-commit, version de kiln, plugin Claude, configuration) et du repo courant (version du modèle, crochet pre-commit, dépendances, `backend/.env`) : ✓, ! à regarder ou ✗ bloquant, chaque fois avec la commande qui corrige. Ne modifie rien. |
 | `kiln completion bash` | Script de complétion bash tiré des commandes et options de kiln ; l'activer par `eval "$(kiln completion bash)"` dans `~/.bashrc`. |
-| `kiln status` | État des repos kiln du dossier de code : branche, arbre propre ou non, version du modèle (`v0.3.2 → v0.3.5` en retard), dérogations (`!` si l'une est échue), stack ; puis les règles dérogées, par nombre de repos. |
+| `kiln status` | État des repos kiln du dossier de code : branche, arbre propre ou non, version du modèle (`v0.4.0 → v0.4.2` en retard), dérogations (`!` si l'une est échue), stack ; puis les règles dérogées, par nombre de repos. |
 | `kiln version` | Dans le dépôt de kiln : dernière version publique, candidates (âge, repos qui les ont adoptées, prêtes à promouvoir), numéro de la prochaine et tickets du plan (`docs/backlog/`) qui restent avant elle. `kiln version cut` : branche `release/vX.Y.Z`, ébauche de la note de version et numéros, puis (une fois la note relue) contrôles, CI de GitHub attendue et, au vert seulement, tag `-rc.N` ; `kiln version promote` : tag public sur la dernière candidate dont la CI est verte, fusion dans `main` et `develop` (PyPI et GitHub Release suivent). |
 | `charter` | Vérifie le repo contre son `charter.toml` (`charter --detail`, `charter --unverified`, `charter types`, `charter coverage`, `charter file <chemin>`). |
 
@@ -132,7 +136,7 @@ qu'en cas d'échec. Un bilan encadré clôt la commande : verdict, durée totale
 Sans dossier, `kiln new` demande le nom du projet et le crée dans le dossier courant.
 Options de `new` : `--size`, `--type`, `--backend`, `--frontend`, `--podman`,
 `--vps <utilisateur@adresse>`, `--name`, `--title`,
-`--description`, `--owner`, `--team login1,login2`, `--goal "<boussole>"`, `--prod-url <url>`,
+`--description`, `--owner`, `--team login1,login2`, `--language en|fr`, `--goal "<boussole>"`, `--prod-url <url>`,
 `--no-github` (pas de dépôt GitHub),
 `--no-install`, `--all-questions`, `--template <chemin ou URL>`. Au-delà des trois questions, ce qu'aucune option ne fixe prend sa valeur conseillée, sauf avec
 `--all-questions`.
@@ -169,6 +173,11 @@ Le type de projet choisit une stack, que l'on change par `--backend` et `--front
 
 Backends : `django`, `fastapi`, `data`, `cli`, `java`, `none`. Frontends : `nuxt`, `next`, `astro`,
 `streamlit`, `dash`, `none`. Toutes les combinaisons sont générées et vérifiées par les tests.
+
+**Django et Nuxt : complets. Les autres : figés, entretenus.** Toutes les piles restent générées
+et testées, mais les nouvelles règles de la grille vont d'abord à Django et Nuxt, jusqu'à ce
+qu'ils soient en haut de la grille ; les règles universelles (CI, conteneurs, chaîne
+d'approvisionnement, secrets) les notent toutes.
 
 `java` n'est conseillé pour aucun type : Java 25 sans framework, construit par Maven via son
 wrapper `./mvnw` (version et somme SHA-256 figées), tests JUnit 6, couverture JaCoCo, enforcer
@@ -214,15 +223,15 @@ sécurité.
 ## Versions
 
 kiln numérote ses versions `vMAJEUR.MINEUR.CORRECTIF`, comme Claude Code : en 0.x, chaque
-version monte le correctif, changements cassants compris (`0.3.4 → 0.3.5`), signalés en tête de
+version monte le correctif, changements cassants compris (`0.4.1 → 0.4.2`), signalés en tête de
 leur note et convertis par `kiln update` ; la mineure ne monte que pour une étape
 (`kiln version --minor`). À partir de 1.0, semver strict.
 Le travail s'intègre dans `develop` ; `main` ne reçoit que des versions.
 
-- **Candidate** (`v0.3.5-rc.1`) : tirée de `develop` sur une branche `release/v0.3.5`, avec son
+- **Candidate** (`v0.4.2-rc.1`) : tirée de `develop` sur une branche `release/v0.4.2`, avec son
   entrée en tête de [`CHANGELOG.md`](CHANGELOG.md). Seuls les postes au canal `internal` la
   suivent (`kiln set channel=internal`).
-- **Promotion** (`v0.3.5`) : dès qu'une candidate plus récente est prête (pas de délai fixe :
+- **Promotion** (`v0.4.2`) : dès qu'une candidate plus récente est prête (pas de délai fixe :
   c'est la suivante prête qui évite le correctif d'urgence), le même commit est tagué et fusionné
   dans `main`. `kiln version` montre les candidates, leur âge, qui les a adoptées, lesquelles
   sont prêtes et le numéro de la prochaine.
@@ -232,8 +241,8 @@ Le travail s'intègre dans `develop` ; `main` ne reçoit que des versions.
 - **Outil** : `uv tool install kiln-cli` prend les versions promues, publiées sur PyPI par le
   workflow `pypi.yml` au tag `vX.Y.Z` ; `uv tool install git+https://github.com/antoine-tena/kiln@<tag>`
   prend aussi les candidates ;
-  `kiln status` dit de quelle version part chaque repo (`v0.3.2 → v0.3.5`), la bannière celle
-  de l'outil (`v0.3.5 +3 · abc1234` : trois commits après v0.3.5, installé depuis un dossier).
+  `kiln status` dit de quelle version part chaque repo (`v0.4.0 → v0.4.2`), la bannière celle
+  de l'outil (`v0.4.2 +3 · abc1234` : trois commits après v0.4.2, installé depuis un dossier).
   Seule une version met un repo à jour : un outil qui n'en est pas une (un dossier en avance sur
   son tag ou modifié, une branche) est refusé par `kiln update`, `kiln new` et `kiln adopt`, qui
   donnent la commande d'installation de la version ; pour essayer le code de kiln sur un repo

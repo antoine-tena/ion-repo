@@ -33,7 +33,7 @@ from kiln.release import (
     promotion_verdict,
     read_tags,
 )
-from kiln.shell import KilnError, capture, run
+from kiln.shell import KilnError, capture, run, run_status
 
 CHANGELOG = "CHANGELOG.md"
 DRAFT_MARKER = "<!-- draft: rewrite for users, breaking changes first, then delete this line -->"
@@ -115,11 +115,13 @@ def _start_release(root: Path, tags: list[Tag], *, milestone: bool) -> None:
     ui.step(f"Branch release/v{version}")
     branch = f"release/v{version}"
     run(["git", "worktree", "add", "-q", "-b", branch, str(tree), "origin/develop"], root)
+    _carry_open_releases(root, tree, version)
     ui.step("Changelog draft and numbers")
     changelog = tree / CHANGELOG
     entry = draft_entry(version, subjects, today=_today())
     changelog.write_text(insert_entry(changelog.read_text("utf-8"), entry), "utf-8")
     bump_package(tree / "pyproject.toml", version)
+    bump_docs(tree, version)
     bumped = bump_changed_plugins(tree, last.name if last else None)
     run(LOCK, tree)
     run(["git", "add", "-A"], tree)
@@ -131,6 +133,28 @@ def _start_release(root: Path, tags: list[Tag], *, milestone: bool) -> None:
         f"next: rewrite the v{version} entry of {CHANGELOG} there (delete the draft line), "
         "commit, then `kiln version cut` again: checks, then tag -rc.1."
     )
+
+
+def _carry_open_releases(root: Path, tree: Path, version: str) -> None:
+    """An earlier release still a candidate (promoted later, merged back into `develop` only
+    then) is merged into the new one: its changelog entry, numbers and fixes come first, and
+    promoting it later leaves nothing to reconcile."""
+    branches = capture(
+        ["git", "branch", "-r", "--list", "origin/release/v*", "--format=%(refname:short)"], root
+    ).split()
+    for remote in sorted(branches, key=lambda name: Version(name.rsplit("/v", 1)[1])):
+        if Version(remote.rsplit("/v", 1)[1]) >= Version(version):
+            continue
+        merged = run_status(["git", "merge-base", "--is-ancestor", remote, "HEAD"], tree)
+        if merged == 0:
+            continue
+        ui.step(f"{remote.removeprefix('origin/')} carried into release/v{version}")
+        message = f"Merge branch '{remote.removeprefix('origin/')}' into release/v{version}"
+        if run_status(["git", "merge", "-q", "--no-ff", remote, "-m", message], tree) != 0:
+            raise KilnError(
+                f"{remote} does not merge cleanly into release/v{version}: resolve it in {tree}, "
+                "commit, then rewrite the changelog entry"
+            )
 
 
 def draft_entry(version: str, subjects: list[str], *, today: str) -> str:
@@ -175,6 +199,21 @@ def bump_package(pyproject: Path, version: str) -> None:
     pyproject.write_text(bumped, "utf-8")
 
 
+# The public docs quote kiln's workflows at the release they describe.
+READMES = ("README.md", "README.fr.md")
+DOCS_QUOTING_RELEASES = (*READMES, "CONTRIBUTING.md")
+DOCS_RELEASE_REF = re.compile(r"(antoine-tena/kiln/\S+?)@v\d+\.\d+\.\d+(?:-rc\.\d+)?\b")
+
+
+def bump_docs(tree: Path, version: str) -> None:
+    """The docs' references to kiln's workflows move to the release being cut."""
+    for name in DOCS_QUOTING_RELEASES:
+        path = tree / name
+        if path.is_file():
+            text = path.read_text("utf-8")
+            path.write_text(DOCS_RELEASE_REF.sub(rf"\1@v{version}", text), "utf-8")
+
+
 def bump_changed_plugins(tree: Path, since: str | None) -> list[str]:
     """Patch of each plugin with a change since `since`: Claude Code only reinstalls a plugin
     whose version moved."""
@@ -207,6 +246,7 @@ def _tag_candidate(root: Path, version: str, tags: list[Tag]) -> None:
         raise KilnError(f"uncommitted changes in {tree}: commit them first")
     if DRAFT_MARKER in (tree / CHANGELOG).read_text("utf-8"):
         raise KilnError(f"the v{version} entry of {CHANGELOG} is still a draft ({tree})")
+    _require_readme_update(tree, version, tags)
     # A fix of a candidate that touches a plugin moves its number: Claude Code only reinstalls
     # a plugin whose version moved, the machines would keep the candidate's old hooks.
     previous = _last_candidate(version, tags)
@@ -239,6 +279,31 @@ def _tag_candidate(root: Path, version: str, tags: list[Tag]) -> None:
     run(["git", "tag", "-a", name, "-m", f"Release candidate {name}"], tree)
     run(["git", "push", "-q", "origin", f"release/v{version}", name], tree)
     ui.success(f"{name} pushed: the internal channel follows it (kiln update --all, with consent)")
+
+
+# A release whose READMEs truly have nothing new says why in its entry, with this marker.
+README_UNCHANGED_MARKER = "<!-- readme: unchanged"
+
+
+def _require_readme_update(tree: Path, version: str, tags: list[Tag]) -> None:
+    """The first candidate of a release changes the READMEs: both describe everything kiln
+    offers at the release it is (antoine, 19 October 2026). A fix candidate (`-rc.2`…) may not."""
+    if _last_candidate(version, tags) is not None:
+        return
+    earlier = [tag for tag in tags if Version(tag.version.base_version) < Version(version)]
+    if not earlier:
+        return
+    since = max(earlier, key=lambda tag: tag.version).name
+    changed = capture(["git", "diff", "--name-only", since, "HEAD", "--", *READMES], tree)
+    if set(changed.split()) == set(READMES):
+        return
+    if README_UNCHANGED_MARKER in changelog_entry((tree / CHANGELOG).read_text("utf-8"), version):
+        return
+    missing = ", ".join(name for name in READMES if name not in changed.split())
+    raise KilnError(
+        f"{missing} unchanged since {since}: say what v{version} brings there, or write "
+        f"`{README_UNCHANGED_MARKER}: why -->` in its {CHANGELOG} entry"
+    )
 
 
 def _last_candidate(version: str, tags: list[Tag]) -> str | None:

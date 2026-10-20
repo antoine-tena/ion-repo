@@ -204,6 +204,12 @@ def assert_updated_cleanly(project: Path, tag: str, name: str = "demo") -> None:
     assert (project / ".claude/rules/kiln/charter.md").is_file()
 
 
+# A published release can no longer be fixed: what its template warns about is tolerated here,
+# the current template stays strict (`filterwarnings` of pyproject.toml).
+OLD_TEMPLATES = pytest.mark.filterwarnings("default::DeprecationWarning")
+
+
+@OLD_TEMPLATES
 @pytest.mark.parametrize("tag", previous_releases())
 @pytest.mark.parametrize(("backend", "frontend"), UPGRADED_STACKS)
 def test_a_project_of_an_earlier_release_updates_cleanly(
@@ -264,6 +270,7 @@ def released_kiln(tmp_path_factory: pytest.TempPathFactory) -> dict[str, str]:
     return env
 
 
+@OLD_TEMPLATES
 @pytest.mark.parametrize("tag", every_release())
 def test_every_release_updates_through_the_installed_tool(
     tmp_path: Path, released_kiln: dict[str, str], monkeypatch: pytest.MonkeyPatch, tag: str

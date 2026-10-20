@@ -1,0 +1,14 @@
+id = "UI-STATES"
+title = "Every screen that loads data handles loading, empty and error"
+pillar = "methods"
+theme = "front-accessibility"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "The empty and the error states are the ones users meet at the worst moment."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "UI-STATES"

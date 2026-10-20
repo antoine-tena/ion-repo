@@ -1,0 +1,14 @@
+id = "THIN-VIEWS"
+title = "Views only receive, check and delegate: no business logic"
+pillar = "readability"
+theme = "architecture"
+scope = { kind = "framework", name = "django" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["association", "company", "university", "enterprise"]
+why = "Logic in views can only be tested through HTTP and gets copied between them."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "VIEW-15"

@@ -1,0 +1,14 @@
+id = "PROPERTY-TESTS"
+title = "Computations with invariants get property-based tests"
+pillar = "methods"
+theme = "tests"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "A property states the rule once and checks it on cases no one picked."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "PROPERTY-TESTS"

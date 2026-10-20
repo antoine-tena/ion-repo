@@ -1,0 +1,13 @@
+id = "SLO"
+title = "Each critical journey has a service level objective and an error budget"
+pillar = "methods"
+theme = "observability"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["company", "enterprise"]
+why = "An objective turns \"is it fast enough\" into a number the team agreed on."
+detectable = "judgment"
+fixable = "judgment"
+since = "0.4.1"

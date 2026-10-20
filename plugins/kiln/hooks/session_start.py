@@ -208,6 +208,10 @@ def tool_update_command(install: tuple[str, str] | None, tag: str) -> str:
 # --- CI: a red integration branch is said before any new work ---
 
 CHARTER_FILE = "charter.toml"
+# `git config statusline.ci locale`: the CI runs on the machine, its verdict a git note.
+LOCAL_CI = "locale"
+CI_NOTES_REFS = ("refs/notes/ci", "refs/notes/ci-origin")
+CI_FAILURES = ("failure", "échec")
 KILN_PACKAGE_MARKER = Path("src/kiln/versions.py")
 
 
@@ -232,11 +236,14 @@ def integration_branch(root: Path) -> str | None:
 def red_ci(root: Path) -> str:
     """For Claude: the last finished run of a workflow on the integration branch failed; ""
     otherwise (green, running, no gh, not on GitHub, `git config statusline.ci false`)."""
-    if run("git", "-C", str(root), "config", "--get", "statusline.ci").stdout.strip() == "false":
+    setting = run("git", "-C", str(root), "config", "--get", "statusline.ci").stdout.strip()
+    if setting == "false":
         return ""
     branch = integration_branch(root)
     if branch is None:
         return ""
+    if setting == LOCAL_CI:
+        return red_local_ci(root, branch)
     fields = "status,conclusion,workflowName,displayTitle,url"
     try:
         listed = run(
@@ -259,6 +266,24 @@ def red_ci(root: Path) -> str:
     return (
         f"The CI of `{branch}` is red: {failures}. Before any other work, tell the user and offer "
         "to fix it first: new work on a red branch hides the next failure."
+    )
+
+
+def red_local_ci(root: Path, branch: str) -> str:
+    """The CI run on the machine (`kiln ci`): its git note on the integration branch's head says
+    `kiln ci: failure` (`échec` before kiln 0.4)."""
+    # The machine's notes first, then origin's copy (`kiln ci` keeps it after a fetch).
+    notes = (
+        run("git", "-C", str(root), "notes", f"--ref={ref}", "show", f"origin/{branch}").stdout
+        for ref in CI_NOTES_REFS
+    )
+    verdict = next((note.split("\n", 1)[0].strip() for note in notes if note.strip()), "")
+    if not verdict.endswith(CI_FAILURES):
+        return ""
+    return (
+        f"The CI of `{branch}` is red: `kiln ci` failed on its last commit ({verdict}). Before "
+        "any other work, tell the user and offer to fix it first: new work on a red branch hides "
+        "the next failure."
     )
 
 

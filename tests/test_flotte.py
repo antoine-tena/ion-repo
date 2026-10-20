@@ -135,7 +135,7 @@ def test_update_branch_is_merged_straight_into_integration(tmp_path: Path) -> No
 def test_status_counts_waivers_across_the_fleet(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    monkeypatch.setattr(fleet, "latest_release", lambda: None)
+    monkeypatch.setattr(fleet, "latest_release", lambda **_: None)
     waiver = (
         '[[waiver]]\nrule = "TAILLE-FICHIER"\nreason = "r"\nby = "a"\n'
         'since = 2026-10-16\nuntil = "never"\n'

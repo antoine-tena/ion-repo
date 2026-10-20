@@ -1,0 +1,13 @@
+id = "UTILITY-CSS-FIRST"
+title = "Utility classes by default, scoped styles only as named exceptions"
+pillar = "standards"
+theme = "front-accessibility"
+scope = { kind = "tool", name = "tailwind" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["association", "company", "university", "enterprise"]
+why = "One way to style keeps the CSS from growing a second design system."
+detectable = "script"
+fixable = "judgment"
+since = "0.4.1"

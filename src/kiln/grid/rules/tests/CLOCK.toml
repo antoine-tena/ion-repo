@@ -1,0 +1,14 @@
+id = "CLOCK"
+title = "Tests freeze time instead of reading the real clock"
+pillar = "methods"
+theme = "tests"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "A test that reads the clock passes today and fails at midnight."
+detectable = "script"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "CLOCK"

@@ -47,6 +47,11 @@ FIRST_PROMPTS = {
 }
 
 
+# The stacks kiln brings to the top of the grid first (T-133, 17 October 2026); the others stay
+# generated and tested as they are, scored by the universal rules only.
+COMPLETE_STACKS = frozenset({"django", "nuxt", "none"})
+
+
 def create_project(request: NewProjectRequest) -> Path:
     """Generates the project and returns its root."""
     if request.destination.exists() and any(request.destination.iterdir()):
@@ -99,6 +104,12 @@ def next_steps(request: NewProjectRequest, root: Path) -> list[str]:
         lines.append(f"Claude Code is not installed: {CLAUDE_CODE_INSTALL} ({CLAUDE_CODE_DOCS})")
     if not (root / ".git" / "refs" / "remotes").is_dir():
         lines.append("A GitHub repo when you want one: kiln publish")
+    frozen = [name for name in (stack.backend, stack.frontend) if name not in COMPLETE_STACKS]
+    if frozen:
+        lines.append(
+            f"Django and Nuxt: complete. {' and '.join(frozen)}: frozen, maintained (generated "
+            "and tested, no new grid rules until Django and Nuxt reach the top)."
+        )
     return lines
 
 

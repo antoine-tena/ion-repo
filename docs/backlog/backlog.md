@@ -26,7 +26,7 @@ keeps a repo up to date with the best of the world, and easy for Claude to read"
     Why, what to do (as a `- [ ]` checklist when there are several steps), where to look.
 
 - **ID** `T-NN`: stable, never reused, quoted as is in commits and branches (tickets opened
-  before 16 October 2026 were `AF-NN`, same number). **Next free: T-152.**
+  before 16 October 2026 were `AF-NN`, same number). **Next free: T-153.**
 - **Type**, one of: `bug` (something is broken); `improvement` (it works, it could work
   better); `idea` (nothing exists yet, to be explored); `task` (work that is neither: a release,
   a decision, a check).
@@ -74,18 +74,13 @@ Candidate `v0.4.0-rc.1` cut on Mon 19 Oct (promoted v0.3.4). The milestone decid
 on 16 October; what is left is small. ⚠ breaking: CLI names, `copier.yml` questions, charter
 rule IDs, workflow inputs, plugin and skill names, all converted by `kiln update`.
 - T-14 · Delete the old PyPI token (XS) (blocked: antoine)
-- T-147 · One answer to "which kiln version" (M)
 
-The candidate fixes for `v0.4.0-rc.2` (annway's update to rc.1 failed on 19 Oct, unseen by any
-check): `develop` becomes rc.2 once they are merged.
+`v0.4.0-rc.2` cut on Mon 19 Oct with the fixes of T-147 to T-151 (annway's update to rc.1 had
+failed unseen); promoted when `v0.4.1-rc.1` is cut.
 
 ### v0.4.1 · The grid, as data
 Candidate Thu 22 Oct. The heart of the vision: what kiln holds as the best, one small file per
 rule on two axes, browsable with `kiln grid`.
-- T-123 · The grid as data: one small file per rule, on two axes (M)
-- T-146 · kiln moves the workflows' tag forward in adopted repos (S)
-- T-124 · The reference repo's rules sorted on the two axes (M)
-- T-133 · The other templates frozen while Django and Nuxt reach the top (XS)
 - T-143 · Decide the name before the launch: kiln, despite Kiln-AI (XS) (antoine decides)
 
 ### v0.4.2 · Any repo scored against the best, in seconds
@@ -209,117 +204,11 @@ secret), used since the promotion of `v0.3.2`. The account-wide token made befor
 exists.
 - [ ] antoine deletes it: https://pypi.org/manage/account/token/
 
-### T-147 · One answer to "which kiln version"
-- **Type**: bug
-- **Status**: in progress — branch fix/version-truth, since 2026-10-19
-- **Opened**: 2026-10-19
-- **Effort**: M · **Owner**: Claude · **Due**: —
-- **Origin**: annway's update to v0.4.0-rc.1, 19 October 2026
-
-A tool installed from a folder (`uv tool install ~/code/kiln`) applied the template at the tag
-nearest the folder's `HEAD` (`v0.3.4`) while running 0.4 code (answers in English): Copier
-refused `frontend: none`. The session had offered `v0.4.0-rc.1` (`latest_release`), and
-`kiln --version` showed the folder's current commit, not the snapshot actually installed.
-- [x] one place says which release the tool is; the offer, `kiln update` and `--version` agree
-- [x] a tool ahead of its tag (code newer than any release) refuses `kiln update` with the way out
-- [x] `--version` of a folder install describes what is installed, not the folder today
-- [ ] antoine's machine runs the candidate (`internal` channel), kiln's own work uses `uv run`:
-  once `v0.4.0-rc.2` is tagged
-
 ## 🟠 Important
-
-### T-146 · kiln moves the workflows' tag forward in adopted repos
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-19
-- **Effort**: S · **Owner**: Claude · **Due**: —
-- **Origin**: T-04, antoine's decision of 19 October 2026 (adopted repos at a tag)
-
-An adopted repo now quotes kiln's reusable workflows at the tag of the last public release
-(`@vX.Y.Z`), so it never takes what lands on `develop` before a candidate. It gets no
-`kiln update`, so the tag only moves by hand.
-- [ ] `kiln update` in an adopted repo (or `kiln update --all`) moves only the
-  `antoine-tena/kiln/...@vX.Y.Z` references to the latest public release, after checking the
-  inputs it passes against the new workflows; nothing else is touched.
-- [ ] `kiln adopt` writes the references at the current public tag, never `@develop`.
-- [ ] `kiln status` shows the tag an adopted repo quotes, late or not.
-
-### T-123 · The grid as data: one small file per rule, on two axes
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-17
-- **Effort**: M · **Owner**: Claude · **Due**: —
-- **Origin**: vision of 17 October 2026 ("the reference grid", next steps 2 and 6); T-95's
-  `kiln why` merged here
-
-The grid is what kiln holds as the best way to work today, and the product's hard core:
-everything else (score, fix, roadmap, bot) reads it. Written as data, it can be scored, tested,
-reviewed in a pull request, and read by Claude one rule at a time.
-- [ ] One TOML file per rule, `grid/<theme>/<RULE-ID>.toml` (decided by Claude, 17 October 2026:
-  `tomllib` is in the standard library, the charter already speaks TOML, and small files named
-  after their content are what Claude reads best). Fields: `id`, `title`, `pillar` (methods,
-  standards, readability, slimming, versions), `theme`, `scope` (universal, language,
-  framework, tool, domain, with its name), `level` (adopt, trial, assess, hold), `regime`
-  (strict, ratchet, review), `profiles`, `why` in one line, `sources` (URL, kind, date
-  checked), `detector`, `fixer`, `since`; `switch_when`, what makes its level change ("Node 26:
-  adopt once it is LTS, 28 October"), read by T-140; `settings`, what a project sets on a
-  universal rule (the time zone of "dates stored in UTC").
-- [ ] Themes from the vision's closed list: structure, code standards, API and typing,
-  architecture, data and migrations, background tasks, concurrency, cache, errors and logs,
-  application security, personal data, supply chain, tests, performance, front and
-  accessibility, containers, operations, observability, CI/CD, git and versions, docs and
-  tracking, AI-assisted development, business domain. Sources weighed in the doctrine's order:
-  official docs and release notes, security advisories, measured studies, adoption data, blogs.
-- [ ] Detectors declarative first: a file present, a key in TOML, YAML or JSON, a regex, an
-  ast-grep pattern, a charter rule; Python only when no pattern can say it (doctrine 11: the
-  fastest at equal precision).
-- [ ] Tests: unique IDs, closed lists respected, every `adopt` rule with a source checked in the
-  last six months, every detector and fixer named exists.
-- [ ] `kiln grid` lists the rules (`--theme`, `--scope`, `--level`); `kiln grid RULE-ID` shows
-  one: why, sources, how it is detected and fixed, how to waive it.
-- [ ] The charter stays the engine of the strict and ratchet regimes in kiln repos; the grid
-  points at its rules for the code standards pillar.
-
-### T-124 · The reference repo's rules sorted on the two axes
-- **Type**: task
-- **Status**: todo
-- **Opened**: 2026-10-17
-- **Effort**: M · **Owner**: Claude · **Due**: —
-- **Origin**: vision of 17 October 2026, next step 1
-
-The reference repo holds 108 named rules (52 in its root `CLAUDE.md`, 44 in its backend's, 12
-in its frontend's), 15 backend pillars, and much outside its charter: Claude Code skills and
-hooks, CI workflows, operations scripts (deployment, backups, tested restore, self-healing,
-alerts), container and reverse proxy configuration. Each gets its place on the two axes before
-T-125 picks the launch rules.
-- [ ] Read-only on the reference repo: nothing written, nothing run that writes.
-- [ ] Each rule: theme, scope, regime, whether a detector and a fixer can be written. Project
-  settings (its time zone, its vocabulary, its app names) stay out of the grid: a universal rule
-  takes them as settings ("dates stored in UTC" is universal, the time zone is the project's).
-- [ ] Written as draft rule files (`level = "assess"`, out of the score until sourced),
-  anonymized: no project, app or person name.
-
-### T-133 · The other templates frozen while Django and Nuxt reach the top
-- **Type**: task
-- **Status**: todo
-- **Opened**: 2026-10-17
-- **Effort**: XS · **Owner**: Claude · **Due**: —
-- **Origin**: vision of 17 October 2026 ("starting scope: Django and Nuxt"), which left the fate
-  of the other templates to decide
-
-Decided by Claude (17 October 2026; antoine: "when there is a choice, decide"): the FastAPI,
-Python data, command-line and Java backends, and the Next, Astro, Streamlit and Dash fronts
-stay generated and tested as today, but get no new grid work until Django and Nuxt are at the
-top of the grid. The universal rules (CI, containers, supply chain, secrets) still score them.
-Why: a grid kept for eight stacks at once is the "endless work" among the vision's risks; two
-stacks done fully prove more than eight done halfway.
-- [ ] README and `kiln new` say it in one line: "Django and Nuxt: complete. The others: frozen,
-  maintained."
-- [ ] The end-to-end matrix keeps them; their score is measured (T-130), not required at 100.
 
 ### T-143 · Decide the name before the launch: kiln, despite Kiln-AI
 - **Type**: task
-- **Status**: todo
+- **Status**: blocked — waiting for antoine (the decision; facts in `docs/vision/nom.md`)
 - **Opened**: 2026-10-18
 - **Effort**: XS · **Owner**: Claude for the facts, antoine for the decision · **Due**: 2026-10-31
 - **Origin**: vision of 17 October 2026, risk 7 ("the name: collision with Kiln-AI, and `kiln`
@@ -328,7 +217,7 @@ stacks done fully prove more than eight done halfway.
 A name changed after the launch loses the stars, links and posts that point at the old one;
 changed before, it costs a session. Today the repo is `kiln`, the package `kiln-cli`, and
 Kiln-AI/Kiln (over 5,000 stars) comes first for "kiln" on GitHub.
-- [ ] Claude lays out the facts on one page: who answers to "kiln" on GitHub, PyPI, npm and in
+- [x] Claude lays out the facts on one page (`docs/vision/nom.md`, 19 October 2026): who answers to "kiln" on GitHub, PyPI, npm and in
   search engines; what a rename would touch (package, command, `kiln:*` plugins, workflows
   quoted by tag, conversions by `kiln update`); two or three free names checked on GitHub and
   PyPI.
@@ -1164,6 +1053,33 @@ An ecosystem is what turns a tool into a project people star and contribute to.
 
 ## ✅ Done
 
+- **2026-10-19** · T-124 · The reference repo's rules sorted on the two axes — its 108 named
+  rules and 15 backend pillars, plus what lives outside its charter (operations, structure,
+  tracking), read only and anonymized, merged where they repeat into 105 draft rules
+  (`level = "assess"`, out of the score): each with theme, scope, regime, profiles, whether a
+  script can detect and fix it, and the kiln charter rule that enforces it; `kiln grid` shows
+  adopt and trial by default (feat/grid-reference) · opened 2026-10-17
+- **2026-10-19** · T-133 · The other templates frozen while Django and Nuxt reach the top —
+  said in both READMEs and at the end of `kiln new` for another stack; the end-to-end matrix
+  keeps them all (docs/frozen-stacks) · opened 2026-10-17
+- **2026-10-19** · T-146 · kiln moves the workflows' tag forward in adopted repos —
+  `kiln update` (and `--all`, `--rehearse`) in an adopted repo moves only the
+  `antoine-tena/kiln/...@ref` references to the latest public release, after checking each
+  input against the workflow at that tag; `kiln adopt` does it at adoption, `kiln status` shows
+  the quoted tag (feat/adopted-tag) · opened 2026-10-19
+- **2026-10-19** · T-123 · The grid as data: one small file per rule, on two axes —
+  `src/kiln/grid/` (format, closed lists, validation, facts of a repo, declarative detectors and
+  Python checks, `kiln grid`), six `adopt` rules with sources checked on 19 October; each rule
+  needs a passing and a failing example (feat/grid-data) · opened 2026-10-17
+- **2026-10-19** · T-152 · A private repo's CI runs on the machine — answer `ci_runner`
+  (`local` by default, `github` for a public repo, picked from the visibility by `kiln update`),
+  `ci.yml` without push triggers, `/kiln:merge` runs `kiln ci`, the status line and the session
+  start read its git note; antoine's GitHub free plan kept running out of minutes
+  (feat/local-ci-private) · opened 2026-10-19
+- **2026-10-19** · T-147 · One answer to "which kiln version" — only a release updates a repo,
+  the package records the commit it is built from, `--version` says what is installed; antoine's
+  machine on `v0.4.0-rc.2` from GitHub; annway's update rehearsed green with it
+  (fix/version-truth) · opened 2026-10-19
 - **2026-10-19** · T-151 · The checks run before every merge into `develop` — `/kiln:merge`
   runs the repo's checks first and reads GitHub's verdict after; antoine's global instructions
   say so, skill names of 0.4 there too (fix/version-truth) · opened 2026-10-19

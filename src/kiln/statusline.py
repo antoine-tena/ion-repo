@@ -31,7 +31,10 @@ LEGACY_SCRIPT = Path("plugins") / "base" / "scripts" / "statusline.py"
 def apply_statusline_settings(root: Path) -> None:
     answers = answers_if_any(root)
     show_ci = answers.get("statusline_ci", True) is not False
-    run(["git", "config", "statusline.ci", "true" if show_ci else "false"], root)
+    # A CI run on the machine is read from its git note (`kiln ci`), not from GitHub.
+    local_ci = answers.get("ci_runner") == "local"
+    value = ("locale" if local_ci else "true") if show_ci else "false"
+    run(["git", "config", "statusline.ci", value], root)
     prod_url = str(answers.get("prod_health_url") or "")
     if prod_url:
         run(["git", "config", "statusline.prod-url", prod_url], root)

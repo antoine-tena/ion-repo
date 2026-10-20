@@ -1,0 +1,13 @@
+id = "BRANCH-NAMES"
+title = "Branches named with a type prefix (feat/, fix/, docs/…)"
+pillar = "methods"
+theme = "git-versions"
+scope = { kind = "tool", name = "git" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "The prefix tells what a branch carries before opening it."
+detectable = "script"
+fixable = "judgment"
+since = "0.4.1"

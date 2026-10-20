@@ -1,0 +1,13 @@
+id = "OPENTELEMETRY"
+title = "Distributed traces with W3C trace context, from the front to the database"
+pillar = "methods"
+theme = "observability"
+scope = { kind = "tool", name = "opentelemetry" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["company", "enterprise"]
+why = "One trace answers \"where did the time go\" across services."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"

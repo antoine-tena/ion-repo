@@ -164,14 +164,23 @@ def test_readme_sections_start_on_their_own_line(
     assert all(line.startswith("## ") for line in readme.splitlines() if "## " in line)
 
 
-def test_ci_runs_for_main_and_develop(tmp_path: Path) -> None:
-    project_dir = generate(tmp_path / "demo")
+def test_ci_on_github_runs_for_main_and_develop(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", ci_runner="github")
 
     workflow = yaml.safe_load((project_dir / ".github/workflows/ci.yml").read_text())
-    # PyYAML lit la clé `on` comme le booléen True.
+    # PyYAML reads the `on` key as the boolean True.
     triggers = workflow[True]
     assert triggers["push"]["branches"] == ["main", "develop"]
     assert triggers["pull_request"]["branches"] == ["main", "develop"]
+
+
+def test_a_local_ci_spends_no_github_minute(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", ci_runner="local")
+
+    workflow = yaml.safe_load((project_dir / ".github/workflows/ci.yml").read_text())
+    triggers = workflow[True]
+    # By hand, or replayed before a production release: never on a push.
+    assert set(triggers) == {"workflow_dispatch", "workflow_call"}
 
 
 def test_tool_project_gets_a_command_line_package(tmp_path: Path) -> None:

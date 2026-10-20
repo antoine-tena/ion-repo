@@ -1,0 +1,14 @@
+id = "EXPLICIT-IMPORTS"
+title = "Project components imported explicitly, not resolved by magic"
+pillar = "readability"
+theme = "code-standards"
+scope = { kind = "framework", name = "nuxt" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["association", "company", "university", "enterprise"]
+why = "An import says where a component comes from; auto-import makes the reader search."
+detectable = "script"
+fixable = "script"
+since = "0.4.1"
+charter_rule = "EXPLICIT-IMPORTS"

@@ -76,7 +76,7 @@ def test_status_outside_a_terminal_is_plain_text(
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "config"))
     (tmp_path / "config/kiln").mkdir(parents=True)
     (tmp_path / "config/kiln/config.toml").write_text(f'code_dir = "{tmp_path}"\n')
-    monkeypatch.setattr(fleet, "latest_release", lambda: "v0.3.0")
+    monkeypatch.setattr(fleet, "latest_release", lambda **_: "v0.3.0")
 
     assert run_kiln(monkeypatch, "status") == 0
     out = capsys.readouterr().out

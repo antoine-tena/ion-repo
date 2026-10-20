@@ -1,0 +1,14 @@
+id = "RETRIES"
+title = "Retries, exponential backoff and final failure live in one place"
+pillar = "methods"
+theme = "background-tasks"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["association", "company", "university", "enterprise"]
+why = "Retry logic scattered in handlers retries forever or never."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "RETRIES"

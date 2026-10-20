@@ -1,0 +1,14 @@
+id = "MODERN-VUE"
+title = "Current Vue and Nuxt APIs (defineModel, useFetch with a key)"
+pillar = "standards"
+theme = "code-standards"
+scope = { kind = "framework", name = "vue" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "The framework's current APIs remove code the old ones made you write."
+detectable = "script"
+fixable = "script"
+since = "0.4.1"
+charter_rule = "MODERN-VUE"

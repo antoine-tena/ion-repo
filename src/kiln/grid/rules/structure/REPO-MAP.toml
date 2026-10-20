@@ -1,0 +1,13 @@
+id = "REPO-MAP"
+title = "The root instructions hold a map of the repo: where each thing lives"
+pillar = "readability"
+theme = "structure"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "A map read first saves every reader, and every agent, a search through the tree."
+detectable = "script"
+fixable = "judgment"
+since = "0.4.1"

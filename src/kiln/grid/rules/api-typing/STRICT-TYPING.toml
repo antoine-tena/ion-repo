@@ -1,0 +1,14 @@
+id = "STRICT-TYPING"
+title = "Strict type checking, every signature annotated, no unexplained ignore"
+pillar = "standards"
+theme = "api-typing"
+scope = { kind = "language", name = "python" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "ratchet"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "Types are the cheapest proof: a wrong call fails before the tests run."
+detectable = "script"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "STRICT-TYPING"

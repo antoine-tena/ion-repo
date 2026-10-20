@@ -1,7 +1,10 @@
 """kiln update and a project of kiln 0.3: the conversions Copier cannot make."""
 
+import os
 import subprocess
 from pathlib import Path
+
+import pytest
 
 from kiln import migrations
 
@@ -68,3 +71,29 @@ def test_rules_are_cited_by_their_new_identifiers(tmp_path: Path) -> None:
     text = (tmp_path / "service.py").read_text()
     assert "# [CONSTANT-TIME]: compare_digest" in text
     assert "rows[INDEX]" in text and "# see [INDEXES]" in text
+
+
+@pytest.mark.parametrize(("visibility", "runner"), [("PUBLIC", "github"), ("PRIVATE", "local")])
+def test_the_ci_runs_where_it_costs_nothing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, visibility: str, runner: str
+) -> None:
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    gh = bin_dir / "gh"
+    gh.write_text(f"#!/bin/sh\necho {visibility}\n")
+    gh.chmod(0o755)
+    monkeypatch.setenv("PATH", f"{bin_dir}:{os.environ['PATH']}")
+    (tmp_path / ".copier-answers.yml").write_text("_commit: v0.4.0\nname: myapp\n")
+
+    assert migrations.answers_for_update(tmp_path, {})["ci_runner"] == runner
+    # Said once, kept: the answer wins over the visibility.
+    (tmp_path / ".copier-answers.yml").write_text("_commit: v0.4.0\nci_runner: local\n")
+    assert "ci_runner" not in migrations.answers_for_update(tmp_path, {})
+
+
+def test_without_gh_the_ci_stays_on_the_machine(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("PATH", str(tmp_path))  # no gh at all
+
+    assert migrations.ci_runner_for(tmp_path) == "local"

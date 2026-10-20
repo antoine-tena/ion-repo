@@ -410,3 +410,21 @@ def test_the_red_ci_is_only_said_in_repos_kiln_looks_after(tmp_path: Path) -> No
     (tmp_path / "src/kiln").mkdir(parents=True)
     (tmp_path / "src/kiln/versions.py").write_text("")
     assert hook.follows_kiln(tmp_path)
+
+
+def test_a_red_local_ci_is_read_from_its_git_note(tmp_path: Path) -> None:
+    hook = load_hook()
+    origin, repo = tmp_path / "origin.git", tmp_path / "repo"
+    subprocess.run(["git", "init", "-q", "--bare", "-b", "develop", str(origin)], check=True)
+    subprocess.run(["git", "clone", "-q", str(origin), str(repo)], check=True)
+    git = ["git", "-C", str(repo)]
+    subprocess.run([*git, "commit", "-q", "--allow-empty", "-m", "start"], check=True)
+    subprocess.run([*git, "push", "-q", "origin", "develop"], check=True)
+    subprocess.run([*git, "config", "statusline.ci", "locale"], check=True)
+
+    assert hook.red_ci(repo) == ""  # never replayed: nothing to say
+    note = ["notes", "--ref=refs/notes/ci", "add", "-f", "-m"]
+    subprocess.run([*git, *note, "kiln ci: failure\nbackend: tests", "origin/develop"], check=True)
+    assert hook.red_ci(repo).startswith("The CI of `develop` is red: `kiln ci` failed")
+    subprocess.run([*git, *note, "kiln ci: success", "origin/develop"], check=True)
+    assert hook.red_ci(repo) == ""

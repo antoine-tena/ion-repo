@@ -19,7 +19,7 @@ from pathlib import Path
 
 import copier
 
-from kiln import ui
+from kiln import adopted, ui
 from kiln.charter.config import CHARTER_FILE, charter_path
 from kiln.rules import write_unverified_rules
 from kiln.shell import KilnError, capture, require_tools, run_status, step
@@ -66,12 +66,28 @@ def adopt_project(root: Path, *, size: str = DEFAULT_SIZE, template: str | None 
     else:
         step("Work tracking")
         copy_backlog(root, template)
+    _quote_released_workflows(root)
     step("Debt found by the charter")
     if shutil.which("charter") is None or run_status(["charter"], root, live=True) == 0:
         ui.note("No deviation.")
     else:
         ui.note("Deviations above: fix them, or remove their rule from charter.toml.")
     ui.note("Review, commit, then merge (skill /kiln:merge).")
+
+
+def _quote_released_workflows(root: Path) -> None:
+    """kiln's workflows already quoted by the repo move to the last public release, never
+    `@develop`; offline, they are left for `kiln update`."""
+    if not adopted.quoted_refs(root):
+        return
+    step("kiln's workflows at the last public release")
+    try:
+        changed = adopted.move_to_release(root)
+    except KilnError as error:
+        ui.note(f"left as they are ({error}); kiln update moves them later")
+        return
+    if changed:
+        ui.note(f"moved: {', '.join(changed)}")
 
 
 def check_adoptable(root: Path) -> None:

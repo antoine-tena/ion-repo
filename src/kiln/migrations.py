@@ -34,6 +34,7 @@ CARRIED_OVER = "## Carried over from the instructions of kiln 0.3"
 # What a project of kiln 0.3 was, whatever it said: its CLAUDE.md made the team French-speaking
 # and its rules computed calendar notions in Europe/Paris.
 LEGACY_DEFAULTS: Mapping[str, object] = {"language": "fr", "timezone": "Europe/Paris"}
+GH_TIMEOUT = 10
 # A citation, not a subscript: `arr[INDEX]` stays as it is.
 RULE_REFERENCE = re.compile(r"(?<![\w\]])\[(" + "|".join(map(re.escape, renames.RULE_IDS)) + r")\]")
 TEXT_SUFFIXES = frozenset(
@@ -64,7 +65,26 @@ def answers_for_update(root: Path, changes: Mapping[str, object]) -> dict[str, o
         data.update(LEGACY_DEFAULTS)
         if current.get("backend") == "java":
             data["java_package"] = "fr." + str(current.get("name", "")).replace("-", "")
+    if "ci_runner" not in raw and "ci_runner" not in changes:
+        data["ci_runner"] = ci_runner_for(root)
     return {**data, **changes}
+
+
+def ci_runner_for(root: Path) -> str:
+    """Where a repo's CI runs when it never said: on GitHub for a public repo (free, unlimited),
+    on the machine otherwise (private, or GitHub out of reach: no minutes spent by surprise)."""
+    try:
+        visibility = subprocess.run(
+            ["gh", "repo", "view", "--json", "visibility", "--jq", ".visibility"],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            timeout=GH_TIMEOUT,
+            check=False,
+        ).stdout.strip()
+    except subprocess.TimeoutExpired, OSError:
+        return "local"
+    return "github" if visibility == "PUBLIC" else "local"
 
 
 def convert(

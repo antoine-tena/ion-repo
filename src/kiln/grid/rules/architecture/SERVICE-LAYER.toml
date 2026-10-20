@@ -1,0 +1,13 @@
+id = "SERVICE-LAYER"
+title = "Business processing lives in services, not in views or models"
+pillar = "readability"
+theme = "architecture"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["association", "company", "university", "enterprise"]
+why = "One place per rule, called the same way from the API, the jobs and the tests."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"

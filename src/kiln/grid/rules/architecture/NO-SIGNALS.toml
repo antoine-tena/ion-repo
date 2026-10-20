@@ -1,0 +1,14 @@
+id = "NO-SIGNALS"
+title = "No Django signals: explicit calls instead"
+pillar = "readability"
+theme = "architecture"
+scope = { kind = "framework", name = "django" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["association", "company", "university", "enterprise"]
+why = "A signal is a side effect no reader of the calling code can see."
+detectable = "script"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "NO-SIGNALS"

@@ -1,0 +1,14 @@
+id = "JS-BUDGET"
+title = "A JavaScript budget per page, checked at build time"
+pillar = "slimming"
+theme = "performance"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "ratchet"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "Every kilobyte of script costs time on a cheap phone."
+detectable = "script"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "JS-BUDGET"

@@ -1,0 +1,14 @@
+id = "TESTED-BACKUPS"
+title = "Backups are restored on a schedule, the restore is tested"
+pillar = "methods"
+theme = "operations"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["association", "company", "university", "enterprise"]
+why = "A backup never restored is a hope, not a backup."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "TESTED-BACKUPS"

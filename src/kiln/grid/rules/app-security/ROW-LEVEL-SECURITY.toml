@@ -1,0 +1,13 @@
+id = "ROW-LEVEL-SECURITY"
+title = "Row-level security isolates each user's rows in the database"
+pillar = "methods"
+theme = "app-security"
+scope = { kind = "tool", name = "postgresql" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["company", "enterprise"]
+why = "A forgotten filter in the code is still caught by the database."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"

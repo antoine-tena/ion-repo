@@ -47,6 +47,7 @@ SETTABLE_KEYS = (
     "frontend_deploy",
     "north_star",
     "statusline_ci",
+    "ci_runner",
     "prod_health_url",
 )
 LIST_KEYS = frozenset({"team"})

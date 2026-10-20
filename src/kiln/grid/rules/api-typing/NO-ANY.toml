@@ -1,0 +1,14 @@
+id = "NO-ANY"
+title = "No any: unknown, then narrowing"
+pillar = "standards"
+theme = "api-typing"
+scope = { kind = "language", name = "typescript" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "ratchet"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "An any switches the type checker off for everything it touches."
+detectable = "script"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "NO-ANY"

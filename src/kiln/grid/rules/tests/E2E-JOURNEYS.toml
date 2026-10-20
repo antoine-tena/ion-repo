@@ -1,0 +1,14 @@
+id = "E2E-JOURNEYS"
+title = "Critical user journeys have an end-to-end browser test"
+pillar = "methods"
+theme = "tests"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["association", "company", "university", "enterprise"]
+why = "The journeys that bring the money or the members are the ones never to break."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "E2E-JOURNEYS"

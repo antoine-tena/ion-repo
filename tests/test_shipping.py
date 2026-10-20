@@ -40,6 +40,8 @@ def repo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     (clone / "src/kiln/versions.py").write_text("")
     (clone / "pyproject.toml").write_text('[project]\nname = "kiln-cli"\nversion = "0.1.0"\n')
     (clone / "CHANGELOG.md").write_text(CHANGELOG)
+    for readme in shipping.READMES:
+        (clone / readme).write_text("# kiln\n")
     (clone / "plugins/kiln/.claude-plugin").mkdir(parents=True)
     (clone / "plugins/kiln/.claude-plugin/plugin.json").write_text('{"version": "0.2.0"}\n')
     (clone / ".gitignore").write_text(".claude/\n")
@@ -56,9 +58,12 @@ def publish(repo: Path, message: str) -> None:
     git(repo, "push", "-q", "origin", "develop")
 
 
-def rewrite_draft(tree: Path) -> None:
+def rewrite_draft(tree: Path, *, readmes: bool = True) -> None:
     changelog = tree / "CHANGELOG.md"
     changelog.write_text(changelog.read_text().replace(shipping.DRAFT_MARKER + "\n", ""))
+    if readmes:
+        for readme in shipping.READMES:
+            (tree / readme).write_text((tree / readme).read_text() + "What's new.\n")
     git(tree, "commit", "-qam", "docs(changelog): the entry rewritten")
 
 
@@ -114,6 +119,13 @@ def test_promote_waits_for_a_newer_candidate_then_publishes(repo: Path) -> None:
 
     publish(repo, "fix: two")
     shipping.cut(repo)  # the open release is a candidate already: the next one starts
+    # The candidate still open comes into the next release: its entry and number first.
+    next_tree = repo / ".claude/worktrees/release-v0.1.2"
+    assert git(next_tree, "merge-base", "--is-ancestor", "v0.1.1-rc.1", "HEAD") == ""
+    changelog = (next_tree / "CHANGELOG.md").read_text()
+    assert (
+        changelog.index("## v0.1.2") < changelog.index("## v0.1.1") < changelog.index("## v0.1.0")
+    )
     rewrite_draft(repo / ".claude/worktrees/release-v0.1.2")
     shipping.cut(repo)
     shipping.promote(repo)
@@ -189,3 +201,25 @@ def test_a_fix_of_a_candidate_bumps_the_plugins_it_touches(repo: Path) -> None:
     assert git(tree, "log", "-1", "--format=%s", "v0.1.1-rc.2") == (
         "chore(release): plugins of the fix bumped"
     )
+
+
+def test_a_release_whose_readmes_say_nothing_new_is_not_tagged(repo: Path) -> None:
+    publish(repo, "feat: one")
+    shipping.cut(repo)
+    tree = repo / ".claude/worktrees/release-v0.1.1"
+    rewrite_draft(tree, readmes=False)
+
+    with pytest.raises(KilnError, match=r"README\.md, README\.fr\.md unchanged since v0\.1\.0"):
+        shipping.cut(repo)
+    assert "v0.1.1-rc.1" not in git(repo, "tag")
+
+    # Nothing visible to say: the entry says why, and the release goes.
+    changelog = tree / "CHANGELOG.md"
+    changelog.write_text(
+        changelog.read_text()
+        .replace("## v0.1.1 — ", "## v0.1.1 — ", 1)
+        .replace("- One\n", "- One\n<!-- readme: unchanged, internal only -->\n", 1)
+    )
+    git(tree, "commit", "-qam", "docs(changelog): nothing for the README")
+    shipping.cut(repo)
+    assert "v0.1.1-rc.1" in git(repo, "tag")

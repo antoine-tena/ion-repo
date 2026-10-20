@@ -1,0 +1,14 @@
+id = "FILE-SIZE"
+title = "Files stay under a size budget that only goes down"
+pillar = "readability"
+theme = "code-standards"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "ratchet"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "A file of one idea reads in one go, by people and by Claude."
+detectable = "script"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "FILE-SIZE"

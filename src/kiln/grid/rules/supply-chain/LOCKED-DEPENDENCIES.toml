@@ -1,0 +1,27 @@
+id = "LOCKED-DEPENDENCIES"
+title = "Every dependency manifest has its lockfile committed next to it"
+pillar = "methods"
+theme = "supply-chain"
+scope = { kind = "universal" }
+level = "adopt"
+regime = "strict"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "Without a lockfile, each install resolves anew: CI, teammates and production run different code."
+applies = []
+fixer = ""
+since = "0.4.1"
+charter_rule = "LOCKED-DEPENDENCIES"
+
+[detector]
+kind = "python"
+check = "lockfiles"
+
+[[sources]]
+url = "https://docs.astral.sh/uv/concepts/projects/layout/"
+kind = "docs"
+checked = 2026-10-19
+
+[[sources]]
+url = "https://pnpm.io/git"
+kind = "docs"
+checked = 2026-10-19

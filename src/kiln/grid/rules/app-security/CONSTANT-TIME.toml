@@ -1,0 +1,14 @@
+id = "CONSTANT-TIME"
+title = "Tokens, keys and codes compared in constant time"
+pillar = "methods"
+theme = "app-security"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "A comparison that stops at the first difference leaks the secret byte by byte."
+detectable = "script"
+fixable = "script"
+since = "0.4.1"
+charter_rule = "CONSTANT-TIME"

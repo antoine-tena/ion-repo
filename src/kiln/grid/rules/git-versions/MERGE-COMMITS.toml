@@ -1,0 +1,14 @@
+id = "MERGE-COMMITS"
+title = "Merges into the integration branch keep their history (no squash)"
+pillar = "methods"
+theme = "git-versions"
+scope = { kind = "tool", name = "git" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["association", "company", "university", "enterprise"]
+why = "The history says which commits came together, and git bisect can still walk it."
+detectable = "script"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "MERGE"

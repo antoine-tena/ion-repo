@@ -1,0 +1,14 @@
+id = "API-FUZZING"
+title = "The API fuzzed from its OpenAPI contract"
+pillar = "methods"
+theme = "tests"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["association", "company", "university", "enterprise"]
+why = "Thousands of generated requests find the crashes no one thought to write."
+detectable = "script"
+fixable = "script"
+since = "0.4.1"
+charter_rule = "API-FUZZING"

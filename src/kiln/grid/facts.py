@@ -1,0 +1,136 @@
+"""What a repo is made of, read from its tracked files in milliseconds: the facts a rule's
+`applies` asks for (`django`, `github-actions`…). Any repo, made by kiln or not."""
+
+import json
+import re
+import subprocess
+import tomllib
+from dataclasses import dataclass
+from pathlib import Path, PurePosixPath
+
+# Facts a rule may ask for, and what tells them.
+KNOWN_FACTS = (
+    "python",
+    "uv",
+    "django",
+    "javascript",
+    "typescript",
+    "pnpm",
+    "nuxt",
+    "vue",
+    "github-actions",
+    "containers",
+)
+IGNORED_PARTS = frozenset({".git", "node_modules", ".venv", "__pycache__", "dist", ".nuxt"})
+
+
+@dataclass(frozen=True)
+class Repo:
+    root: Path
+    files: tuple[str, ...]  # tracked files, POSIX paths relative to the root
+    facts: frozenset[str]
+
+    def matching(self, *patterns: str) -> list[str]:
+        """Tracked files matching any of the glob `patterns` (`**` crosses folders)."""
+        return [
+            name
+            for name in self.files
+            if any(PurePosixPath(name).full_match(pattern) for pattern in patterns)
+        ]
+
+
+def read_repo(root: Path) -> Repo:
+    files = tuple(tracked_files(root))
+    return Repo(root, files, frozenset(detect_facts(root, files)))
+
+
+def tracked_files(root: Path) -> list[str]:
+    """`git ls-files` (ignored files left out); every file outside node_modules and the like
+    when the folder is not a git repo."""
+    listed = subprocess.run(
+        ["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard"],
+        cwd=root,
+        capture_output=True,
+        check=False,
+    )
+    if listed.returncode == 0:
+        return [name for name in listed.stdout.decode().split("\0") if name]
+    return [
+        path.relative_to(root).as_posix()
+        for path in root.rglob("*")
+        if path.is_file() and not IGNORED_PARTS.intersection(path.relative_to(root).parts)
+    ]
+
+
+def detect_facts(root: Path, files: tuple[str, ...]) -> set[str]:
+    names = {PurePosixPath(name).name for name in files}
+    facts: set[str] = set()
+    python_deps = _python_dependencies(root, files)
+    node_deps = _node_dependencies(root, files)
+    if names & {"pyproject.toml", "setup.py", "requirements.txt"} or any(
+        name.endswith(".py") for name in files
+    ):
+        facts.add("python")
+    if "uv.lock" in names:
+        facts.add("uv")
+    if "django" in python_deps or "manage.py" in names:
+        facts.add("django")
+    if "package.json" in names:
+        facts.add("javascript")
+    if "tsconfig.json" in names or any(name.endswith((".ts", ".tsx")) for name in files):
+        facts.add("typescript")
+    if "pnpm-lock.yaml" in names:
+        facts.add("pnpm")
+    if "nuxt" in node_deps or any(name.startswith("nuxt.config.") for name in names):
+        facts.add("nuxt")
+    if "vue" in node_deps or "nuxt" in facts:
+        facts.add("vue")
+    if any(PurePosixPath(name).full_match(".github/workflows/*.y*ml") for name in files):
+        facts.add("github-actions")
+    if any(
+        name in {"Dockerfile", "Containerfile"} or re.fullmatch(r"(docker-)?compose.*\.ya?ml", name)
+        for name in names
+    ):
+        facts.add("containers")
+    return facts
+
+
+def _python_dependencies(root: Path, files: tuple[str, ...]) -> set[str]:
+    found: set[str] = set()
+    for name in files:
+        path = PurePosixPath(name)
+        if path.name == "pyproject.toml":
+            try:
+                project = tomllib.loads((root / name).read_text(encoding="utf-8"))
+            except OSError, tomllib.TOMLDecodeError:
+                continue
+            declared = project.get("project", {}).get("dependencies", [])
+            found |= {_requirement_name(item) for item in declared if isinstance(item, str)}
+        elif path.name.startswith("requirements") and path.suffix == ".txt":
+            try:
+                lines = (root / name).read_text(encoding="utf-8").splitlines()
+            except OSError:
+                continue
+            found |= {_requirement_name(line) for line in lines if line.strip()[:1].isalpha()}
+    return found
+
+
+def _node_dependencies(root: Path, files: tuple[str, ...]) -> set[str]:
+    found: set[str] = set()
+    for name in files:
+        if PurePosixPath(name).name != "package.json" or "node_modules/" in name:
+            continue
+        try:
+            package = json.loads((root / name).read_text(encoding="utf-8"))
+        except OSError, ValueError:
+            continue
+        for section in ("dependencies", "devDependencies"):
+            declared = package.get(section, {})
+            if isinstance(declared, dict):
+                found |= set(declared)
+    return found
+
+
+def _requirement_name(requirement: str) -> str:
+    """`Django>=5.2` → `django`."""
+    return re.split(r"[\s<>=!~;\[(@]", requirement.strip(), maxsplit=1)[0].lower()

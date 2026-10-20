@@ -1,0 +1,14 @@
+id = "THIN-MODEL"
+title = "Models describe tables, no business computation"
+pillar = "readability"
+theme = "architecture"
+scope = { kind = "framework", name = "django" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["association", "company", "university", "enterprise"]
+why = "A model that computes ties the rules to the database and to every query."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "THIN-MODEL"

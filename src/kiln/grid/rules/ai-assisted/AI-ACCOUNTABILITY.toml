@@ -1,0 +1,14 @@
+id = "AI-ACCOUNTABILITY"
+title = "Code written by an agent follows the same rules and review"
+pillar = "methods"
+theme = "ai-assisted"
+scope = { kind = "tool", name = "claude-code" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "Who typed the code does not change who answers for it."
+detectable = "judgment"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "AI-ACCOUNTABILITY"

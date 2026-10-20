@@ -1,0 +1,13 @@
+id = "CACHE-STAMPEDE"
+title = "Hot cache keys are protected against stampedes at expiry"
+pillar = "methods"
+theme = "cache"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["company", "enterprise"]
+why = "A popular key expiring sends every request to the database at once."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"

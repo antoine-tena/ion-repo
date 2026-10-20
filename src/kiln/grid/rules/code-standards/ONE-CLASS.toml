@@ -1,0 +1,14 @@
+id = "ONE-CLASS"
+title = "One class per file, a few small helpers aside"
+pillar = "readability"
+theme = "code-standards"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["association", "company", "university", "enterprise"]
+why = "A file named after its class is found without searching."
+detectable = "script"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "ONE-CLASS"

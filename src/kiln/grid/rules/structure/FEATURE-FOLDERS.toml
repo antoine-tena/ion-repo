@@ -1,0 +1,13 @@
+id = "FEATURE-FOLDERS"
+title = "One folder per feature or domain, not per technical layer"
+pillar = "readability"
+theme = "structure"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["association", "company", "university", "enterprise"]
+why = "A change to one feature stays in one folder."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"

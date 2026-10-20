@@ -1,0 +1,14 @@
+id = "API-LATENCY"
+title = "A latency budget per read route (p95), slower routes justified"
+pillar = "methods"
+theme = "performance"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["association", "company", "university", "enterprise"]
+why = "A budget makes a slow route a decision, not an accident."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "API-LATENCY"

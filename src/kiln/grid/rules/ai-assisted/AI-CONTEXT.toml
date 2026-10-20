@@ -1,0 +1,14 @@
+id = "AI-CONTEXT"
+title = "The repo's instructions are the agent's reference context, kept short"
+pillar = "readability"
+theme = "ai-assisted"
+scope = { kind = "tool", name = "claude-code" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "An agent follows what it reads first; instructions that drift mislead it."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "AI-CONTEXT"

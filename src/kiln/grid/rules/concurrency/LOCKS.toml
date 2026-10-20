@@ -1,0 +1,14 @@
+id = "LOCKS"
+title = "Counters, payments, balances and seats use pessimistic locks"
+pillar = "methods"
+theme = "concurrency"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["association", "company", "university", "enterprise"]
+why = "Two requests at the same second sell the last seat twice."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "LOCKS"

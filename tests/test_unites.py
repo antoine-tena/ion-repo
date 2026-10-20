@@ -14,7 +14,7 @@ from kiln import cli, github, ui
 from kiln.banner import LOGO, _project_summary, render_logo
 from kiln.config import UserConfig
 from kiln.deps import _major_bounds
-from kiln.dev import service_prefix
+from kiln.dev import read_env_file, service_prefix
 from kiln.doctor import Level, workstation_findings
 from kiln.install import ensure_env_file
 from kiln.release import Tag, latest_candidates, next_version, promotion_verdict
@@ -71,6 +71,26 @@ def test_java_backend_is_checked_by_the_maven_wrapper() -> None:
         ("backend maven", ("./mvnw", "-B", "-q", "verify")),
         ("charter", ("charter",)),
     ]
+
+
+def test_java_backend_with_a_frontend_serves_its_jar_in_dev() -> None:
+    commands = Stack(backend="java", frontend="nuxt", has_podman=False).dev_commands()
+
+    assert [(command.label, command.directory) for command in commands] == [
+        ("java", "backend"),
+        ("nuxt", "frontend"),
+    ]
+    script = commands[0].argv[-1]
+    assert script.startswith("./mvnw -q -B -DskipTests package && ")
+    assert script.endswith('exec java -jar "$1"')
+
+
+def test_env_file_of_a_server_is_read(tmp_path: Path) -> None:
+    env_file = tmp_path / ".env"
+    env_file.write_text("# local\nexport PORT=9000\nNAME='demo pass'\n\nBROKEN\nEMPTY=\n")
+
+    assert read_env_file(env_file) == {"PORT": "9000", "NAME": "demo pass", "EMPTY": ""}
+    assert read_env_file(tmp_path / "absent") == {}
 
 
 def test_adopted_maven_backend_is_detected(tmp_path: Path) -> None:

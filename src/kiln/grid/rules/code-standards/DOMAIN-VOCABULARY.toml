@@ -1,0 +1,14 @@
+id = "DOMAIN-VOCABULARY"
+title = "The code speaks the domain's vocabulary, one word per notion"
+pillar = "standards"
+theme = "code-standards"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "review"
+profiles = ["association", "company", "university", "enterprise"]
+why = "Two words for one notion, or one word for two, is where misunderstandings start."
+detectable = "judgment"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "VOCABULARY"

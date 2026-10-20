@@ -1,0 +1,14 @@
+id = "ASYNC-HEALTH"
+title = "The asynchronous chain has its own health probe"
+pillar = "methods"
+theme = "operations"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["association", "company", "university", "enterprise"]
+why = "A stuck queue fails silently: nothing errors, nothing happens."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "ASYNC-HEALTH"

@@ -1,0 +1,14 @@
+id = "ENCRYPTION"
+title = "Very sensitive fields are encrypted at rest"
+pillar = "methods"
+theme = "app-security"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["association", "company", "university", "enterprise"]
+why = "A stolen database backup should not be a stolen bank account."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"
+charter_rule = "ENCRYPTION"

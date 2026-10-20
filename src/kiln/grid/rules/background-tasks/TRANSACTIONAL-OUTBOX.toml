@@ -1,0 +1,13 @@
+id = "TRANSACTIONAL-OUTBOX"
+title = "External side effects go through a transactional outbox"
+pillar = "methods"
+theme = "background-tasks"
+scope = { kind = "universal" }
+# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+level = "assess"
+regime = "strict"
+profiles = ["association", "company", "university", "enterprise"]
+why = "A payment recorded and an email not sent, or the reverse, is a support ticket."
+detectable = "approximate"
+fixable = "judgment"
+since = "0.4.1"

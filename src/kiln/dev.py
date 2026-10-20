@@ -4,6 +4,9 @@ The servers' output is interleaved line by line, each line prefixed by its servi
 (`django   │ …`, `nuxt     │ …`). The servers keep their colors (`FORCE_COLOR`) and Python does
 not buffer (`PYTHONUNBUFFERED`).
 
+Each server also receives the variables of the `.env` of its folder (`backend/.env`), the
+local, ignored settings of the machine; the shell's environment wins over them.
+
 With `--containers` (podman project), the whole stack runs in podman (`compose.yaml`).
 """
 
@@ -19,6 +22,7 @@ from kiln.shell import KilnError, require_tools, run, step
 from kiln.stack import Command, load_stack
 
 COMPOSE_FILE = "compose.yaml"
+ENV_FILE = ".env"
 # Color of each service's prefix, in launch order.
 PREFIX_COLORS = (ui.FIRE, ui.MOSS, ui.GLOW, ui.CHEEK)
 _print_lock = threading.Lock()
@@ -62,11 +66,29 @@ def run_dev_servers(root: Path, *, in_containers: bool = False) -> None:
             reader.join(timeout=1)
 
 
+def read_env_file(path: Path) -> dict[str, str]:
+    """`KEY=value` lines of a `.env`: comments, blanks and `export` ignored, quotes removed."""
+    if not path.is_file():
+        return {}
+    variables = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip().removeprefix("export ").strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        value = value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"":
+            value = value[1:-1]
+        variables[key.strip()] = value
+    return variables
+
+
 def _start(root: Path, command: Command, env: dict[str, str]) -> subprocess.Popen[str]:
+    directory = root / command.directory
     return subprocess.Popen(
         list(command.argv),
-        cwd=root / command.directory,
-        env=env,
+        cwd=directory,
+        env={**read_env_file(directory / ENV_FILE), **env},
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
