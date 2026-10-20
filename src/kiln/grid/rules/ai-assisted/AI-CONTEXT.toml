@@ -1,14 +1,29 @@
 id = "AI-CONTEXT"
-title = "The repo's instructions are the agent's reference context, kept short"
+title = "The repo has instructions for coding agents (CLAUDE.md or AGENTS.md)"
 pillar = "readability"
 theme = "ai-assisted"
-scope = { kind = "tool", name = "claude-code" }
-# A draft from the reference repo (T-124): assessed, out of the score until sourced.
-level = "assess"
-regime = "review"
+scope = { kind = "universal" }
+level = "adopt"
+regime = "strict"
 profiles = ["solo", "association", "company", "university", "enterprise"]
-why = "An agent follows what it reads first; instructions that drift mislead it."
-detectable = "approximate"
+why = "An agent that reads the repo's own rules first follows them; one that guesses repeats the same mistakes."
+applies = []
+detectable = "script"
 fixable = "judgment"
+fixer = ""
 since = "0.4.1"
 charter_rule = "AI-CONTEXT"
+
+[detector]
+kind = "file"
+paths = ["CLAUDE.md", "AGENTS.md", ".github/copilot-instructions.md", "GEMINI.md"]
+
+[[sources]]
+url = "https://code.claude.com/docs/en/memory"
+kind = "docs"
+checked = 2026-10-20
+
+[[sources]]
+url = "https://agents.md/"
+kind = "adoption"
+checked = 2026-10-20

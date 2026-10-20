@@ -1,11 +1,13 @@
 """What a repo is made of, read from its tracked files in milliseconds: the facts a rule's
 `applies` asks for (`django`, `github-actions`…). Any repo, made by kiln or not."""
 
+import functools
+import glob
 import json
 import re
 import subprocess
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path, PurePosixPath
 
 # Facts a rule may ask for, and what tells them.
@@ -29,14 +31,27 @@ class Repo:
     root: Path
     files: tuple[str, ...]  # tracked files, POSIX paths relative to the root
     facts: frozenset[str]
+    # Read once per run: a later read (after `kiln fix` writes) takes a new `read_repo`.
+    texts: dict[str, str] = field(default_factory=dict, compare=False, hash=False, repr=False)
 
     def matching(self, *patterns: str) -> list[str]:
         """Tracked files matching any of the glob `patterns` (`**` crosses folders)."""
-        return [
-            name
-            for name in self.files
-            if any(PurePosixPath(name).full_match(pattern) for pattern in patterns)
-        ]
+        compiled = [_glob(pattern) for pattern in patterns]
+        return [name for name in self.files if any(regex.match(name) for regex in compiled)]
+
+    def text(self, name: str) -> str:
+        """A tracked file's text, read once for every rule; "" when it cannot be read."""
+        if name not in self.texts:
+            try:
+                self.texts[name] = (self.root / name).read_text(encoding="utf-8")
+            except OSError, UnicodeDecodeError:
+                self.texts[name] = ""
+        return self.texts[name]
+
+
+@functools.cache
+def _glob(pattern: str) -> re.Pattern[str]:
+    return re.compile(glob.translate(pattern, recursive=True, include_hidden=True))
 
 
 def read_repo(root: Path) -> Repo:

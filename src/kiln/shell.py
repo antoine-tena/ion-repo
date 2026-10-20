@@ -3,6 +3,8 @@
 import os
 import shutil
 import subprocess
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 
 from kiln import ui
@@ -35,7 +37,7 @@ def run_status(
 ) -> int:
     """Runs a command and returns its code. In a terminal, a spinner replaces its output, shown
     in full only if it fails."""
-    if live or not ui.is_styled() or os.environ.get(VERBOSE_VARIABLE):
+    if live or not shows_spinner():
         return subprocess.run(command, cwd=cwd, env=env, check=False).returncode
     spinner = ui.Spinner(" ".join(command))
     output: list[str] = []
@@ -59,6 +61,25 @@ def run_status(
         spinner.stop()
     spinner.finish(succeeded=returncode == 0, output="".join(output))
     return returncode
+
+
+def shows_spinner() -> bool:
+    """Whether a spinner replaces what runs: in a terminal, unless the full output is asked for."""
+    return ui.is_styled() and not os.environ.get(VERBOSE_VARIABLE)
+
+
+@contextmanager
+def spinner_line(label: str) -> Iterator[None]:
+    """Work done in kiln itself shown like a command: the spinner, then ✓ or ✗ and its
+    duration."""
+    spinner = ui.Spinner(label)
+    spinner.start()
+    succeeded = False
+    try:
+        yield
+        succeeded = True
+    finally:
+        spinner.finish(succeeded=succeeded)
 
 
 def capture(command: list[str], cwd: Path) -> str:

@@ -1,0 +1,24 @@
+id = "NOQA-CODES"
+title = "Each `# noqa` names the rule it silences"
+pillar = "standards"
+theme = "code-standards"
+scope = { kind = "language", name = "python" }
+level = "adopt"
+regime = "ratchet"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "A blanket noqa hides every future error on its line, not only the one it was for."
+applies = ["python"]
+detectable = "script"
+fixable = "judgment"
+fixer = ""
+since = "0.4.2"
+
+[detector]
+kind = "regex"
+files = ["**/*.py"]
+pattern = '''#\s*noqa\b(?!\s*:)'''
+
+[[sources]]
+url = "https://docs.astral.sh/ruff/rules/blanket-noqa/"
+kind = "docs"
+checked = 2026-10-20

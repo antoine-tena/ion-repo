@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="930" height="232" viewBox="0 0 930 232" role="img" aria-label="One kiln release, from a change checked to every repo updated: a candidate on a green CI, the release on PyPI, a rehearsal on a clone of each repo, then kiln update in each repo">
+<rect width="100%" height="100%" rx="12" fill="#ffffff"/>
+<g font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" text-anchor="middle">
+<text x="465" y="36" font-size="19" font-weight="600" fill="#1c1b19">One release, every repo current</text>
+<rect x="20" y="62" width="154" height="116" rx="10" fill="#faf8f5" stroke="#e2ddd5"/>
+<rect x="20" y="62" width="154" height="4" rx="2" fill="#c2551f"/>
+<text x="97" y="100" font-size="17" font-weight="600" fill="#1c1b19">kiln</text>
+<text x="97" y="130" font-size="14" fill="#3d3b37">template, rules,</text>
+<text x="97" y="150" font-size="14" fill="#3d3b37">plugins, workflows</text>
+<text x="97" y="206" font-size="13" fill="#7a776f">✓ checked at each merge</text>
+<line x1="179" y1="120" x2="194" y2="120" stroke="#c2551f" stroke-width="2"/>
+<path d="M193,115 L199,120 L193,125 Z" fill="#c2551f"/>
+<rect x="204" y="62" width="154" height="116" rx="10" fill="#faf8f5" stroke="#e2ddd5"/>
+<rect x="204" y="62" width="154" height="4" rx="2" fill="#c2551f"/>
+<text x="281" y="100" font-size="17" font-weight="600" fill="#1c1b19">candidate</text>
+<text x="281" y="130" font-size="14" fill="#3d3b37">tried first on</text>
+<text x="281" y="150" font-size="14" fill="#3d3b37">kiln&#x27;s own repos</text>
+<text x="281" y="206" font-size="13" fill="#7a776f">✓ green on Linux, macOS</text>
+<line x1="363" y1="120" x2="378" y2="120" stroke="#c2551f" stroke-width="2"/>
+<path d="M377,115 L383,120 L377,125 Z" fill="#c2551f"/>
+<rect x="388" y="62" width="154" height="116" rx="10" fill="#faf8f5" stroke="#e2ddd5"/>
+<rect x="388" y="62" width="154" height="4" rx="2" fill="#c2551f"/>
+<text x="465" y="100" font-size="17" font-weight="600" fill="#1c1b19">release</text>
+<text x="465" y="130" font-size="14" fill="#3d3b37">on PyPI and</text>
+<text x="465" y="150" font-size="14" fill="#3d3b37">GitHub Releases</text>
+<text x="465" y="206" font-size="13" fill="#7a776f">✓ next candidate ready</text>
+<line x1="547" y1="120" x2="562" y2="120" stroke="#c2551f" stroke-width="2"/>
+<path d="M561,115 L567,120 L561,125 Z" fill="#c2551f"/>
+<rect x="572" y="62" width="154" height="116" rx="10" fill="#faf8f5" stroke="#e2ddd5"/>
+<rect x="572" y="62" width="154" height="4" rx="2" fill="#c2551f"/>
+<text x="649" y="100" font-size="17" font-weight="600" fill="#1c1b19">rehearsal</text>
+<text x="649" y="130" font-size="14" fill="#3d3b37">your repo updated</text>
+<text x="649" y="150" font-size="14" fill="#3d3b37">on a throwaway clone</text>
+<text x="649" y="206" font-size="13" fill="#7a776f">✓ green on every clone</text>
+<line x1="731" y1="120" x2="746" y2="120" stroke="#c2551f" stroke-width="2"/>
+<path d="M745,115 L751,120 L745,125 Z" fill="#c2551f"/>
+<rect x="756" y="62" width="154" height="116" rx="10" fill="#faf8f5" stroke="#e2ddd5"/>
+<rect x="756" y="62" width="154" height="4" rx="2" fill="#c2551f"/>
+<text x="833" y="100" font-size="17" font-weight="600" fill="#1c1b19">your repos</text>
+<text x="833" y="130" font-size="14" fill="#3d3b37">kiln update merges</text>
+<text x="833" y="150" font-size="14" fill="#3d3b37">template and deps</text>
+<text x="833" y="206" font-size="13" fill="#7a776f">✓ only if checks pass</text>
+</g>
+</svg>

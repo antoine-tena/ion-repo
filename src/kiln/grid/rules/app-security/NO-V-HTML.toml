@@ -1,0 +1,29 @@
+id = "NO-V-HTML"
+title = "No `v-html` on content that is not sanitized"
+pillar = "methods"
+theme = "app-security"
+scope = { kind = "framework", name = "vue" }
+level = "adopt"
+regime = "review"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "`v-html` inserts raw HTML: user content there is cross-site scripting."
+applies = ["vue"]
+detectable = "approximate"
+fixable = "judgment"
+fixer = ""
+since = "0.4.2"
+
+[detector]
+kind = "regex"
+files = ["**/*.vue"]
+pattern = '''\bv-html\s*='''
+
+[[sources]]
+url = "https://vuejs.org/guide/best-practices/security.html"
+kind = "docs"
+checked = 2026-10-20
+
+[[sources]]
+url = "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+kind = "advisory"
+checked = 2026-10-20

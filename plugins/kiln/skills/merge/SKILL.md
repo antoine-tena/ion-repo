@@ -42,5 +42,7 @@ step 4. Talk to the user in their language.
    - on GitHub otherwise, when `gh` is there: `gh run list --commit <merge sha>` then
      `gh run watch <id> --exit-status --compact`.
    Red: say so and fix it right away, on a new branch, before any other work (a red integration
-   branch hides the next failure; the session start reports it too).
+   branch hides the next failure; the session start reports it too). Red with no step run
+   (`gh run view <id> --json jobs`: every job has empty `steps`) is GitHub refusing to start the
+   jobs (billing, spending limit): nothing to fix in the code; say so, and replay it with `kiln ci`.
 7. Sum up: merge commit, files touched, checks and GitHub's verdict.

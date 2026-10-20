@@ -346,15 +346,22 @@ def test_a_checkout_copy_is_up_to_date_only_when_it_is_the_release(
 
 
 def fake_ci(
-    hook: ModuleType, monkeypatch: pytest.MonkeyPatch, runs: list[dict[str, str]] | None
+    hook: ModuleType,
+    monkeypatch: pytest.MonkeyPatch,
+    runs: list[dict[str, str]] | None,
+    steps: int = 3,
 ) -> None:
-    """git says the integration branch is develop; gh lists `runs` (None: gh missing)."""
+    """git says the integration branch is develop; gh lists `runs` (None: gh missing), each of
+    their jobs having run `steps` steps."""
     real_run: Callable[..., subprocess.CompletedProcess[str]] = hook.run
 
     def run(*command: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
         if command[0] == "gh":
             if runs is None:
                 raise FileNotFoundError("gh")
+            if command[1:3] == ("run", "view"):
+                jobs = [{"name": "tests", "steps": [{"name": "step"}] * steps}]
+                return subprocess.CompletedProcess(command, 0, stdout=json.dumps({"jobs": jobs}))
             return subprocess.CompletedProcess(command, 0, stdout=json.dumps(runs))
         if "origin/develop" in command:
             return subprocess.CompletedProcess(command, 0, stdout="abc\n")
@@ -400,6 +407,20 @@ def test_a_red_integration_branch_is_said_before_any_work(
     assert hook.red_ci(tmp_path) == ""
     fake_ci(hook, monkeypatch, None)
     assert hook.red_ci(tmp_path) == ""
+
+
+def test_a_run_github_never_started_is_not_a_failure_to_fix(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    hook = load_hook()
+    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
+    (tmp_path / "charter.toml").write_text("")
+
+    # Billing or a spending limit: GitHub fails every job before its first step.
+    fake_ci(hook, monkeypatch, [ci_run("CI", "completed", "failure", "Merge")], steps=0)
+    said = hook.red_ci(tmp_path)
+    assert said.startswith("The CI of `develop` did not run: GitHub started none of the jobs of CI")
+    assert "nothing to fix" in said and "kiln ci" in said and "is red" not in said
 
 
 def test_the_red_ci_is_only_said_in_repos_kiln_looks_after(tmp_path: Path) -> None:

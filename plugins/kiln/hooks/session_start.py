@@ -244,7 +244,7 @@ def red_ci(root: Path) -> str:
         return ""
     if setting == LOCAL_CI:
         return red_local_ci(root, branch)
-    fields = "status,conclusion,workflowName,displayTitle,url"
+    fields = "status,conclusion,workflowName,displayTitle,url,databaseId"
     try:
         listed = run(
             "gh", "run", "list", "--branch", branch, "--limit", "20", "--json", fields, cwd=root
@@ -257,16 +257,41 @@ def red_ci(root: Path) -> str:
         if found.get("status") == "completed":
             latest.setdefault(str(found.get("workflowName", "")), found)
     red = [found for found in latest.values() if found.get("conclusion") == "failure"]
-    if not red:
-        return ""
-    failures = "; ".join(
+    blocked = [found for found in red if never_started(root, found)]
+    failed = [found for found in red if found not in blocked]
+    said = []
+    if failed:
+        said.append(
+            f"The CI of `{branch}` is red: {described(failed)}. Before any other work, tell the "
+            "user and offer to fix it first: new work on a red branch hides the next failure."
+        )
+    if blocked:
+        said.append(
+            f"The CI of `{branch}` did not run: GitHub started none of the jobs of "
+            f"{described(blocked)} (no step ran: billing, spending limit or Actions turned off on "
+            "the owner's account). It is not a failure of the code, there is nothing to fix in "
+            "the repo: tell the user, and that `kiln ci` replays the CI on the machine."
+        )
+    return " ".join(said)
+
+
+def described(runs: list[dict[str, str]]) -> str:
+    return "; ".join(
         f'{found.get("workflowName")} on "{found.get("displayTitle")}" ({found.get("url")})'
-        for found in red
+        for found in runs
     )
-    return (
-        f"The CI of `{branch}` is red: {failures}. Before any other work, tell the user and offer "
-        "to fix it first: new work on a red branch hides the next failure."
-    )
+
+
+def never_started(root: Path, found: dict[str, str]) -> bool:
+    """GitHub refused to start the run: each of its jobs failed before running a single step."""
+    try:
+        viewed = run(
+            "gh", "run", "view", str(found.get("databaseId", "")), "--json", "jobs", cwd=root
+        )
+        jobs = json.loads(viewed.stdout).get("jobs", []) if viewed.returncode == 0 else []
+    except OSError, ValueError, AttributeError, subprocess.TimeoutExpired:
+        return False
+    return bool(jobs) and all(not job.get("steps") for job in jobs)
 
 
 def red_local_ci(root: Path, branch: str) -> str:

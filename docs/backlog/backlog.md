@@ -26,7 +26,7 @@ keeps a repo up to date with the best of the world, and easy for Claude to read"
     Why, what to do (as a `- [ ]` checklist when there are several steps), where to look.
 
 - **ID** `T-NN`: stable, never reused, quoted as is in commits and branches (tickets opened
-  before 16 October 2026 were `AF-NN`, same number). **Next free: T-153.**
+  before 16 October 2026 were `AF-NN`, same number). **Next free: T-159.**
 - **Type**, one of: `bug` (something is broken); `improvement` (it works, it could work
   better); `idea` (nothing exists yet, to be explored); `task` (work that is neither: a release,
   a decision, a check).
@@ -70,24 +70,21 @@ promoted when the next one is cut. Up to the launch, each release is planned at 
 waits for is v0.5.0.
 
 ### v0.4.0 · kiln speaks English
-Candidate `v0.4.0-rc.1` cut on Mon 19 Oct (promoted v0.3.4). The milestone decided by antoine, merged in `develop`
-on 16 October; what is left is small. ⚠ breaking: CLI names, `copier.yml` questions, charter
-rule IDs, workflow inputs, plugin and skill names, all converted by `kiln update`.
-- T-14 · Delete the old PyPI token (XS) (blocked: antoine)
-
-`v0.4.0-rc.2` cut on Mon 19 Oct with the fixes of T-147 to T-151 (annway's update to rc.1 had
-failed unseen); promoted when `v0.4.1-rc.1` is cut.
+Promoted on Mon 19 Oct (`v0.4.0-rc.2`, CI green; PyPI and GitHub Release published). The
+milestone decided by antoine. ⚠ breaking: CLI names, `copier.yml` questions, charter rule IDs,
+workflow inputs, plugin and skill names, all converted by `kiln update`.
 
 ### v0.4.1 · The grid, as data
-Candidate Thu 22 Oct. The heart of the vision: what kiln holds as the best, one small file per
-rule on two axes, browsable with `kiln grid`.
-- T-143 · Decide the name before the launch: kiln, despite Kiln-AI (XS) (antoine decides)
+Candidate `v0.4.1-rc.1` cut on Mon 19 Oct (CI green, end-to-end tests included): `kiln grid`,
+105 drafts from the reference repo, adopted repos' workflows at the public tag, private repos'
+CI on the machine, both READMEs complete and checked. Promoted when `v0.4.2-rc.1` is cut.
 
 ### v0.4.2 · Any repo scored against the best, in seconds
 Candidate Sat 24 Oct. The launch hook: `uvx kiln-cli score` on the repo people already have,
 without a token.
-- T-125 · Grid v1: the rules kiln launches with (L)
-- T-46 · `kiln score`: any repo measured against the grid in seconds, no tokens (L)
+- ✅ T-125 · Grid v1: the rules kiln launches with (L)
+- ✅ T-46 · `kiln score`: any repo measured against the grid in seconds, no tokens (L)
+- T-157 · Credit #45 and #46 in the notes of v0.4.2 (XS)
 
 ### v0.4.3 · What a script can fix, fixed by script
 Candidate Mon 26 Oct. The fixes that cost no token, each proven by the repo's own checks.
@@ -115,6 +112,7 @@ content defined on 17 October: the version the launch waits for (T-03).
 - T-30 · README and English docs for strangers, with the demo (L)
 - T-33 · One promise everywhere: tagline, About, PyPI, social preview (S)
 - T-119 · GitHub Sponsors and `FUNDING.yml` (XS)
+- T-154 · Show your score: a badge other repos display (S)
 
 ### v0.5.1 · Launch week: a stranger's first ten minutes, rehearsed
 Candidate Tue 3 Nov. Fixes only from here to the launch; the week absorbs up to three slipped
@@ -142,6 +140,7 @@ comes first; these tickets give way to it.
 - T-116 · An accessible CLI: `NO_COLOR`, `--plain` (S) (good first issue)
 - T-10 · Interface polish (S)
 - T-99 · `kiln doctor --fix` (S)
+- T-153 · `statusline.ci locale`: a French value left in generated repos (S)
 
 ### v0.5.5 · Findings where people look, upgrades proven
 - T-91 · Findings where people look: SARIF in pull requests and code scanning (M)
@@ -192,93 +191,29 @@ build on kiln. From here, strict semver: breaking → major, `feat` → minor.
 
 ## 🔴 Critical
 
-### T-14 · Delete the old PyPI token
+### T-157 · Credit #45 and #46 in the notes of v0.4.2
 - **Type**: task
-- **Status**: blocked — waiting for antoine (delete the old token)
-- **Opened**: 2026-10-16
-- **Effort**: XS · **Owner**: antoine · **Due**: —
-- **Origin**: promotion of v0.3.0, 16 October 2026
+- **Status**: todo
+- **Opened**: 2026-10-20
+- **Effort**: XS · **Owner**: Claude · **Due**: v0.4.2 candidate
+- **Origin**: PRs #45 and #46 by NathanBarrachin, merged 2026-10-20
 
-`kiln-cli` is published with a token scoped to the project (`.pypi/token`, `PYPI_TOKEN`
-secret), used since the promotion of `v0.3.2`. The account-wide token made before it still
-exists.
-- [ ] antoine deletes it: https://pypi.org/manage/account/token/
+In the `v0.4.2` entry of `CHANGELOG.md`: the line of each fix ends with `(#45, thanks
+@NathanBarrachin)` and `(#46, thanks @NathanBarrachin)` (a CI run GitHub never started is not
+red; carried-over instructions keep their outline).
 
 ## 🟠 Important
 
-### T-143 · Decide the name before the launch: kiln, despite Kiln-AI
-- **Type**: task
-- **Status**: blocked — waiting for antoine (the decision; facts in `docs/vision/nom.md`)
-- **Opened**: 2026-10-18
-- **Effort**: XS · **Owner**: Claude for the facts, antoine for the decision · **Due**: 2026-10-31
-- **Origin**: vision of 17 October 2026, risk 7 ("the name: collision with Kiln-AI, and `kiln`
-  is taken on PyPI")
-
-A name changed after the launch loses the stars, links and posts that point at the old one;
-changed before, it costs a session. Today the repo is `kiln`, the package `kiln-cli`, and
-Kiln-AI/Kiln (over 5,000 stars) comes first for "kiln" on GitHub.
-- [x] Claude lays out the facts on one page (`docs/vision/nom.md`, 19 October 2026): who answers to "kiln" on GitHub, PyPI, npm and in
-  search engines; what a rename would touch (package, command, `kiln:*` plugins, workflows
-  quoted by tag, conversions by `kiln update`); two or three free names checked on GitHub and
-  PyPI.
-- [ ] antoine decides, before T-33 rewrites the tagline and T-30 the README.
-
-### T-125 · Grid v1: the rules kiln launches with
+### T-158 · `kiln score` reads the GitHub settings when `gh` is logged in
 - **Type**: improvement
 - **Status**: todo
-- **Opened**: 2026-10-17
-- **Effort**: L · **Owner**: Claude · **Due**: —
-- **Origin**: vision of 17 October 2026 (the grid, the five pillars, two real repos measured)
+- **Opened**: 2026-10-20
+- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Origin**: left from T-46 (2026-10-20)
 
-What `kiln score` measures on launch day: about fifty rules, each with its sources and its date,
-for the universal, Python, TypeScript, Django and Nuxt scopes.
-- [ ] The 31 reference practices measured on 17 October (tooling, supply chain, containers and
-  operations, tests, application security, observability and delivery); the code standards of
-  the charter that hold beyond one project (file and function sizes, names, typing, modern
-  Python…); the readability rules whose detector is exact (sizes, generic names, a repo map in
-  `CLAUDE.md`); the delegation of versions (Dependabot or Renovate present, with a cooldown).
-- [ ] Levels by the doctrine, the best rather than the newest. On 17 October: Python 3.15
-  `assess` (Django 6.1 stops at 3.14), ty `assess` (beta: mypy stays `adopt`), Vue 3.6 `assess`
-  (release candidate), Node 26 `adopt` only once it is LTS (28 October).
-- [ ] Engine-neutral: a practice is met whatever the tool that meets it (non-root, read-only
-  containers with Docker or Podman alike); no rule takes points for a tool choice (decided by
-  Claude, 17 October 2026: otherwise it is the first Hacker News comment).
-- [ ] One profile at launch, "small structure" (an association, a freelancer, a 50-person
-  company, a university lab): SLO, feature flags and other large-company methods are not
-  counted; T-39 brings the other profiles.
-- [ ] Each draft of T-124 that makes the cut gets its sources and leaves `assess`.
-- [ ] A rule launches `strict` only when it raises no false positive on the reference repo and
-  the university repo (local copies), `review` until then (doctrine 7: an imprecise rule is
-  worse than none; ruff's "ambiguous characters" on the reference repo were French
-  typography).
-
-### T-46 · `kiln score`: any repo measured against the grid in seconds, no tokens
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-16
-- **Effort**: L · **Owner**: Claude · **Due**: —
-- **Origin**: growth review, 16 October 2026; rewritten 17 October 2026 from the vision
-  (deterministic audit, step 1; command named); T-34 merged here
-
-The door for the repo people already have, and the number the launch shows: `uvx kiln-cli
-score` in any repo, generated by kiln or not. The reference repo kept a hand-made audit, rule by
-rule, dated 25 September: three weeks later it was already out of date. A script reruns. Named
-`score` (decided by Claude, 17 October 2026): it says what you get, a number to share like
-Lighthouse or OpenSSF Scorecard; `audit` belongs to vulnerability tools (`npm audit`,
-`pip-audit`) and would mislead.
-- [ ] A score out of 100 and one per pillar (methods, standards, readability, versions; slimming
-  comes with T-138), the three gaps that gain the most, and for each finding: rule ID, why in
-  one line, source, effort, and what closes it (`kiln fix` when a converter exists,
-  `/kiln:modernize` otherwise, `kiln waive RULE` to accept it).
-- [ ] Every detector of grid v1 (T-125); stacks found from the manifests; rules outside the
-  repo's stacks or profile left out of the count; waivers shown apart, as accepted deviations.
-- [ ] Deterministic (the same score twice), offline by default (end-of-life data bundled at
-  release time from endoflife.date, `--online` to refresh, GitHub settings checked when `gh`
-  is logged in), under 5 seconds on a 50,000-line repo, nothing written in the repo (cache in
-  `~/.cache/kiln`).
-- [ ] `--json` with a documented schema (read by kiln-bot, the study and the badge), `--all` for
-  every finding, `--badge` for the README.
-- [ ] What the grid does not know is listed at the end (T-38).
+Branch protection or rulesets on the integration branch, secret scanning and push protection,
+Dependabot alerts: read through `gh api` when logged in, left out of the count otherwise (never a
+failure for lack of a token).
 
 ### T-126 · `kiln fix`: every scriptable gap closed on a branch, with proof
 - **Type**: improvement
@@ -493,12 +428,25 @@ token, so it runs in CI for free on any public repo.
 - **Effort**: L · **Owner**: Claude · **Due**: —
 - **Origin**: T-03 prerequisites; issues #37 and #38; rewritten 17 October 2026 for the vision
 
-- [ ] First screen: the promise (T-33), `uvx kiln-cli score`, the demo, the numbers (T-131,
-  T-132); then how it works in five steps (score, fix, roadmap for Claude, verified by the
-  script, continuous), the grid, and "Built for Claude Code; the score and the fixes need no AI
-  at all".
-- [ ] Demo recorded with vhs (a `.tape` file in `docs/assets/`, replayed at each release):
-  `kiln score` on a public repo, `kiln fix`, the score again, the kiln-bot pull request.
+- [x] Today's README brought to the level of the best (20 October 2026, branch
+  `docs/showcase`), after measuring the READMEs of 70 repos of 10,000 stars or more (uv, ruff,
+  Bun, ripgrep, fzf, mise, Claude Code…): the pixel kiln on top, one promise, three badges that
+  measure something (beyond five, popular npm packages get fewer downloads: Trockman et al.,
+  ICSE 2018), a recorded demo first, plain bullets, the words of a visitor, a comparison where
+  the others win rows too; the help screen, the rule list and the update note moved to the
+  reference. `tests/test_docs.py` now fails on the marks readers take for AI writing (em dashes,
+  list items opened in bold or by an emoji, sales words), on a README whose images or links
+  would break on PyPI, and on a demo that types what kiln no longer offers.
+- [x] Demo recorded with vhs (`docs/assets/kiln-new.tape`, `scripts/demo_shell.sh`): `kiln new`,
+  its three questions, then `kiln check` on the new repo; replayed before each candidate.
+- [ ] v0.5.0 first screen: the promise (T-33), `uvx kiln-cli score`, then the study's chart as
+  the hero, as uv and ruff open on one benchmark chart: light and dark, a caption with the exact
+  conditions, a link to the script that reruns it (T-131, T-132); then how it works in five
+  steps (score, fix, roadmap for Claude, verified by the script, continuous), the grid, and
+  "Built for Claude Code; the score and the fixes need no AI at all".
+- [ ] A second tape: `kiln score` on a public example repo (never a team's project shown at
+  fault), `kiln fix`, the score again, the kiln-bot pull request; its first frame says what it
+  shows, as animations stay paused for those who ask for less motion.
 - [ ] Docs in English in `docs/`: getting started, score, fix, modernize, the grid (one page per
   theme generated from the rule files: the Technology Radar that applies itself), update,
   charter, plugins, workflows, versions. `README.fr.md` shrinks to a French summary pointing
@@ -522,16 +470,48 @@ token, so it runs in CI for free on any public repo.
 "Start every project like a senior engineer would" sold `kiln new`; the vision sells keeping any
 repo up to date. The same words in the README hero, the GitHub About (search results, link
 previews), the PyPI summary and the launch titles.
-- [ ] Decided by Claude (17 October 2026), from the vision's taglines: **"Dependabot for your
-  methods."**, then "kiln keeps your repo up to date with the best of the world (methods,
-  structure, tools, containers, security, code standards) and easy for Claude to read." The
-  analogy explains the job in four words; "the best" alone would read as an opinion.
+- [x] Today's promise, the same everywhere, chosen by antoine on 20 October 2026 from the
+  former ones ("Repos Claude Code can work in safely, kept up to date." was too bare): "Claude
+  Code's workshop", then "Start every new project, and rescue every old one, like a senior
+  engineer would — even if you're not one.", and under it "Make Claude Code build
+  production-grade repos, bring yours up to that grade, and keep them that way." An old repo to
+  bring up counts as much as a new one. In the README, the PyPI summary (`pyproject.toml`), the
+  GitHub About and the social preview drawn by `scripts/screenshots.py`.
+- [ ] Decided by Claude (17 October 2026), from the vision's taglines, reworded on 20 October:
+  **"Dependabot for engineering practices."** ("your methods" reads as class methods to an
+  English-speaking developer), then "kiln keeps your repo up to date with the best of the world
+  (methods, structure, tools, containers, security, code standards) and easy for Claude to
+  read." The analogy explains the job in four words, as "A cat(1) clone with wings" (bat) or "A
+  smarter cd command" (zoxide) do; "the best" alone would read as an opinion. Shown to antoine
+  first, with today's line beside it: he keeps "Claude Code's workshop" and the senior engineer
+  line (20 October 2026), and decides whether the analogy joins them or replaces them.
 - [ ] Right under it, the proof in numbers (T-131, T-132) and the one line
   `uvx kiln-cli score`.
 - [ ] GitHub About and topics (best-practices, modernization, code-quality, technical-debt next
   to claude-code, django, nuxt), PyPI summary; the social preview (1280×640) redone with the new
   line, uploaded by antoine (no API): https://github.com/antoine-tena/kiln/settings (Social
   preview).
+- [ ] The social preview redrawn with the v0.5.0 promise (`scripts/screenshots.py`, then
+  `scripts/social_preview.py`), then a box in `urgent.md` asking antoine to upload it again
+  (no API takes it): https://github.com/antoine-tena/kiln/settings, "Social preview", "Edit".
+  Today's image was uploaded by antoine on 20 October 2026.
+
+### T-154 · Show your score: a badge other repos display
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-20
+- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Origin**: README study, 20 October 2026; after T-46
+
+The image that travels by itself: GitHub's code search finds the Ruff badge in about 7,800
+READMEs, OpenSSF Scorecard's in about 25,000, github-readme-stats cards in about 247,000. A score
+is a badge that measures something, the kind a study of 294,941 npm packages found reliable and
+lasting (Trockman et al., ICSE 2018), whose authors ask for badges of "conformance to coding
+standards".
+- [ ] `kiln score --badge`: the Markdown of a shields.io endpoint badge, its JSON kept up to date
+  by kiln-bot (T-59) or the CI.
+- [ ] A "Show your score" section in the README, as Ruff has; kiln's own badge on top (T-90).
+- [ ] The `kiln score` output made to be screenshotted: the score large, the kiln, 80 columns.
 
 ### T-119 · GitHub Sponsors and `FUNDING.yml`
 - **Type**: task
@@ -580,6 +560,10 @@ Nothing is posted on a forum before it (T-118 starts after).
   recorded from the released version (T-30, T-33).
 - [ ] kiln passes its own grid, its CI green on `main` (T-90).
 - [ ] No open 🔴 ticket.
+- [ ] The Hacker News title, text and every answer written by antoine, by hand: HN's
+  guidelines say "Please don't put generated text in HN posts" and, for comments, "Don't
+  post generated text or AI-edited text"; Claude hands over raw facts only (numbers, links).
+  No upvotes asked, no booster comments from friends.
 - [ ] Gate checked on **Monday 9 November at 20:00**. One box empty: the launch moves to
   **Wednesday 18 November**, same hour, gate on Monday 16 November. The date moves, never the
   gate.
@@ -650,6 +634,46 @@ actionlint) with a fallback to `develop`. On the first run, check that the versi
 tag's, and that `.kiln` is removed before the project's checks.
 
 ## 🟡 Normal
+
+### T-155 · A Streamlit or Dash front gets a deployment that fits, or none is assumed
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-10-20
+- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Origin**: issue #43 (darnak69, 16 October 2026)
+
+- [ ] `front_deploiement=vercel` refused for Streamlit and Dash (they need a long-running
+  Python server with websockets).
+- [ ] With no deployment set, nothing generated cites `deploy.yml` or `scripts/ops/deploy-*.sh`
+  (comment of `ci.yml`, last step of the `version` skill).
+- [ ] A target that fits: `vps` (podman + Caddy) opened to the front image, with a
+  `/_stcore/health` probe; the Streamlit `Containerfile` gets its health probe and its `uv`
+  image pinned by digest. Closes #43.
+
+### T-156 · Committed trained models tied to the code that made them
+- **Type**: idea
+- **Status**: todo
+- **Opened**: 2026-10-20
+- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Origin**: issue #44 (darnak69, 16 October 2026)
+
+For `backend=data`: a manifest next to each committed model (hash of the training code, seed,
+dataset version, metrics) written by the training command; a check that the hash still matches
+the code, or the commit says why; a test template asserting the committed model's metrics stay
+above the recorded ones. Goes in the grid as a rule with its sources (T-123 doctrine), not
+only in the template. Closes #44.
+
+### T-153 · `statusline.ci locale`: a French value left in generated repos
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-10-20
+- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Origin**: the README's recorded demo (20 October 2026) shows `git config statusline.ci locale`
+
+kiln moved to English in 0.4.0, but `apply_statusline_settings` (`src/kiln/statusline.py`) still
+writes `locale` for a CI run on the machine, read by the status line script, the session start
+hook and `/kiln:merge`. Write `local`, keep reading `locale` (hooks and status line are read from
+the main tree by open sessions), convert existing repos in `kiln update`.
 
 ### T-45 · Update reminders at the pace you choose
 - **Type**: improvement
@@ -1053,6 +1077,13 @@ An ecosystem is what turns a tool into a project people star and contribute to.
 
 ## ✅ Done
 
+- **2026-10-20** · T-46 · `kiln score` — any repo against the 40 scored rules: score out of 100 and per pillar, three gaps first, waivers apart, uncovered stacks listed, `--all`, `--json` (schema 1), `--badge`, `--online`; about 1 s on the reference repo; GitHub settings left to T-158 (feat/kiln-score) · opened 2026-10-16
+- **2026-10-20** · T-125 · Grid v1 — 40 scored rules (nine drafts promoted, 25 new), each sourced and dated, with a passing and a failing example, run on local copies of both training repos: rules that can flag wrongly launch `review` or `ratchet`; 1.0 s on the reference repo (feat/grid-v1) · opened 2026-10-17
+- **2026-10-19** · T-143 · Decide the name before the launch — antoine keeps **kiln**, after
+  the facts of `docs/vision/nom.md` (Kiln-AI, two agent tools of the same name, `kiln` taken on
+  PyPI and npm); the package stays `kiln-cli` · opened 2026-10-18
+- **2026-10-19** · T-14 · Delete the old PyPI token — done by antoine: only the `kiln-cli`
+  token scoped to the project remains, the one `pypi.yml` publishes with · opened 2026-10-16
 - **2026-10-19** · T-124 · The reference repo's rules sorted on the two axes — its 108 named
   rules and 15 backend pillars, plus what lives outside its charter (operations, structure,
   tracking), read only and anonymized, merged where they repeat into 105 draft rules

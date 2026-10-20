@@ -1,14 +1,25 @@
 id = "NO-ANY"
-title = "No any: unknown, then narrowing"
+title = "No explicit any: unknown, then narrowing"
 pillar = "standards"
 theme = "api-typing"
 scope = { kind = "language", name = "typescript" }
-# A draft from the reference repo (T-124): assessed, out of the score until sourced.
-level = "assess"
+level = "adopt"
 regime = "ratchet"
 profiles = ["solo", "association", "company", "university", "enterprise"]
-why = "An any switches the type checker off for everything it touches."
+why = "Each `any` switches the type checker off where it is needed most."
+applies = ["typescript"]
 detectable = "script"
 fixable = "judgment"
+fixer = ""
 since = "0.4.1"
 charter_rule = "NO-ANY"
+
+[detector]
+kind = "regex"
+files = ["**/*.ts", "**/*.tsx", "**/*.vue"]
+pattern = '''(:\s*any\s*[,;)=\]>|]|\bas\s+any\b\s*[);,\]]|<any>)'''
+
+[[sources]]
+url = "https://www.typescriptlang.org/tsconfig/"
+kind = "docs"
+checked = 2026-10-20

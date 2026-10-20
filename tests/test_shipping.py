@@ -41,6 +41,7 @@ def repo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     (clone / "pyproject.toml").write_text('[project]\nname = "kiln-cli"\nversion = "0.1.0"\n')
     (clone / "CHANGELOG.md").write_text(CHANGELOG)
     for readme in shipping.READMES:
+        (clone / readme).parent.mkdir(parents=True, exist_ok=True)
         (clone / readme).write_text("# kiln\n")
     (clone / "plugins/kiln/.claude-plugin").mkdir(parents=True)
     (clone / "plugins/kiln/.claude-plugin/plugin.json").write_text('{"version": "0.2.0"}\n')
@@ -62,7 +63,7 @@ def rewrite_draft(tree: Path, *, readmes: bool = True) -> None:
     changelog = tree / "CHANGELOG.md"
     changelog.write_text(changelog.read_text().replace(shipping.DRAFT_MARKER + "\n", ""))
     if readmes:
-        for readme in shipping.READMES:
+        for readme, _ in shipping.DOCS_BY_LANGUAGE:
             (tree / readme).write_text((tree / readme).read_text() + "What's new.\n")
     git(tree, "commit", "-qam", "docs(changelog): the entry rewritten")
 
@@ -209,7 +210,10 @@ def test_a_release_whose_readmes_say_nothing_new_is_not_tagged(repo: Path) -> No
     tree = repo / ".claude/worktrees/release-v0.1.1"
     rewrite_draft(tree, readmes=False)
 
-    with pytest.raises(KilnError, match=r"README\.md, README\.fr\.md unchanged since v0\.1\.0"):
+    with pytest.raises(
+        KilnError,
+        match=r"neither README\.md nor docs/reference\.md, README\.fr\.md nor .* since v0\.1\.0",
+    ):
         shipping.cut(repo)
     assert "v0.1.1-rc.1" not in git(repo, "tag")
 

@@ -1,0 +1,29 @@
+id = "TYPE-IGNORE-CODES"
+title = "Each `# type: ignore` names its error code"
+pillar = "standards"
+theme = "api-typing"
+scope = { kind = "language", name = "python" }
+level = "adopt"
+regime = "ratchet"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "A bare ignore hides every type error on its line, including the next one."
+applies = ["python"]
+detectable = "script"
+fixable = "judgment"
+fixer = ""
+since = "0.4.2"
+
+[detector]
+kind = "regex"
+files = ["**/*.py"]
+pattern = '''#\s*type:\s*ignore(?!\[)'''
+
+[[sources]]
+url = "https://docs.astral.sh/ruff/rules/blanket-type-ignore/"
+kind = "docs"
+checked = 2026-10-20
+
+[[sources]]
+url = "https://mypy.readthedocs.io/en/stable/error_codes.html"
+kind = "docs"
+checked = 2026-10-20

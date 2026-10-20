@@ -1,14 +1,24 @@
 id = "STRICT-TS"
-title = "TypeScript strict everywhere, Vue scripts included"
+title = "TypeScript strict everywhere"
 pillar = "standards"
 theme = "api-typing"
 scope = { kind = "language", name = "typescript" }
-# A draft from the reference repo (T-124): assessed, out of the score until sourced.
-level = "assess"
+level = "adopt"
 regime = "strict"
 profiles = ["solo", "association", "company", "university", "enterprise"]
-why = "Strict mode turns a class of runtime errors into compile errors."
+why = "Strict mode turns a whole class of runtime errors into compile errors."
+applies = ["typescript"]
 detectable = "script"
 fixable = "judgment"
+fixer = ""
 since = "0.4.1"
 charter_rule = "STRICT-TS"
+
+[detector]
+kind = "python"
+check = "strict_typescript"
+
+[[sources]]
+url = "https://www.typescriptlang.org/tsconfig/"
+kind = "docs"
+checked = 2026-10-20

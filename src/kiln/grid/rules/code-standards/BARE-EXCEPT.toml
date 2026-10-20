@@ -1,0 +1,29 @@
+id = "BARE-EXCEPT"
+title = "No bare `except:`"
+pillar = "standards"
+theme = "code-standards"
+scope = { kind = "language", name = "python" }
+level = "adopt"
+regime = "strict"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "A bare except swallows KeyboardInterrupt and every bug along with the error it meant."
+applies = ["python"]
+detectable = "script"
+fixable = "judgment"
+fixer = ""
+since = "0.4.2"
+
+[detector]
+kind = "regex"
+files = ["**/*.py"]
+pattern = '''(?m)^\s*except\s*:'''
+
+[[sources]]
+url = "https://docs.astral.sh/ruff/rules/bare-except/"
+kind = "docs"
+checked = 2026-10-20
+
+[[sources]]
+url = "https://peps.python.org/pep-0008/"
+kind = "docs"
+checked = 2026-10-20

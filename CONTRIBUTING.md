@@ -73,12 +73,16 @@ uv run pytest -q                 # renders every stack combination, ~20 s on all
 - No `pip`, no `docker` anywhere: uv for Python, pnpm for JavaScript, podman for containers.
 - Never commit secrets or real personal data.
 - Code, comments, messages and docs are in English (a few older comments are still in French);
-  `README.fr.md` is the French reference.
+  `README.fr.md` and `docs/reference.fr.md` are their French versions.
+- A change updates the docs in its branch: [`docs/reference.md`](docs/reference.md) (and its
+  French version) for what it adds, the README when what kiln is for changes. Images come from
+  `uv run python scripts/screenshots.py`; `tests/test_docs.py` fails when one is out of date.
 
 ## Code of conduct
 
-Be kind and assume good intent. Harassment or personal attacks are not tolerated; report them
-privately to the maintainer (see [SECURITY.md](SECURITY.md) for how to reach them).
+kiln follows the [Contributor Covenant](CODE_OF_CONDUCT.md). Be kind and assume good intent.
+Harassment or personal attacks are not tolerated; report them privately to the maintainer,
+through [GitHub's private reporting](https://github.com/antoine-tena/kiln/security/advisories/new).
 
 ---
 

@@ -1,0 +1,24 @@
+id = "TS-EXPECT-ERROR"
+title = "`@ts-expect-error` rather than `@ts-ignore`"
+pillar = "standards"
+theme = "api-typing"
+scope = { kind = "language", name = "typescript" }
+level = "adopt"
+regime = "ratchet"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "`@ts-expect-error` fails once the error is gone, so the silence never outlives its reason."
+applies = ["typescript"]
+detectable = "script"
+fixable = "script"
+fixer = ""
+since = "0.4.2"
+
+[detector]
+kind = "regex"
+files = ["**/*.ts", "**/*.tsx", "**/*.vue"]
+pattern = '''@ts-ignore\b'''
+
+[[sources]]
+url = "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html"
+kind = "docs"
+checked = 2026-10-20

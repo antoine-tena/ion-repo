@@ -1,6 +1,6 @@
 {
   "name": "kiln",
-  "version": "0.13.3",
+  "version": "0.13.4",
   "description": "For every project: worktrees, merge, release, cleanup, kiln updates, defects reported to kiln, contributor PRs, good first issues, service tokens, branch guard, protected files, per-file charter check, context7",
   "author": {
     "name": "antoine-tena"

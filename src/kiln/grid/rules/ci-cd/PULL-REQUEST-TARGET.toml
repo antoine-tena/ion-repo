@@ -1,0 +1,29 @@
+id = "PULL-REQUEST-TARGET"
+title = "No `pull_request_target` workflow, or one that never runs the pull request's code"
+pillar = "methods"
+theme = "ci-cd"
+scope = { kind = "tool", name = "github-actions" }
+level = "adopt"
+regime = "review"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "`pull_request_target` runs with the repo's secrets; checking out the fork's code there hands them over."
+applies = ["github-actions"]
+detectable = "approximate"
+fixable = "judgment"
+fixer = ""
+since = "0.4.2"
+
+[detector]
+kind = "regex"
+files = [".github/workflows/*.yml", ".github/workflows/*.yaml"]
+pattern = '''(?m)^\s*(-\s*)?pull_request_target\b'''
+
+[[sources]]
+url = "https://securitylab.github.com/resources/github-actions-preventing-pwn-requests/"
+kind = "advisory"
+checked = 2026-10-20
+
+[[sources]]
+url = "https://github.com/ossf/scorecard/blob/main/docs/checks.md"
+kind = "advisory"
+checked = 2026-10-20

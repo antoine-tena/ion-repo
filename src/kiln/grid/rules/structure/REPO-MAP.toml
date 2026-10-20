@@ -3,11 +3,28 @@ title = "The root instructions hold a map of the repo: where each thing lives"
 pillar = "readability"
 theme = "structure"
 scope = { kind = "universal" }
-# A draft from the reference repo (T-124): assessed, out of the score until sourced.
-level = "assess"
-regime = "strict"
+level = "adopt"
+regime = "review"
 profiles = ["solo", "association", "company", "university", "enterprise"]
 why = "A map read first saves every reader, and every agent, a search through the tree."
-detectable = "script"
+applies = []
+detectable = "approximate"
 fixable = "judgment"
+fixer = ""
 since = "0.4.1"
+
+[detector]
+kind = "regex"
+files = ["CLAUDE.md", "AGENTS.md"]
+pattern = '''(?im)^#+\s.*\b(map|layout|structure|carte|arborescence)\b'''
+expect = "match"
+
+[[sources]]
+url = "https://code.claude.com/docs/en/memory"
+kind = "docs"
+checked = 2026-10-20
+
+[[sources]]
+url = "https://agents.md/"
+kind = "adoption"
+checked = 2026-10-20

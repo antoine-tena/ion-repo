@@ -1,0 +1,23 @@
+id = "README"
+title = "The repo has a README"
+pillar = "readability"
+theme = "docs-tracking"
+scope = { kind = "universal" }
+level = "adopt"
+regime = "strict"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "The first file anyone opens says what the project is and how to run it."
+applies = []
+detectable = "script"
+fixable = "judgment"
+fixer = ""
+since = "0.4.2"
+
+[detector]
+kind = "file"
+paths = ["README*", "readme*", "Readme*"]
+
+[[sources]]
+url = "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes"
+kind = "docs"
+checked = 2026-10-20

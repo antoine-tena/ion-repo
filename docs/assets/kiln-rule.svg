@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="918" height="292" viewBox="0 0 918 292" role="img" aria-label="kiln grid: one rule, its why and sources">
+<rect width="100%" height="100%" rx="10" fill="#1c1b19"/>
+<circle cx="20" cy="18" r="6" fill="#ff5f57"/><circle cx="40" cy="18" r="6" fill="#febc2e"/><circle cx="60" cy="18" r="6" fill="#28c840"/>
+<g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="14" fill="#e6e3dc" xml:space="preserve">
+<text x="22.0" y="41.5" textLength="8.4" fill="#8c8c87">$</text>
+<text x="38.8" y="41.5" textLength="201.6">kiln grid pinned-actions</text>
+<text x="38.8" y="77.5" textLength="117.6" fill="#f79628" font-weight="bold">PINNED-ACTIONS</text>
+<text x="173.2" y="77.5" textLength="546.0">GitHub Actions and reusable workflows pinned to a full commit SHA</text>
+<text x="38.8" y="95.5" textLength="596.4" fill="#b9b9b4">A tag can be moved to other code at any time; a full commit SHA cannot.</text>
+<text x="38.8" y="131.5" textLength="42.0" fill="#8c8c87">theme</text>
+<text x="131.2" y="131.5" textLength="100.8">supply-chain</text>
+<text x="38.8" y="149.5" textLength="42.0" fill="#8c8c87">scope</text>
+<text x="131.2" y="149.5" textLength="168.0">tool: github-actions</text>
+<text x="38.8" y="167.5" textLength="42.0" fill="#8c8c87">level</text>
+<text x="131.2" y="167.5" textLength="42.0">adopt</text>
+<text x="38.8" y="185.5" textLength="50.4" fill="#8c8c87">regime</text>
+<text x="131.2" y="185.5" textLength="50.4">strict</text>
+<text x="38.8" y="203.5" textLength="67.2" fill="#8c8c87">profiles</text>
+<text x="131.2" y="203.5" textLength="420.0">solo, association, company, university, enterprise</text>
+<text x="38.8" y="221.5" textLength="67.2" fill="#8c8c87">detected</text>
+<text x="131.2" y="221.5" textLength="42.0">regex</text>
+<text x="38.8" y="239.5" textLength="42.0" fill="#8c8c87">fixed</text>
+<text x="131.2" y="239.5" textLength="243.6">by judgment (Claude, roadmap)</text>
+<text x="38.8" y="257.5" textLength="50.4" fill="#8c8c87">source</text>
+<text x="131.2" y="257.5" textLength="764.4">https://docs.github.com/en/actions/reference/security/secure-use (docs, checked 2026-10-19)</text>
+<text x="38.8" y="275.5" textLength="42.0" fill="#8c8c87">waive</text>
+<text x="131.2" y="275.5" textLength="487.2">kiln waive PINNED-ACTIONS --reason "why this repo differs"</text>
+</g>
+</svg>

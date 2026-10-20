@@ -3,9 +3,9 @@
 L'atelier de Claude Code : savoir, garde-fous, façons de travailler et mise à jour des repos
 (modèle Copier, commande `kiln`, moteur `charte`, plugins Claude Code, workflows
 réutilisables). Tout ce qui est générique aux repos vit ici : un défaut d'un fichier
-généré se corrige dans `template/`, puis `kiln update` dans le repo. Présentation complète et
-commandes dans [`README.fr.md`](README.fr.md) (vitrine en anglais :
-[`README.md`](README.md)).
+généré se corrige dans `template/`, puis `kiln update` dans le repo. Présentation dans
+[`README.fr.md`](README.fr.md) (vitrine en anglais : [`README.md`](README.md)), tout le détail
+dans [`docs/reference.fr.md`](docs/reference.fr.md) ([`docs/reference.md`](docs/reference.md)).
 
 ## Carte du repo
 
@@ -18,7 +18,7 @@ un dossier ou un module.
   `.copier-answers.yml`), `template.py`, `deps.py`, `github.py`, `rules.py` (règles non
   vérifiées), `statusline.py`, `versions.py` (tags, journal des versions), `frozen.py` (fichiers figés par `kiln-waivers.toml`, épargnés par `update`), `renames.py` (noms d'avant 0.4.0 et leurs noms anglais), `banner.py` (bannière, écran d'accueil), `ui.py` (palette pierre et feu, étapes,
   roue animée, bilan, succès, erreurs), `shell.py`, `config.py` (`~/.config/kiln/config.toml`).
-- `src/kiln/grid/` : la grille (T-123) : `rules/<thème>/<ID>.toml` une règle par fichier, `model.py` (format, listes fermées, validation), `facts.py` (de quoi est fait un repo), `detectors.py` (détecteurs déclaratifs, contrôles Python), `fixers.py` (convertisseurs de `kiln fix`), `show.py` (`kiln grid`) ; chaque règle a un exemple qui passe et un qui échoue dans `tests/test_grid.py`.
+- `src/kiln/grid/` : la grille (T-123) : `rules/<thème>/<ID>.toml` une règle par fichier, `model.py` (format, listes fermées, validation), `facts.py` (de quoi est fait un repo), `detectors.py` (détecteurs déclaratifs, contrôles Python), `fixers.py` (convertisseurs de `kiln fix`), `show.py` (`kiln grid`), `score.py` (`kiln score`, note d'un repo face à la grille) ; chaque règle a un exemple qui passe et un qui échoue dans `tests/test_grid.py`.
 - `src/kiln/ci/` : `kiln ci` (CI rejouée sur le poste, verdict en note git) ;
   `src/kiln/charter/` : moteur de `charter` (`bans.py`, `ratchets.py`,
   `python_tools.py`, `waivers.py` : dérogations de `kiln-waivers.toml`).
@@ -38,15 +38,22 @@ un dossier ou un module.
 - `.github/workflows/` : workflows réutilisables appelés par les repos générés, plus ceux de
   kiln (`kiln.yml` contrôles, `pypi.yml` publication du paquet `kiln-cli` au tag promu) ;
   `actions/` : actions composites (`charter`, son ancien nom `charte`, `services`).
-- Vitrine publique, en anglais : `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, `LICENSE`
-  (MIT), `.github/ISSUE_TEMPLATE/`, `.github/pull_request_template.md` ; capture de l'écran
-  d'accueil `docs/assets/kiln-home.svg` (régénérée par `scripts/home_screenshot.py`, vérifiée par `test_docs.py`). Référence complète en français : `README.fr.md`.
+- Vitrine publique : `README.md` (et sa traduction `README.fr.md`), `CONTRIBUTING.md`,
+  `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1), `SECURITY.md`, `LICENSE` (MIT),
+  `.github/ISSUE_TEMPLATE/`, `.github/pull_request_template.md` ; référence complète
+  `docs/reference.md` et `docs/reference.fr.md` ; images `docs/assets/` (dessinées par
+  `scripts/screenshots.py`, vérifiées par `test_docs.py`), dont la démo animée
+  `kiln-new.gif` enregistrée par VHS depuis `kiln-new.tape` et l'image de partage
+  `social-preview.png` (déposée à la main dans les réglages de GitHub).
 - `docs/backlog/` : suivi du travail, en anglais (skill `/kiln:backlog`), dont la prochaine
   promotion de version ; `docs/assets/` : images de la vitrine ; `docs/vision/` : l'idée de
   projet, brouillon en français, un fichier par sujet (`README.md` sert d'index).
-- `scripts/home_screenshot.py` : régénère la capture de l'écran d'accueil du README.
+- `scripts/screenshots.py` : dessine les images du README à partir des vraies sorties de kiln
+  (et le logo, l'image de partage) ; `scripts/social_preview.py` : l'image de partage en PNG
+  (Playwright) ; `scripts/demo_shell.sh` : le shell des démos enregistrées (kiln de ce dossier,
+  sans numéro de version, dans un dossier jetable sur le disque).
 - `tests/` : `test_template.py` (rendu du modèle pour chaque stack), `test_cli.py` (la commande :
-  accueil, erreurs, bilan, sorties hors terminal, anciens noms), `test_questions.py` (questions de `kiln new`), `test_new.py` (ce que `kiln new` dit à la fin), `test_grid.py` (la grille), `test_adopted.py` (repos adoptés), `test_unites.py`,
+  accueil, erreurs, bilan, sorties hors terminal, anciens noms), `test_questions.py` (questions de `kiln new`), `test_new.py` (ce que `kiln new` dit à la fin), `test_grid.py` (la grille), `test_score.py` (`kiln score`), `test_adopted.py` (repos adoptés), `test_unites.py`,
   `test_ci.py`, `test_flotte.py`, `test_waivers.py` (dérogations), `test_waive.py`, `test_charter_file.py` (`charter file`, hook après une édition), `test_shipping.py` (`kiln version cut` et `promote`), `test_rehearsal.py` (`update --rehearse`), `test_e2e.py` (de bout en bout, `-m e2e` : chaque version depuis v0.3.0 par un outil installé, et le repo-témoin `antoine-tena/kiln-rehearsal`, figé à v0.3.3-rc.2, ne jamais le mettre à jour), `test_deployment.py`, `test_statusline.py` (choix du
   poste et rendu du script), `test_plugins.py` (skills cités présents, nommés comme leur dossier), `test_docs.py` (vitrine à jour : capture d'accueil, plugins et workflows cités), `test_branch_guard.py` (hook de garde de branche), `test_adopt.py`,
   `test_reminders.py`, `test_session_start.py` ; `conftest.py` : config git du poste écartée, identité de test.
@@ -157,14 +164,38 @@ l'outil), `release.py` (`kiln version`), `shipping.py` (`kiln version cut`, `kil
 
 ## Le README, entièrement à jour
 
-Demande d'antoine (19 octobre 2026) : les deux README décrivent tout ce que kiln offre, à la
-version qu'il est, à chaque version. `tests/test_docs.py` échoue si une commande, une option,
-un réglage de `kiln set`, un plugin, une skill, un hook ou un workflow réutilisable manque à
-l'un des deux, ou s'ils citent kiln à une autre version que celle de `pyproject.toml` (que
-`kiln version cut` fait avancer). `kiln version cut` refuse de taguer la première candidate
-d'une version dont les README n'ont pas changé depuis la précédente (sauf
-`<!-- readme: unchanged, pourquoi -->` dans son entrée). Un changement met donc à jour README.md
-et README.fr.md dans sa branche, pas à la release.
+Demande d'antoine (19 octobre 2026) : le README, « le mieux au monde », entièrement à jour
+d'une version à l'autre. Il montre kiln en peu de mots et en vraies images (sur le modèle d'uv,
+ruff, Bun) ; la référence (`docs/reference.md`, `docs/reference.fr.md`) contient tout le
+reste. `tests/test_docs.py` échoue si :
+- la référence d'une langue oublie une commande, une option, un réglage de `kiln set`, un
+  plugin, une skill, un hook ou un workflow réutilisable ;
+- un README cite une commande qui n'existe pas, ne renvoie pas à sa référence, ou ne suit plus
+  l'autre langue (mêmes sections, puces, images, tableaux) ;
+- une image de `docs/assets/` diffère de ce que dessine `scripts/screenshots.py` à partir des
+  vraies sorties de kiln (l'accueil, `kiln grid`, une règle, la note de `kiln update`, le schéma
+  d'une version en clair et en sombre) ;
+- les docs citent kiln à une autre version que celle de `pyproject.toml` ;
+- une démo enregistrée tape une commande ou une option qui n'existe plus, ou pèse 5 Mo et plus ;
+- le README que publie PyPI garde une image ou un lien relatifs (le build les fait pointer vers
+  le tag de la version sur GitHub, `hatch-fancy-pypi-readme` dans `pyproject.toml`) ;
+- un README porte les marques d'un texte d'IA que les lecteurs de Hacker News relèvent : tiret
+  cadratin, puce ouverte en gras ou par un emoji, mot de vendeur (*seamless*, *powerful*…).
+`kiln version cut` fait avancer cette version citée, et refuse de taguer la première candidate
+d'une version dont ni le README ni la référence d'une langue n'ont changé (sauf
+`<!-- readme: unchanged, pourquoi -->` dans son entrée). Un changement met donc à jour la doc
+dans sa branche, pas à la release. Les images se regardent dans un vrai navigateur avant de les
+commiter (`textLength` et les espaces ne se rendent bien que là).
+
+La démo animée (`docs/assets/kiln-new.gif`) se réenregistre avant chaque candidate, quand ce
+qu'elle montre a changé : `vhs docs/assets/kiln-new.tape` (vhs, ttyd et ffmpeg). Une seule
+promesse partout (README, « About » de GitHub, résumé PyPI, image de partage), choisie par
+antoine le 20 octobre 2026 : « Claude Code's workshop », puis « Start every new project, and
+rescue every old one, like a senior engineer would — even if you're not one. », et sous elle
+« Make Claude Code build production-grade repos, bring yours up to that grade, and keep them
+that way. » Un vieux repo à remettre à niveau compte autant qu'un nouveau (`kiln adopt`, puis le
+score et la correction de la v0.5.0). Le texte posté
+sur Hacker News, titre et réponses compris, est écrit à la main par antoine (règle du forum).
 
 ## Contrôles
 

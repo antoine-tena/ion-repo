@@ -1,246 +1,184 @@
 <div align="center">
 
-# kiln 🔥
+<img src="docs/assets/kiln-logo.svg" alt="kiln's logo: a laughing kiln in pixel art" width="168">
 
-**Start every project like a senior engineer would — even if you're not one.**
+# kiln
 
-Three questions, and Claude Code gets a modern repo: stack chosen for you, tests, CI,
-guardrails, a GitHub repo — kept up to date for as long as the project lives.
+*Claude Code's workshop*
 
+**Start every new project, and rescue every old one, like a senior engineer would — even if you're not one.**
+
+Make Claude Code build production-grade repos, bring yours up to that grade, and keep them that way.
+
+[![PyPI](https://img.shields.io/pypi/v/kiln-cli.svg?color=c2551f)](https://pypi.org/project/kiln-cli/)
 [![CI](https://github.com/antoine-tena/kiln/actions/workflows/kiln.yml/badge.svg?branch=develop)](https://github.com/antoine-tena/kiln/actions/workflows/kiln.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE)
-[![Python 3.14](https://img.shields.io/badge/python-3.14-blue.svg)](https://www.python.org/)
-[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
-[![Built on Copier](https://img.shields.io/badge/built%20on-Copier-8a2be2.svg)](https://copier.readthedocs.io)
-[![Claude Code plugins](https://img.shields.io/badge/Claude%20Code-plugins-d97757.svg)](#claude-code-plugins)
+[![License: MIT](https://img.shields.io/badge/license-MIT-4c4c4c.svg)](LICENSE)
 
-*English · [Français](README.fr.md)*
+[**Reference**](docs/reference.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Français](README.fr.md)
 
-<img src="docs/assets/kiln-home.svg" alt="kiln welcome screen: a pixel-art kiln and the list of commands" width="720">
+<img src="docs/assets/kiln-new.gif" alt="kiln new my-app asks three questions (what you build, how big, the team's language), creates a Django and Nuxt app with its first commit, then kiln check passes ruff, mypy, pytest, ESLint, the type checks and charter" width="820">
+
+<i>A real run, played at 1.5× with the waits cut: <code>kiln new</code>, then <code>kiln check</code> in the new repo.</i>
 
 </div>
 
----
+Claude Code writes code fast. A repo needs more than that to stay healthy: a current stack, rules
+an agent cannot argue its way around, a git workflow that survives a bad afternoon, and someone
+to stop it going stale on day ninety. kiln brings all four to a new repo in three questions, and
+to the one you already have, however old and messy: it lays down the rules, lists what falls
+short, and Claude Code works it off. Then it keeps every repo current, release after release.
+kiln itself calls no AI and needs no API key.
 
-Claude Code writes code fast, but a real repo needs more than a prompt: an up-to-date stack,
-rules the agent cannot talk its way around, a sane git workflow, and someone to stop the repo
-from going stale on day ninety. **kiln** brings all four. Built on
-[Copier](https://copier.readthedocs.io), it generates the repo, wires Claude Code into it, and
-keeps every repo you own current:
+## Highlights
 
-- 🧱 **`kiln new`** — three questions (what you are building, its size, your language), then
-  a complete repo: code, tests, linters, CI, pre-commit, containers, a `CLAUDE.md` for AI
-  agents, a GitHub repo with protected branches.
-- 🎛️ **`kiln set`** — change your mind later. `kiln set frontend=nuxt podman=true` re-renders
-  the repo; a removed framework takes its files with it.
-- 🔄 **`kiln update`** — pull template improvements *and* dependency upgrades into an existing
-  repo, then run the checks before anything is committed. Local edits are kept; real conflicts
-  are marked inline.
-- 🚚 **`kiln update --all`** — do it for **every** kiln repo in `~/code` at once: one worktree
-  per repo, small commits, merge only when the checks pass.
-- 📏 **`charter`** — a rule engine for things linters don't catch (no `pip`/`docker`, file-size
-  ratchets, Django locks, personal-data patterns, coverage floors…), declared per repo in
-  `charter.toml`. Disagree with a rule? `kiln waive` it in `kiln-waivers.toml`, with a reason and an
-  expiry that grows with each renewal (a week, a month, three months, six months).
-- 🤖 **Claude Code native** — every generated repo ships agent instructions and enables kiln's
-  Claude Code plugins (branch guards, worktree/merge/release skills, status line).
+- A new repo in three questions (what you build, how big, the team's language): code, tests,
+  linters, CI, pre-commit hooks, containers and the instructions Claude reads first.
+- A repo you already have, however old: `kiln adopt` brings it under kiln on a work branch,
+  without touching an existing file. The rules are checked after each edit Claude makes, the
+  debt they find is listed for Claude to work off, and `kiln check`, `kiln dev` and
+  `kiln status` serve it like a repo kiln created.
+- `kiln update` replays the template, takes compatible dependency upgrades, converts what a
+  release renamed and runs your checks before you commit. `--rehearse` tries it on a throwaway
+  clone first, `--all` updates every repo in your code folder.
+- `charter`, kiln's rule checker, checks each file Claude edits in about 0.15 s: banned tools,
+  names, file sizes, personal data in logs. Counts that may only go down (ratchets) and coverage
+  floors hold at each commit and in CI. A waiver needs a reason and an end date.
+- `kiln grid` lists the practices kiln stands behind, each with its reason, its sources (checked
+  and dated) and how it is detected. `kiln score` measures any repo against them in about a
+  second, without a token: a score out of 100, one per pillar, and the gaps to close first.
+- Skills for worktrees, merges, releases and reviews; hooks that keep Claude off `main` and
+  `develop`; a status line that shows CI, tickets and production.
+- A private repo's CI runs on your machine (`kiln ci`, its verdict kept as a git note) and spends
+  no GitHub minutes; a public repo's runs on GitHub, where it is free.
 
-> [!NOTE]
-> kiln was born to run a real production app (a non-profit's Django + Nuxt site) and the
-> repos around it. Since v0.4.0 it speaks English: commands, messages, generated code and
-> docs. What your users read (pages, messages, README) follows the project's language, English
-> or French.
+## Install
+
+```sh
+uv tool install kiln-cli     # the command is kiln; uv fetches Python 3.14 if needed
+```
+
+Or try it without installing anything: `uvx kiln-cli new my-app` for a new repo,
+`uvx kiln-cli adopt` in one you already have. macOS, Linux and Windows through WSL;
+[pnpm](https://pnpm.io/) for JavaScript fronts, [podman](https://podman.io/) for containers.
 
 ## Quick start
 
-```sh
-# 1. Install (needs uv and git; Python 3.14 is fetched by uv if missing).
-#    macOS, Linux, and Windows through WSL. The PyPI package is kiln-cli, the command is kiln.
-uv tool install kiln-cli
-#    …or try it without installing anything: uvx kiln-cli new my-app
-#    Tab completion in bash: add  eval "$(kiln completion bash)"  to ~/.bashrc
+A new repo:
 
-# 2. Create a project — answer a few questions, or pass them as flags
-kiln new my-app
-kiln new my-api --size ember --type api --backend fastapi --no-github
-
-# 3. Work in it
-cd my-app
-kiln dev       # start the dev servers of the stack
-kiln check     # ruff, mypy, pytest, ESLint, type checks, then charter
-
-# 4. Months later
-kiln update            # template changes + compatible dependency upgrades + checks
-kiln update --major    # major versions too
+```console
+$ kiln new my-app            # three questions, then a private GitHub repo (--no-github: local)
+$ cd my-app && kiln dev      # the stack's dev servers, output prefixed by service
+$ kiln check                 # ruff, mypy, pytest, ESLint, type checks, then charter
+$ claude                     # Claude Code, with kiln's rules, skills and hooks loaded
 ```
 
-`kiln new` creates a private GitHub repo by default (via `gh`); `--no-github` skips it.
-Optional tools: [pnpm](https://pnpm.io/) for JavaScript fronts, a JDK 25 for Java,
-[podman](https://podman.io/) for containers.
+A repo you already have, on a work branch:
+
+```console
+$ git switch -c chore/kiln-adopt
+$ kiln adopt                 # the rules and a backlog, no file touched; then what falls short
+$ claude                     # Claude Code works it off, with kiln's rules, skills and hooks
+```
 
 ## What you get
 
-| Project type | Recommended backend | Recommended frontend |
+| You build | Backend | Frontend |
 |---|---|---|
-| Full app (`app`) | Django + Django Ninja | Nuxt + Vue |
-| API only (`api`) | FastAPI | — |
-| Content site (`site`) | — | Astro |
-| Data dashboard (`dashboard`) | Python data (polars, marimo, Plotly) | Streamlit |
-| Data analysis (`analysis`) | Python data | — |
-| CLI tool (`cli`) | Python CLI (argparse, installable) | — |
+| A full app (`app`) | Django + Django Ninja | Nuxt + Vue |
+| An API (`api`) | FastAPI | — |
+| A content site (`site`) | — | Astro |
+| A data dashboard (`dashboard`) | polars, marimo, Plotly | Streamlit |
+| A data analysis (`analysis`) | polars, marimo, Plotly | — |
+| A command-line tool (`cli`) | Python, installable | — |
 
-Backends: `django`, `fastapi`, `data`, `cli`, `java` (Java 25 + Maven, no framework).
-Frontends: `nuxt`, `next`, `astro`, `streamlit`, `dash`. **Every combination is generated and
-validated by the test suite.**
+Next.js, Dash and Java 25 + Maven are there too, and kiln's tests generate and check every
+combination. Django and Nuxt are complete; the other stacks are frozen but maintained: new grid
+rules go to Django and Nuxt first.
 
-**Django and Nuxt: complete. The others: frozen, maintained.** Every stack stays generated and
-tested, but new grid rules go to Django and Nuxt first, until they reach the top of the grid;
-the universal rules (CI, containers, supply chain, secrets) score them all.
+Every repo also gets uv, pnpm and podman (never pip, npm or docker), CI that calls kiln's
+reusable workflows, protected `main` and `develop` branches, a `docs/backlog/` of typed tickets,
+and a size (`spark`, `ember`, `flame` or `blaze`) that sets how much process it carries. A
+Django app can ship to a hardened VPS (Caddy, read-only containers, automatic rollback, tested
+backups), a Nuxt front to Vercel.
 
-Each generated repo comes with:
+## Kept current
 
-- **Opinionated tooling, no `pip`, no `docker`:** uv for Python, pnpm for JavaScript, podman
-  for containers; ruff, mypy (strict), pytest + coverage floor, ESLint, pre-commit (which also
-  refuses commits on `main`/`develop`).
-- **CI on GitHub Actions** that calls kiln's reusable workflows — so fixing CI once in kiln
-  fixes it everywhere.
-- **A project size** (`spark` → `ember` → `flame` → `blaze`) that tunes defaults: a weekend
-  script doesn't get the same ceremony as a multi-team service.
-- **Agent-ready instructions:** kiln's rules for Claude in `.claude/rules/kiln/`, with stable
-  rule IDs the `charter` engine can check; each stack's rules load only when Claude touches its
-  files. The root `CLAUDE.md` belongs to the project.
-- **Optional production setups:** a hardened VPS deployment for Django (Caddy with automatic
-  TLS, read-only containers, one image per commit, automatic rollback, daily backups with
-  restore tests) and Vercel deployment for Nuxt fronts.
-- **A backlog** (`docs/backlog/`: typed `T-NN` tickets by priority) that Claude Code's status line counts.
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/kiln-flow-dark.svg">
+    <img src="docs/assets/kiln-flow-light.svg" alt="One release, every repo current: kiln, then a candidate tried on kiln's own repos, the release on PyPI, a rehearsal on a clone of your repo, then kiln update merges it only if the checks pass" width="820">
+  </picture>
+</p>
 
-## Why not just Copier / cookiecutter?
+A kiln release first ships as a candidate, tagged only once its CI is green on Linux and macOS,
+including an update from every release since v0.3.0 through an installed tool. It is promoted
+when the next candidate is ready, then rehearsed on a clone of each repo before
+`kiln update --all` merges it, one worktree per repo. Repos quote kiln's workflows at the exact
+release they follow, so nothing reaches them between releases, and `kiln update` shows what is
+new in each release it crosses. A repo brought in by `kiln adopt` follows kiln's workflows at the
+latest release, moved forward by `kiln update` too.
 
-kiln **is** Copier underneath — every project keeps its `.copier-answers.yml`, so you can
-always fall back to plain Copier. What kiln adds is everything around the template:
+## The grid
+
+<p align="center">
+  <img src="docs/assets/kiln-rule.svg" alt="kiln grid pinned-actions: why the rule holds, its theme, scope and level, how it is detected and fixed, its source checked on a date, and how to waive it" width="820">
+</p>
+<p align="center"><i><code>kiln grid &lt;ID&gt;</code>: one rule in full, with its reason, a source checked on a date, and how a repo can waive it.</i></p>
+
+One small TOML file per rule, on two axes: its theme (supply chain, containers, tests…) and its
+scope (universal, a language, a framework, a tool). Each says why, cites sources weighed in a
+fixed order (official docs, security advisories, measured studies, adoption data, blogs) and
+carries a level from Thoughtworks' Technology Radar: adopt, trial, assess, hold. Only adopted
+rules count: 40 of them (supply chain, CI, containers, tests, code standards, Django and Vue
+security), each run on two real repos for false positives; 95 drafts wait behind
+`kiln grid --level assess`.
+Each scored rule ships with a repo that passes it and one that fails it.
+
+## Compared with Copier and cookiecutter
+
+kiln is [Copier](https://copier.readthedocs.io) underneath: every project keeps its
+`.copier-answers.yml`, and plain Copier still works on it. kiln adds what comes after day one,
+and gives up some breadth for it.
 
 | | cookiecutter | Copier | **kiln** |
 |---|:---:|:---:|:---:|
 | Generate a project | ✅ | ✅ | ✅ |
+| Any language or framework | ✅ | ✅ | ❌ |
+| Community templates to start from | ✅ | ✅ | ❌ |
 | Apply template updates to existing projects | ❌ | ✅ | ✅ |
-| Stack recommendation from the project type | ❌ | ❌ | ✅ |
-| Change stack/options after generation (`kiln set`) | ❌ | partial | ✅ |
-| Upgrade dependencies + run checks in the same step | ❌ | ❌ | ✅ |
-| Update all your repos at once (`update --all`) | ❌ | ❌ | ✅ |
-| Shared, reusable CI workflows | ❌ | ❌ | ✅ |
-| Repo-level rule engine (`charter`) | ❌ | ❌ | ✅ |
-| Replay CI locally, verdict stored as a git note (`kiln ci`) | ❌ | ❌ | ✅ |
-| Claude Code plugins and agent instructions | ❌ | ❌ | ✅ |
+| Pick the stack from what you build | ❌ | ❌ | ✅ |
+| Change the stack later (`kiln set frontend=nuxt`) | ❌ | partial | ✅ |
+| Upgrade dependencies and run the checks in the same step | ❌ | ❌ | ✅ |
+| Rehearse, then update every repo at once | ❌ | ❌ | ✅ |
+| Shared CI workflows, quoted at a release | ❌ | ❌ | ✅ |
+| A rule engine with dated waivers (`charter`) | ❌ | ❌ | ✅ |
+| Claude Code skills, hooks and instructions | ❌ | ❌ | ✅ |
 
-kiln is opinionated on purpose. If you want a neutral templating engine, use Copier directly;
-if you want a batteries-included workflow that stays maintained, use kiln — or fork it and
-make the opinions yours.
+kiln is opinionated on purpose. For a neutral templating engine, use Copier; for a workflow that
+stays maintained, use kiln, or fork it and make the opinions yours.
 
-## Commands
+## Reference
 
-| Command | What it does |
-|---|---|
-| `kiln new [dir]` | Questionnaire, generation, lockfiles, install, first commit on `main`, then `develop` where all work happens. Three questions (what you build, size, language), the rest by option: `--name`, `--title`, `--description`, `--type`, `--size`, `--backend`, `--frontend`, `--language`, `--owner`, `--team`, `--podman`, `--vps`, `--goal`, `--prod-url`; `--no-github` (local only), `--no-install`, `--template` (another source), `--all-questions` (the whole questionnaire). |
-| `kiln adopt` | Bring an existing repo that kiln did not generate under kiln (`--template` for another source), on a work branch: `charter.toml` (size via `--size`, rules that apply anywhere, checked after each edit), `docs/backlog/` if missing, then the existing debt the charter finds. Never touches an existing file. |
-| `kiln publish` | Create the private GitHub repo and protect its branches, for a project generated without `gh`. |
-| `kiln install` | Set up a machine after a clone: tools, dependencies, `.env`, migrations, pre-commit. Re-runnable. |
-| `kiln dev` | Start the stack's dev servers, their output interleaved and prefixed by service in colour (`django │ …`); `--containers` runs everything in podman. |
-| `kiln check` | Ruff, mypy, pytest for each Python project, ESLint and type checks for the front, then `charter`. |
-| `kiln set [key=value…]` | Show or change the repo's settings (see [Settings](#settings)); the repo is re-rendered. Outside a repo, or with `--global`, this machine's settings. |
-| `kiln waive [RULE\|file]` | Waive a kiln rule (`--paths`, `--reason`), or freeze a generated file so `kiln update` leaves it alone; `--renew` moves to the next tier (a week, a month, three months, six months); `--permanent` for a waiver with no deadline, `--upstream` to link the issue or PR opened on kiln. No argument: list the waivers. |
-| `kiln update` | Move to the latest kiln release (with a box listing what's new in each release crossed), compatible dependency upgrades, then checks. `--major`, `--no-template`, `--no-deps`. `--rehearse` plays it on a throwaway clone first and only reports, the repo untouched. In an adopted repo (`kiln adopt`), only the references to kiln's workflows move, to the latest public release, their inputs checked. Only a release of kiln updates a repo: a tool built from a checkout is refused, with the command that installs the release. |
-| `kiln update --all` | Update every kiln repo in your code folder, one worktree each, merged only if checks pass. `--all --rehearse`: each update on a clone, nothing touched, a summary per repo. |
-| `kiln status` | Branch, clean tree, template release (`v0.4.0 → v0.4.2` when behind), waivers, stack — for every kiln repo, then the most waived rules across them. |
-| `kiln version` | In kiln's own repo: latest public release, candidates (age, adopting repos, ready to promote), the number the next release should take and the planned tickets still open. `--minor` when the next one is a milestone. `kiln version cut` cuts the release branch with a drafted changelog entry, then (once the entry is rewritten) runs the checks, waits for GitHub's CI and tags `-rc.N` only on green; `kiln version promote` tags the ready candidate (green CI), merges it into `main` and `develop`, and PyPI and the GitHub Release follow. |
-| `kiln grid [RULE-ID]` | The grid: the practices kiln holds as the best today, one small TOML file per rule, each with its why, its sources (checked and dated), its level (adopt, trial, assess, hold) and how it is detected and fixed. `--theme`, `--scope`, `--level` filter; a rule ID shows it in full, with how to waive it. |
-| `kiln doctor` | Check the machine (git, uv, gh login, pnpm, podman, Java, pre-commit, kiln release, Claude plugin) and the current repo; each problem comes with the command that fixes it. Changes nothing. |
-| `kiln ci [commit]` | Replay the repo's GitHub CI locally against throwaway PostgreSQL/Redis, and push the verdict as a git note (`--skip <job>`, `--no-push` to keep the note local, `--keep` the commit's worktree, `--status` for the verdict only). A private repo runs its CI this way by default (`ci_runner: local`): no GitHub minutes spent; a public one runs on GitHub, free. `kiln set ci_runner=github` switches. |
-| `kiln contract` | Django + Nuxt: export `openapi.json` and regenerate the front's API types. |
-| `kiln completion bash` | Print a bash completion script built from the parser; enable it with `eval "$(kiln completion bash)"` in `~/.bashrc`. |
-| `charter` | Check the repo against its `charter.toml` (`--detail`, `--unverified`, `types`, `coverage`, `file <path>`); `charte` is its former name. |
-
-Full reference (in French): [README.fr.md](README.fr.md#commandes).
-
-## Settings
-
-Every answer of the template, shown by `kiln set` and changed by `kiln set key=value` (the repo
-is re-rendered, on a work branch):
-
-| Key | What it sets |
-|---|---|
-| `name`, `title`, `description` | Short name (packages' prefix), displayed title, one sentence. |
-| `project_type`, `size` | What you build (`app`, `api`, `site`, `dashboard`, `analysis`, `cli`) and how hot it burns (`spark`, `ember`, `flame`, `blaze`): the stack and the rules follow. |
-| `backend`, `frontend`, `podman` | The stack (see [What you get](#what-you-get)) and podman containers. |
-| `language`, `language_comments`, `language_commits`, `language_docs`, `language_tickets`, `language_ui` | The team's language, and per use when they differ. |
-| `owner`, `team` | GitHub account owning the repo, and the team's logins (reviewers). |
-| `java_package` | Root package of the Java sources. |
-| `timezone` | Time zone of the project's calendar notions (dates are stored in UTC). |
-| `serena` | Serena for Claude Code (symbol navigation on big codebases). |
-| `deploy`, `vps_host`, `api_domain`, `site_url`, `deploy_branch`, `frontend_deploy` | Production: a hardened VPS (SSH host, API domain, site address, deployed branch) and the front on Vercel. |
-| `north_star` | The goal that orders the priorities of `docs/backlog/`. |
-| `ci_runner` | Where each push's CI runs: `local` (`kiln ci`, no GitHub minutes, a private repo's default) or `github` (free for a public repo). |
-| `statusline_ci`, `prod_health_url` | Claude Code's status line: CI state, and production's health probe. |
-
-## Reusable GitHub workflows
-
-kiln's workflows work from any repository, kiln-generated or not:
-
-```yaml
-jobs:
-  backend:
-    uses: antoine-tena/kiln/.github/workflows/django.yml@v0.4.1   # a kiln release tag
-```
-
-`django.yml`, `python.yml`, `maven.yml`, `pnpm.yml`, `charter.yml`, `security.yml` (`uv audit`,
-`pnpm audit`), `secrets.yml` (gitleaks), `api-contract.yml`, `infra.yml` (podman build,
-actionlint, shellcheck), `sbom.yml` (CycloneDX), `mutation.yml` (mutmut), `vercel.yml`. `charte.yml`,
-`securite.yml` and `contrat-api.yml` are their former names, kept as relays. Databases for tests run in
-podman. See [`.github/workflows/`](.github/workflows/).
-
-## Claude Code plugins
-
-kiln is also a [Claude Code](https://docs.claude.com/en/docs/claude-code) plugin marketplace:
-
-```sh
-claude plugin marketplace add antoine-tena/kiln
-claude plugin install kiln@kiln
-```
-
-| Plugin | What's inside |
-|---|---|
-| `kiln` | Skills for the git workflow (`worktree`, `merge`, `release`, `cleanup`, `review` = a branch's commits before they go public, and the whole repo before a release, `backlog`, `update` = self-update, `adopt` = bring an existing repo under kiln), `report` (a kiln defect met in your repo becomes an issue or a PR, posted once you approve), `contribution` (an outside contributor's PR handled like a well-run open-source project: untrusted code read before anything runs, triage, review, a merge that credits them, nothing posted without your yes), `good-first-issues` (a small, steady stock of `good first issue` issues drawn from your backlog and reserved for newcomers, refilled as they get merged) and `token` (a service token pasted once into a git-ignored `.<service>/` folder, never shown); hooks that guard protected branches and files (`branch_guard.py`, `protect_files.py`), refuse a commit message signed by Claude, check each edited file (`check_file.py`), and ask at session start (`session_start.py`, with kiln's logo and what's new above the first prompt, `first_prompt.py`; a red integration branch is told to Claude): kiln updates in kiln repos, adoption in your other repos ("Yes", "Later", "Never for this repo"), all paced by one goodwill score that each yes raises and each no lowers (`reminders.py`); a shared status line in four styles (`kiln set statusline=…`, or `none` / `custom` to keep your own); condensed command output with [rtk](https://github.com/rtk-ai/rtk) (`rtk.py`). |
-| `django` | Skills `migration`, `regen-api` (API types regenerated) and `postgres-read` (read-only PostgreSQL MCP). |
-| `nuxt` | Skills `nuxt`, `vue-best-practices`, `vue-testing-best-practices`, `vitest`, `polish` (UI polish) and `preview` (screenshots on three phones and a desktop, Playwright MCP). |
-| `vps` | Skills `deploy`, `prod-logs` (read-only diagnosis) and `prod-dump` (production copied into a throwaway database). |
-| `stripe` | Stripe MCP in test mode. |
-| `serena` | Read-only [Serena](https://github.com/oraios/serena) MCP for symbol navigation in big repos. |
-
-Generated repos enable the right plugins for their stack automatically.
+Every command and option, every `kiln set` key, the reusable workflows and the Claude Code
+plugins: [**docs/reference.md**](docs/reference.md). In a terminal, `kiln <command> --help`.
 
 ## Status
 
-kiln is used daily on a handful of real repos, including one in production. It is young, so it
-numbers releases like Claude Code does: in `0.x`, every release bumps the patch, breaking changes
-included (`0.4.1 → 0.4.2`), listed first in the release notes and migrated by `kiln update`; the
-minor only moves for a milestone. Strict semver starts at 1.0. Each release is first a candidate
-(`v0.4.2-rc.1`) used on the author's own repos; it is promoted to `main` (`v0.4.2`) only once
-the next candidate is ready, its CI green (macOS and end-to-end tests included) and its update
-rehearsed on a copy of each repo, so a release never needs an emergency fix. Projects are generated and updated from the latest release, pin kiln's workflows to
-that exact tag, and `kiln update` shows what changed in each release it applies (see
-[`CHANGELOG.md`](CHANGELOG.md)).
-Linux, WSL and macOS are supported.
+kiln runs a handful of real repos every day, one of them in production. One maintainer writes it
+with Claude Code, under the same rules it gives your repos. Releases are numbered like Claude
+Code's: in `0.x`, each release bumps the patch, breaking changes come first in the
+[changelog](CHANGELOG.md) and `kiln update` converts them; the minor marks a milestone. Strict
+semver starts at 1.0. What comes next is for the repos you already have: any Django or Nuxt repo
+scored against the grid in seconds, then brought up to it by script wherever a script can
+(v0.5.0).
 
 ## Contributing
 
-Issues and pull requests are very welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
-Small fixes can go straight to a PR; for bigger changes, open an issue first so we agree on
-the approach. Good places to start: the
-[`good first issue`](https://github.com/antoine-tena/kiln/labels/good%20first%20issue) label.
-Using Claude Code in a kiln repo? `/kiln:report` turns a kiln defect into a
-ready-to-post issue or PR: checked against the latest release and the existing issues, scrubbed
-of anything private, posted only once you approve.
-
-If kiln saves you time, a ⭐ helps other people find it.
+Issues and pull requests are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md), the
+[code of conduct](CODE_OF_CONDUCT.md), and the
+[`good first issue`](https://github.com/antoine-tena/kiln/labels/good%20first%20issue) label to
+start. In a kiln repo, `/kiln:report` turns a kiln defect into a ready-to-post issue or pull
+request, posted only once you approve. If kiln saves you time, a star helps others find it.
 
 ## License
 

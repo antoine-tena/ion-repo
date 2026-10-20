@@ -56,6 +56,152 @@ CASES: dict[str, dict[str, dict[str, str]]] = {
         "pass": {".env.example": "SECRET=\n"},
         "fail": {"backend/.env": "SECRET=real\n"},
     },
+    "IMAGES-BY-DIGEST": {
+        "pass": {
+            "Containerfile": f"FROM python:3.14-slim@sha256:{'a' * 64} AS build\nFROM build\n"
+            "FROM scratch\nFROM ${BASE}\n"
+        },
+        "fail": {"Dockerfile": "FROM node:24\n"},
+    },
+    "HARDENED-CONTAINERS": {
+        "pass": {
+            "compose.yml": "services:\n  web:\n    read_only: true\n    cap_drop: [ALL]\n"
+            "    security_opt: [no-new-privileges:true]\n"
+        },
+        "fail": {"compose.yml": "services:\n  web:\n    image: a\n"},
+    },
+    "MIGRATIONS": {
+        "pass": {
+            "shop/apps.py": "",
+            "shop/models.py": "",
+            "shop/migrations/__init__.py": "",
+        },
+        "fail": {"shop/apps.py": "", "shop/models/__init__.py": ""},
+    },
+    "VULNERABILITY-AUDIT": {
+        "pass": {WORKFLOW: "jobs:\n  a:\n    steps:\n      - run: uvx pip-audit\n"},
+        "fail": {WORKFLOW: "jobs:\n  a:\n    steps:\n      - run: pytest\n"},
+    },
+    "REPO-MAP": {
+        "pass": {"CLAUDE.md": "# a\n\n## Repo map\n\n- `src/`: code\n"},
+        "fail": {"CLAUDE.md": "# a\n\n## Rules\n"},
+    },
+    "AI-CONTEXT": {"pass": {"AGENTS.md": "# a\n"}, "fail": {"README.md": "# a\n"}},
+    "STRICT-TS": {
+        "pass": {
+            "tsconfig.json": '{"compilerOptions": {"strict": true}}',
+            "frontend/tsconfig.json": '{"extends": "./.nuxt/tsconfig.json"}',
+            "frontend/nuxt.config.ts": "export default defineNuxtConfig({})\n",
+        },
+        "fail": {"tsconfig.json": '{"compilerOptions": {"strict": false}}'},
+    },
+    "NO-ANY": {
+        "pass": {"a.ts": "// works for any input\nconst x: unknown = 1\n"},
+        "fail": {"a.ts": "const x: any = 1\n"},
+    },
+    "STRICT-TYPING": {
+        "pass": {"pyproject.toml": "[tool.mypy]\nstrict = true\n"},
+        "fail": {"pyproject.toml": "[tool.mypy]\npython_version = '3.14'\n"},
+    },
+    "HEALTH-PROBES": {
+        "pass": {"Containerfile": "FROM a\nHEALTHCHECK CMD curl -f http://localhost/\n"},
+        "fail": {"Containerfile": "FROM a\n"},
+    },
+    "WORKFLOW-PERMISSIONS": {
+        "pass": {WORKFLOW: "permissions: {}\njobs:\n  a:\n    runs-on: x\n"},
+        "fail": {WORKFLOW: "jobs:\n  a:\n    runs-on: x\n"},
+    },
+    "WORKFLOW-INJECTION": {
+        "pass": {WORKFLOW: 'jobs:\n  a:\n    steps:\n      - run: echo "$TITLE"\n'},
+        "fail": {
+            WORKFLOW: "jobs:\n  a:\n    steps:\n"
+            '      - run: echo "${{ github.event.pull_request.title }}"\n'
+        },
+    },
+    "PULL-REQUEST-TARGET": {
+        "pass": {WORKFLOW: "on:\n  pull_request:\n"},
+        "fail": {WORKFLOW: "on:\n  pull_request_target:\n"},
+    },
+    "SECRET-SCAN": {
+        "pass": {
+            ".pre-commit-config.yaml": "repos:\n  - repo: https://github.com/gitleaks/gitleaks\n"
+        },
+        "fail": {WORKFLOW: "jobs: {}\n"},
+    },
+    "CI-PRESENT": {"pass": {".gitlab-ci.yml": "test: {}\n"}, "fail": {"README.md": "# a\n"}},
+    "TESTS-IN-CI": {
+        "pass": {WORKFLOW: "jobs:\n  a:\n    steps:\n      - run: uv run pytest -q\n"},
+        "fail": {WORKFLOW: "jobs:\n  a:\n    steps:\n      - run: echo hi\n"},
+    },
+    "LINT-IN-CI": {
+        "pass": {WORKFLOW: "jobs:\n  a:\n    steps:\n      - run: pnpm lint\n"},
+        "fail": {WORKFLOW: "jobs:\n  a:\n    steps:\n      - run: echo hi\n"},
+    },
+    "TESTS-PRESENT": {
+        "pass": {"backend/tests/test_api.py": "def test_a(): ...\n"},
+        "fail": {"app.py": "print(1)\n"},
+    },
+    "SUPPORTED-RUNTIMES": {
+        "pass": {".python-version": "3.14\n", "Containerfile": "FROM node:24-slim\n"},
+        "fail": {"frontend/.nvmrc": "18\n"},
+    },
+    "CURRENT-DEBIAN": {
+        "pass": {"Containerfile": "FROM python:3.14-slim-trixie\n"},
+        "fail": {"Containerfile": "FROM python:3.12-slim-bookworm\n"},
+    },
+    "NO-OBSOLETE-BACKPORTS": {
+        "pass": {"requirements.txt": "dataclasses-json==0.6\ntyping-extensions==4.15\n"},
+        "fail": {"requirements.txt": "flask==3.1\ntyping==3.7.4.3\n"},
+    },
+    "BARE-EXCEPT": {
+        "pass": {"a.py": "try:\n    pass\nexcept ValueError:\n    pass\n"},
+        "fail": {"a.py": "try:\n    pass\nexcept:\n    pass\n"},
+    },
+    "NOQA-CODES": {
+        "pass": {"a.py": "import os  # noqa: F401\n"},
+        "fail": {"a.py": "import os  # noqa\n"},
+    },
+    "TYPE-IGNORE-CODES": {
+        "pass": {"a.py": "x = f()  # type: ignore[no-untyped-call]\n"},
+        "fail": {"a.py": "x = f()  # type: ignore\n"},
+    },
+    "TS-EXPECT-ERROR": {
+        "pass": {"a.ts": "// @ts-expect-error: untyped lib\n"},
+        "fail": {"a.vue": '<script setup lang="ts">\n// @ts-ignore\n</script>\n'},
+    },
+    "NAIVE-DATETIMES": {
+        "pass": {"a.py": "now = datetime.now(UTC)\nlater = timezone.now()\n"},
+        "fail": {"a.py": "now = datetime.datetime.utcnow()\n"},
+    },
+    "SQL-PARAMETERS": {
+        "pass": {"a.py": 'cursor.execute("SELECT 1 WHERE id = %s", [pk])\n'},
+        "fail": {"a.py": 'cursor.execute(f"SELECT 1 WHERE id = {pk}")\n'},
+    },
+    "DJANGO-DEBUG-OFF": {
+        "pass": {"config/settings.py": "DEBUG = env.bool('DEBUG', default=False)\n"},
+        "fail": {"config/settings.py": "DEBUG = True\n"},
+    },
+    "DJANGO-SECRET-KEY": {
+        "pass": {"config/settings/base.py": "SECRET_KEY = os.environ['SECRET_KEY']\n"},
+        "fail": {"config/settings.py": "SECRET_KEY = 'django-insecure-abc'\n"},
+    },
+    "DJANGO-ALLOWED-HOSTS": {
+        "pass": {"config/settings.py": "ALLOWED_HOSTS = ['example.org']\n"},
+        "fail": {"config/settings.py": "ALLOWED_HOSTS = ['*']\n"},
+    },
+    "NO-V-HTML": {
+        "pass": {"a.vue": "<template><p>{{ text }}</p></template>\n"},
+        "fail": {"a.vue": '<template><p v-html="text" /></template>\n'},
+    },
+    "README": {"pass": {"README.md": "# a\n"}, "fail": {"docs/README.md": "# a\n"}},
+    "JS-LINTER": {
+        "pass": {"frontend/eslint.config.mjs": "export default []\n"},
+        "fail": {"package.json": "{}"},
+    },
+    "PYTHON-LINTER": {
+        "pass": {"pyproject.toml": "[tool.ruff]\nline-length = 100\n"},
+        "fail": {"pyproject.toml": "[project]\nname = 'a'\n"},
+    },
 }
 
 
@@ -95,6 +241,17 @@ def test_each_rule_says_pass_and_fail_where_it_should(
     assert outcome.status == expected, outcome
     if expected == "fail":
         assert outcome.locations or outcome.detail
+
+
+def test_requirements_pinned_to_exact_versions_are_their_own_lock(tmp_path: Path) -> None:
+    rule = next(rule for rule in RULES if rule.id == "LOCKED-DEPENDENCIES")
+    pinned = make_repo(
+        tmp_path / "pinned", {"requirements.txt": "-r base.txt\nflask==3.1  # web\n"}
+    )
+    loose = make_repo(tmp_path / "loose", {"api/requirements.txt": "flask>=3\n"})
+
+    assert detectors.detect(rule.detector, pinned).status == detectors.PASS
+    assert detectors.detect(rule.detector, loose).locations == ("api/requirements.txt",)
 
 
 def test_nothing_to_look_at_is_not_a_pass(tmp_path: Path) -> None:

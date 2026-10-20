@@ -1,0 +1,28 @@
+id = "CI-PRESENT"
+title = "A continuous integration runs on each change"
+pillar = "methods"
+theme = "ci-cd"
+scope = { kind = "universal" }
+level = "adopt"
+regime = "strict"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "Checks that only run on one laptop stop running."
+applies = []
+detectable = "script"
+fixable = "script"
+fixer = ""
+since = "0.4.2"
+
+[detector]
+kind = "file"
+paths = [".github/workflows/*.yml", ".github/workflows/*.yaml", ".gitlab-ci.yml", ".circleci/config.yml", ".forgejo/workflows/*.yml", "azure-pipelines.yml", "bitbucket-pipelines.yml", "Jenkinsfile", ".woodpecker.yml", ".woodpecker/*.yml"]
+
+[[sources]]
+url = "https://docs.github.com/en/actions/get-started/continuous-integration"
+kind = "docs"
+checked = 2026-10-20
+
+[[sources]]
+url = "https://github.com/ossf/scorecard/blob/main/docs/checks.md"
+kind = "advisory"
+checked = 2026-10-20

@@ -250,11 +250,14 @@ def recap(command: str, started: float, *, succeeded: bool) -> None:
 
 
 def panel(title: str, lines: list[str]) -> None:
-    """Frame: a title in fire, then lines (a `vN …` line in bold, `- …` as a bullet)."""
+    """Frame: a title in fire, then lines (a `vN …` line in bold, `- …` as a bullet). A long
+    line wraps under its own text, never cut; `code` spans of the changelog show in colour,
+    without their backticks."""
     if not is_styled():
         print(f"\n{title}", *(f"  {line}" for line in lines), sep="\n", flush=True)
         return
-    inner = min(max(len(title), *(len(line) for line in lines)) + 2, _columns() - 6)
+    widest = max(len(title), *(len(line.replace("`", "")) for line in lines))
+    inner = min(widest + 2, _columns() - 6)
     edge = foreground(STONE_DARK)
     bar = f"{edge}│{RESET}"
     print(f"\n  {edge}╭{'─' * (inner + 2)}╮{RESET}")
@@ -262,13 +265,58 @@ def panel(title: str, lines: list[str]) -> None:
     print(f"  {bar} {paint(shown_title, FIRE, bold=True)}{' ' * (inner - len(shown_title))} {bar}")
     print(f"  {edge}├{'─' * (inner + 2)}┤{RESET}")
     for line in lines:
-        text = _fit(line, inner)
-        gap = " " * (inner - len(text))
-        if text.startswith("- "):
-            styled = f"{paint('·', FIRE)} {text[2:]}"
-        elif text[:1] == "v" and text[1:2].isdigit():
-            styled = paint(text, bold=True)
-        else:
-            styled = paint(text, STONE)
-        print(f"  {bar} {styled}{gap} {bar}")
+        is_bullet = line.startswith("- ")
+        is_heading = line[:1] == "v" and line[1:2].isdigit()
+        body = line[2:] if is_bullet else line
+        indent = 2 if is_bullet else 0
+        for index, words in enumerate(_wrap_words(_code_words(body), inner - indent)):
+            visible = " ".join(_visible(word) for word in words)
+            styled = " ".join(
+                "".join(paint(piece, GLOW) if is_code else piece for piece, is_code in word)
+                for word in words
+            )
+            if is_heading:
+                styled = paint(visible, bold=True)
+            elif not is_bullet:
+                styled = paint(visible, STONE)
+            lead = (paint("·", FIRE) + " " if index == 0 else "  ") if is_bullet else ""
+            gap = " " * (inner - indent - len(visible))
+            print(f"  {bar} {lead}{styled}{gap} {bar}")
     print(f"  {edge}╰{'─' * (inner + 2)}╯{RESET}", flush=True)
+
+
+# A word of a changelog line: its pieces, each in a `code` span or not ("(`ci_runner`)" is three).
+Word = list[tuple[str, bool]]
+
+
+def _code_words(text: str) -> list[Word]:
+    """The words of a line, backticks gone, each piece marked when it sat between them."""
+    words: list[Word] = [[]]
+    for index, part in enumerate(text.split("`")):
+        is_code = index % 2 == 1
+        chunks = part.split(" ")
+        for position, chunk in enumerate(chunks):
+            if position > 0:
+                words.append([])  # a space ends the word
+            if chunk:
+                words[-1].append((chunk, is_code))
+    return [word for word in words if word]
+
+
+def _visible(word: Word) -> str:
+    return "".join(piece for piece, _ in word)
+
+
+def _wrap_words(words: list[Word], width: int) -> list[list[Word]]:
+    """Greedy wrapping on the visible length; a word longer than the width gets its own line."""
+    lines: list[list[Word]] = [[]]
+    length = 0
+    for word in words:
+        size = len(_visible(word))
+        needed = size + (1 if lines[-1] else 0)
+        if lines[-1] and length + needed > width:
+            lines.append([])
+            length, needed = 0, size
+        lines[-1].append(word)
+        length += needed
+    return lines

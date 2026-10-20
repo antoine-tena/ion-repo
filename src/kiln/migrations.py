@@ -183,16 +183,65 @@ def convert_charter(root: Path, old: Path) -> list[str]:
 # --- CLAUDE.md files ------------------------------------------------------------------------
 
 
+HEADING = re.compile(r"^#{1,6}\s")
+FENCE = re.compile(r"^\s*(```|~~~)")
+# The notes of a file sit under its `### From` line: their own headings go one level below.
+NOTES_LEVEL = 4
+MAX_LEVEL = 6
+
+
 def additions(rendered: str, project: str) -> list[str]:
-    """Lines the project wrote into a generated file: what it has that the render has not."""
-    matcher = difflib.SequenceMatcher(a=rendered.splitlines(), b=project.splitlines())
+    """Lines the project wrote into a generated file: what it has that the render has not. A block
+    written inside a section of the file comes under that section's heading, and every heading
+    goes below the `### From` line of the notes, so that the outline of `CLAUDE.md` holds."""
+    lines = project.splitlines()
+    marks = outline(lines)
+    matcher = difflib.SequenceMatcher(a=rendered.splitlines(), b=lines)
     added: list[str] = []
+    shown: str | None = None
     for tag, _, _, start, end in matcher.get_opcodes():
-        if tag in ("insert", "replace"):
-            block = "\n".join(project.splitlines()[start:end]).strip("\n")
-            if block.strip():
-                added += [*block.splitlines(), ""]
+        if tag not in ("insert", "replace"):
+            continue
+        while start < end and not lines[start].strip():
+            start += 1
+        while end > start and not lines[end - 1].strip():
+            end -= 1
+        if start == end:
+            continue
+        is_heading, section = marks[start]
+        if not is_heading and section is not None and section != shown and level(section) > 1:
+            added += [demoted(section), ""]
+        for index in range(start, end):
+            added.append(demoted(lines[index]) if marks[index][0] else lines[index])
+        added.append("")
+        shown = marks[end - 1][1]
     return added
+
+
+def outline(lines: list[str]) -> list[tuple[bool, str | None]]:
+    """Each line: is it a heading (the `#` lines of a code block are not), and the heading of the
+    section it is in."""
+    marks: list[tuple[bool, str | None]] = []
+    fenced, section = False, None
+    for line in lines:
+        if FENCE.match(line):
+            fenced = not fenced
+        is_heading = not fenced and HEADING.match(line) is not None
+        if is_heading:
+            section = line
+        marks.append((is_heading, section))
+    return marks
+
+
+def level(heading: str) -> int:
+    return len(heading) - len(heading.lstrip("#"))
+
+
+def demoted(heading: str) -> str:
+    """A heading of the old file, below the `### From` line: its sections at level 4, their
+    subsections below."""
+    depth = level(heading)
+    return "#" * min(max(depth + 2, NOTES_LEVEL), MAX_LEVEL) + heading[depth:]
 
 
 def carry_over_instructions(root: Path, old: Path, source: str, ref: str | None) -> list[str]:

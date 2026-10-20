@@ -1,14 +1,29 @@
 id = "HARDENED-CONTAINERS"
-title = "Containers rootless, non-root, read-only file system, no added capability"
+title = "Compose services read-only, every capability dropped, no privilege escalation"
 pillar = "methods"
 theme = "containers"
 scope = { kind = "tool", name = "containers" }
-# A draft from the reference repo (T-124): assessed, out of the score until sourced.
-level = "assess"
-regime = "strict"
+level = "adopt"
+regime = "review"
 profiles = ["solo", "association", "company", "university", "enterprise"]
 why = "What a broken-into container can reach depends on what it was allowed."
+applies = ["containers"]
 detectable = "script"
 fixable = "judgment"
+fixer = ""
 since = "0.4.1"
 charter_rule = "HARDENED-CONTAINERS"
+
+[detector]
+kind = "python"
+check = "hardened_compose"
+
+[[sources]]
+url = "https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html"
+kind = "advisory"
+checked = 2026-10-20
+
+[[sources]]
+url = "https://docs.docker.com/reference/compose-file/services/"
+kind = "docs"
+checked = 2026-10-20

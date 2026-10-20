@@ -86,16 +86,20 @@ def test_the_hook_reports_the_edited_file_fast(
     charter.chmod(0o755)
     payload = json.dumps({"tool_input": {"file_path": str(repo / "backend/printer.py")}})
 
-    start = time.perf_counter()
-    hook = subprocess.run(
-        [sys.executable, str(HOOK)],
-        input=payload,
-        capture_output=True,
-        text=True,
-        env={"PATH": f"{bin_dir}:/usr/bin:/bin", "TMPDIR": str(tmp_path_factory.mktemp("t"))},
-    )
-    elapsed = time.perf_counter() - start
+    timings = []
+    for _ in range(3):
+        start = time.perf_counter()
+        hook = subprocess.run(
+            [sys.executable, str(HOOK)],
+            input=payload,
+            capture_output=True,
+            text=True,
+            env={"PATH": f"{bin_dir}:/usr/bin:/bin", "TMPDIR": str(tmp_path_factory.mktemp("t"))},
+        )
+        timings.append(time.perf_counter() - start)
 
     assert hook.returncode == 2
     assert "[LOGGING]" in hook.stderr and "clean.py" not in hook.stderr
-    assert elapsed < 2  # under 200 ms on its own; margin for a loaded test machine
+    # Under 200 ms on its own. The best of three runs measures the hook, not a busy test
+    # machine (a single run once took 2.4 s on GitHub's macOS while the suite ran in parallel).
+    assert min(timings) < 2

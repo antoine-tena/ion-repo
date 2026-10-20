@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-label="kiln, Claude Code&#x27;s workshop: Start every new project, and rescue every old one, like a senior engineer would — even if you&#x27;re not one.">
+<defs><radialGradient id="glow" cx="0.25" cy="0.55" r="0.45"><stop offset="0" stop-color="#f79628" stop-opacity="0.22"/><stop offset="1" stop-color="#f79628" stop-opacity="0"/></radialGradient></defs>
+<rect width="1280" height="640" fill="#1c1b19"/>
+<rect width="1280" height="640" fill="url(#glow)"/>
+<g shape-rendering="crispEdges">
+<rect x="356" y="232" width="52" height="26" fill="#b44b23"/>
+<rect x="174" y="258" width="78" height="26" fill="#b9b9b4"/>
+<rect x="252" y="258" width="78" height="26" fill="#8c8c87"/>
+<rect x="356" y="258" width="52" height="26" fill="#5f5f5c"/>
+<rect x="148" y="284" width="26" height="26" fill="#b9b9b4"/>
+<rect x="174" y="284" width="26" height="26" fill="#ffffff"/>
+<rect x="200" y="284" width="26" height="26" fill="#191919"/>
+<rect x="226" y="284" width="52" height="26" fill="#8c8c87"/>
+<rect x="278" y="284" width="26" height="26" fill="#ffffff"/>
+<rect x="304" y="284" width="26" height="26" fill="#191919"/>
+<rect x="330" y="284" width="26" height="26" fill="#8c8c87"/>
+<rect x="356" y="284" width="52" height="26" fill="#5f5f5c"/>
+<rect x="122" y="310" width="52" height="26" fill="#b9b9b4"/>
+<rect x="174" y="310" width="26" height="26" fill="#ffffff"/>
+<rect x="200" y="310" width="26" height="26" fill="#191919"/>
+<rect x="226" y="310" width="52" height="26" fill="#8c8c87"/>
+<rect x="278" y="310" width="26" height="26" fill="#ffffff"/>
+<rect x="304" y="310" width="26" height="26" fill="#191919"/>
+<rect x="330" y="310" width="52" height="26" fill="#8c8c87"/>
+<rect x="382" y="310" width="52" height="26" fill="#5f5f5c"/>
+<rect x="122" y="336" width="26" height="26" fill="#b9b9b4"/>
+<rect x="148" y="336" width="26" height="26" fill="#8c8c87"/>
+<rect x="174" y="336" width="26" height="26" fill="#e68278"/>
+<rect x="226" y="336" width="52" height="26" fill="#cd3223"/>
+<rect x="330" y="336" width="26" height="26" fill="#e68278"/>
+<rect x="356" y="336" width="26" height="26" fill="#8c8c87"/>
+<rect x="382" y="336" width="52" height="26" fill="#5f5f5c"/>
+<rect x="122" y="362" width="26" height="26" fill="#b9b9b4"/>
+<rect x="148" y="362" width="52" height="26" fill="#8c8c87"/>
+<rect x="226" y="362" width="26" height="26" fill="#cd3223"/>
+<rect x="252" y="362" width="26" height="26" fill="#f79628"/>
+<rect x="278" y="362" width="26" height="26" fill="#cd3223"/>
+<rect x="356" y="362" width="26" height="26" fill="#8c8c87"/>
+<rect x="382" y="362" width="52" height="26" fill="#5f5f5c"/>
+<rect x="122" y="388" width="78" height="26" fill="#8c8c87"/>
+<rect x="226" y="388" width="26" height="26" fill="#f79628"/>
+<rect x="252" y="388" width="52" height="26" fill="#ffe178"/>
+<rect x="304" y="388" width="26" height="26" fill="#f79628"/>
+<rect x="356" y="388" width="78" height="26" fill="#5f5f5c"/>
+<rect x="96" y="414" width="364" height="26" fill="#b44b23"/>
+</g>
+<text x="560" y="196" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="112" font-weight="bold" fill="#f2efe8">kiln</text>
+<text x="560" y="258" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="40" fill="#f79628">Claude Code&#x27;s workshop</text>
+<text x="560" y="338" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="34" fill="#f2efe8">Start every new project, and</text>
+<text x="560" y="384" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="34" fill="#f2efe8">rescue every old one, like a</text>
+<text x="560" y="430" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="34" fill="#f2efe8">senior engineer would — even</text>
+<text x="560" y="476" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="34" fill="#f2efe8">if you&#x27;re not one.</text>
+<text x="560" y="574" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="24" fill="#8c8c87">github.com/antoine-tena/kiln</text>
+</svg>

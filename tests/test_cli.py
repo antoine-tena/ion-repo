@@ -1,4 +1,5 @@
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -119,3 +120,35 @@ def test_the_names_of_kiln_0_3_still_work_with_a_warning(
 
 def test_an_option_of_another_command_is_left_alone() -> None:
     assert cli.modernize(["update", "--statut"]) == ["update", "--statut"]
+
+
+def test_a_long_release_note_wraps_instead_of_being_cut(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(ui, "is_styled", lambda stream=None: True)
+    monkeypatch.setattr(ui, "_columns", lambda: 50)
+    words = "every word of this long line must reach the reader in full, wrapped"
+
+    ui.panel("What's new", [f"- {words}", "v0.4.1  2026-10-19"])
+
+    text = re.sub(r"\033\[[\d;]*m", "", capsys.readouterr().out)
+    assert "…" not in text
+    assert " ".join(re.findall(r"│ ·? ?(.*?)\s*│", text)).split() == [
+        "What's", "new", *words.split(), "v0.4.1", "2026-10-19"
+    ]  # fmt: skip
+    assert all(len(line) <= 50 for line in text.splitlines())
+
+
+def test_code_spans_of_a_release_note_show_in_colour_without_backticks(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(ui, "is_styled", lambda stream=None: True)
+    monkeypatch.setattr(ui, "_columns", lambda: 100)
+
+    ui.panel("What's new", ["- new answer (`ci_runner`), set by `kiln set ci_runner=github`."])
+
+    out = capsys.readouterr().out
+    text = re.sub(r"\033\[[\d;]*m", "", out)
+    assert "`" not in text
+    assert "new answer (ci_runner), set by kiln set ci_runner=github." in text
+    assert ui.paint("ci_runner", ui.GLOW) in out and ui.paint("set", ui.GLOW) in out

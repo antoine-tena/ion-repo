@@ -1,14 +1,31 @@
 id = "HEALTH-PROBES"
-title = "Each service exposes a liveness and a readiness probe"
+title = "Containers declare a health check"
 pillar = "methods"
 theme = "operations"
-scope = { kind = "universal" }
-# A draft from the reference repo (T-124): assessed, out of the score until sourced.
-level = "assess"
-regime = "strict"
-profiles = ["association", "company", "university", "enterprise"]
-why = "A process that is up but not ready should not receive traffic."
+scope = { kind = "tool", name = "containers" }
+level = "adopt"
+regime = "review"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "An orchestrator can only restart what it knows is unhealthy."
+applies = ["containers"]
 detectable = "approximate"
 fixable = "judgment"
+fixer = ""
 since = "0.4.1"
 charter_rule = "HEALTH-PROBES"
+
+[detector]
+kind = "regex"
+files = ["**/Dockerfile", "**/Containerfile", "**/*.Dockerfile", "**/Dockerfile.*", "**/compose.y*ml", "**/compose.*.y*ml", "**/docker-compose*.y*ml", "**/*.container"]
+pattern = '''(?im)^\s*(HEALTHCHECK\s|healthcheck:|HealthCmd=)'''
+expect = "match"
+
+[[sources]]
+url = "https://docs.docker.com/reference/dockerfile/"
+kind = "docs"
+checked = 2026-10-20
+
+[[sources]]
+url = "https://docs.docker.com/reference/compose-file/services/"
+kind = "docs"
+checked = 2026-10-20

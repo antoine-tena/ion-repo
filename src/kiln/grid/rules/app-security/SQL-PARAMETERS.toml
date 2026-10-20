@@ -1,0 +1,24 @@
+id = "SQL-PARAMETERS"
+title = "SQL built with parameters, never by formatting strings"
+pillar = "methods"
+theme = "app-security"
+scope = { kind = "language", name = "python" }
+level = "adopt"
+regime = "review"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "A value formatted into SQL is an injection waiting for the right input."
+applies = ["python"]
+detectable = "approximate"
+fixable = "judgment"
+fixer = ""
+since = "0.4.2"
+
+[detector]
+kind = "regex"
+files = ["**/*.py"]
+pattern = '''\.(execute|executemany|raw|extra)\(\s*f[\"']|\.(execute|executemany|raw)\(\s*[\"'][^\"'\n]*[\"']\s*(%\s|\.format\()'''
+
+[[sources]]
+url = "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"
+kind = "advisory"
+checked = 2026-10-20

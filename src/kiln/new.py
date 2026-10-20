@@ -4,6 +4,7 @@ import os
 import shutil
 import subprocess
 import sys
+from contextlib import nullcontext
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -14,7 +15,7 @@ from kiln.config import load_config
 from kiln.contract import generate_api_contract
 from kiln.deps import lock_dependencies
 from kiln.rules import write_unverified_rules
-from kiln.shell import KilnError, require_tools, run, step
+from kiln.shell import KilnError, require_tools, run, shows_spinner, spinner_line, step
 from kiln.stack import load_stack, read_answers
 from kiln.statusline import apply_statusline_settings
 from kiln.template import template_revision, template_source
@@ -60,18 +61,24 @@ def create_project(request: NewProjectRequest) -> Path:
     should_publish = request.should_publish and github.can_publish()
     step("Generation from the template")
     source = template_source(request.template)
-    copier.run_copy(
-        source,
-        request.destination,
-        data=request.answers,
-        user_defaults=_user_defaults(should_publish=should_publish),
-        vcs_ref=template_revision(source),
-        use_prereleases=follows_candidates(),
-        unsafe=False,
-        # Only the essential questions (asked before) unless all are wanted; outside a
-        # terminal (CI, agent), every unanswered question takes its default.
-        defaults=not (request.all_questions and sys.stdin.isatty()),
-    )
+    asks_everything = request.all_questions and sys.stdin.isatty()
+    # In a terminal, the files Copier writes are one line, like every other step's command;
+    # the questionnaire, logs and `KILN_VERBOSE` keep Copier's own output.
+    quiet = shows_spinner() and not asks_everything
+    with spinner_line("copier copy") if quiet else nullcontext():
+        copier.run_copy(
+            source,
+            request.destination,
+            data=request.answers,
+            user_defaults=_user_defaults(should_publish=should_publish),
+            vcs_ref=template_revision(source),
+            use_prereleases=follows_candidates(),
+            unsafe=False,
+            # Only the essential questions (asked before) unless all are wanted; outside a
+            # terminal (CI, agent), every unanswered question takes its default.
+            defaults=not asks_everything,
+            quiet=quiet,
+        )
     root = request.destination.resolve()
     stack = load_stack(root)
     if stack.pnpm_dir is not None:

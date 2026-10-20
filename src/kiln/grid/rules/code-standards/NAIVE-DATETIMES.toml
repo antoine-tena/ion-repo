@@ -1,0 +1,24 @@
+id = "NAIVE-DATETIMES"
+title = "No naive `datetime.now()` or `utcnow()`"
+pillar = "standards"
+theme = "code-standards"
+scope = { kind = "language", name = "python" }
+level = "adopt"
+regime = "ratchet"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "A date without its time zone is read differently by each server; `utcnow()` is deprecated since Python 3.12."
+applies = ["python"]
+detectable = "script"
+fixable = "judgment"
+fixer = ""
+since = "0.4.2"
+
+[detector]
+kind = "regex"
+files = ["**/*.py"]
+pattern = '''\bdatetime\.(utcnow|utcfromtimestamp)\(|\bdatetime\.now\(\s*\)'''
+
+[[sources]]
+url = "https://docs.python.org/3/library/datetime.html"
+kind = "docs"
+checked = 2026-10-20

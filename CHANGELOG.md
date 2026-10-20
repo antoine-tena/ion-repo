@@ -6,6 +6,14 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 `release/vX.Y.Z` branch, rewritten before its first candidate. Names are those of their release:
 entries before v0.4.0 quote kiln's former French names.
 
+## v0.4.2 — 2026-10-20
+- `kiln score`: any repo, made by kiln or not, measured against the grid in about a second, offline and without a token. A score out of 100 and one per pillar, the three gaps to close first, then each gap with its reason, where it is, its source and what closes it; waived rules shown apart, stacks the grid does not cover listed at the end. `--all`, `--json` (schema 1), `--badge` for a README, `--online` for fresh end-of-life dates.
+- Grid v1: 40 scored rules, up from 6. CI and workflows (token permissions, untrusted input in scripts, `pull_request_target`, tests, linter, vulnerability audit, secret scan), containers (images by digest, current Debian, hardened compose services, health checks), Django settings (`DEBUG`, `SECRET_KEY`, `ALLOWED_HOSTS`), Python and TypeScript standards, runtimes past their end of life. Each one sourced and dated, and run on two real repos for false positives: those that can flag wrongly are `review` or `ratchet`. A `requirements.txt` pinned to exact versions now counts as locked.
+- `kiln dev` runs a Java API next to its front.
+- The session start no longer calls a CI red when GitHub never started its jobs (billing, spending limit): it says there is nothing to fix in the code, and that `kiln ci` replays it on the machine (#45, thanks @NathanBarrachin).
+- `kiln update` from 0.3 keeps the outline of the instructions it carries over: their headings sit under the carried-over part, and a line added to a generated section keeps its heading (#46, thanks @NathanBarrachin).
+- Fixes: generation is one line in a terminal like every other step; a long panel line wraps instead of being cut; release notes show code in colour; `kiln version cut` redraws the README's images of the release.
+
 ## v0.4.1 — 2026-10-19
 - A private repo's CI runs on the machine: new answer `ci_runner` (`local` for a private repo, `github` for a public one, picked from the repo's visibility by `kiln update` when missing). In `local`, `ci.yml` has no push trigger (no GitHub minutes spent), `/kiln:merge` replays it with `kiln ci`, and the status line and the session start read its verdict; `kiln set ci_runner=github` brings it back on each push.
 - `kiln grid`: the practices kiln holds as the best, one small TOML file per rule, each with its why, its sources checked and dated, its level (adopt, trial, assess, hold), its regime and how it is detected. Six rules to start (lockfiles, pinned actions, dependency updates and their cooldown, non-root containers, no committed `.env`), and 105 assessed drafts drawn from the reference repo (`kiln grid --level assess`).

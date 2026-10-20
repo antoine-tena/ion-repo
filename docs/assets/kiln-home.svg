@@ -1,103 +1,105 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="766" height="760" viewBox="0 0 766 760" role="img" aria-label="kiln welcome screen">
+<svg xmlns="http://www.w3.org/2000/svg" width="766" height="760" viewBox="0 0 766 760" role="img" aria-label="kiln welcome screen: the commands">
 <rect width="100%" height="100%" rx="10" fill="#1c1b19"/>
 <circle cx="20" cy="18" r="6" fill="#ff5f57"/><circle cx="40" cy="18" r="6" fill="#febc2e"/><circle cx="60" cy="18" r="6" fill="#28c840"/>
 <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="14" fill="#e6e3dc" xml:space="preserve">
-<rect x="64.0" y="55" width="8.7" height="9.3" fill="#b9b9b4"/>
-<rect x="72.4" y="55" width="8.7" height="9.3" fill="#b9b9b4"/>
-<rect x="80.8" y="55" width="8.7" height="9.3" fill="#b9b9b4"/>
-<rect x="89.2" y="55" width="8.7" height="9.3" fill="#8c8c87"/>
-<rect x="97.6" y="55" width="8.7" height="9.3" fill="#8c8c87"/>
-<rect x="106.0" y="55" width="8.7" height="9.3" fill="#8c8c87"/>
-<rect x="122.8" y="55" width="8.7" height="9.3" fill="#5f5f5c"/>
-<rect x="122.8" y="46" width="8.7" height="9.3" fill="#b44b23"/>
-<rect x="131.2" y="55" width="8.7" height="9.3" fill="#5f5f5c"/>
-<rect x="131.2" y="46" width="8.7" height="9.3" fill="#b44b23"/>
-<rect x="47.2" y="73" width="8.7" height="9.3" fill="#b9b9b4"/>
-<rect x="55.6" y="64" width="8.7" height="18.3" fill="#b9b9b4"/>
-<rect x="64.0" y="64" width="8.7" height="18.3" fill="#ffffff"/>
-<rect x="72.4" y="64" width="8.7" height="18.3" fill="#191919"/>
-<rect x="80.8" y="64" width="8.7" height="18.3" fill="#8c8c87"/>
-<rect x="89.2" y="64" width="8.7" height="18.3" fill="#8c8c87"/>
-<rect x="97.6" y="64" width="8.7" height="18.3" fill="#ffffff"/>
-<rect x="106.0" y="64" width="8.7" height="18.3" fill="#191919"/>
-<rect x="114.4" y="64" width="8.7" height="18.3" fill="#8c8c87"/>
-<rect x="122.8" y="73" width="8.7" height="9.3" fill="#8c8c87"/>
-<rect x="122.8" y="64" width="8.7" height="9.3" fill="#5f5f5c"/>
+<rect x="64.0" y="37" width="8.7" height="9.3" fill="#b9b9b4"/>
+<rect x="72.4" y="37" width="8.7" height="9.3" fill="#b9b9b4"/>
+<rect x="80.8" y="37" width="8.7" height="9.3" fill="#b9b9b4"/>
+<rect x="89.2" y="37" width="8.7" height="9.3" fill="#8c8c87"/>
+<rect x="97.6" y="37" width="8.7" height="9.3" fill="#8c8c87"/>
+<rect x="106.0" y="37" width="8.7" height="9.3" fill="#8c8c87"/>
+<rect x="122.8" y="37" width="8.7" height="9.3" fill="#5f5f5c"/>
+<rect x="122.8" y="28" width="8.7" height="9.3" fill="#b44b23"/>
+<rect x="131.2" y="37" width="8.7" height="9.3" fill="#5f5f5c"/>
+<rect x="131.2" y="28" width="8.7" height="9.3" fill="#b44b23"/>
+<rect x="47.2" y="55" width="8.7" height="9.3" fill="#b9b9b4"/>
+<rect x="55.6" y="46" width="8.7" height="18.3" fill="#b9b9b4"/>
+<rect x="64.0" y="46" width="8.7" height="18.3" fill="#ffffff"/>
+<rect x="72.4" y="46" width="8.7" height="18.3" fill="#191919"/>
+<rect x="80.8" y="46" width="8.7" height="18.3" fill="#8c8c87"/>
+<rect x="89.2" y="46" width="8.7" height="18.3" fill="#8c8c87"/>
+<rect x="97.6" y="46" width="8.7" height="18.3" fill="#ffffff"/>
+<rect x="106.0" y="46" width="8.7" height="18.3" fill="#191919"/>
+<rect x="114.4" y="46" width="8.7" height="18.3" fill="#8c8c87"/>
+<rect x="122.8" y="55" width="8.7" height="9.3" fill="#8c8c87"/>
+<rect x="122.8" y="46" width="8.7" height="9.3" fill="#5f5f5c"/>
+<rect x="131.2" y="46" width="8.7" height="18.3" fill="#5f5f5c"/>
+<rect x="139.6" y="55" width="8.7" height="9.3" fill="#5f5f5c"/>
+<text x="181.6" y="59.5" textLength="33.6" font-weight="bold">kiln</text>
+<rect x="47.2" y="64" width="8.7" height="18.3" fill="#b9b9b4"/>
+<rect x="55.6" y="64" width="8.7" height="18.3" fill="#8c8c87"/>
+<rect x="64.0" y="73" width="8.7" height="9.3" fill="#8c8c87"/>
+<rect x="64.0" y="64" width="8.7" height="9.3" fill="#e68278"/>
+<rect x="80.8" y="64" width="8.7" height="18.3" fill="#cd3223"/>
+<rect x="89.2" y="73" width="8.7" height="9.3" fill="#f79628"/>
+<rect x="89.2" y="64" width="8.7" height="9.3" fill="#cd3223"/>
+<rect x="97.6" y="73" width="8.7" height="9.3" fill="#cd3223"/>
+<rect x="114.4" y="64" width="8.7" height="9.3" fill="#e68278"/>
+<rect x="122.8" y="64" width="8.7" height="18.3" fill="#8c8c87"/>
 <rect x="131.2" y="64" width="8.7" height="18.3" fill="#5f5f5c"/>
-<rect x="139.6" y="73" width="8.7" height="9.3" fill="#5f5f5c"/>
-<text x="181.6" y="77.5" textLength="33.6" font-weight="bold">kiln</text>
-<rect x="47.2" y="82" width="8.7" height="18.3" fill="#b9b9b4"/>
-<rect x="55.6" y="82" width="8.7" height="18.3" fill="#8c8c87"/>
-<rect x="64.0" y="91" width="8.7" height="9.3" fill="#8c8c87"/>
-<rect x="64.0" y="82" width="8.7" height="9.3" fill="#e68278"/>
-<rect x="80.8" y="82" width="8.7" height="18.3" fill="#cd3223"/>
-<rect x="89.2" y="91" width="8.7" height="9.3" fill="#f79628"/>
-<rect x="89.2" y="82" width="8.7" height="9.3" fill="#cd3223"/>
-<rect x="97.6" y="91" width="8.7" height="9.3" fill="#cd3223"/>
-<rect x="114.4" y="82" width="8.7" height="9.3" fill="#e68278"/>
-<rect x="122.8" y="82" width="8.7" height="18.3" fill="#8c8c87"/>
-<rect x="131.2" y="82" width="8.7" height="18.3" fill="#5f5f5c"/>
-<rect x="139.6" y="82" width="8.7" height="18.3" fill="#5f5f5c"/>
-<text x="181.6" y="95.5" textLength="184.8" fill="#f79628">Claude Code's workshop</text>
-<rect x="38.8" y="109" width="8.7" height="9.3" fill="#b44b23"/>
-<rect x="47.2" y="109" width="8.7" height="9.3" fill="#b44b23"/>
-<rect x="47.2" y="100" width="8.7" height="9.3" fill="#8c8c87"/>
-<rect x="55.6" y="109" width="8.7" height="9.3" fill="#b44b23"/>
-<rect x="55.6" y="100" width="8.7" height="9.3" fill="#8c8c87"/>
-<rect x="64.0" y="109" width="8.7" height="9.3" fill="#b44b23"/>
-<rect x="64.0" y="100" width="8.7" height="9.3" fill="#8c8c87"/>
-<rect x="72.4" y="109" width="8.7" height="9.3" fill="#b44b23"/>
-<rect x="80.8" y="109" width="8.7" height="9.3" fill="#b44b23"/>
-<rect x="80.8" y="100" width="8.7" height="9.3" fill="#f79628"/>
-<rect x="89.2" y="109" width="8.7" height="9.3" fill="#b44b23"/>
-<rect x="89.2" y="100" width="8.7" height="9.3" fill="#ffe178"/>
-<rect x="97.6" y="109" width="8.7" height="9.3" fill="#b44b23"/>
-<rect x="97.6" y="100" width="8.7" height="9.3" fill="#ffe178"/>
-<rect x="106.0" y="109" width="8.7" height="9.3" fill="#b44b23"/>
-<rect x="106.0" y="100" width="8.7" height="9.3" fill="#f79628"/>
-<rect x="114.4" y="109" width="8.7" height="9.3" fill="#b44b23"/>
-<rect x="122.8" y="109" width="8.7" height="9.3" fill="#b44b23"/>
-<rect x="122.8" y="100" width="8.7" height="9.3" fill="#5f5f5c"/>
-<rect x="131.2" y="109" width="8.7" height="9.3" fill="#b44b23"/>
-<rect x="131.2" y="100" width="8.7" height="9.3" fill="#5f5f5c"/>
-<rect x="139.6" y="109" width="8.7" height="9.3" fill="#b44b23"/>
-<rect x="139.6" y="100" width="8.7" height="9.3" fill="#5f5f5c"/>
-<rect x="148.0" y="109" width="8.7" height="9.3" fill="#b44b23"/>
-<text x="181.6" y="113.5" textLength="117.6" fill="#8c8c87">~/code/atelier</text>
-<text x="38.8" y="149.5" textLength="42.0" font-weight="bold">Usage</text>
-<text x="97.6" y="149.5" textLength="33.6">kiln</text>
-<text x="139.6" y="149.5" textLength="159.6" fill="#8c8c87">&lt;command&gt; [options]</text>
-<text x="38.8" y="185.5" textLength="58.8" fill="#f79628" font-weight="bold">PROJECT</text>
-<text x="55.6" y="203.5" textLength="25.2" fill="#b9b9b4" font-weight="bold">new</text>
-<text x="181.6" y="203.5" textLength="260.4">Generate a complete new project</text>
-<text x="55.6" y="221.5" textLength="42.0" fill="#b9b9b4" font-weight="bold">adopt</text>
-<text x="181.6" y="221.5" textLength="277.2">Bring an existing repo under kiln</text>
-<text x="55.6" y="239.5" textLength="58.8" fill="#b9b9b4" font-weight="bold">install</text>
-<text x="181.6" y="239.5" textLength="277.2">Set up this machine after a clone</text>
-<text x="55.6" y="257.5" textLength="58.8" fill="#b9b9b4" font-weight="bold">publish</text>
-<text x="181.6" y="257.5" textLength="462.0">Create the private GitHub repo and protect its branches</text>
-<text x="55.6" y="275.5" textLength="50.4" fill="#b9b9b4" font-weight="bold">update</text>
-<text x="181.6" y="275.5" textLength="302.4">Update the template and dependencies</text>
-<text x="55.6" y="293.5" textLength="25.2" fill="#b9b9b4" font-weight="bold">set</text>
-<text x="181.6" y="293.5" textLength="562.8">Show or change the repo's settings (outside a repo: this machine's)</text>
-<text x="55.6" y="311.5" textLength="42.0" fill="#b9b9b4" font-weight="bold">waive</text>
-<text x="181.6" y="311.5" textLength="487.2">Waive a rule of kiln, or freeze a file (no argument: list)</text>
-<text x="38.8" y="347.5" textLength="84.0" fill="#f79628" font-weight="bold">DAY TO DAY</text>
-<text x="55.6" y="365.5" textLength="25.2" fill="#b9b9b4" font-weight="bold">dev</text>
-<text x="181.6" y="365.5" textLength="193.2">Run the project locally</text>
-<text x="55.6" y="383.5" textLength="42.0" fill="#b9b9b4" font-weight="bold">check</text>
-<text x="181.6" y="383.5" textLength="201.6">Run the project's checks</text>
-<text x="55.6" y="401.5" textLength="16.8" fill="#b9b9b4" font-weight="bold">ci</text>
-<text x="181.6" y="401.5" textLength="302.4">Replay a commit's CI on this machine</text>
-<text x="55.6" y="419.5" textLength="67.2" fill="#b9b9b4" font-weight="bold">contract</text>
-<text x="181.6" y="419.5" textLength="386.4">Regenerate openapi.json and the frontend types</text>
-<text x="55.6" y="437.5" textLength="50.4" fill="#b9b9b4" font-weight="bold">doctor</text>
-<text x="181.6" y="437.5" textLength="420.0">Diagnose this machine and the repo, with the fixes</text>
-<text x="55.6" y="455.5" textLength="84.0" fill="#b9b9b4" font-weight="bold">completion</text>
-<text x="181.6" y="455.5" textLength="386.4">Shell completion script (eval it in ~/.bashrc)</text>
-<text x="38.8" y="491.5" textLength="67.2" fill="#f79628" font-weight="bold">THE GRID</text>
-<text x="55.6" y="509.5" textLength="33.6" fill="#b9b9b4" font-weight="bold">grid</text>
-<text x="181.6" y="509.5" textLength="386.4">The rules kiln holds as the best, with sources</text>
+<rect x="139.6" y="64" width="8.7" height="18.3" fill="#5f5f5c"/>
+<text x="181.6" y="77.5" textLength="184.8" fill="#f79628">Claude Code's workshop</text>
+<rect x="38.8" y="91" width="8.7" height="9.3" fill="#b44b23"/>
+<rect x="47.2" y="91" width="8.7" height="9.3" fill="#b44b23"/>
+<rect x="47.2" y="82" width="8.7" height="9.3" fill="#8c8c87"/>
+<rect x="55.6" y="91" width="8.7" height="9.3" fill="#b44b23"/>
+<rect x="55.6" y="82" width="8.7" height="9.3" fill="#8c8c87"/>
+<rect x="64.0" y="91" width="8.7" height="9.3" fill="#b44b23"/>
+<rect x="64.0" y="82" width="8.7" height="9.3" fill="#8c8c87"/>
+<rect x="72.4" y="91" width="8.7" height="9.3" fill="#b44b23"/>
+<rect x="80.8" y="91" width="8.7" height="9.3" fill="#b44b23"/>
+<rect x="80.8" y="82" width="8.7" height="9.3" fill="#f79628"/>
+<rect x="89.2" y="91" width="8.7" height="9.3" fill="#b44b23"/>
+<rect x="89.2" y="82" width="8.7" height="9.3" fill="#ffe178"/>
+<rect x="97.6" y="91" width="8.7" height="9.3" fill="#b44b23"/>
+<rect x="97.6" y="82" width="8.7" height="9.3" fill="#ffe178"/>
+<rect x="106.0" y="91" width="8.7" height="9.3" fill="#b44b23"/>
+<rect x="106.0" y="82" width="8.7" height="9.3" fill="#f79628"/>
+<rect x="114.4" y="91" width="8.7" height="9.3" fill="#b44b23"/>
+<rect x="122.8" y="91" width="8.7" height="9.3" fill="#b44b23"/>
+<rect x="122.8" y="82" width="8.7" height="9.3" fill="#5f5f5c"/>
+<rect x="131.2" y="91" width="8.7" height="9.3" fill="#b44b23"/>
+<rect x="131.2" y="82" width="8.7" height="9.3" fill="#5f5f5c"/>
+<rect x="139.6" y="91" width="8.7" height="9.3" fill="#b44b23"/>
+<rect x="139.6" y="82" width="8.7" height="9.3" fill="#5f5f5c"/>
+<rect x="148.0" y="91" width="8.7" height="9.3" fill="#b44b23"/>
+<text x="181.6" y="95.5" textLength="117.6" fill="#8c8c87">~/code/atelier</text>
+<text x="38.8" y="131.5" textLength="42.0" font-weight="bold">Usage</text>
+<text x="97.6" y="131.5" textLength="33.6">kiln</text>
+<text x="139.6" y="131.5" textLength="159.6" fill="#8c8c87">&lt;command&gt; [options]</text>
+<text x="38.8" y="167.5" textLength="58.8" fill="#f79628" font-weight="bold">PROJECT</text>
+<text x="55.6" y="185.5" textLength="25.2" fill="#b9b9b4" font-weight="bold">new</text>
+<text x="181.6" y="185.5" textLength="260.4">Generate a complete new project</text>
+<text x="55.6" y="203.5" textLength="42.0" fill="#b9b9b4" font-weight="bold">adopt</text>
+<text x="181.6" y="203.5" textLength="277.2">Bring an existing repo under kiln</text>
+<text x="55.6" y="221.5" textLength="58.8" fill="#b9b9b4" font-weight="bold">install</text>
+<text x="181.6" y="221.5" textLength="277.2">Set up this machine after a clone</text>
+<text x="55.6" y="239.5" textLength="58.8" fill="#b9b9b4" font-weight="bold">publish</text>
+<text x="181.6" y="239.5" textLength="462.0">Create the private GitHub repo and protect its branches</text>
+<text x="55.6" y="257.5" textLength="50.4" fill="#b9b9b4" font-weight="bold">update</text>
+<text x="181.6" y="257.5" textLength="302.4">Update the template and dependencies</text>
+<text x="55.6" y="275.5" textLength="25.2" fill="#b9b9b4" font-weight="bold">set</text>
+<text x="181.6" y="275.5" textLength="562.8">Show or change the repo's settings (outside a repo: this machine's)</text>
+<text x="55.6" y="293.5" textLength="42.0" fill="#b9b9b4" font-weight="bold">waive</text>
+<text x="181.6" y="293.5" textLength="487.2">Waive a rule of kiln, or freeze a file (no argument: list)</text>
+<text x="38.8" y="329.5" textLength="84.0" fill="#f79628" font-weight="bold">DAY TO DAY</text>
+<text x="55.6" y="347.5" textLength="25.2" fill="#b9b9b4" font-weight="bold">dev</text>
+<text x="181.6" y="347.5" textLength="193.2">Run the project locally</text>
+<text x="55.6" y="365.5" textLength="42.0" fill="#b9b9b4" font-weight="bold">check</text>
+<text x="181.6" y="365.5" textLength="201.6">Run the project's checks</text>
+<text x="55.6" y="383.5" textLength="16.8" fill="#b9b9b4" font-weight="bold">ci</text>
+<text x="181.6" y="383.5" textLength="302.4">Replay a commit's CI on this machine</text>
+<text x="55.6" y="401.5" textLength="67.2" fill="#b9b9b4" font-weight="bold">contract</text>
+<text x="181.6" y="401.5" textLength="386.4">Regenerate openapi.json and the frontend types</text>
+<text x="55.6" y="419.5" textLength="50.4" fill="#b9b9b4" font-weight="bold">doctor</text>
+<text x="181.6" y="419.5" textLength="420.0">Diagnose this machine and the repo, with the fixes</text>
+<text x="55.6" y="437.5" textLength="84.0" fill="#b9b9b4" font-weight="bold">completion</text>
+<text x="181.6" y="437.5" textLength="386.4">Shell completion script (eval it in ~/.bashrc)</text>
+<text x="38.8" y="473.5" textLength="67.2" fill="#f79628" font-weight="bold">THE GRID</text>
+<text x="55.6" y="491.5" textLength="33.6" fill="#b9b9b4" font-weight="bold">grid</text>
+<text x="181.6" y="491.5" textLength="386.4">The rules kiln holds as the best, with sources</text>
+<text x="55.6" y="509.5" textLength="42.0" fill="#b9b9b4" font-weight="bold">score</text>
+<text x="181.6" y="509.5" textLength="470.4">Any repo measured against the grid, in seconds, no token</text>
 <text x="38.8" y="545.5" textLength="75.6" fill="#f79628" font-weight="bold">ALL REPOS</text>
 <text x="55.6" y="563.5" textLength="50.4" fill="#b9b9b4" font-weight="bold">status</text>
 <text x="181.6" y="563.5" textLength="352.8">State of the kiln repos of the code folder</text>
@@ -113,7 +115,8 @@
 <text x="55.6" y="689.5" textLength="8.4" fill="#5f5f5c">$</text>
 <text x="72.4" y="689.5" textLength="168.0">kiln set podman=true</text>
 <text x="55.6" y="707.5" textLength="8.4" fill="#5f5f5c">$</text>
-<text x="72.4" y="707.5" textLength="462.0">kiln set --global             # this machine's settings</text>
+<text x="72.4" y="707.5" textLength="142.8">kiln set --global</text>
+<text x="324.4" y="707.5" textLength="210.0"># this machine's settings</text>
 <text x="38.8" y="743.5" textLength="176.4" font-weight="bold">kiln &lt;command&gt; --help</text>
 <text x="223.6" y="743.5" textLength="386.4" fill="#8c8c87">for the options · github.com/antoine-tena/kiln</text>
 </g>

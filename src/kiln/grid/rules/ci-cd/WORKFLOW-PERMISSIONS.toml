@@ -1,0 +1,28 @@
+id = "WORKFLOW-PERMISSIONS"
+title = "Each workflow sets the permissions of its token"
+pillar = "methods"
+theme = "ci-cd"
+scope = { kind = "tool", name = "github-actions" }
+level = "adopt"
+regime = "strict"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "A workflow token gets what it was given; the default is often write access to the whole repo."
+applies = ["github-actions"]
+detectable = "script"
+fixable = "script"
+fixer = ""
+since = "0.4.2"
+
+[detector]
+kind = "python"
+check = "workflow_permissions"
+
+[[sources]]
+url = "https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token"
+kind = "docs"
+checked = 2026-10-20
+
+[[sources]]
+url = "https://github.com/ossf/scorecard/blob/main/docs/checks.md"
+kind = "advisory"
+checked = 2026-10-20

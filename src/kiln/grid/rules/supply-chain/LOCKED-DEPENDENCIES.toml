@@ -25,3 +25,8 @@ checked = 2026-10-19
 url = "https://pnpm.io/git"
 kind = "docs"
 checked = 2026-10-19
+
+[[sources]]
+url = "https://pip.pypa.io/en/stable/topics/repeatable-installs/"
+kind = "docs"
+checked = 2026-10-20

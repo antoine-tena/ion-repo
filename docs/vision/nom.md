@@ -1,7 +1,9 @@
 # kiln : le nom, les faits avant la décision
 
-> Partie de [l'idée de projet](README.md). Faits relevés le 19 octobre 2026 pour T-143 ; la
-> décision revient à antoine, avant le 31 octobre (T-33 réécrit l'accroche, T-30 le README).
+> Partie de [l'idée de projet](README.md). Faits relevés le 19 octobre 2026 pour T-143.
+>
+> **Décision d'antoine, 19 octobre 2026 : on garde « kiln »** (paquet `kiln-cli`). Les noms
+> libres ci-dessous restent pour mémoire.
 
 ## Qui répond à « kiln » aujourd'hui
 

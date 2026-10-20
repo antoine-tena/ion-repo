@@ -45,7 +45,24 @@ def test_the_project_additions_to_a_generated_file_are_found() -> None:
 
     added = migrations.additions(rendered, project)
 
-    assert "- our own rule" in added and "## Our section" in added and "- rule a" not in added
+    assert "- our own rule" in added and "#### Our section" in added and "- rule a" not in added
+
+
+def test_the_carried_over_additions_keep_the_outline_of_the_file() -> None:
+    rendered = "# Title\n\n## Map\n\n- `src/`: code\n\n## Language\n\n- English\n"
+    project = (
+        "# Title\n\n## Map\n\n- `src/`: code\n- `docs/`: our docs\n\n## Language\n\n- English\n\n"
+        "## Ours\n\n- rule\n\n### Detail\n\n```sh\n# not a heading\n```\n- `team.md`: who\n"
+    )
+
+    added = migrations.additions(rendered, project)
+
+    # Under `### From`: the section a line was added to is named, headings go one level below.
+    assert added == [
+        "#### Map", "", "- `docs/`: our docs", "",
+        "#### Ours", "", "- rule", "", "##### Detail", "", "```sh", "# not a heading", "```",
+        "- `team.md`: who", "",
+    ]  # fmt: skip
 
 
 def test_legacy_answers_get_their_new_names_and_the_team_of_that_time(tmp_path: Path) -> None:
