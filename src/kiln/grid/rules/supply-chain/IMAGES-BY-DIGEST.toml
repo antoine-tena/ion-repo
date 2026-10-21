@@ -10,7 +10,7 @@ why = "A tag can point to another image tomorrow; a digest cannot."
 applies = ["containers"]
 detectable = "script"
 fixable = "script"
-fixer = ""
+fixer = "pin_images"
 since = "0.4.1"
 charter_rule = "IMAGES-BY-DIGEST"
 

@@ -20,7 +20,7 @@
 <text x="38.8" y="221.5" textLength="67.2" fill="#8c8c87">detected</text>
 <text x="131.2" y="221.5" textLength="42.0">regex</text>
 <text x="38.8" y="239.5" textLength="42.0" fill="#8c8c87">fixed</text>
-<text x="131.2" y="239.5" textLength="243.6">by judgment (Claude, roadmap)</text>
+<text x="131.2" y="239.5" textLength="184.8">kiln fix (pin_actions)</text>
 <text x="38.8" y="257.5" textLength="50.4" fill="#8c8c87">source</text>
 <text x="131.2" y="257.5" textLength="764.4">https://docs.github.com/en/actions/reference/security/secure-use (docs, checked 2026-10-19)</text>
 <text x="38.8" y="275.5" textLength="42.0" fill="#8c8c87">waive</text>

@@ -9,8 +9,8 @@ profiles = ["solo", "association", "company", "university", "enterprise"]
 why = "A linter catches the bugs reviewers miss, every time, for free."
 applies = ["python"]
 detectable = "script"
-fixable = "judgment"
-fixer = ""
+fixable = "script"
+fixer = "add_ruff"
 since = "0.4.2"
 
 [detector]

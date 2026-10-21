@@ -116,7 +116,13 @@ def _start_release(root: Path, tags: list[Tag], *, milestone: bool) -> None:
     branch = f"release/v{version}"
     run(["git", "worktree", "add", "-q", "-b", branch, str(tree), "origin/develop"], root)
     _carry_open_releases(root, tree, version)
+    _draft_release(root, tree, version, last)
+
+
+def _draft_release(root: Path, tree: Path, version: str, last: Tag | None) -> None:
+    """The changelog draft and the numbers of the release, committed on its branch."""
     ui.step("Changelog draft and numbers")
+    subjects = _subjects_since(root, last.name if last else None)
     changelog = tree / CHANGELOG
     entry = draft_entry(version, subjects, today=_today())
     changelog.write_text(insert_entry(changelog.read_text("utf-8"), entry), "utf-8")
@@ -153,7 +159,7 @@ def _carry_open_releases(root: Path, tree: Path, version: str) -> None:
         if run_status(["git", "merge", "-q", "--no-ff", remote, "-m", message], tree) != 0:
             raise KilnError(
                 f"{remote} does not merge cleanly into release/v{version}: resolve it in {tree}, "
-                "commit, then rewrite the changelog entry"
+                "commit, then `kiln version cut` again: it drafts the changelog entry"
             )
 
 
@@ -246,6 +252,12 @@ def _tag_candidate(root: Path, version: str, tags: list[Tag]) -> None:
         )
     if capture(["git", "status", "--porcelain"], tree):
         raise KilnError(f"uncommitted changes in {tree}: commit them first")
+    if f"## v{version} " not in (tree / CHANGELOG).read_text("utf-8"):
+        # The cut stopped before its draft (an earlier release that did not merge cleanly):
+        # the draft and the numbers come now, and nothing is tagged before they are rewritten.
+        earlier = [tag for tag in tags if Version(tag.version.base_version) < Version(version)]
+        _draft_release(root, tree, version, max(earlier, key=lambda tag: tag.version, default=None))
+        return
     if DRAFT_MARKER in (tree / CHANGELOG).read_text("utf-8"):
         raise KilnError(f"the v{version} entry of {CHANGELOG} is still a draft ({tree})")
     _require_readme_update(tree, version, tags)

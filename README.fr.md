@@ -49,7 +49,8 @@ aucune IA et ne demande aucune clé d'API.
 - `kiln grid` liste les pratiques que kiln défend, chacune avec sa raison, ses sources
   (vérifiées et datées) et sa façon d'être détectée. `kiln score` y mesure n'importe quel repo
   en une seconde environ, sans jeton : une note sur 100, une par pilier, et les écarts à
-  combler d'abord.
+  combler d'abord. `kiln fix` comble sur une branche ceux qu'un script peut combler, un
+  commit par règle, annulé si vos contrôles passent au rouge.
 - Des skills pour les worktrees, les fusions, les versions et les relectures ; des hooks qui
   tiennent Claude à l'écart de `main` et `develop` ; une status line qui montre la CI, les
   tickets et la production.

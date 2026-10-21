@@ -8,7 +8,7 @@ regime = "strict"
 profiles = ["solo", "association", "company", "university", "enterprise"]
 why = "A tag can be moved to other code at any time; a full commit SHA cannot."
 applies = ["github-actions"]
-fixer = ""
+fixer = "pin_actions"
 since = "0.4.1"
 
 [detector]

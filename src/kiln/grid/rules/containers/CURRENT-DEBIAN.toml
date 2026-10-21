@@ -10,7 +10,7 @@ why = "An older Debian has left regular security support; images inherit every u
 applies = ["containers"]
 detectable = "script"
 fixable = "script"
-fixer = ""
+fixer = "move_to_trixie"
 since = "0.4.2"
 
 [detector]

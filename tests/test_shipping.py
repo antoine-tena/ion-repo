@@ -227,3 +227,25 @@ def test_a_release_whose_readmes_say_nothing_new_is_not_tagged(repo: Path) -> No
     git(tree, "commit", "-qam", "docs(changelog): nothing for the README")
     shipping.cut(repo)
     assert "v0.1.1-rc.1" in git(repo, "tag")
+
+
+def test_a_cut_stopped_by_a_conflict_drafts_before_it_tags(repo: Path) -> None:
+    publish(repo, "feat: first")
+    shipping.cut(repo)
+    rewrite_draft(repo / ".claude/worktrees/release-v0.1.1")
+    shipping.cut(repo)
+    publish(repo, "feat: second")
+    # The state a conflict carrying release/v0.1.1 leaves: the branch, resolved by hand, and
+    # neither the draft nor the numbers.
+    tree = repo / ".claude/worktrees/release-v0.1.2"
+    git(repo, "worktree", "add", "-q", "-b", "release/v0.1.2", str(tree), "origin/develop")
+    git(tree, "merge", "-q", "--no-ff", "origin/release/v0.1.1", "-m", "Merge release/v0.1.1")
+
+    shipping.cut(repo)
+
+    assert "v0.1.2-rc.1" not in git(repo, "ls-remote", "--tags", "origin")
+    assert shipping.DRAFT_MARKER in (tree / "CHANGELOG.md").read_text()
+    assert '"0.1.2"' in (tree / "pyproject.toml").read_text()
+    rewrite_draft(tree)
+    shipping.cut(repo)
+    assert "v0.1.2-rc.1" in git(repo, "ls-remote", "--tags", "origin")

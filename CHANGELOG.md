@@ -6,6 +6,11 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 `release/vX.Y.Z` branch, rewritten before its first candidate. Names are those of their release:
 entries before v0.4.0 quote kiln's former French names.
 
+## v0.4.3 — 2026-10-20
+- `kiln fix`: every gap a script can close, closed on a work branch `kiln/fix-<date>`, one commit per rule with its why and source. Your checks run before and after each converter; one that turns them red is undone and reported, and a repo without tests is fixed anyway, each commit marked unverified. `--dry-run` shows the plan and the diff, `--rule ID` takes one rule, and the score before and after closes the run.
+- Fourteen converters to start: actions pinned by commit SHA, a 7-day cooldown on updates, Dependabot for every ecosystem found, read-only workflow tokens, gitleaks, a minimal CI, obsolete backports removed, loose `requirements.txt` compiled to exact versions by uv, ruff with its safe fixes, `@ts-expect-error`, images pinned by digest, Debian 13, a non-root user, Node and Python moved off their end of life. Those that reach the network say so first.
+- Fixes: `kiln version cut` no longer tags a release whose cut stopped on a conflict before its changelog entry was drafted; the README's `kiln update` image is drawn from the right notes.
+
 ## v0.4.2 — 2026-10-20
 - `kiln score`: any repo, made by kiln or not, measured against the grid in about a second, offline and without a token. A score out of 100 and one per pillar, the three gaps to close first, then each gap with its reason, where it is, its source and what closes it; waived rules shown apart, stacks the grid does not cover listed at the end. `--all`, `--json` (schema 1), `--badge` for a README, `--online` for fresh end-of-life dates.
 - Grid v1: 40 scored rules, up from 6. CI and workflows (token permissions, untrusted input in scripts, `pull_request_target`, tests, linter, vulnerability audit, secret scan), containers (images by digest, current Debian, hardened compose services, health checks), Django settings (`DEBUG`, `SECRET_KEY`, `ALLOWED_HOSTS`), Python and TypeScript standards, runtimes past their end of life. Each one sourced and dated, and run on two real repos for false positives: those that can flag wrongly are `review` or `ratchet`. A `requirements.txt` pinned to exact versions now counts as locked.

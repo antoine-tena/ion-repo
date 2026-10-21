@@ -10,7 +10,7 @@ why = "A workflow token gets what it was given; the default is often write acces
 applies = ["github-actions"]
 detectable = "script"
 fixable = "script"
-fixer = ""
+fixer = "add_permissions"
 since = "0.4.2"
 
 [detector]

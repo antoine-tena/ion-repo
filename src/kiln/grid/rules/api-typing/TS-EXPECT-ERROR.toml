@@ -10,7 +10,7 @@ why = "`@ts-expect-error` fails once the error is gone, so the silence never out
 applies = ["typescript"]
 detectable = "script"
 fixable = "script"
-fixer = ""
+fixer = "ts_expect_error"
 since = "0.4.2"
 
 [detector]

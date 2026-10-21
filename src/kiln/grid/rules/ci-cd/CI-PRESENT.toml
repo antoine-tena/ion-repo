@@ -10,7 +10,7 @@ why = "Checks that only run on one laptop stop running."
 applies = []
 detectable = "script"
 fixable = "script"
-fixer = ""
+fixer = "add_ci"
 since = "0.4.2"
 
 [detector]

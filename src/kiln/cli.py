@@ -29,7 +29,7 @@ LANGUAGES = ("en", "fr")
 COMMAND_GROUPS = (
     ("Project", ("new", "adopt", "install", "publish", "update", "set", "waive")),
     ("Day to day", ("dev", "check", "ci", "contract", "doctor", "completion")),
-    ("The grid", ("grid", "score")),
+    ("The grid", ("grid", "score", "fix")),
     ("All repos", ("status", "update --all", "version")),
 )
 FLEET_UPDATE_ROLE = "update every kiln repo, merged straight away"
@@ -51,7 +51,7 @@ LEGACY_OPTIONS = {
     "set": {"--poste": "--global"},
 }
 NO_RECAP_COMMANDS = frozenset(
-    {"dev", "ci", "status", "doctor", "version", "waive", "grid", "score"}
+    {"dev", "ci", "status", "doctor", "version", "waive", "grid", "score", "fix"}
 )
 HELP_FLAGS: tuple[list[str], ...] = ([], ["-h"], ["--help"])
 
@@ -127,6 +127,7 @@ def build_parser() -> argparse.ArgumentParser:
     commands.add_parser("doctor", help="diagnose this machine and the repo, with the fixes")
     _add_grid_command(commands)
     _add_score_command(commands)
+    _add_fix_command(commands)
     status_parser = commands.add_parser("status", help="state of the kiln repos of the code folder")
     status_parser.add_argument("--all", action="store_true", help="(default) every repo")
     set_parser = commands.add_parser(
@@ -239,6 +240,17 @@ def _add_score_command(commands: argparse._SubParsersAction[argparse.ArgumentPar
     score_parser.add_argument(
         "--online", action="store_true", help="refresh end-of-life dates from endoflife.date"
     )
+
+
+def _add_fix_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+    fix_parser = commands.add_parser(
+        "fix", help="close by script every gap a script can close, on a branch, with proof"
+    )
+    fix_parser.add_argument(
+        "path", type=Path, nargs="?", default=Path(), help="the repo (default: here)"
+    )
+    fix_parser.add_argument("--dry-run", action="store_true", help="the plan and the diff only")
+    fix_parser.add_argument("--rule", help="only this rule (its ID)")
 
 
 def _add_waive_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
@@ -410,6 +422,10 @@ def dispatch(arguments: argparse.Namespace) -> list[str]:
             show.list_rules(theme=arguments.theme, scope=arguments.scope, level=arguments.level)
     elif arguments.command == "score":
         _dispatch_score(arguments)
+    elif arguments.command == "fix":
+        from kiln.grid import fix
+
+        fix.fix(arguments.path.resolve(), dry_run=arguments.dry_run, only=arguments.rule)
     elif arguments.command == "version":
         _dispatch_version(arguments, repo_root(Path.cwd()))
     elif arguments.command == "status" or (arguments.command == "update" and arguments.all):

@@ -10,7 +10,7 @@ why = "`typing`, `enum34`, `futures`, `pathlib` or `dataclasses` from PyPI shado
 applies = ["python"]
 detectable = "script"
 fixable = "script"
-fixer = ""
+fixer = "remove_backports"
 since = "0.4.2"
 
 [detector]

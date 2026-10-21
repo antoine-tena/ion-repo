@@ -26,7 +26,7 @@ keeps a repo up to date with the best of the world, and easy for Claude to read"
     Why, what to do (as a `- [ ]` checklist when there are several steps), where to look.
 
 - **ID** `T-NN`: stable, never reused, quoted as is in commits and branches (tickets opened
-  before 16 October 2026 were `AF-NN`, same number). **Next free: T-159.**
+  before 16 October 2026 were `AF-NN`, same number). **Next free: T-160.**
 - **Type**, one of: `bug` (something is broken); `improvement` (it works, it could work
   better); `idea` (nothing exists yet, to be explored); `task` (work that is neither: a release,
   a decision, a check).
@@ -84,13 +84,13 @@ Candidate Sat 24 Oct. The launch hook: `uvx kiln-cli score` on the repo people a
 without a token.
 - ✅ T-125 · Grid v1: the rules kiln launches with (L)
 - ✅ T-46 · `kiln score`: any repo measured against the grid in seconds, no tokens (L)
-- T-157 · Credit #45 and #46 in the notes of v0.4.2 (XS)
+- ✅ T-157 · Credit #45 and #46 in the notes of v0.4.2 (XS)
 
 ### v0.4.3 · What a script can fix, fixed by script
 Candidate Mon 26 Oct. The fixes that cost no token, each proven by the repo's own checks.
-- T-126 · `kiln fix`: every scriptable gap closed on a branch, with proof (M)
-- T-127 · First converters: supply chain and CI (M)
-- T-128 · First converters: Python and containers (L)
+- ✅ T-126 · `kiln fix`: every scriptable gap closed on a branch, with proof (M)
+- ✅ T-127 · First converters: supply chain and CI (M)
+- ✅ T-128 · First converters: Python and containers (L)
 
 ### v0.4.4 · The rest handed to Claude, and kiln passes its own grid
 Candidate Wed 28 Oct. Claude only gets what needs judgment, and kiln's repos show the way.
@@ -191,18 +191,23 @@ build on kiln. From here, strict semver: breaking → major, `feat` → minor.
 
 ## 🔴 Critical
 
-### T-157 · Credit #45 and #46 in the notes of v0.4.2
-- **Type**: task
+## 🟠 Important
+
+### T-159 · What T-126 to T-128 left: compose hardening, pyproject from requirements, `kiln update`
+- **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-20
-- **Effort**: XS · **Owner**: Claude · **Due**: v0.4.2 candidate
-- **Origin**: PRs #45 and #46 by NathanBarrachin, merged 2026-10-20
+- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Origin**: left from T-126, T-127 and T-128 (2026-10-20)
 
-In the `v0.4.2` entry of `CHANGELOG.md`: the line of each fix ends with `(#45, thanks
-@NathanBarrachin)` and `(#46, thanks @NathanBarrachin)` (a CI run GitHub never started is not
-red; carried-over instructions keep their outline).
+- [ ] Compose services `read_only`, `cap_drop: [ALL]`, `no-new-privileges`, kept only where the
+  service still starts (needs the containers run: `podman compose up` on a copy).
+- [ ] `requirements*.txt` to `pyproject.toml` and `uv.lock` (today: the loose file becomes its
+  `.in` and uv compiles exact versions, which keeps images and scripts working).
+- [ ] In a kiln repo, `kiln update` runs the same converters after the template.
+- [ ] Images: a converter commit that touches a `Dockerfile` builds it when podman or docker is
+  there (today: left to the repo's CI).
 
-## 🟠 Important
 
 ### T-158 · `kiln score` reads the GitHub settings when `gh` is logged in
 - **Type**: improvement
@@ -214,67 +219,6 @@ red; carried-over instructions keep their outline).
 Branch protection or rulesets on the integration branch, secret scanning and push protection,
 Dependabot alerts: read through `gh api` when logged in, left out of the count otherwise (never a
 failure for lack of a token).
-
-### T-126 · `kiln fix`: every scriptable gap closed on a branch, with proof
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-17
-- **Effort**: M · **Owner**: Claude · **Due**: —
-- **Origin**: vision of 17 October 2026 (mechanical fixes, step 2; nothing without proof);
-  T-60 merged here
-
-What a program can fix, a program fixes: exact, repeatable, and without a token. `fix` like
-`ruff check --fix` (decided by Claude, 17 October 2026).
-- [ ] On a work branch (`kiln/fix-<date>`), refused on a dirty tree; one commit per rule, its
-  message giving the why and the source.
-- [ ] The repo's own checks before and after (`kiln check` in a kiln repo; elsewhere the test,
-  lint and type commands found in the manifests and the CI). A converter that turns them red is
-  reverted and reported, never left in a commit. A repo without tests is fixed anyway, but each
-  commit and the summary say "unverified: no tests".
-- [ ] `--dry-run`: the plan and the diff, nothing written; `--rule ID` for one rule; waived
-  rules skipped.
-- [ ] The score before and after, and what is left for `/kiln:modernize`.
-- [ ] Network only when a converter needs it (a digest or a commit SHA to resolve), said before
-  it starts.
-- [ ] In a kiln repo, `kiln update` runs the same converters after the template.
-
-### T-127 · First converters: supply chain and CI
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-17
-- **Effort**: M · **Owner**: Claude · **Due**: —
-- **Origin**: vision of 17 October 2026 (the reference repo had none of its 16 actions pinned
-  and no cooldown; the university repo had no CI at all)
-
-- [ ] GitHub Actions pinned by commit SHA, the version kept as a comment, kept current by
-  Dependabot or Renovate.
-- [ ] A cooldown on new releases wherever the tool has one (Dependabot `cooldown`, Renovate
-  `minimumReleaseAge`, pnpm `minimumReleaseAge`…), each key checked against its official docs.
-- [ ] Dependabot set up when neither Dependabot nor Renovate is, for the ecosystems found, with
-  the cooldown.
-- [ ] Least privilege in workflows (`permissions:` when missing), a secret scan (gitleaks) when
-  there is none.
-- [ ] A minimal CI when there is none: the repo's own lint and tests on each push and pull
-  request.
-
-### T-128 · First converters: Python and containers
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-17
-- **Effort**: L · **Owner**: Claude · **Due**: —
-- **Origin**: vision of 17 October 2026 (the university repo: four `requirements.txt` without a
-  lock, tags that move, everything running as root, Node 18 past its end of life; the reference
-  repo still on Debian 12)
-
-- [ ] `requirements*.txt` to `pyproject.toml` and `uv.lock`, installs frozen in CI and in the
-  images; obsolete backports (the `typing` package) removed.
-- [ ] ruff in place of flake8, black, isort and pyupgrade, their settings carried over; the safe
-  fixes applied (`UP`, `I`, unused `noqa`).
-- [ ] Base images pinned by digest, Debian 13 where an image is still on 12, a non-root user;
-  in compose, `read_only`, `cap_drop: [ALL]` and `no-new-privileges` where the service still
-  starts (checked).
-- [ ] Runtimes past their end of life (Node, Python) moved to the supported LTS everywhere they
-  are named (`.nvmrc`, `engines`, images, CI), kept only if the checks stay green.
 
 ### T-129 · What needs judgment goes to Claude: `kiln score --roadmap` and `/kiln:modernize`
 - **Type**: improvement
@@ -1077,6 +1021,8 @@ An ecosystem is what turns a tool into a project people star and contribute to.
 
 ## ✅ Done
 
+- **2026-10-20** · T-126, T-127, T-128 · `kiln fix` and its first 14 converters — one commit per rule on `kiln/fix-<date>`, checks before and after, red undone, `--dry-run`, `--rule`; supply chain and CI, Python, containers and runtimes; the university copy went from 35 to 61; leftovers in T-159 (feat/kiln-fix) · opened 2026-10-17
+- **2026-10-20** · T-157 · #45 and #46 credited in the v0.4.2 notes (release/v0.4.2) · opened 2026-10-20
 - **2026-10-20** · T-46 · `kiln score` — any repo against the 40 scored rules: score out of 100 and per pillar, three gaps first, waivers apart, uncovered stacks listed, `--all`, `--json` (schema 1), `--badge`, `--online`; about 1 s on the reference repo; GitHub settings left to T-158 (feat/kiln-score) · opened 2026-10-16
 - **2026-10-20** · T-125 · Grid v1 — 40 scored rules (nine drafts promoted, 25 new), each sourced and dated, with a passing and a failing example, run on local copies of both training repos: rules that can flag wrongly launch `review` or `ratchet`; 1.0 s on the reference repo (feat/grid-v1) · opened 2026-10-17
 - **2026-10-19** · T-143 · Decide the name before the launch — antoine keeps **kiln**, after
