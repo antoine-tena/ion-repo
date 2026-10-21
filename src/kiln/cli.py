@@ -8,7 +8,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, NoReturn
 
-from kiln import banner, ui
+from kiln import banner, tool_update, ui
 from kiln.config import load_config
 from kiln.shell import KilnError, repo_root
 from kiln.versions import installed_version
@@ -103,12 +103,19 @@ def build_parser() -> argparse.ArgumentParser:
     adopt_parser = commands.add_parser("adopt", help="bring an existing repo under kiln")
     adopt_parser.add_argument("--size", choices=SIZES, help="size of the project (default: ember)")
     adopt_parser.add_argument("--template", help="template source (path or git URL)")
-    commands.add_parser("install", help="set up this machine after a clone")
+    install_parser = commands.add_parser("install", help="set up this machine after a clone")
+    install_parser.add_argument(
+        "--machine",
+        action="store_true",
+        help="kiln for the whole machine (command, Claude plugin, settings), even from a repo",
+    )
     commands.add_parser("publish", help="create the private GitHub repo and protect its branches")
     _add_update_command(commands)
-    dev_parser = commands.add_parser("dev", help="run the project locally")
-    dev_parser.add_argument("--containers", action="store_true", help="the whole stack in podman")
-    commands.add_parser("check", help="run the project's checks")
+    _add_dev_command(commands)
+    check_parser = commands.add_parser("check", help="run the project's checks")
+    check_parser.add_argument(
+        "--tests", action="store_true", help="the test suites too (the release runs them)"
+    )
     _add_ci_command(commands)
     commands.add_parser("contract", help="regenerate openapi.json and the frontend types")
     version_parser = commands.add_parser(
@@ -207,7 +214,17 @@ def _dispatch_score(arguments: argparse.Namespace) -> None:
     if arguments.online:
         score.refresh_end_of_life()
     report = score.score_repo(root)
-    if arguments.json:
+    if arguments.rule or arguments.roadmap:
+        from kiln.grid import roadmap
+
+        if arguments.rule:
+            roadmap.show_rule(report, score.rule_finding(report, arguments.rule), arguments.rule)
+            return
+        if arguments.write:
+            written = roadmap.write_tickets(root, report)
+            print(f"{len(written)} ticket(s) written in {roadmap.BACKLOG}: {', '.join(written)}")
+        roadmap.show_roadmap(report)
+    elif arguments.json:
         print(score.as_json(report))
     elif arguments.badge:
         print(score.badge(report))
@@ -240,6 +257,13 @@ def _add_score_command(commands: argparse._SubParsersAction[argparse.ArgumentPar
     score_parser.add_argument(
         "--online", action="store_true", help="refresh end-of-life dates from endoflife.date"
     )
+    score_parser.add_argument(
+        "--roadmap", action="store_true", help="what needs judgment, for Claude, with its places"
+    )
+    score_parser.add_argument(
+        "--write", action="store_true", help="with --roadmap: the items as backlog tickets"
+    )
+    score_parser.add_argument("--rule", help="one rule only: fails while its gap is open")
 
 
 def _add_fix_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
@@ -313,6 +337,36 @@ def _add_ci_command(commands: argparse._SubParsersAction[argparse.ArgumentParser
     ci_parser.add_argument("--no-push", action="store_true", help="keep the note local")
     ci_parser.add_argument("--keep", action="store_true", help="keep the commit's worktree")
     ci_parser.add_argument("--status", action="store_true", help="verdict only, no replay")
+
+
+def _add_dev_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+    dev_parser = commands.add_parser("dev", help="run the project locally")
+    dev_parser.add_argument(
+        "action",
+        nargs="?",
+        choices=["status", "logs", "stop"],
+        help="what runs in the background: its state, its output, or stop it",
+    )
+    dev_parser.add_argument("service", nargs="?", help="logs: this process only")
+    dev_parser.add_argument(
+        "--foreground", action="store_true", help="in this terminal, until Ctrl+C"
+    )
+    dev_parser.add_argument(
+        "--only", type=lambda names: names.split(","), help="these processes only (django,nuxt)"
+    )
+    dev_parser.add_argument("-f", "--follow", action="store_true", help="logs: keep following")
+    dev_parser.add_argument("--containers", action="store_true", help="the whole stack in podman")
+
+
+def _check_dev_arguments(arguments: argparse.Namespace) -> None:
+    if arguments.action != "logs" and (arguments.service or arguments.follow):
+        raise KilnError("a service and --follow go with kiln dev logs")
+    starting = arguments.foreground or arguments.containers or arguments.only
+    if arguments.action is not None and starting:
+        options = "--foreground, --only and --containers"
+        raise KilnError(f"{options} start the project, not kiln dev {arguments.action}")
+    if arguments.containers and arguments.only:
+        raise KilnError("--containers runs the whole stack: no --only")
 
 
 def _add_update_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
@@ -430,6 +484,10 @@ def dispatch(arguments: argparse.Namespace) -> list[str]:
         _dispatch_version(arguments, repo_root(Path.cwd()))
     elif arguments.command == "status" or (arguments.command == "update" and arguments.all):
         _dispatch_fleet(arguments)
+    elif arguments.command == "install" and (arguments.machine or not _is_in_repo()):
+        from kiln import install
+
+        install.install_machine()
     elif arguments.command == "set" and (arguments.machine or not _is_in_repo()):
         from kiln import machine
 
@@ -474,11 +532,20 @@ def _dispatch_in_repo(arguments: argparse.Namespace, root: Path) -> None:
     elif command == "dev":
         from kiln import dev
 
-        dev.run_dev_servers(root, in_containers=arguments.containers)
+        _check_dev_arguments(arguments)
+        dev.run_dev(
+            root,
+            arguments.action,
+            in_containers=arguments.containers,
+            foreground=arguments.foreground,
+            only=arguments.only,
+            follow=arguments.follow,
+            service=arguments.service,
+        )
     elif command == "check":
         from kiln import check
 
-        check.check_project(root)
+        check.check_project(root, arguments.tests)
     elif command == "ci":
         _dispatch_ci(root, arguments)
     elif command == "contract":
@@ -522,7 +589,7 @@ def _repo_root_or_hint() -> Path:
         raise KilnError(
             f"{Path.cwd()} is not in a repo: go into one first (cd <repo>).{repos_line} "
             "From here: kiln status, kiln update --all, kiln set (this machine's settings), "
-            "kiln new."
+            "kiln install (kiln for this machine), kiln new."
         ) from None
 
 
@@ -531,7 +598,11 @@ def _show_banner(arguments: argparse.Namespace) -> None:
     action = BANNER_ACTIONS.get(arguments.command)
     if action is None:
         return
-    if arguments.command in ("new", "status", "doctor") or getattr(arguments, "all", False):
+    if (
+        arguments.command in ("new", "status", "doctor")
+        or getattr(arguments, "all", False)
+        or (arguments.command == "install" and (arguments.machine or not _is_in_repo()))
+    ):
         banner.show_banner(action if arguments.command != "update" else "update of the repos")
         return
     banner.show_banner(action, _repo_root_or_hint())
@@ -618,6 +689,7 @@ def main() -> None:
         _recap(arguments, started, succeeded=True)
         if steps:
             ui.panel("Next steps", steps)
+        tool_update.offer(arguments.command)
     except KilnError as error:
         ui.error(str(error))
         sys.exit(EXIT_FAILURE)

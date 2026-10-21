@@ -47,6 +47,8 @@ kiln itself calls no AI and needs no API key.
   and dated) and how it is detected. `kiln score` measures any repo against them in about a
   second, without a token: a score out of 100, one per pillar, and the gaps to close first. `kiln fix` closes on a
   branch those a script can close, one commit per rule, undone if your checks turn red.
+  `kiln score --roadmap` hands the rest to Claude Code as a short list with file and line, and
+  `/kiln:modernize` works through it, each gap proven closed by `kiln score --rule`.
 - Skills for worktrees, merges, releases and reviews; hooks that keep Claude off `main` and
   `develop`; a status line that shows CI, tickets and production.
 - A private repo's CI runs on your machine (`kiln ci`, its verdict kept as a git note) and spends
@@ -56,6 +58,7 @@ kiln itself calls no AI and needs no API key.
 
 ```sh
 uv tool install kiln-cli     # the command is kiln; uv fetches Python 3.14 if needed
+kiln install                 # outside a repo: kiln's Claude Code plugin in every session
 ```
 
 Or try it without installing anything: `uvx kiln-cli new my-app` for a new repo,
@@ -68,8 +71,8 @@ A new repo:
 
 ```console
 $ kiln new my-app            # three questions, then a private GitHub repo (--no-github: local)
-$ cd my-app && kiln dev      # the stack's dev servers, output prefixed by service
-$ kiln check                 # ruff, mypy, pytest, ESLint, type checks, then charter
+$ cd my-app && kiln dev      # dev servers in the background, databases first, logs offered
+$ kiln check                 # ruff, mypy, ESLint, type checks, then charter (--tests: the suites)
 $ claude                     # Claude Code, with kiln's rules, skills and hooks loaded
 ```
 

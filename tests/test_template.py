@@ -7,6 +7,8 @@ import copier
 import pytest
 import yaml
 
+from kiln.grid import score
+
 TEMPLATE_DIR = Path(__file__).resolve().parent.parent
 ANSWERS = {
     "name": "demo",
@@ -224,8 +226,8 @@ def test_java_backend_gets_a_maven_project(tmp_path: Path) -> None:
     assert workflow["jobs"]["backend"]["uses"].startswith(
         "antoine-tena/kiln/.github/workflows/maven.yml@"
     )
-    # Nothing for uv or pnpm to audit: no empty security job.
-    assert "security" not in workflow["jobs"]
+    # The Maven project audited alone (OSV-Scanner), nothing for uv or pnpm.
+    assert workflow["jobs"]["security"]["with"] == {"uv": "", "pnpm": "", "maven": "backend"}
     charter = tomllib.loads((project_dir / "charter.toml").read_text())
     assert ".java" in charter["ratchets"]["file-size"]["suffixes"]
     charter_rules = (project_dir / ".claude/rules/kiln/charter.md").read_text()
@@ -247,16 +249,88 @@ def test_team_gets_kiln_marketplace_and_plugin(tmp_path: Path) -> None:
     assert settings["enabledPlugins"] == {"kiln@kiln": True}
 
 
-def test_a_released_template_pins_its_workflows_to_its_version(tmp_path: Path) -> None:
-    clone = tmp_path / "kiln"
+@pytest.fixture(scope="module")
+def released(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, str]:
+    """kiln's template as a release would hand it over: a clone tagged v9.9.9, and its SHA."""
+    clone = tmp_path_factory.mktemp("released") / "kiln"
     subprocess.run(["git", "clone", "-q", "--no-tags", str(TEMPLATE_DIR), str(clone)], check=True)
     subprocess.run(["git", "-C", str(clone), "tag", "v9.9.9"], check=True)
+    sha = subprocess.check_output(["git", "-C", str(clone), "rev-parse", "HEAD"], text=True)
+    return clone, sha.strip()
+
+
+def generate_released(released: tuple[Path, str], destination: Path, **answers: object) -> Path:
     copier.run_copy(
-        str(clone), tmp_path / "demo", data=ANSWERS, defaults=True, vcs_ref="v9.9.9", quiet=True
+        str(released[0]),
+        destination,
+        data={**ANSWERS, **answers},
+        defaults=True,
+        vcs_ref="v9.9.9",
+        quiet=True,
+    )
+    return destination
+
+
+def test_a_released_template_pins_its_workflows_to_its_version(
+    tmp_path: Path, released: tuple[Path, str]
+) -> None:
+    project_dir = generate_released(released, tmp_path / "demo")
+
+    text = (project_dir / ".github/workflows/ci.yml").read_text()
+    workflow = yaml.safe_load(text)
+    assert workflow["jobs"]["api-contract"]["uses"].endswith(f"api-contract.yml@{released[1]}")
+    assert f"api-contract.yml@{released[1]} # v9.9.9\n" in text
+    assert workflow["permissions"] == {"contents": "read"}
+
+
+@pytest.mark.parametrize(
+    ("backend", "frontend", "deploy"),
+    [(*stack, "none") for stack in STACKS] + [("django", "nuxt", "vps")],
+)
+def test_a_released_project_scores_100_on_kiln_grid(
+    tmp_path: Path, released: tuple[Path, str], backend: str, frontend: str, deploy: str
+) -> None:
+    """kiln asks of others' repos what it generates: a new project has no gap to close."""
+    podman = (backend, frontend) in PODMAN_STACKS
+    project_dir = generate_released(
+        released,
+        tmp_path / "demo",
+        backend=backend,
+        frontend=frontend,
+        podman=podman,
+        deploy=deploy,
     )
 
-    workflow = yaml.safe_load((tmp_path / "demo/.github/workflows/ci.yml").read_text())
-    assert workflow["jobs"]["api-contract"]["uses"].endswith("api-contract.yml@v9.9.9")
+    report = score.score_repo(project_dir)
+
+    # The lockfiles are written by `kiln new` right after the template (`lock_dependencies`).
+    expected = {"LOCKED-DEPENDENCIES"}
+    if backend == "none" and frontend in ("nuxt", "next", "astro"):
+        expected.add("TESTS-PRESENT")  # a front alone has no test yet (T-160)
+    assert {gap.rule for gap in report.gaps} <= expected
+
+
+@pytest.mark.parametrize(("backend", "frontend"), PODMAN_STACKS)
+def test_dependabot_watches_each_folder_of_the_project(
+    tmp_path: Path, backend: str, frontend: str
+) -> None:
+    project_dir = generate(tmp_path / "demo", backend=backend, frontend=frontend, podman=True)
+
+    config = yaml.safe_load((project_dir / ".github/dependabot.yml").read_text())
+    manifests = {
+        "uv": ("pyproject.toml",),
+        "maven": ("pom.xml",),
+        "npm": ("package.json",),
+        "docker": ("Containerfile",),
+        "github-actions": (".github/workflows/ci.yml",),
+    }
+    for update in config["updates"]:
+        assert update["cooldown"] == {"default-days": 7}
+        for folder in update["directories"]:
+            assert any(
+                (project_dir / folder.lstrip("/") / name).is_file()
+                for name in manifests[update["package-ecosystem"]]
+            ), (update["package-ecosystem"], folder)
 
 
 def test_a_project_without_owner_has_no_codeowners_nor_team(tmp_path: Path) -> None:

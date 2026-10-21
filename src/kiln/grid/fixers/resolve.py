@@ -73,17 +73,29 @@ MANIFESTS = ", ".join(
 )
 
 
+DOCKER_HUB = "registry-1.docker.io"
+
+
+def registry_path(name: str) -> tuple[str, str]:
+    """The registry's API host and the repository path of an image name (without its tag):
+    Docker Hub's names (`node`, `docker.io/library/node`) are served by registry-1.docker.io."""
+    first = name.split("/")[0]
+    if "." in first or ":" in first or first == "localhost":
+        registry, path = first, name.split("/", 1)[1]
+    else:
+        registry, path = "docker.io", name
+    if registry in {"docker.io", "index.docker.io"}:
+        return DOCKER_HUB, path if "/" in path else f"library/{path}"
+    return registry, path
+
+
 @functools.cache
 def image_digest(image: str) -> str:
     """`sha256:…` of `name:tag` (the multi-platform index when there is one), through the
     registry's anonymous token."""
     name, _, tag = image.partition(":")
     tag = tag or "latest"
-    first = name.split("/")[0]
-    if "." in first or ":" in first or first == "localhost":
-        registry, path = first, name.split("/", 1)[1]
-    else:
-        registry, path = "registry-1.docker.io", name if "/" in name else f"library/{name}"
+    registry, path = registry_path(name)
     url = f"https://{registry}/v2/{path}/manifests/{tag}"
     headers = {"Accept": MANIFESTS}
     try:

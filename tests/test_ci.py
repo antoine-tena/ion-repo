@@ -107,6 +107,13 @@ def test_django_plan_keeps_the_project_inputs(tmp_path: Path) -> None:
     assert plan.services.database == "demo"
 
 
+def test_a_maven_project_is_audited_by_osv_scanner() -> None:
+    job = Job("security", "security", {"uv": "", "pnpm": "", "maven": "backend"})
+    steps = plan_job(job).steps
+    assert [(step.label, step.directory) for step in steps] == [("OSV-Scanner (Maven)", "backend")]
+    assert "osv-scanner --recursive ." in steps[0].command
+
+
 def test_workflow_names_of_before_0_4_are_still_replayed() -> None:
     old = Job("audit", "securite", {"niveau": "critical", "version-pnpm": "10"})
     contract = Job("contract", "contrat-api", {"back": "api", "generation": "pnpm gen"})

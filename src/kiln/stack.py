@@ -73,7 +73,7 @@ FRONTEND_DEV_COMMANDS: Mapping[str, tuple[str, ...]] = {
 PNPM_CHECK_SCRIPTS: Mapping[str, tuple[str, ...]] = {
     "nuxt": ("lint", "typecheck"),
     "next": ("lint", "typecheck"),
-    "astro": ("typecheck",),
+    "astro": ("lint", "typecheck"),
 }
 # Build and install outputs of a framework, removed when switching away from it (`kiln set`).
 # Never data nor .env: only what the tool regenerates. The lock is one: it is not in the
@@ -103,9 +103,11 @@ PYTHON_CHECKS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("ruff", ("uv", "run", "ruff", "check", ".")),
     ("format", ("uv", "run", "ruff", "format", "--check", ".")),
     ("mypy", ("uv", "run", "mypy", ".")),
-    ("pytest", ("uv", "run", "pytest", "-q")),
 )
+# The test suites: only on request (`kiln check --tests`); the release runs them all (`kiln ci`).
+PYTHON_TESTS = ("pytest", ("uv", "run", "pytest", "-q"))
 MAVEN_CHECK = ("maven", (MAVEN_WRAPPER, "-B", "-q", "verify"))
+MAVEN_SKIP_TESTS = "-DskipTests"
 
 
 @dataclass(frozen=True)
@@ -152,15 +154,17 @@ class Stack:
             commands.append(Command(self.frontend, FRONTEND_DIR, argv))
         return commands
 
-    def check_commands(self) -> list[Command]:
+    def check_commands(self, with_tests: bool = False) -> list[Command]:
+        python_checks = (*PYTHON_CHECKS, PYTHON_TESTS) if with_tests else PYTHON_CHECKS
         commands = [
             Command(f"{directory} {label}", directory, argv)
             for directory in self.python_dirs
-            for label, argv in PYTHON_CHECKS
+            for label, argv in python_checks
         ]
         if self.maven_dir is not None:
             label, argv = MAVEN_CHECK
-            commands.append(Command(f"{self.maven_dir} {label}", self.maven_dir, argv))
+            maven_argv = argv if with_tests else (*argv, MAVEN_SKIP_TESTS)
+            commands.append(Command(f"{self.maven_dir} {label}", self.maven_dir, maven_argv))
         if self.pnpm_dir is not None:
             commands += [
                 Command(f"{self.pnpm_dir} {script}", self.pnpm_dir, ("pnpm", script))

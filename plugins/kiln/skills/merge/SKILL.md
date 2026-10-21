@@ -16,10 +16,12 @@ step 4. Talk to the user in their language.
    commits are public for good. What the review tidies on the branch happens before the merge;
    what it leaves to the user, tell them and wait for their decision.
    Then the repo's checks, in the branch's worktree: `kiln check` in a repo kiln generated or
-   adopted, otherwise the commands its `CLAUDE.md` gives (kiln itself: `uv run pytest -q`,
-   `uv run ruff check`, `uv run ruff format --check`, `uv run mypy src tests`). Commits made
-   without checks during a long series are fine; the merge is where they all run. A failure:
-   fix it on the branch, never merge red.
+   adopted, otherwise the commands its `CLAUDE.md` gives (kiln itself: `uv run ruff check`,
+   `uv run ruff format --check`, `uv run mypy src tests`). Lint, types and charter only: never a
+   full test suite at a merge (no `kiln check --tests`, no `kiln ci`), the release runs them all;
+   at most the tests of the files the branch touched. Commits made without checks during a long
+   series are fine; the merge is where these run. A failure: fix it on the branch, never merge
+   red.
 2. Update the integration branch (`git pull --ff-only origin <integration>`), then
    `git merge --no-ff <branch> -m "Merge branch '<branch>' into <integration>"`, from the main
    tree when it is on the integration branch, otherwise with `git -C` on a worktree that is;

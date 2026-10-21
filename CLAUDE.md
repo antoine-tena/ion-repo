@@ -13,12 +13,12 @@ Où chercher, pour ne pas explorer ; à tenir à jour dans le commit qui ajoute,
 un dossier ou un module.
 
 - `src/kiln/` : la commande. `cli.py` (arguments ; anciens noms de 0.3 acceptés par `modernize`) ; une commande par module : `new.py` (questions de `questions.py`),
-  `adopt.py` (`kiln adopt`, repo existant), `install.py`, `dev.py`, `check.py`, `settings.py` (`kiln set`, clés réglables), `machine.py` (`kiln set` hors d'un repo : réglages du poste), `waive.py` (`kiln waive`), `update.py`,
-  `contract.py`, `release.py` (`kiln version`), `shipping.py` (`kiln version cut` et `promote`), `github_ci.py` (verdict de la CI de GitHub sur un commit, attendu par `cut` et `promote`), `doctor.py` (diagnostic du poste et du repo), `fleet.py` (`status`, `update --all`), `adopted.py` (repo adopté : le tag des workflows de kiln avancé à la dernière version publique), `rehearsal.py` (`kiln update --rehearse`, la mise à jour sur un clone jetable) ; socle : `stack.py` (stack lue dans
+  `adopt.py` (`kiln adopt`, repo existant), `install.py`, `dev/` (`kiln dev` : `processes.py` serveurs de la stack et `Procfile.dev`, `backing.py` bases du compose dans podman, `menu.py` quoi lancer et journaux proposés, `background.py` arrière-plan, `status`, `logs`, `stop`, `foreground.py` `--foreground`, `containers.py` `--containers`), `check.py`, `settings.py` (`kiln set`, clés réglables), `machine.py` (`kiln set` hors d'un repo : réglages du poste), `waive.py` (`kiln waive`), `update.py`,
+  `contract.py`, `release.py` (`kiln version`), `shipping.py` (`kiln version cut` et `promote`), `github_ci.py` (verdict de la CI de GitHub sur un commit, attendu par `cut` et `promote`), `doctor.py` (diagnostic du poste et du repo), `tool_update.py` (mise à jour de l'outil proposée après une commande tapée hors de Claude Code), `fleet.py` (`status`, `update --all`), `adopted.py` (repo adopté : le tag des workflows de kiln avancé à la dernière version publique), `adopted_names.py` (repo adopté : ses noms de kiln 0.3 convertis par `kiln update`), `rehearsal.py` (`kiln update --rehearse`, la mise à jour sur un clone jetable) ; socle : `stack.py` (stack lue dans
   `.copier-answers.yml`), `template.py`, `deps.py`, `github.py`, `rules.py` (règles non
   vérifiées), `statusline.py`, `versions.py` (tags, journal des versions), `frozen.py` (fichiers figés par `kiln-waivers.toml`, épargnés par `update`), `renames.py` (noms d'avant 0.4.0 et leurs noms anglais), `banner.py` (bannière, écran d'accueil), `ui.py` (palette pierre et feu, étapes,
   roue animée, bilan, succès, erreurs), `shell.py`, `config.py` (`~/.config/kiln/config.toml`).
-- `src/kiln/grid/` : la grille (T-123) : `rules/<thème>/<ID>.toml` une règle par fichier, `model.py` (format, listes fermées, validation), `facts.py` (de quoi est fait un repo), `detectors.py` (détecteurs déclaratifs, contrôles Python), `fixers/` (convertisseurs de `kiln fix` : `ci.py`, `python.py`, `containers.py`, `resolve.py` pour les SHA et empreintes en ligne), `fix.py` (`kiln fix`), `show.py` (`kiln grid`), `score.py` (`kiln score`, note d'un repo face à la grille) ; chaque règle a un exemple qui passe et un qui échoue dans `tests/test_grid.py`.
+- `src/kiln/grid/` : la grille (T-123) : `rules/<thème>/<ID>.toml` une règle par fichier, `model.py` (format, listes fermées, validation), `facts.py` (de quoi est fait un repo), `detectors.py` (détecteurs déclaratifs, contrôles Python), `fixers/` (convertisseurs de `kiln fix` : `ci.py`, `python.py`, `containers.py`, `resolve.py` pour les SHA et empreintes en ligne), `fix.py` (`kiln fix`), `show.py` (`kiln grid`), `score.py` (`kiln score`, note d'un repo face à la grille), `roadmap.py` (`kiln score --roadmap`, `--rule`, `--write` : ce qui demande du jugement, pour Claude) ; chaque règle a un exemple qui passe et un qui échoue dans `tests/test_grid.py`.
 - `src/kiln/ci/` : `kiln ci` (CI rejouée sur le poste, verdict en note git) ;
   `src/kiln/charter/` : moteur de `charter` (`bans.py`, `ratchets.py`,
   `python_tools.py`, `waivers.py` : dérogations de `kiln-waivers.toml`).
@@ -29,7 +29,7 @@ un dossier ou un module.
 - `plugins/` : plugins Claude Code, catalogue `.claude-plugin/marketplace.json` (avec
   `renames` : anciens noms `base`, `pile-django`, `pile-nuxt`, `vps-podman`) ; `kiln/` (skills
   `worktree`, `merge`, `release`, `cleanup`, `review` (commits et diff d'une branche avant la
-  fusion, dépôt entier avant une version), `backlog`, `update`, `adopt`, `report` (défaut de kiln
+  fusion, dépôt entier avant une version), `backlog`, `update`, `adopt`, `modernize` (écarts de la feuille de route comblés un à un), `report` (défaut de kiln
   remonté en issue ou PR), `token` (jeton d'un service dans `.<service>/`), `contribution` (PR
   d'un contributeur extérieur), `good-first-issues` ; `hooks/` (dont `reminders.py`, espacement
   des questions de mise à jour, et `first_prompt.py`, logo de kiln et nouveautés au-dessus de la
@@ -51,7 +51,8 @@ un dossier ou un module.
 - `scripts/screenshots.py` : dessine les images du README à partir des vraies sorties de kiln
   (et le logo, l'image de partage) ; `scripts/social_preview.py` : l'image de partage en PNG
   (Playwright) ; `scripts/demo_shell.sh` : le shell des démos enregistrées (kiln de ce dossier,
-  sans numéro de version, dans un dossier jetable sur le disque).
+  sans numéro de version, dans un dossier jetable sur le disque) ; `scripts/refresh_images.py` :
+  images de base du modèle épinglées au digest de leur tag (avant chaque candidate).
 - `tests/` : `test_template.py` (rendu du modèle pour chaque stack), `test_cli.py` (la commande :
   accueil, erreurs, bilan, sorties hors terminal, anciens noms), `test_questions.py` (questions de `kiln new`), `test_new.py` (ce que `kiln new` dit à la fin), `test_grid.py` (la grille), `test_score.py` (`kiln score`), `test_fix.py` (`kiln fix` et ses conversions), `test_adopted.py` (repos adoptés), `test_unites.py`,
   `test_ci.py`, `test_flotte.py`, `test_waivers.py` (dérogations), `test_waive.py`, `test_charter_file.py` (`charter file`, hook après une édition), `test_shipping.py` (`kiln version cut` et `promote`), `test_rehearsal.py` (`update --rehearse`), `test_e2e.py` (de bout en bout, `-m e2e` : chaque version depuis v0.3.0 par un outil installé, et le repo-témoin `antoine-tena/kiln-rehearsal`, figé à v0.3.3-rc.2, ne jamais le mettre à jour), `test_deployment.py`, `test_statusline.py` (choix du
@@ -143,7 +144,8 @@ cassant → majeure (rare et planifiée), `feat` → mineure, le reste → corre
 Deux temps, par la skill `/kiln:release` (pas de déploiement : le tag publie, et le tag promu
 publie sur PyPI le paquet `kiln-cli` par `pypi.yml`) :
 1. **Candidate** : branche `release/vX.Y.Z` tirée de `develop`, entrée `## vX.Y.Z — date` en tête
-   de `CHANGELOG.md`, `version = "X.Y.Z"` dans `pyproject.toml`, contrôle complet (les trois
+   de `CHANGELOG.md`, `version = "X.Y.Z"` dans `pyproject.toml`, digests des images du modèle
+   rafraîchis (`uv run python scripts/refresh_images.py`), contrôle complet (les trois
    commandes ci-dessous), branche poussée, **CI de GitHub attendue sur son commit** (macOS et
    tests de bout en bout, qui ne tournent que là : la rc.1 de la v0.4.0 était sortie sur un rouge
    que personne n'avait lu), tag `vX.Y.Z-rc.1` poussé seulement au vert. Les postes au canal `internal` (`kiln set

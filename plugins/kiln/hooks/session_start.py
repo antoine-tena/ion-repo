@@ -31,7 +31,7 @@ import tomllib
 import urllib.request
 from collections.abc import Callable
 from pathlib import Path
-from typing import NamedTuple
+from typing import Any, NamedTuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import reminders
@@ -61,6 +61,17 @@ LABEL_LENGTH = 25
 # Lines of minor fixes, shown after the others (`Correctifs` in French changelogs).
 FIX_LABELS = ("Correctifs", "Correctif", "Fixes", "Fix")
 STARTUP_SOURCE = "startup"
+# Said at every start, /clear and compaction included, in any repo: an error that kiln caused
+# often surfaces elsewhere (a Django traceback because `kiln dev` did not start the database).
+ERROR_ORIGIN = (
+    "kiln [REPORT-TO-KILN]: when something fails (a command, a test, a check, a server that "
+    "crashes, a CI run), ask yourself before fixing it whether the cause lies in kiln - the kiln "
+    "or charter command (kiln dev, kiln check, kiln ci...), a file kiln generated, a rule of its "
+    "charter, a skill or hook of a kiln plugin, a reusable workflow - even when the error shows "
+    "up elsewhere. If it does, tell the user, and fix it in kiln, never in the repo where it "
+    "showed (kiln update would undo it): in kiln's own repo when this machine has it, otherwise "
+    "report it with /kiln:report, only with the user's agreement."
+)
 TOOL_KEY = reminders.TOOL_KEY
 LEGACY_PLUGIN_LINK = Path(".claude") / "kiln"
 
@@ -661,27 +672,36 @@ def main() -> None:
         return
     try:
         payload = json.load(sys.stdin)
+    except ValueError:
+        payload = {}
+    red, found = startup_context(payload)
+    context = "\n\n".join(
+        part for part in (ERROR_ORIGIN, red, found.context if found else "") if part
+    )
+    if found:
+        save_notice(payload.get("session_id", ""), found.notice)
+    hook_output = {"hookEventName": "SessionStart", "additionalContext": context}
+    print(json.dumps({"hookSpecificOutput": hook_output}, ensure_ascii=False))
+
+
+def startup_context(payload: dict[str, Any]) -> tuple[str, Offer | None]:
+    """At startup in a git repo: the red CI and the update question; nothing otherwise."""
+    try:
         if payload.get("source", STARTUP_SOURCE) != STARTUP_SOURCE:
-            return
+            return "", None
         cwd = payload.get("cwd") or "."
         root = git_root(cwd)
         if root is None:
-            return
+            return "", None
         remove_legacy_link(root)
         state = reminders.load()
         found = offer(cwd, state)
         if kiln_repo(cwd) is not None:
             reminders.save(state)
-        red = red_ci(root) if follows_kiln(root) else ""
+        return (red_ci(root) if follows_kiln(root) else ""), found
     except Exception:
-        # No network, GitHub rate limiting, unreadable repo: the session starts silently.
-        return
-    context = "\n\n".join(part for part in (red, found.context if found else "") if part)
-    if found:
-        save_notice(payload.get("session_id", ""), found.notice)
-    if context:
-        hook_output = {"hookEventName": "SessionStart", "additionalContext": context}
-        print(json.dumps({"hookSpecificOutput": hook_output}, ensure_ascii=False))
+        # No network, GitHub rate limiting, unreadable repo: only the standing rule is said.
+        return "", None
 
 
 if __name__ == "__main__":

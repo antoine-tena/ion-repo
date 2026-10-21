@@ -428,7 +428,9 @@ def collect_repo(status: Status, cwd: str, top: str) -> str:
             300,
             f"vercel api '/v6/deployments?projectId={vp['projectId']}"
             f"&target=production&state=READY&limit=1' {scope} | python3 -c 'import json,sys;"
-            ' print(json.load(sys.stdin)["deployments"][0]["meta"]["githubCommitSha"])\'',
+            ' m = json.load(sys.stdin)["deployments"][0]["meta"];'
+            # Git integration: githubCommitSha; `vercel deploy` from the CLI: gitCommitSha.
+            ' print(m.get("githubCommitSha") or m.get("gitCommitSha", ""))\'',
             main,
         )
         front = framework(

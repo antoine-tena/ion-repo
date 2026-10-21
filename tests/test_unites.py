@@ -1,5 +1,6 @@
 import datetime
 import json
+import os
 import subprocess
 import sys
 import zipfile
@@ -12,15 +13,17 @@ from plumbum import ProcessExecutionError
 
 from kiln import cli, github, ui
 from kiln.banner import LOGO, _project_summary, render_logo
+from kiln.check import _check_commands, _ci_django_job
 from kiln.config import UserConfig
 from kiln.deps import _major_bounds
 from kiln.dev import read_env_file, service_prefix
+from kiln.dev.backing import backing_services
 from kiln.doctor import Level, workstation_findings
-from kiln.install import ensure_env_file
+from kiln.install import ensure_env_file, moved_from, pnpm_behind, sync_command
 from kiln.release import Tag, latest_candidates, next_version, promotion_verdict
 from kiln.rules import charter_rules, verified_rules, write_unverified_rules
 from kiln.settings import parse_assignments, remove_replaced_artifacts
-from kiln.shell import KilnError
+from kiln.shell import KilnError, quiet_git
 from kiln.stack import Stack, answers_if_any, load_stack, stack_from_answers
 from kiln.template import DEFAULT_TEMPLATE_SOURCE, template_revision
 from kiln.update import (
@@ -61,6 +64,42 @@ def test_checks_end_with_charter() -> None:
     ]
 
 
+@pytest.mark.parametrize(
+    ("charter_name", "directory_key"), [("charter.toml", "directory"), ("charte.toml", "dossier")]
+)
+def test_typing_follows_the_charter_when_it_declares_it(
+    tmp_path: Path, charter_name: str, directory_key: str
+) -> None:
+    stack = Stack(backend="django", frontend="aucun", has_podman=False)
+    (tmp_path / charter_name).write_text(f'[types]\n{directory_key} = "backend"\n')
+
+    commands = {command.label: command for command in _check_commands(tmp_path, stack)}
+
+    assert commands["backend mypy"].argv == ("charter", "types")
+    assert commands["backend mypy"].directory == "."
+    assert _check_commands(tmp_path / "bare", stack)[2].argv == ("uv", "run", "mypy", ".")
+
+
+def test_backend_tests_take_the_databases_of_the_ci_job(tmp_path: Path) -> None:
+    assert _ci_django_job(tmp_path, "backend") is None  # no ci.yml: the compose's databases
+    workflows = tmp_path / ".github" / "workflows"
+    workflows.mkdir(parents=True)
+    (workflows / "ci.yml").write_text(
+        "jobs:\n  quality:\n    uses: antoine-tena/kiln/.github/workflows/charte.yml@v0.3.4\n"
+        "  backend:\n    uses: antoine-tena/kiln/.github/workflows/django.yml@v0.3.4\n"
+        "    with:\n      base: club\n      redis: docker.io/library/redis:8-alpine\n"
+        "      env: |\n        DEBUG=True\n"
+    )
+
+    plan = _ci_django_job(tmp_path, "backend")
+
+    assert plan is not None and plan.services is not None
+    assert plan.services.database == "club"
+    assert plan.services.redis == "docker.io/library/redis:8-alpine"
+    assert dict(plan.env) == {"DEBUG": "True"}
+    assert _ci_django_job(tmp_path, "api") is None
+
+
 def test_java_backend_is_checked_by_the_maven_wrapper() -> None:
     stack = Stack(backend="java", frontend="aucun", has_podman=False)
 
@@ -68,9 +107,17 @@ def test_java_backend_is_checked_by_the_maven_wrapper() -> None:
     assert stack.maven_dir == "backend"
     assert stack.dev_commands() == []
     assert [(command.label, command.argv) for command in stack.check_commands()] == [
-        ("backend maven", ("./mvnw", "-B", "-q", "verify")),
+        ("backend maven", ("./mvnw", "-B", "-q", "verify", "-DskipTests")),
         ("charter", ("charter",)),
     ]
+    assert stack.check_commands(with_tests=True)[0].argv == ("./mvnw", "-B", "-q", "verify")
+
+
+def test_test_suites_run_only_on_request() -> None:
+    stack = Stack(backend="django", frontend="nuxt", has_podman=False)
+
+    assert "backend pytest" not in [command.label for command in stack.check_commands()]
+    assert "backend pytest" in [command.label for command in stack.check_commands(True)]
 
 
 def test_java_backend_with_a_frontend_serves_its_jar_in_dev() -> None:
@@ -145,6 +192,42 @@ def test_legacy_template_source_is_replaced(tmp_path: Path) -> None:
     replace_legacy_source(tmp_path)
 
     assert "_src_path: https://github.com/antoine-tena/kiln.git" in answers.read_text()
+
+
+def _venv_with_script(venv: Path, created_in: Path) -> None:
+    (venv / "bin").mkdir(parents=True)
+    (venv / "bin" / "ruff").write_bytes(b"\x7fELF binary")
+    (venv / "bin" / "mypy").write_text(f"#!{created_in}/bin/python\nimport mypy\n")
+
+
+def test_a_venv_moved_with_its_repo_is_reinstalled(tmp_path: Path) -> None:
+    venv = tmp_path / "club" / "backend" / ".venv"
+    old_venv = tmp_path / "projects" / "club" / "backend" / ".venv"
+    _venv_with_script(venv, old_venv)
+
+    assert moved_from(venv) == old_venv
+    assert sync_command(venv) == ["uv", "sync", "--locked", "--reinstall"]
+
+
+def test_a_venv_in_place_or_absent_is_only_synced(tmp_path: Path) -> None:
+    venv = tmp_path / "backend" / ".venv"
+    _venv_with_script(venv, venv)
+
+    assert moved_from(venv) is None
+    assert moved_from(tmp_path / "missing") is None
+    assert sync_command(venv) == ["uv", "sync", "--locked"]
+
+
+def test_pnpm_dependencies_behind_their_lockfile_are_seen(tmp_path: Path) -> None:
+    assert pnpm_behind(tmp_path)  # never installed
+    (tmp_path / "pnpm-lock.yaml").write_text("nuxt@4.6.2\n")
+    (tmp_path / "node_modules" / ".pnpm").mkdir(parents=True)
+    installed = tmp_path / "node_modules" / ".pnpm" / "lock.yaml"
+    installed.write_text("nuxt@4.5.2\n")
+    assert pnpm_behind(tmp_path)
+
+    installed.write_text("nuxt@4.6.2\n")
+    assert not pnpm_behind(tmp_path)
 
 
 def test_env_file_gets_a_local_secret_and_is_kept(tmp_path: Path) -> None:
@@ -368,13 +451,20 @@ def test_other_git_failure_keeps_its_last_line() -> None:
     assert git_failure(error) == "git failed while updating the template: fatal: ref inconnue"
 
 
+@pytest.mark.parametrize("pinned", [False, True])
 @pytest.mark.parametrize("local_edit", ["", "  local: true\n"])
 def test_promoted_candidate_does_not_conflict_on_kiln_workflow_refs(
-    tmp_path: Path, local_edit: str
+    tmp_path: Path, local_edit: str, pinned: bool
 ) -> None:
     """Le tag promu pose sur le commit de sa candidate : Copier rend l'ancienne version sous le
     nom promu, et seul le `@<tag>` des workflows de kiln différerait du projet (T-18). Une
-    vraie modification locale au même endroit reste un conflit à arbitrer."""
+    vraie modification locale au même endroit reste un conflit à arbitrer. Épinglé par SHA
+    (`@<sha> # <tag>`), le SHA ne change pas à la promotion : seul le tag du commentaire."""
+    ref = (
+        "{{ _copier_conf.vcs_ref_hash }} # {{ _copier_answers._commit }}"
+        if pinned
+        else "{{ _copier_answers._commit }}"
+    )
     template, project = tmp_path / "modele", tmp_path / "projet"
 
     def git(root: Path, *args: str) -> None:
@@ -384,7 +474,7 @@ def test_promoted_candidate_does_not_conflict_on_kiln_workflow_refs(
         (template / "ci.yml.jinja").write_text(
             "# version de kiln ({{ _copier_answers._commit }})\n"
             "jobs:\n  python:\n    uses: antoine-tena/kiln/.github/workflows/python.yml"
-            "@{{ _copier_answers._commit }}\n" + steps
+            f"@{ref}\n" + steps
         )
         git(template, "add", "-A")
         git(template, "commit", "-qm", tag)
@@ -411,7 +501,8 @@ def test_promoted_candidate_does_not_conflict_on_kiln_workflow_refs(
     ci = (project / "ci.yml").read_text()
     assert ("<<<<<<<" in ci) == bool(local_edit)
     if not local_edit:
-        assert ci.endswith("python.yml@v1.0.1\n  charte: true\n")
+        assert ci.endswith("v1.0.1\n  charte: true\n")
+        assert ("python.yml@v1.0.1" in ci) != pinned
         assert "ci.yml" not in subprocess.check_output(
             ["git", "diff", "--name-only", "--diff-filter=U"], cwd=project, text=True
         )
@@ -558,3 +649,37 @@ def test_without_gh_the_project_is_created_without_github(
     assert github.can_publish() is False
     assert github.login() is None
     assert "kiln publish" in capsys.readouterr().out
+
+
+def test_backing_services_reads_db_and_redis_of_the_services_only(tmp_path: Path) -> None:
+    compose = tmp_path / "compose.yml"
+    compose.write_text(
+        "name: demo\nx-common: &common\n  tmpfs: /tmp\n"
+        "services:\n  db:\n    image: postgres\n    container_name: demo-db\n"
+        "  redis:\n    image: redis\n  backend:\n    container_name: demo-backend\n"
+        "volumes:\n  db-data:\n",
+        encoding="utf-8",
+    )
+    assert backing_services(compose) == {"db": "demo-db", "redis": "demo_redis_1"}
+
+
+def test_git_runs_without_background_housekeeping_while_copier_works(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("GIT_CONFIG_COUNT", "1")
+    monkeypatch.setenv("GIT_CONFIG_KEY_0", "user.name")
+    monkeypatch.setenv("GIT_CONFIG_VALUE_0", "Kept")
+    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
+
+    def setting(key: str) -> str:
+        found = subprocess.run(
+            ["git", "-C", str(tmp_path), "config", "--get", key], capture_output=True, text=True
+        )
+        return found.stdout.strip()
+
+    with quiet_git():
+        assert (setting("gc.auto"), setting("maintenance.auto")) == ("0", "false")
+        assert setting("user.name") == "Kept"
+    assert setting("gc.auto") == ""
+    assert os.environ["GIT_CONFIG_COUNT"] == "1"
+    assert "GIT_CONFIG_KEY_1" not in os.environ

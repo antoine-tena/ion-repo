@@ -18,7 +18,7 @@ from kiln.contract import generate_api_contract
 from kiln.deps import lock_dependencies, sync_dependencies, update_dependencies
 from kiln.frozen import frozen_files, report_frozen_drift
 from kiln.rules import write_unverified_rules
-from kiln.shell import KilnError, capture, require_tools, run, step
+from kiln.shell import KilnError, capture, quiet_git, require_tools, run, step
 from kiln.stack import ANSWERS_FILE, load_stack, read_answers
 from kiln.template import DEFAULT_TEMPLATE_SOURCE, template_revision
 from kiln.versions import (
@@ -36,7 +36,8 @@ PROTECTED_BRANCHES = ("main", "develop")
 # Start of a conflict left by Copier (`git merge-file`).
 CONFLICT_MARKER = "<<<<<<< before updating"
 # A reusable workflow of kiln cited at a tag: `antoine-tena/kiln/….yml@v0.3.1`.
-KILN_WORKFLOW_REF = re.compile(r"(antoine-tena/kiln/\S+?)@(\S+)")
+# `…/charter.yml@v0.4.1`, or `…/charter.yml@<sha> # v0.4.1` once pinned: the tag is in the comment.
+KILN_WORKFLOW_REF = re.compile(r"(antoine-tena/kiln/\S+?)@(\S+)(?:[ \t]+#[ \t]*(\S+))?")
 # Former address of the template (init-repo, renamed kiln): GitHub redirects, still replaced.
 LEGACY_TEMPLATE_SOURCES = ("https://github.com/antoine-tena/init-repo.git",)
 
@@ -118,19 +119,20 @@ def apply_template(root: Path, answers: Mapping[str, object] | None = None) -> N
     left as they are."""
     previous_answers = migrations.raw_answers(root)
     try:
-        copier.run_update(
-            root,
-            # Under today's names: a project of kiln 0.3 wrote its answers in French.
-            data=migrations.answers_for_update(root, answers or {}),
-            vcs_ref=template_revision(_template_source(root)),
-            use_prereleases=follows_candidates(),
-            exclude=frozen_files(root),
-            defaults=True,
-            skip_answered=True,
-            overwrite=True,
-            conflict="inline",
-            unsafe=False,
-        )
+        with quiet_git():
+            copier.run_update(
+                root,
+                # Under today's names: a project of kiln 0.3 wrote its answers in French.
+                data=migrations.answers_for_update(root, answers or {}),
+                vcs_ref=template_revision(_template_source(root)),
+                use_prereleases=follows_candidates(),
+                exclude=frozen_files(root),
+                defaults=True,
+                skip_answered=True,
+                overwrite=True,
+                conflict="inline",
+                unsafe=False,
+            )
     except UserMessageError as error:
         raise KilnError(f"template update refused: {error}") from error
     except ProcessExecutionError as error:
@@ -174,7 +176,7 @@ def resolve_kiln_ref_conflicts(root: Path) -> None:
 
 
 def _kiln_refs(text: str) -> set[str]:
-    return {match.group(2) for match in KILN_WORKFLOW_REF.finditer(text)}
+    return {match.group(3) or match.group(2) for match in KILN_WORKFLOW_REF.finditer(text)}
 
 
 def _index_stage(root: Path, stage: int, name: str) -> str | None:

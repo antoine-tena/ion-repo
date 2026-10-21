@@ -8,3 +8,13 @@
 "{{ echappe | replace('"', '\\"') }}"
 {%- endif -%}
 {%- endmacro -%}
+
+{#- Port de la base PostgreSQL du projet sur le poste, tiré de son nom : deux projets ne se
+    disputent jamais le 5432 (54000 à 54999, le même à chaque mise à jour). -#}
+{%- macro db_port(name) -%}
+{%- set ns = namespace(sum=0) -%}
+{%- for character in name -%}
+{%- set ns.sum = (ns.sum * 31 + 'abcdefghijklmnopqrstuvwxyz0123456789-'.find(character) + 1) % 1000 -%}
+{%- endfor -%}
+{{ 54000 + ns.sum }}
+{%- endmacro -%}

@@ -2,6 +2,7 @@ import importlib.util
 import io
 import json
 import subprocess
+import sys
 from collections.abc import Callable
 from pathlib import Path
 from types import ModuleType
@@ -449,3 +450,17 @@ def test_a_red_local_ci_is_read_from_its_git_note(tmp_path: Path) -> None:
     assert hook.red_ci(repo).startswith("The CI of `develop` is red: `kiln ci` failed")
     subprocess.run([*git, *note, "kiln ci: success", "origin/develop"], check=True)
     assert hook.red_ci(repo) == ""
+
+
+def test_every_start_recalls_that_errors_may_come_from_kiln(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    hook = load_hook()
+    monkeypatch.setattr(hook, "git_root", lambda cwd: None)
+    monkeypatch.setattr(sys, "argv", ["session_start.py"])
+    monkeypatch.setattr(sys, "stdin", io.StringIO('{"source": "clear", "cwd": "/"}'))
+
+    hook.main()
+
+    said = json.loads(capsys.readouterr().out)["hookSpecificOutput"]["additionalContext"]
+    assert said == hook.ERROR_ORIGIN

@@ -105,9 +105,16 @@ kiln dev
 - Frontend : {{ front_url }}
 {%- if backend in ['django', 'fastapi'] and js_front %} (les appels `/api` sont relayés vers le backend){% endif %}.
 {%- endif %}
+{%- if front_url or backend in ['django', 'fastapi', 'data'] %}
+
+`kiln dev` laisse tout tourner en arrière-plan et propose de suivre les journaux ; ensuite
+`kiln dev status`, `kiln dev logs [service] -f`, `kiln dev stop` (`--foreground` : dans le
+terminal, jusqu'à Ctrl+C). Un processus de plus (un worker, une tâche de fond) se déclare dans le
+`Procfile.dev` de son dossier, une ligne `nom: commande`.
+{%- endif %}
 {%- if podman %}
 
-`kiln dev --containers` lance toute la pile dans podman (`compose.yaml`).
+`kiln dev --containers` lance toute la pile dans podman, comme en production (`compose.yaml`).
 {%- endif %}
 
 ## Vérifier le code
@@ -254,9 +261,16 @@ kiln dev
 - Frontend: {{ front_url }}
 {%- if backend in ['django', 'fastapi'] and js_front %} (`/api` calls are proxied to the backend){% endif %}.
 {%- endif %}
+{%- if front_url or backend in ['django', 'fastapi', 'data'] %}
+
+`kiln dev` leaves it all running in the background and offers to follow the logs; then
+`kiln dev status`, `kiln dev logs [service] -f`, `kiln dev stop` (`--foreground`: in the
+terminal, until Ctrl+C). One more process (a worker, a background task)
+goes in its folder's `Procfile.dev`, one `name: command` line.
+{%- endif %}
 {%- if podman %}
 
-`kiln dev --containers` runs the whole stack in podman (`compose.yaml`).
+`kiln dev --containers` runs the whole stack in podman, as in production (`compose.yaml`).
 {%- endif %}
 
 ## Check the code

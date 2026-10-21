@@ -1,6 +1,9 @@
 """`kiln score` (T-46): any repo measured against the grid, the same number twice, nothing
-written, waivers apart, and what the grid does not know listed."""
+written, waivers apart, and what the grid does not know listed. `--roadmap` (T-129): what needs
+judgment handed to Claude with its places, a false positive dismissed on its path, a gap proven
+closed by `--rule`, tickets written once."""
 
+import datetime
 import json
 import subprocess
 import sys
@@ -9,7 +12,8 @@ from pathlib import Path
 import pytest
 
 from kiln import cli
-from kiln.grid import score
+from kiln.grid import roadmap, score
+from kiln.shell import KilnError
 
 SHA = "b4ffde65f46336ab88eb53be808477a3936bae11"
 GOOD = {
@@ -87,6 +91,23 @@ def test_stacks_the_grid_does_not_cover_are_listed(tmp_path: Path) -> None:
     assert report.uncovered == ("PHP: not covered by the grid yet",)
 
 
+@pytest.mark.parametrize(
+    ("files", "uncovered"),
+    [
+        ({"App.sln": "", "App/App.csproj": "<Project/>", "App/Main.cs": ""}, ["C# (.NET)"]),
+        ({".classpath": "", "src/Main.java": "class Main {}"}, ["Java"]),
+        ({"pom.xml": "<project/>", "src/Main.java": "class Main {}"}, ["Java (Maven)"]),
+        ({"web/index.php": "<?php"}, ["PHP"]),
+    ],
+)
+def test_a_stack_known_by_its_sources_alone_is_listed(
+    tmp_path: Path, files: dict[str, str], uncovered: list[str]
+) -> None:
+    report = score.score_repo(make(tmp_path, {**GOOD, **files}))
+
+    assert report.uncovered == tuple(f"{stack}: not covered by the grid yet" for stack in uncovered)
+
+
 def test_json_badge_and_screen(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -114,3 +135,82 @@ def test_a_missing_folder_is_said(
     with pytest.raises(SystemExit):
         cli.main()
     assert "no folder" in capsys.readouterr().err
+
+
+# --- the roadmap ---
+
+LEGACY = {
+    **GOOD,
+    "app.py": "try:\n    pass\nexcept:\n    pass\n",
+    "db.py": 'def find(cursor, name):\n    cursor.execute(f"SELECT * FROM t WHERE n = {name}")\n',
+}
+BACKLOG = """# Backlog
+
+**Next free: T-07.**
+
+## 🟡 Normal
+
+## ✅ Done
+"""
+
+
+def test_the_roadmap_leaves_scripts_out_and_puts_sure_gaps_first(tmp_path: Path) -> None:
+    report = score.score_repo(make(tmp_path, LEGACY))
+
+    items = report.roadmap()
+
+    assert all(not found.by_script for found in items)
+    assert [found.rule for found in items].index("BARE-EXCEPT") < [
+        found.rule for found in items
+    ].index("SQL-PARAMETERS")
+    sql = next(found for found in items if found.rule == "SQL-PARAMETERS")
+    assert sql.confirm and sql.locations == ("db.py:2",)
+
+
+def test_a_false_positive_dismissed_on_its_path_is_never_flagged_again(tmp_path: Path) -> None:
+    root = make(tmp_path, LEGACY)
+    (root / "kiln-waivers.toml").write_text(
+        '[[waiver]]\nrule = "SQL-PARAMETERS"\npaths = ["db.py"]\n'
+        'reason = "false positive: a constant"\nby = "a"\nsince = 2026-10-20\nuntil = "never"\n'
+    )
+
+    found = score.rule_finding(score.score_repo(root), "SQL-PARAMETERS")
+
+    assert found is not None and found.status == "waived"
+
+
+def test_rule_fails_while_the_gap_is_open_and_passes_once_closed(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    root = make(tmp_path, LEGACY)
+    report = score.score_repo(root)
+    with pytest.raises(KilnError, match="BARE-EXCEPT still open"):
+        roadmap.show_rule(report, score.rule_finding(report, "BARE-EXCEPT"), "BARE-EXCEPT")
+
+    (root / "app.py").write_text("try:\n    pass\nexcept ValueError:\n    pass\n")
+    report = score.score_repo(root)
+    roadmap.show_rule(report, score.rule_finding(report, "BARE-EXCEPT"), "BARE-EXCEPT")
+
+    assert "BARE-EXCEPT: pass" in capsys.readouterr().out
+
+
+def test_write_turns_items_into_tickets_once(tmp_path: Path) -> None:
+    root = make(tmp_path, {**LEGACY, "docs/backlog/backlog.md": BACKLOG})
+    report = score.score_repo(root)
+    today = datetime.date(2026, 10, 21)
+
+    written = roadmap.write_tickets(root, report, today)
+    again = roadmap.write_tickets(root, report, today)
+
+    text = (root / roadmap.BACKLOG).read_text()
+    assert written[0] == "T-07" and again == []
+    assert f"Next free: T-{7 + len(written):02d}" in text
+    assert "grid rule `BARE-EXCEPT`" in text and "- [ ] `app.py:3`" in text
+    assert text.index("### T-07") > text.index("## 🟡 Normal") > 0
+
+
+def test_without_a_backlog_write_says_how_to_get_one(tmp_path: Path) -> None:
+    root = make(tmp_path, LEGACY)
+
+    with pytest.raises(KilnError, match="kiln adopt"):
+        roadmap.write_tickets(root, score.score_repo(root))

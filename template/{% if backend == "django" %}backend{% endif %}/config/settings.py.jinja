@@ -70,9 +70,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-# SQLite by default in development; DATABASE_URL for PostgreSQL.
+# SQLite by default in development; DATABASE_URL for PostgreSQL, from the environment or the
+# `.env` like every setting (`kiln dev` starts the compose's database it points to).
 DATABASES = {
-    "default": dj_database_url.config(default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+    "default": dj_database_url.parse(
+        config("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
+    ),
 }
 
 AUTH_PASSWORD_VALIDATORS = [

@@ -1,7 +1,7 @@
 # Image of frontend/: the Dash dashboard.
 # Built from the root of the repo (compose.yaml, or podman build -f <directory>/Containerfile .).
 # uv only, never pip; a non-root user ([HARDENED-CONTAINERS]).
-FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim
+FROM ghcr.io/astral-sh/uv:python3.14-trixie-slim@sha256:db955a4c5fd85c9e08ae2c02f3fcedf76765aebc7c9bc10c55a6bbcc1b0510be
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=never PYTHONUNBUFFERED=1
 {%- if backend == 'data' %}
 COPY backend/ /srv/backend/
@@ -11,6 +11,9 @@ COPY frontend/pyproject.toml frontend/uv.lock frontend/.python-version ./
 RUN uv sync --locked --no-dev --no-install-project
 COPY frontend/ ./
 RUN uv sync --locked --no-dev && useradd --system --create-home app && chown -R app /srv
+# The image's environment first in PATH: the server starts without uv, which would want to
+# write its cache into a read-only file system ([HARDENED-CONTAINERS]).
+ENV PATH="/srv/frontend/.venv/bin:$PATH"
 USER app
 EXPOSE 8050
-CMD ["uv", "run", "--no-sync", "python", "-c", "from app import app; app.run(host=\"0.0.0.0\", port=8050)"]
+CMD ["python", "-c", "from app import app; app.run(host=\"0.0.0.0\", port=8050)"]

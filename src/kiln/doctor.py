@@ -6,7 +6,6 @@ changed: each fix is offered, never applied.
 """
 
 import functools
-import json
 import shutil
 import subprocess
 from dataclasses import dataclass
@@ -16,16 +15,18 @@ from pathlib import Path
 from kiln import ui
 from kiln.charter.config import charter_path
 from kiln.config import UserConfig, config_path, load_config
-from kiln.install import SYSTEM_HINTS
+from kiln.install import (
+    BASE_PLUGIN,
+    SYSTEM_HINTS,
+    kiln_plugin_enabled,
+    moved_from,
+    pnpm_behind,
+)
 from kiln.shell import INSTALL_HINTS, KilnError
 from kiln.stack import ANSWERS_FILE, BACKEND_DIR, Stack, load_stack, read_answers
 from kiln.versions import installed_version, latest_release, release_version, upgrade_command
 
 PROBE_TIMEOUT = 5
-CLAUDE_SETTINGS = Path.home() / ".claude" / "settings.json"
-BASE_PLUGIN = "kiln@kiln"
-# Its name before kiln 0.4, until Claude Code applies the catalogue's renames.
-LEGACY_BASE_PLUGIN = "base@kiln"
 GITHUB_LOGIN_URL = "https://github.com/login/device"
 LABEL_WIDTH = 16
 
@@ -163,19 +164,13 @@ def _kiln_tool() -> Finding:
 
 
 def _claude_plugin() -> Finding:
-    try:
-        settings = json.loads(CLAUDE_SETTINGS.read_text())
-    except OSError, ValueError:
-        settings = {}
-    plugins = settings.get("enabledPlugins", {})
-    if plugins.get(BASE_PLUGIN) or plugins.get(LEGACY_BASE_PLUGIN):
+    if kiln_plugin_enabled():
         return Finding(Level.OK, "Claude plugin", f"{BASE_PLUGIN} enabled")
     return Finding(
         Level.WARN,
         "Claude plugin",
         f"{BASE_PLUGIN} not enabled on this machine",
-        "claude plugin marketplace add antoine-tena/kiln && "
-        f"claude plugin install {BASE_PLUGIN} --scope user",
+        "kiln install --machine",
     )
 
 
@@ -201,10 +196,9 @@ def repo_findings(root: Path, stack: Stack | None) -> list[Finding]:
         return findings
     findings.append(_hook(root))
     for directory in stack.python_dirs:
-        findings.append(_installed(root / directory / ".venv", f"{directory} (uv)", "uv sync"))
+        findings.append(_venv(root / directory / ".venv", f"{directory} (uv)"))
     if stack.pnpm_dir is not None:
-        modules = root / stack.pnpm_dir / "node_modules"
-        findings.append(_installed(modules, f"{stack.pnpm_dir} (pnpm)", "pnpm install"))
+        findings.append(_pnpm(root / stack.pnpm_dir, f"{stack.pnpm_dir} (pnpm)"))
     if stack.has_api:
         env_file = root / BACKEND_DIR / ".env"
         findings.append(
@@ -242,6 +236,22 @@ def _hook(root: Path) -> Finding:
     if path.exists():
         return Finding(Level.OK, "pre-commit", "hook installed")
     return Finding(Level.WARN, "pre-commit", "hook missing", "kiln install")
+
+
+def _venv(venv: Path, label: str) -> Finding:
+    created_in = moved_from(venv)
+    if created_in is None:
+        return _installed(venv, label, "uv sync")
+    return Finding(
+        Level.FAIL, label, f"venv created in {created_in}: its tools fail", "kiln install"
+    )
+
+
+def _pnpm(directory: Path, label: str) -> Finding:
+    modules = directory / "node_modules"
+    if modules.is_dir() and pnpm_behind(directory):
+        return Finding(Level.WARN, label, "older than pnpm-lock.yaml", "pnpm install")
+    return _installed(modules, label, "pnpm install")
 
 
 def _installed(path: Path, label: str, fix: str) -> Finding:

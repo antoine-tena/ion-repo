@@ -16,33 +16,47 @@ from pathlib import Path
 import yaml  # brought by copier
 
 from kiln import ui
+from kiln.adopted_names import convert_legacy_names, remaining_mentions
+from kiln.grid.fixers import resolve
 from kiln.shell import KilnError, step
 from kiln.versions import latest_release
 
 WORKFLOW_DIR = Path(".github") / "workflows"
-# `uses: antoine-tena/kiln/.github/workflows/charter.yml@v0.4.0`, a comment after it kept.
+# `uses: antoine-tena/kiln/.github/workflows/charter.yml@v0.4.0`, a comment after it kept; or
+# pinned, `…/charter.yml@<sha> # v0.4.0` ([PINNED-ACTIONS]), where the comment holds the tag.
 KILN_USES = re.compile(
     r"(?P<lead>uses:\s*['\"]?)(?P<path>antoine-tena/kiln/(?P<file>\S+?))@(?P<ref>[^\s'\"#]+)"
+    r"(?P<close>['\"]?)(?P<comment>[ \t]+#[ \t]*(?P<tag>\S+).*)?"
 )
+FULL_SHA = re.compile(r"^[0-9a-f]{40}$")
 RAW_URL = "https://raw.githubusercontent.com/antoine-tena/kiln/{ref}/{file}"
 FETCH_TIMEOUT = 10
 
 Fetch = Callable[[str, str], str]  # (ref, path in kiln) -> the file's text
+Resolve = Callable[[str], str]  # tag -> its commit SHA
+
+
+def _quoted(match: re.Match[str]) -> str:
+    """The release a reference quotes: its tag, read in the comment when pinned by SHA."""
+    return match["tag"] if FULL_SHA.match(match["ref"]) and match["tag"] else match["ref"]
 
 
 def quoted_refs(root: Path) -> set[str]:
     """The refs at which the repo's workflows quote kiln's: one when all agree."""
     return {
-        match.group("ref")
+        _quoted(match)
         for path in _workflow_files(root)
         for match in KILN_USES.finditer(path.read_text(encoding="utf-8"))
     }
 
 
-def move_to_release(root: Path, tag: str | None = None, fetch: Fetch | None = None) -> list[str]:
+def move_to_release(
+    root: Path, tag: str | None = None, fetch: Fetch | None = None, resolve: Resolve | None = None
+) -> list[str]:
     """Every reference to kiln's workflows moved to `tag` (by default the latest public
-    release); returns the files changed. Refused, nothing written, when an input the repo
-    passes does not exist in the workflow at that tag."""
+    release), in the form the repo chose: a tag stays a tag, a SHA becomes the tag's SHA with
+    the tag in its comment; returns the files changed. Refused, nothing written, when an input
+    the repo passes does not exist in the workflow at that tag."""
     tag = tag or latest_release(candidates=False)
     if tag is None:
         raise KilnError("kiln's public releases are out of reach (network): run again later")
@@ -58,9 +72,16 @@ def move_to_release(root: Path, tag: str | None = None, fetch: Fetch | None = No
             f"kiln's workflows at {tag} no longer take what this repo passes, nothing moved:\n  "
             + "\n  ".join(problems)
         )
+    resolve = resolve or _commit_of
+
+    def moved_ref(match: re.Match[str]) -> str:
+        if FULL_SHA.match(match["ref"]):
+            return f"{match['lead']}{match['path']}@{resolve(tag)}{match['close']} # {tag}"
+        return f"{match['lead']}{match['path']}@{tag}{match['close']}{match['comment'] or ''}"
+
     changed = []
     for path, text in texts.items():
-        moved = KILN_USES.sub(lambda match: f"{match['lead']}{match['path']}@{tag}", text)
+        moved = KILN_USES.sub(moved_ref, text)
         if moved != text:
             path.write_text(moved, encoding="utf-8")
             changed.append(str(path.relative_to(root)))
@@ -68,7 +89,16 @@ def move_to_release(root: Path, tag: str | None = None, fetch: Fetch | None = No
 
 
 def update_adopted(root: Path) -> None:
-    """`kiln update` in an adopted repo: only the workflows' tag moves."""
+    """`kiln update` in an adopted repo: its names of kiln 0.3 converted, then the workflows' tag
+    moved."""
+    converted = convert_legacy_names(root)
+    if converted:
+        step("Adopted repo: kiln's names of 0.3 moved to today's")
+        for line in converted:
+            ui.success(line)
+        mentions = remaining_mentions(root)
+        if mentions:
+            ui.note(f"still cited in the repo's own text, to reread: {', '.join(mentions)}")
     step("Adopted repo: kiln's workflows moved to the last public release")
     before = quoted_refs(root)
     changed = move_to_release(root)
@@ -119,3 +149,7 @@ def _fetch(ref: str, file: str) -> str:
             return str(response.read().decode("utf-8"))
     except OSError as error:
         raise KilnError(f"{file} at {ref} unreachable ({error}): run again later") from error
+
+
+def _commit_of(tag: str) -> str:
+    return resolve.commit_of("antoine-tena/kiln", tag)

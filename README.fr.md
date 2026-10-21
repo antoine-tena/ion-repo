@@ -51,6 +51,8 @@ aucune IA et ne demande aucune clé d'API.
   en une seconde environ, sans jeton : une note sur 100, une par pilier, et les écarts à
   combler d'abord. `kiln fix` comble sur une branche ceux qu'un script peut combler, un
   commit par règle, annulé si vos contrôles passent au rouge.
+  `kiln score --roadmap` confie le reste à Claude Code en une courte liste, fichier et ligne
+  compris, et `/kiln:modernize` la traite, chaque écart prouvé comblé par `kiln score --rule`.
 - Des skills pour les worktrees, les fusions, les versions et les relectures ; des hooks qui
   tiennent Claude à l'écart de `main` et `develop` ; une status line qui montre la CI, les
   tickets et la production.
@@ -61,6 +63,7 @@ aucune IA et ne demande aucune clé d'API.
 
 ```sh
 uv tool install kiln-cli     # la commande est kiln ; uv installe Python 3.14 s'il manque
+kiln install                 # hors d'un repo : le plugin Claude Code de kiln dans chaque session
 ```
 
 Ou pour essayer sans rien installer : `uvx kiln-cli new mon-app` pour un nouveau repo,
@@ -74,8 +77,8 @@ Un nouveau repo :
 
 ```console
 $ kiln new mon-app            # trois questions, puis un dépôt GitHub privé (--no-github : local)
-$ cd mon-app && kiln dev      # les serveurs de la stack, sorties préfixées par service
-$ kiln check                  # ruff, mypy, pytest, ESLint, types, puis charter
+$ cd mon-app && kiln dev      # serveurs en arrière-plan, bases d'abord, journaux proposés
+$ kiln check                  # ruff, mypy, ESLint, types, puis charter (--tests : les suites)
 $ claude                      # Claude Code, avec les règles, skills et hooks de kiln
 ```
 

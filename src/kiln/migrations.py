@@ -132,8 +132,9 @@ KEY = re.compile(r"^(\s*)(\w+)(\s*=)")
 QUOTED = re.compile(r'"([^"]*)"')
 
 
-def translate_charter(text: str) -> str:
-    """A `charte.toml` under the names of kiln 0.4, comments and values kept."""
+def translate_charter(text: str, *, keep_ids: bool = False) -> str:
+    """A `charte.toml` under the names of kiln 0.4, comments and values kept; `keep_ids` for an
+    adopted repo, whose rule identifiers are its own, cited by its instructions."""
     lines = []
     for line in text.splitlines():
         if section := SECTION.match(line):
@@ -144,7 +145,7 @@ def translate_charter(text: str) -> str:
         elif key := KEY.match(line):
             name = renames.CHARTER_KEYS.get(key[2], key[2])
             rest = line[key.end() :]
-            if name == "id":
+            if name == "id" and not keep_ids:
                 rest = QUOTED.sub(lambda m: f'"{renames.rule_id(m[1])}"', rest, count=1)
             elif name == "rule":
                 rest = QUOTED.sub(lambda m: f'"{renames.CHARTER_RULES.get(m[1], m[1])}"', rest)

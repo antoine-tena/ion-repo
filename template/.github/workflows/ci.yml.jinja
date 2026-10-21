@@ -1,8 +1,10 @@
-{# The kiln release the project comes from: its workflows are cited at that tag, and
-    `kiln update` moves it forward. A template taken outside a release (kiln's development)
-    cites develop. #}
+{# The kiln release the project comes from: its workflows are cited at that release's commit,
+    its tag in a comment ([PINNED-ACTIONS]: a tag can move, a SHA cannot), and `kiln update`
+    moves both forward. A promoted tag sits on its last candidate's commit: the SHA stays. A
+    template taken outside a release (kiln's development) cites develop. #}
 {%- set kiln_commit = _copier_answers._commit | default('') | string %}
 {%- set kiln_ref = kiln_commit if (kiln_commit.startswith('v') and '-g' not in kiln_commit) else 'develop' -%}
+{%- set kiln_pin = (_copier_conf.vcs_ref_hash ~ ' # ' ~ kiln_ref) if kiln_ref != 'develop' else 'develop' -%}
 name: CI
 
 # The reusable workflows live in kiln (antoine-tena/kiln, public), cited at the kiln release the
@@ -23,10 +25,14 @@ on:
   # Replayed by deploy.yml before any production release.
   workflow_call:
 
+# [WORKFLOW-PERMISSIONS]: the token reads the repo, nothing more; kiln's workflows need no more.
+permissions:
+  contents: read
+
 jobs:
 {%- if backend == 'django' %}
   backend:
-    uses: antoine-tena/kiln/.github/workflows/django.yml@{{ kiln_ref }}
+    uses: antoine-tena/kiln/.github/workflows/django.yml@{{ kiln_pin }}
     with:
       database: {{ name | replace('-', '_') }}
       env: |
@@ -34,63 +40,64 @@ jobs:
         DJANGO_DEBUG=True
 {%- elif backend in ['fastapi', 'data', 'cli'] %}
   backend:
-    uses: antoine-tena/kiln/.github/workflows/python.yml@{{ kiln_ref }}
+    uses: antoine-tena/kiln/.github/workflows/python.yml@{{ kiln_pin }}
     with:
       directory: backend
 {%- elif backend == 'java' %}
   backend:
-    uses: antoine-tena/kiln/.github/workflows/maven.yml@{{ kiln_ref }}
+    uses: antoine-tena/kiln/.github/workflows/maven.yml@{{ kiln_pin }}
     with:
       directory: backend
 {%- endif %}
 {%- if frontend in ['nuxt', 'next', 'astro'] %}
 
   frontend:
-    uses: antoine-tena/kiln/.github/workflows/pnpm.yml@{{ kiln_ref }}
+    uses: antoine-tena/kiln/.github/workflows/pnpm.yml@{{ kiln_pin }}
     with:
       scripts: |
-{%- if frontend != 'astro' %}
         lint
-{%- endif %}
         typecheck
         build
 {%- elif frontend in ['streamlit', 'dash'] %}
 
   frontend:
-    uses: antoine-tena/kiln/.github/workflows/python.yml@{{ kiln_ref }}
+    uses: antoine-tena/kiln/.github/workflows/python.yml@{{ kiln_pin }}
     with:
       directory: frontend
 {%- endif %}
 {%- if backend == 'django' and frontend == 'nuxt' %}
 
   api-contract:
-    uses: antoine-tena/kiln/.github/workflows/api-contract.yml@{{ kiln_ref }}
+    uses: antoine-tena/kiln/.github/workflows/api-contract.yml@{{ kiln_pin }}
     with:
       env: |
         DJANGO_SECRET_KEY=ci-without-secret-value
 {%- endif %}
 
   charter:
-    uses: antoine-tena/kiln/.github/workflows/charter.yml@{{ kiln_ref }}
+    uses: antoine-tena/kiln/.github/workflows/charter.yml@{{ kiln_pin }}
 
   # [SECRETS]: gitleaks searches the whole history, with no organisation licence.
   secrets-scan:
-    uses: antoine-tena/kiln/.github/workflows/secrets.yml@{{ kiln_ref }}
+    uses: antoine-tena/kiln/.github/workflows/secrets.yml@{{ kiln_pin }}
 
 {%- set uv_dirs = (['backend'] if backend not in ['none', 'java'] else []) + (['frontend'] if frontend in ['streamlit', 'dash'] else []) %}
 {%- set pnpm_dir = 'frontend' if frontend in ['nuxt', 'next', 'astro'] else '' %}
-{%- if uv_dirs or pnpm_dir %}
+{%- if uv_dirs or pnpm_dir or backend == 'java' %}
 
   security:
-    uses: antoine-tena/kiln/.github/workflows/security.yml@{{ kiln_ref }}
+    uses: antoine-tena/kiln/.github/workflows/security.yml@{{ kiln_pin }}
     with:
       uv: "{{ uv_dirs | join(' ') }}"
       pnpm: "{{ pnpm_dir }}"
+{%- if backend == 'java' %}
+      maven: backend
+{%- endif %}
 {%- endif %}
 {%- if podman %}
 
   containers:
-    uses: antoine-tena/kiln/.github/workflows/infra.yml@{{ kiln_ref }}
+    uses: antoine-tena/kiln/.github/workflows/infra.yml@{{ kiln_pin }}
     with:
       containerfiles: "{{ ((['backend/Containerfile'] if backend not in ['none', 'cli', 'java'] else []) + (['frontend/Containerfile'] if frontend != 'none' else [])) | join(' ') }}"
       compose: compose.yaml

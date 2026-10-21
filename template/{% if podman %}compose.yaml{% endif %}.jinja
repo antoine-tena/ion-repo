@@ -1,13 +1,37 @@
+{% from "macros.jinja" import db_port -%}
 {%- set base = name | replace('-', '_') -%}
 {%- set front_port = {'nuxt': 3000, 'next': 3000, 'astro': 4321, 'streamlit': 8501, 'dash': 8050}.get(frontend) -%}
-# The project's stack under podman: `kiln dev --containers` (podman-compose up --build).
+# The project's stack under podman: `kiln dev --containers` (podman-compose up --build); `kiln dev`
+# starts only its database and runs the code on the machine.
 # Images built from the root of the repo (`.containerignore`); never docker.
 name: {{ name }}
+
+# [HARDENED-CONTAINERS]: each service on a read-only file system, every capability dropped, no
+# privilege escalation; what it must write goes to a tmpfs.
+x-hardened: &hardened
+  read_only: true
+  tmpfs:
+    - /tmp
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
 
 services:
 {%- if backend == 'django' %}
   db:
+    <<: *hardened
     image: docker.io/library/postgres:16-alpine
+    # The entrypoint hands the data folder to the postgres user, then drops to it.
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
     environment:
       POSTGRES_USER: {{ base }}
       # Local database of the machine, never exposed: this password protects nothing else.
@@ -15,6 +39,9 @@ services:
       POSTGRES_DB: {{ base }}
     volumes:
       - db-data:/var/lib/postgresql/data
+    # For the code run on the machine by `kiln dev`, on the loopback only.
+    ports:
+      - "127.0.0.1:{{ db_port(name) }}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U {{ base }}"]
       interval: 5s
@@ -24,6 +51,7 @@ services:
 {%- if backend in ['django', 'fastapi'] %}
 
   backend:
+    <<: *hardened
     build:
       context: .
       dockerfile: backend/Containerfile
@@ -41,21 +69,39 @@ services:
 {%- endif %}
     ports:
       - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as r; r.urlopen('http://127.0.0.1:8000/api/health', timeout=5)"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
 {%- elif backend == 'data' %}
 
   notebooks:
+    <<: *hardened
     build:
       context: .
       dockerfile: backend/Containerfile
     ports:
       - "2718:2718"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as r; r.urlopen('http://127.0.0.1:2718/health', timeout=5)"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
 {%- endif %}
 {%- if frontend != 'none' %}
 
   frontend:
+    <<: *hardened
     build:
       context: .
       dockerfile: frontend/Containerfile
+{%- if frontend == 'astro' %}
+    # astro preview writes its lock file in .astro/, as the node user: writable like /tmp.
+    tmpfs:
+      - /tmp
+      - /srv/frontend/.astro:mode=1777
+{%- endif %}
 {%- if backend in ['django', 'fastapi'] %}
     environment:
       BACKEND_URL: http://backend:8000
@@ -65,6 +111,15 @@ services:
 {%- endif %}
     ports:
       - "{{ front_port }}:{{ front_port }}"
+    healthcheck:
+{%- if frontend in ['nuxt', 'next', 'astro'] %}
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:{{ front_port }}/').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+{%- else %}
+      test: ["CMD", "python", "-c", "import urllib.request as r; r.urlopen('http://127.0.0.1:{{ front_port }}/{{ '_stcore/health' if frontend == 'streamlit' else '' }}', timeout=5)"]
+{%- endif %}
+      interval: 10s
+      timeout: 10s
+      retries: 10
 {%- endif %}
 {%- if backend == 'django' %}
 

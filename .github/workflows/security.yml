@@ -1,8 +1,8 @@
 name: Dependency security
 
 # Fails as long as a dependency known to be vulnerable stays in place: `uv audit` for each uv
-# project, `pnpm audit` for each pnpm front. Upgrades go through `kiln update`; GitHub's security
-# alerts stay on.
+# project, `pnpm audit` for each pnpm front, OSV-Scanner for a Maven project. Upgrades go through
+# Dependabot and `kiln update`; GitHub's security alerts stay on.
 on:
   workflow_call:
     inputs:
@@ -16,6 +16,10 @@ on:
         default: frontend
       pnpm-version:
         description: Version of pnpm (empty = the packageManager field of package.json)
+        type: string
+        default: ""
+      maven:
+        description: Directory of the Maven project, audited by OSV-Scanner (empty = none)
         type: string
         default: ""
       audit-level:
@@ -58,3 +62,11 @@ jobs:
         if: always() && inputs.pnpm != ''
         run: pnpm audit --prod --audit-level ${{ inputs.audit-level }}
         working-directory: ./${{ inputs.pnpm }}
+
+      - name: OSV-Scanner (Maven)
+        if: always() && inputs.maven != ''
+        uses: google/osv-scanner-action/osv-scanner-action@v2.7.0
+        with:
+          scan-args: |-
+            --recursive
+            ./${{ inputs.maven }}

@@ -1,0 +1,29 @@
+{#- [DEPENDENCY-UPDATES]: each ecosystem of the project, weekly, after a cooldown
+    ([UPDATE-COOLDOWN]: a release a week old has had time to be pulled if it was hijacked). Same
+    shape as `kiln fix` writes it. kiln's own workflows move with `kiln update` only, which
+    converts what changes with them. -#}
+{%- set uv_dirs = (['/backend'] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + (['/frontend'] if frontend in ['streamlit', 'dash'] else []) %}
+{%- set container_dirs = ((['/backend'] if backend not in ['none', 'cli', 'java'] else []) + (['/frontend'] if frontend != 'none' else [])) if podman else [] %}
+{%- set ecosystems = [] %}
+{%- if uv_dirs %}{% set _ = ecosystems.append(('uv', uv_dirs)) %}{% endif %}
+{%- if backend == 'java' %}{% set _ = ecosystems.append(('maven', ['/backend'])) %}{% endif %}
+{%- if frontend in ['nuxt', 'next', 'astro'] %}{% set _ = ecosystems.append(('npm', ['/frontend'])) %}{% endif %}
+{%- if container_dirs %}{% set _ = ecosystems.append(('docker', container_dirs)) %}{% endif %}
+{%- set _ = ecosystems.append(('github-actions', ['/'])) -%}
+version: 2
+updates:
+{%- for ecosystem, folders in ecosystems %}
+  - package-ecosystem: {{ ecosystem }}
+    directories:
+{%- for folder in folders %}
+      - "{{ folder }}"
+{%- endfor %}
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+{%- if ecosystem == 'github-actions' %}
+    ignore:
+      - dependency-name: "antoine-tena/kiln/*"
+{%- endif %}
+{%- endfor %}

@@ -2,20 +2,22 @@
 
 Each scored rule (level `adopt`) whose facts the repo has runs its detector; a rule with nothing
 to look at (`n/a`) or outside the repo's stacks is left out of the count, and a waived one
-(`kiln-waivers.toml`) is shown apart as an accepted deviation. The score is the share of the
-rules that apply which pass, out of 100, overall and per pillar: every rule weighs the same,
-so the number says how many of today's practices the repo follows. Deterministic, offline by
-default, and nothing is written in the repo.
+(`kiln-waivers.toml`) is shown apart as an accepted deviation; a waiver with `paths` only
+takes out the places it covers (a false positive dismissed there, never flagged again). The
+score is the share of the rules that apply which pass, out of 100, overall and per pillar:
+every rule weighs the same, so the number says how many of today's practices the repo
+follows. Deterministic, offline by default, and nothing is written in the repo.
 """
 
 import datetime
 import json
 import urllib.request
 from dataclasses import asdict, dataclass, field
+from fnmatch import fnmatchcase
 from pathlib import Path, PurePosixPath
 
 from kiln import ui
-from kiln.charter.waivers import Waiver
+from kiln.charter.waivers import Waivers
 from kiln.charter.waivers import load as load_waivers
 from kiln.grid import detectors
 from kiln.grid.facts import Repo, read_repo
@@ -24,6 +26,7 @@ from kiln.grid.model import PILLARS, Rule, load_rules
 # The version of the `--json` output; it only goes up when a field changes meaning or leaves.
 SCHEMA = 1
 PASSED, FAILED, WAIVED, LEFT_OUT = "pass", "fail", "waived", "n/a"
+BY_SCRIPT, BY_JUDGMENT = "kiln fix", "by judgment (Claude Code)"
 TOP_GAPS = 3
 SHOWN_LOCATIONS = 3
 # Manifests of stacks the grid does not cover yet: listed at the end, never counted (T-38).
@@ -38,6 +41,22 @@ UNCOVERED = {
     "mix.exs": "Elixir",
     "pubspec.yaml": "Dart",
     "Package.swift": "Swift",
+}
+# A stack known by its sources alone (no manifest: an Eclipse project, a PHP site, a .NET
+# solution), named once even when its manifest is also there.
+UNCOVERED_SOURCES = {
+    ".cs": "C# (.NET)",
+    ".csproj": "C# (.NET)",
+    ".sln": "C# (.NET)",
+    ".fs": "F# (.NET)",
+    ".java": "Java",
+    ".kt": "Kotlin",
+    ".php": "PHP",
+    ".go": "Go",
+    ".rs": "Rust",
+    ".rb": "Ruby",
+    ".swift": "Swift",
+    ".dart": "Dart",
 }
 ENDOFLIFE_API = "https://endoflife.date/api/{product}.json"
 
@@ -54,6 +73,11 @@ class Finding:
     regime: str
     locations: tuple[str, ...] = ()
     detail: str = ""
+    confirm: bool = False  # an approximate detector: Claude confirms or dismisses each place
+
+    @property
+    def by_script(self) -> bool:
+        return self.fix == BY_SCRIPT
 
 
 @dataclass(frozen=True)
@@ -76,15 +100,23 @@ class Report:
         closes it), then the strict ones (their detector is exact)."""
         return sorted(
             self.gaps,
-            key=lambda found: (found.fix != "kiln fix", found.regime != "strict", found.rule),
+            key=lambda found: (not found.by_script, found.regime != "strict", found.rule),
         )[:TOP_GAPS]
+
+    def roadmap(self) -> list[Finding]:
+        """What no converter closes, for Claude: every rule weighs the same in the score, so
+        the sure gaps first, then the smallest (fewest places to open), to confirm last."""
+        return sorted(
+            (found for found in self.gaps if not found.by_script),
+            key=lambda found: (found.confirm, len(found.locations) or 1, found.rule),
+        )
 
 
 def score_repo(root: Path, rules: list[Rule] | None = None) -> Report:
     repo = read_repo(root)
     waivers = load_waivers(root)
     findings = [
-        _finding(rule, repo, waivers.for_rule(rule.id) or waivers.for_rule(rule.charter_rule))
+        _finding(rule, repo, waivers)
         for rule in (rules if rules is not None else load_rules())
         if rule.is_scored and set(rule.applies) <= repo.facts
     ]
@@ -102,11 +134,16 @@ def score_repo(root: Path, rules: list[Rule] | None = None) -> Report:
     )
 
 
-def _finding(rule: Rule, repo: Repo, waived: list[Waiver]) -> Finding:
+def _finding(rule: Rule, repo: Repo, waivers: Waivers) -> Finding:
     outcome = detectors.detect(rule.detector, repo)
     status = {detectors.PASS: PASSED, detectors.FAIL: FAILED}.get(outcome.status, LEFT_OUT)
-    if waived and status == FAILED:
-        status = WAIVED
+    locations = outcome.locations
+    if status == FAILED:
+        unwaived = _unwaived(locations, waivers, rule)
+        if unwaived is None or (locations and not unwaived):
+            status = WAIVED
+        else:
+            locations = unwaived
     return Finding(
         rule=rule.id,
         title=rule.title,
@@ -114,11 +151,37 @@ def _finding(rule: Rule, repo: Repo, waived: list[Waiver]) -> Finding:
         status=status,
         why=rule.why,
         source=rule.sources[0].url if rule.sources else "",
-        fix="kiln fix" if rule.fixer else "by judgment (Claude Code)",
+        fix=BY_SCRIPT if rule.fixer else BY_JUDGMENT,
         regime=rule.regime,
-        locations=outcome.locations if status != PASSED else (),
+        locations=locations if status != PASSED else (),
         detail=outcome.detail if status != PASSED else "",
+        confirm=rule.detectable == "approximate",
     )
+
+
+def _unwaived(locations: tuple[str, ...], waivers: Waivers, rule: Rule) -> tuple[str, ...] | None:
+    """The places no waiver covers; None when a waiver covers the whole repo."""
+    patterns: list[str] = []
+    for name in (rule.id, rule.charter_rule):
+        if not name or not waivers.for_rule(name):
+            continue
+        waived = waivers.waived_paths(name)
+        if waived is None:
+            return None
+        patterns += waived
+
+    def covered(location: str) -> bool:
+        path = location.split(":")[0]
+        return any(
+            fnmatchcase(path, pattern) or path.startswith(pattern.rstrip("/") + "/")
+            for pattern in patterns
+        )
+
+    return tuple(location for location in locations if not covered(location))
+
+
+def rule_finding(report: Report, rule_id: str) -> Finding | None:
+    return next((found for found in report.findings if found.rule == rule_id), None)
 
 
 def _percent(findings: list[Finding]) -> int | None:
@@ -132,6 +195,13 @@ def _uncovered(repo: Repo) -> list[str]:
         UNCOVERED[PurePosixPath(name).name]
         for name in repo.files
         if PurePosixPath(name).name in UNCOVERED
+    }
+    languages = {stack.split(" (")[0] for stack in found}
+    found |= {
+        stack
+        for name in repo.files
+        if (stack := UNCOVERED_SOURCES.get(PurePosixPath(name).suffix))
+        and stack.split(" (")[0] not in languages
     }
     return sorted(f"{stack}: not covered by the grid yet" for stack in found)
 
@@ -171,6 +241,7 @@ def badge(report: Report) -> str:
 def as_json(report: Report) -> str:
     data = asdict(report)
     data["top_gaps"] = [found.rule for found in report.top_gaps()]
+    data["roadmap"] = [found.rule for found in report.roadmap()]
     return json.dumps(data, indent=2, ensure_ascii=False)
 
 
@@ -181,6 +252,9 @@ def show(report: Report, *, every: bool = False) -> None:
     pillars = [f"{pillar} {value}" for pillar, value in report.pillars.items() if value is not None]
     print(ui.paint(f"  {'  ·  '.join(pillars)}", ui.STONE_LIGHT))
     print(ui.paint(f"  stacks: {', '.join(report.facts) or 'none found'}", ui.STONE))
+    if report.uncovered and not report.facts:
+        only = "  universal rules only: the grid does not know this repo's stack"
+        print(ui.paint(only, ui.STONE))
     counted = [found for found in report.findings if found.status in (PASSED, FAILED)]
     passed = sum(found.status == PASSED for found in counted)
     print(ui.paint(f"  {passed} of {len(counted)} rules met", ui.STONE))

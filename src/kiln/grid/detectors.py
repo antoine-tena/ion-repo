@@ -281,9 +281,16 @@ def workflow_permissions(repo: Repo) -> Outcome:
     return Outcome(FAIL, tuple(failing[:MAX_LOCATIONS])) if failing else Outcome(PASS)
 
 
+# Shared configurations that set `strict` themselves: extending one is strict.
+STRICT_TS_PRESETS = re.compile(
+    r'"extends"\s*:\s*"(astro/tsconfigs/(strict|strictest)|@tsconfig/strictest(/tsconfig\.json)?)"'
+)
+
+
 def strict_typescript(repo: Repo) -> Outcome:
-    """Each `tsconfig.json` sets `strict`; Nuxt's generated one is strict unless
-    `nuxt.config` turns it off."""
+    """Each `tsconfig.json` sets `strict`, or extends a strict preset (Astro's `strict` and
+    `strictest`, `@tsconfig/strictest`); Nuxt's generated one is strict unless `nuxt.config`
+    turns it off."""
     configs = [name for name in repo.matching("**/tsconfig.json") if "node_modules/" not in name]
     if not configs:
         return Outcome(NOT_APPLICABLE)
@@ -298,6 +305,8 @@ def strict_typescript(repo: Repo) -> Outcome:
             and PurePosixPath(n).name.startswith("nuxt.config.")
         ]
         if re.search(r'"strict"\s*:\s*true', text):
+            continue
+        if STRICT_TS_PRESETS.search(text) and not re.search(r'"strict"\s*:\s*false', text):
             continue
         if (
             nuxt

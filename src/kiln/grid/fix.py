@@ -93,7 +93,10 @@ def plan(root: Path, only: str | None = None) -> list[Rule]:
 
 def fix(root: Path, *, dry_run: bool = False, only: str | None = None) -> list[Outcome]:
     root = Path(git(root, "rev-parse", "--show-toplevel").strip())
-    if git(root, "status", "--porcelain"):
+    # A dry run works on a copy of the last commit: the tree's changes are neither needed nor
+    # touched.
+    is_dirty = bool(git(root, "status", "--porcelain"))
+    if is_dirty and not dry_run:
         raise KilnError("the tree has uncommitted changes: commit or stash them first")
     rules = plan(root, only)
     before = score.score_repo(root).score
@@ -105,6 +108,8 @@ def fix(root: Path, *, dry_run: bool = False, only: str | None = None) -> list[O
     if reaching:
         ui.note(f"Network needed (commit SHAs, image digests) for: {', '.join(reaching)}")
     if dry_run:
+        if is_dirty:
+            ui.note("Dry run from the last commit: uncommitted changes left out.")
         return _dry_run(root, rules)
     branch = f"kiln/fix-{datetime.date.today().isoformat()}"
     git(root, "switch", "-c", branch)

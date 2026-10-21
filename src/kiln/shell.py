@@ -110,3 +110,37 @@ def repo_root(start: Path) -> Path:
         return Path(capture(["git", "rev-parse", "--show-toplevel"], start))
     except KilnError:
         raise KilnError(f"{start} is not in a git repo: go into a repo, or kiln new") from None
+
+
+# Git's background housekeeping, off while Copier works in its throwaway repos: a detached
+# `gc --auto` still writing in `.git/objects` made Copier's removal of the folder fail
+# ("Directory not empty"), at random.
+QUIET_GIT_SETTINGS = (("gc.auto", "0"), ("gc.autoDetach", "false"), ("maintenance.auto", "false"))
+
+
+@contextmanager
+def quiet_git() -> Iterator[None]:
+    """The git commands started meanwhile run without background housekeeping, through the
+    `GIT_CONFIG_COUNT` variables, added to those already set."""
+    saved = {key: os.environ.get(key) for key in _quiet_git_keys()}
+    count = int(os.environ.get("GIT_CONFIG_COUNT", "0") or 0)
+    for offset, (key, value) in enumerate(QUIET_GIT_SETTINGS):
+        os.environ[f"GIT_CONFIG_KEY_{count + offset}"] = key
+        os.environ[f"GIT_CONFIG_VALUE_{count + offset}"] = value
+    os.environ["GIT_CONFIG_COUNT"] = str(count + len(QUIET_GIT_SETTINGS))
+    try:
+        yield
+    finally:
+        for key in _quiet_git_keys():
+            os.environ.pop(key, None)
+        os.environ.update({key: value for key, value in saved.items() if value is not None})
+
+
+def _quiet_git_keys() -> list[str]:
+    count = int(os.environ.get("GIT_CONFIG_COUNT", "0") or 0) + len(QUIET_GIT_SETTINGS)
+    indexes = range(count)
+    return [
+        "GIT_CONFIG_COUNT",
+        *(f"GIT_CONFIG_KEY_{index}" for index in indexes),
+        *(f"GIT_CONFIG_VALUE_{index}" for index in indexes),
+    ]

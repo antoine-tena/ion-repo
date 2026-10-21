@@ -9,6 +9,22 @@ services:
     container_name: {{ name }}-db
     image: docker.io/library/postgres:16-alpine
     restart: always
+    # [HARDENED-CONTAINERS]: read-only, no privilege escalation; the entrypoint keeps only what
+    # it needs to hand the data folder to the postgres user, then drop to it.
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
     environment:
       POSTGRES_USER: {{ base }}
       POSTGRES_DB: {{ base }}
@@ -35,12 +51,14 @@ services:
       DATABASE_URL: postgres://{{ base }}:${POSTGRES_PASSWORD}@127.0.0.1:5432/{{ base }}
     # Host network: the database on 127.0.0.1, the API reached by Caddy on 127.0.0.1:8000.
     network_mode: host
-    # [HARDENED-CONTAINERS]: read-only file system, no capability.
+    # [HARDENED-CONTAINERS]: read-only file system, no capability, no privilege escalation.
     read_only: true
     tmpfs:
       - /tmp
     cap_drop:
       - ALL
+    security_opt:
+      - no-new-privileges:true
     depends_on:
       db:
         condition: service_healthy

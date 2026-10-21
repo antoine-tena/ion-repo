@@ -50,7 +50,7 @@ def test_outside_a_repository_the_error_is_explained(
 ) -> None:
     monkeypatch.chdir(tmp_path)
 
-    assert run_kiln(monkeypatch, "install") == cli.EXIT_FAILURE
+    assert run_kiln(monkeypatch, "check") == cli.EXIT_FAILURE
     assert "is not in a repo" in capsys.readouterr().err
 
 

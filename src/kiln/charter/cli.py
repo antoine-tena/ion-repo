@@ -85,7 +85,10 @@ def unverified_rules(repo: Repo) -> list[str]:
 
 
 def waivers_of(repo: Repo) -> Waivers:
-    """Waivers of `kiln-waivers.toml`, checked against the rules and the files of the repo."""
+    """Waivers of `kiln-waivers.toml`, checked against the rules and the files of the repo; a
+    rule of the grid counts (a false positive of `kiln score` dismissed on its path)."""
+    from kiln.grid.model import load_rules
+
     waivers = load_waivers(repo.root)
     known = [
         params["id"]
@@ -95,7 +98,7 @@ def waivers_of(repo: Repo) -> Waivers:
     ]
     check_targets(
         waivers,
-        [*known, *charter_rules(repo.root)],
+        [*known, *charter_rules(repo.root), *(rule.id for rule in load_rules())],
         lambda pattern: repo.tracked(pattern, excluded=False),
     )
     return waivers

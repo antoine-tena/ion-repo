@@ -40,7 +40,13 @@ DEFAULTS: Mapping[str, Mapping[str, str]] = {
         "reports": "",
         "rapports": "",
     },
-    "security": {"uv": "backend", "pnpm": "frontend", "pnpm-version": "", "audit-level": "high"},
+    "security": {
+        "uv": "backend",
+        "pnpm": "frontend",
+        "pnpm-version": "",
+        "maven": "",
+        "audit-level": "high",
+    },
     "secrets": {},
     # Relays of before kiln 0.4.0, with their inputs of that time.
     "charte": {},
@@ -78,6 +84,14 @@ if ! command -v gitleaks >/dev/null; then
   exit 1
 fi
 gitleaks git --redact --no-banner --verbose ."""
+# OSV-Scanner on the workstation (`mise use -g osv-scanner`, `brew install osv-scanner`): the same
+# audit of a Maven project as the `security` workflow.
+OSV_SCAN = """\
+if ! command -v osv-scanner >/dev/null; then
+  echo "osv-scanner is missing: mise use -g osv-scanner (or brew install osv-scanner)" >&2
+  exit 1
+fi
+osv-scanner --recursive ."""
 BACK_LANE = "back"
 FRONT_LANE = "front"
 
@@ -195,6 +209,8 @@ def _security(job: Job, inputs: Mapping[str, str]) -> Plan:
     if inputs["pnpm"]:
         audit = f"pnpm audit --prod --audit-level {inputs['audit-level']}"
         steps.append(Step("pnpm audit", audit, inputs["pnpm"], should_always_run=True))
+    if inputs["maven"]:
+        steps.append(Step("OSV-Scanner (Maven)", OSV_SCAN, inputs["maven"], should_always_run=True))
     return Plan(job, tuple(steps))
 
 

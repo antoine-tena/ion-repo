@@ -167,6 +167,15 @@ def test_a_dirty_tree_is_refused(tmp_path: Path) -> None:
         fix.fix(root)
 
 
+def test_a_dry_run_leaves_a_dirty_tree_alone(tmp_path: Path) -> None:
+    root = make(tmp_path, CONVERTED["TS-EXPECT-ERROR"])
+    (root / "notes.md").write_text("draft\n")
+
+    fix.fix(root, dry_run=True, only="TS-EXPECT-ERROR")
+
+    assert git(root, "status", "--porcelain").strip() == "?? notes.md"
+
+
 def test_files_the_repo_ignores_are_still_committed(tmp_path: Path) -> None:
     root = make(tmp_path, {".gitignore": ".*\n", "uv.lock": ""})
     git(root, "add", "--force", ".gitignore")
@@ -175,3 +184,19 @@ def test_files_the_repo_ignores_are_still_committed(tmp_path: Path) -> None:
     fix.fix(root, only="DEPENDENCY-UPDATES")
 
     assert ".github/dependabot.yml" in git(root, "ls-files")
+
+
+@pytest.mark.parametrize(
+    ("name", "expected"),
+    [
+        ("node", ("registry-1.docker.io", "library/node")),
+        ("docker.io/library/node", ("registry-1.docker.io", "library/node")),
+        ("docker.io/bitnami/redis", ("registry-1.docker.io", "bitnami/redis")),
+        ("bitnami/redis", ("registry-1.docker.io", "bitnami/redis")),
+        ("ghcr.io/astral-sh/uv", ("ghcr.io", "astral-sh/uv")),
+        ("localhost:5000/app", ("localhost:5000", "app")),
+    ],
+)
+def test_docker_hub_images_are_asked_of_its_registry(name: str, expected: tuple[str, str]) -> None:
+    """`docker.io/library/node` named in full answers at registry-1.docker.io, not docker.io."""
+    assert resolve.registry_path(name) == expected
