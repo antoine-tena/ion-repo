@@ -21,6 +21,7 @@ RULES = {rule.id: rule for rule in load_rules()}
 @pytest.fixture(autouse=True)
 def offline(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(resolve, "commit_of", lambda repo, ref: SHA)
+    monkeypatch.setattr(resolve, "exact_version", lambda repo, sha: "v4.2.2")
     monkeypatch.setattr(resolve, "latest_release", lambda repo, major=None: "v4.2.0")
     monkeypatch.setattr(resolve, "image_digest", lambda image: DIGEST)
 
@@ -94,12 +95,23 @@ def test_every_converter_named_by_a_rule_has_a_case() -> None:
     }
 
 
-def test_pinned_actions_keep_their_version_as_a_comment(tmp_path: Path) -> None:
+def test_pinned_actions_keep_their_exact_version_as_a_comment(tmp_path: Path) -> None:
     root = make(tmp_path, CONVERTED["PINNED-ACTIONS"])
     ci.pin_actions(read_repo(root))
     text = (root / WORKFLOW).read_text()
-    assert f"uses: actions/checkout@{SHA} # v4\n" in text
+    assert f"uses: actions/checkout@{SHA} # v4.2.2\n" in text
     assert f"uses: 'owner/repo/.github/workflows/x.yml@{SHA}' # kept" in text
+
+
+def test_the_exact_version_is_the_most_precise_tag_on_the_commit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    refs = {"main": SHA, "v7": SHA, "v7.0": SHA, "v7.0.1": SHA, "v7.0.0": "0" * 40}
+    monkeypatch.undo()  # the real lookup, on faked refs
+    monkeypatch.setattr(resolve, "remote_refs", lambda repo: refs)
+
+    assert resolve.exact_version("actions/checkout", SHA) == "v7.0.1"
+    assert resolve.exact_version("actions/checkout", "1" * 40) is None
 
 
 def test_dependabot_also_updates_the_actions_of_composite_actions(tmp_path: Path) -> None:

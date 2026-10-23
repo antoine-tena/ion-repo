@@ -30,7 +30,8 @@ def _write(repo: Repo, name: str, text: str) -> None:
 
 
 def pin_actions(repo: Repo) -> list[str]:
-    """`uses: owner/repo@v4` → `uses: owner/repo@<sha> # v4`, reusable workflows included."""
+    """`uses: owner/repo@v4` → `uses: owner/repo@<sha> # v4.2.2` (the exact version on that
+    commit, as pinact writes it), reusable workflows included."""
     changed = []
     files = repo.matching(*WORKFLOWS, *ACTIONS)
     for name in files:
@@ -43,7 +44,8 @@ def pin_actions(repo: Repo) -> list[str]:
             owner_repo = "/".join(found["target"].split("/")[:2])
             sha = resolve.commit_of(owner_repo, found["ref"])
             tail = found["tail"]
-            comment = tail if "#" in tail else f" # {found['ref']}{tail}"
+            version = resolve.exact_version(owner_repo, sha) or found["ref"]
+            comment = tail if "#" in tail else f" # {version}{tail}"
             ending = "\n" if line.endswith("\n") else ""
             q = found["quote"]
             lines[index] = f"{found['head']}{q}{found['target']}@{sha}{q}{comment}{ending}"
