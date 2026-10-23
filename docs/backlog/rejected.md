@@ -88,3 +88,13 @@ small structures' repos up to date; back once the grid holds.
 - A financial guarantee on merged code: trust sold as an insured product
 
 ## Dropped
+
+- **2026-10-22** · Drop the names and conversions from before kiln 0.4.0 (never a ticket, a
+  session's own initiative) — declined by antoine: `plugins/base/` still serves the machine's
+  status line (`~/.claude/settings.json`), sweep is still at v0.3.4-rc.1 and calls `charte.yml`,
+  `test_e2e.py` updates the `kiln-rehearsal` witness frozen at v0.3.3-rc.2, and the 0.4.0 notes
+  promise the relays. Back once no repo of the machine is before 0.4.0, the e2e has no 0.3
+  witness and the status line points to `plugins/kiln/`; the work is kept in the local tag
+  `archive/drop-pre-040-compat` · opened 2026-10-21
+- **2026-10-21** · T-05 · Check the first real run of the workflows on GitHub — dropped by
+  antoine; the private probe `antoine-tena/kiln-t05-probe` is left as it is · opened 2026-10-15

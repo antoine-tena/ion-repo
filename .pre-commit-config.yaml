@@ -2,10 +2,9 @@
 #
 # Installation, une fois, à la racine : kiln install  (ou : uvx pre-commit install)
 # Le crochet vaut pour l'arbre principal et tous les worktrees. Tout rejouer :
-#   pre-commit run --all-files --hook-stage pre-push
-# Le typage, trop lent pour chaque commit, se joue avant chaque push : `develop` ne reçoit la
-# CI complète qu'au passage d'une version (skill `base:version`).
-default_install_hook_types: [pre-commit, pre-push]
+#   pre-commit run --all-files
+# Seulement ruff, sur les fichiers commités : typage, tests et CI ne tournent qu'à la release.
+default_install_hook_types: [pre-commit]
 default_stages: [pre-commit]
 repos:
   - repo: local
@@ -22,10 +21,3 @@ repos:
         language: system
         types: [python]
 
-      - id: typage
-        name: typage mypy (avant push)
-        entry: uv run mypy src tests
-        language: system
-        pass_filenames: false
-        always_run: true
-        stages: [pre-push]

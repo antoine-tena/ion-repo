@@ -12,7 +12,7 @@ from copier.errors import UserMessageError
 from plumbum import ProcessExecutionError
 
 from kiln import migrations, ui
-from kiln.backlog import add_after_update_ticket, migrate_legacy_backlog
+from kiln.backlog import add_after_update_ticket, migrate_legacy_backlog, split_backlog
 from kiln.check import check_project
 from kiln.contract import generate_api_contract
 from kiln.deps import lock_dependencies, sync_dependencies, update_dependencies
@@ -145,6 +145,9 @@ def apply_template(root: Path, answers: Mapping[str, object] | None = None) -> N
     replace_legacy_source(root)
     if migrate_legacy_backlog(root):
         ui.note("Tracking moved from docs/a-faire/ to docs/backlog/ (T-NN tickets, in English).")
+        split_backlog(root, from_disk=True)
+    elif split_backlog(root):
+        ui.note("Closed tickets moved from docs/backlog/backlog.md to docs/backlog/done.md.")
 
 
 def resolve_kiln_ref_conflicts(root: Path) -> None:

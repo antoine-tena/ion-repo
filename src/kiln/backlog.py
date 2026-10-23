@@ -1,4 +1,5 @@
-"""Work tracking: moving the former `docs/a-faire/` (in French) to `docs/backlog/`.
+"""Work tracking: moving the former `docs/a-faire/` (in French) to `docs/backlog/`, and splitting
+the former single `backlog.md` into open tickets and `done.md`.
 
 `kiln update` calls it after Copier: the template laid down a blank `docs/backlog/`, which the
 repo's tracking replaces, converted (headings, fields and statuses in English, `AF-NN` become
@@ -99,19 +100,40 @@ def opened(root: Path, path: str) -> dict[str, str]:
 
 def convert_backlog(text: str, template_text: str, dates: dict[str, str]) -> str:
     """`a-faire.md` to `backlog.md`: the template's header and how-to, tickets converted."""
-    next_free = re.search(r"Prochain libre : AF-(\d+)", text)
-    compass = re.search(r"La boussole est \*\*(.+?)\*\*", text, re.S)
+    # The next free number: the one written, unless a ticket already took it.
+    written = re.search(r"prochain libre : AF-(\d+)", text, re.I)
+    listed = text[text.index("## 🔴") :] if "## 🔴" in text else text
+    taken = [int(number) for number in re.findall(r"\bAF-(\d+)\b", listed)]
+    next_free = max(int(written[1]) if written else 0, max(taken, default=0) + 1)
+    compass = re.search(r"La boussole est[^*\n]*\*\*(.+?)\*\*", text, re.S)
     started = re.search(r"Créée le\s+\*\*(.+?)\*\*", text)
     body = text[text.index("## 🔴") :] if "## 🔴" in text else text
     body = convert_tickets(body, dates)
     header = template_text[: template_text.index("## 🔴")] if "## 🔴" in template_text else ""
-    if next_free:
-        header = re.sub(r"Next free: T-\d+", f"Next free: T-{next_free[1]}", header)
+    if taken:
+        header = re.sub(r"Next free: T-\d+", f"Next free: T-{next_free:02d}", header)
     if compass:
         header = re.sub(r"North star: \*\*.*?\*\*", f"North star: **{compass[1]}**", header)
     if started:
         header = re.sub(r"Started on\s+\*\*.*?\*\*", f"Started on\n**{started[1]}**", header)
-    return header + body
+    return _with_legacy_notes(header, text) + body
+
+
+def _with_legacy_notes(header: str, text: str) -> str:
+    """The paragraphs the former introduction added (the state of production…) after the
+    template's own, which replaces its first one and the compass."""
+    intro = text[: text.index("\n---")] if "\n---" in text else ""
+    blocks = [block.strip() for block in intro.split("\n\n") if block.strip()]
+    paragraphs = [block for block in blocks if not block.startswith("#")][1:]
+    notes = [
+        re.sub(r"\bAF-(\d+)\b", r"T-\1", block)
+        for block in paragraphs
+        if not block.startswith("La boussole est")
+    ]
+    if not notes or "\n---" not in header:
+        return header
+    cut = header.index("\n---")
+    return header[:cut].rstrip("\n") + "\n\n" + "\n\n".join(notes) + "\n" + header[cut:]
 
 
 def convert_tickets(text: str, dates: dict[str, str]) -> str:
@@ -129,6 +151,7 @@ def convert_tickets(text: str, dates: dict[str, str]) -> str:
                 if status.startswith(old):
                     status = new + status.removeprefix(old)
             status = re.sub(r"depuis le ", "since ", status)
+            status = re.sub(r"\bAF-(\d+)\b", r"T-\1", status)
             lines += ["- **Type**: task", f"- **Status**: {status}"]
             lines.append(f"- **Opened**: {dates.get(ticket) or '—'}")
             continue
@@ -164,9 +187,65 @@ def convert_urgent(text: str, intro: str) -> str:
     """The checkboxes of `urgent.md` under the template's introduction, in English."""
     lines = text.splitlines()
     first_box = next((i for i, line in enumerate(lines) if line.startswith("- [")), len(lines))
-    boxes = "\n".join(lines[first_box:]).strip("\n")
+    boxes = re.sub(r"\bAF-(\d+)\b", r"T-\1", "\n".join(lines[first_box:]).strip("\n"))
     body = intro.rstrip("\n") + "\n"
     return body + f"\n{boxes}\n" if boxes else body
+
+
+DONE_HEADING = "## ✅ Done"
+HOW_TO_HEADING = "## How to use"
+FORMER_INTRO = re.compile(
+    r'What is done is in the "✅ Done" section at\s+the bottom; what was turned\s+down is in'
+    r"\s+\[rejected\.md\]\(rejected\.md\)\."
+)
+LOG_PREAMBLE = ("### Log", "One line per closed ticket", "`- **YYYY-MM-DD** · T-NN")
+
+
+def split_backlog(root: Path, *, from_disk: bool = False) -> bool:
+    """The former single `backlog.md` (how-to at the top, "✅ Done" log at the bottom) split:
+    the open tickets stay, the log goes to `done.md`, the how-to to the template's `README.md`.
+    Read from the last commit, as the repo kept it: Copier's merge of the template's new layout
+    into it leaves the log loose at the bottom (`from_disk` after the move from `docs/a-faire/`,
+    written this same run). Says whether it split."""
+    path = root / BACKLOG_DIR / "backlog.md"
+    if from_disk:
+        text = path.read_text() if path.exists() else None
+    else:
+        try:
+            text = capture(["git", "show", f"HEAD:{(BACKLOG_DIR / 'backlog.md').as_posix()}"], root)
+        except KilnError:
+            text = None
+    if text is None or DONE_HEADING not in text:
+        return False
+    open_part, log = text.split(f"\n{DONE_HEADING}", 1)
+    path.write_text(_open_backlog(open_part))
+    entries = "\n".join(
+        line for line in log.splitlines()[1:] if not line.startswith(LOG_PREAMBLE)
+    ).strip()
+    done = root / BACKLOG_DIR / "done.md"
+    intro = done.read_text() if done.exists() else "# Done\n"
+    done.write_text(intro.rstrip("\n") + "\n" + (f"\n{entries}\n" if entries else ""))
+    return True
+
+
+def _open_backlog(text: str) -> str:
+    """The open part of a former `backlog.md`: its how-to removed, the next free ID moved up to
+    the header, the introduction pointing to the new files."""
+    next_free = NEXT_FREE.search(text)
+    if HOW_TO_HEADING in text:
+        start = text.index(HOW_TO_HEADING)
+        end = text.find("\n## ", start)
+        text = text[:start] + (text[end + 1 :] if end != -1 else "")
+    text = re.sub(r"\n---\n\s*\n---\n", "\n---\n", text)
+    text = FORMER_INTRO.sub(
+        "Closed tickets are in [done.md](done.md), what was turned down in\n"
+        "[rejected.md](rejected.md); how to write a ticket: [README.md](README.md).",
+        text,
+    )
+    if next_free and not NEXT_FREE.search(text) and "\n---" in text:
+        cut = text.index("\n---")
+        text = f"{text[:cut].rstrip()}\n\n**Next free: T-{next_free[1]}.**\n{text[cut:]}"
+    return text.rstrip().removesuffix("---").rstrip() + "\n"
 
 
 # A line of a changelog entry: what each repo crossing that release must do after updating.

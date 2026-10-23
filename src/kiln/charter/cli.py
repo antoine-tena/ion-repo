@@ -19,7 +19,7 @@ Waivers: `kiln-waivers.toml` (see waivers.py) lifts a rule from the whole repo o
 paths, for a limited time; they are listed at each check.
 
 Usage: charter [check]      the rules of the charter (default)
-       charter file <path>  the bans on that one file, fast (the hook after each edit)
+       charter file <path>… the bans on those files alone, fast (edit hook, kiln check)
        charter types        mypy typing as a ratchet ([types])
        charter coverage     coverage floors of the backend ([coverage])
        charter --detail     value of each ratchet and floor, without judging
@@ -259,8 +259,9 @@ ACTIONS: dict[str, Callable[[Repo], int]] = {
 
 def main() -> int:
     action = sys.argv[1] if len(sys.argv) > 1 else "check"
-    if action == "file" and len(sys.argv) == 3:
-        return check_file(open_repo(), sys.argv[2])
+    if action == "file" and len(sys.argv) >= 3:
+        repo = open_repo()
+        return max(check_file(repo, path) for path in sys.argv[2:])
     if action not in ACTIONS:
         sys.exit(__doc__)
     return ACTIONS[action](open_repo())

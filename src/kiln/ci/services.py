@@ -40,7 +40,8 @@ def running_services(services: Services | None, prefix: str) -> Iterator[dict[st
 
 
 def remove_orphan_containers() -> int:
-    """Removes the containers whose launching `kiln ci` is dead; returns their number."""
+    """Removes the containers whose launching `kiln ci` or `kiln check` is dead; returns their
+    number."""
     listing = subprocess.run(
         ["podman", "ps", "-a", "--filter", f"label={OWNER_LABEL}",
          "--format", f'{{{{.Names}}}} {{{{index .Labels "{OWNER_LABEL}"}}}}'],

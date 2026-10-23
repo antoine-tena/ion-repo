@@ -1,6 +1,6 @@
 ---
 name: contribution
-description: Handle a pull request from an outside contributor, as a well-run open-source project would - safety check of the untrusted code, triage, review, then approve and merge with credit, ask for changes, finish it for them, or close it kindly; nothing is posted on GitHub without the user's yes. Use when a PR from someone else arrives on one of the user's repos, or when the user asks to look at, review, merge or answer a contributor's PR.
+description: Handle an outside contributor's pull request like a well-run open-source project: safety check of the untrusted code, triage, review, then merge with credit, ask for changes, finish it or close it kindly; nothing posted without the user's yes. Use when such a PR arrives or the user asks about one.
 argument-hint: "[PR number or URL]"
 ---
 

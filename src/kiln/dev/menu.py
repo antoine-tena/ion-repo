@@ -1,8 +1,9 @@
 """What `kiln dev` asks in a terminal: what to run, then whether to follow the logs.
 
 A small project (one or two processes) runs everything without a question. From three on (a
-backend, a front, a worker…), a menu offers everything, the last choice, or a choice process by
-process, remembered for the next time. Outside a terminal (a script, a Claude session), nothing
+backend, a front, a worker…), a menu offers everything, the last choice, the front alone (on the
+API its `.env` names, see `processes`), or a choice process by process, remembered for the next
+time. Outside a terminal (a script, a Claude session), nothing
 is asked: everything runs, or what `--only` names.
 """
 
@@ -13,7 +14,7 @@ from pathlib import Path
 
 from kiln import ui
 from kiln.shell import KilnError
-from kiln.stack import Command
+from kiln.stack import FRONTEND_DIR, Command
 
 # From this many processes on, kiln asks what to run.
 MENU_THRESHOLD = 3
@@ -43,7 +44,8 @@ def select(
     elif ask is None or len(commands) < MENU_THRESHOLD:
         return commands
     else:
-        chosen = _ask_selection(labels, _last_selection(state, labels), ask)
+        front = [command.label for command in commands if command.directory == FRONTEND_DIR]
+        chosen = _ask_selection(labels, front, _last_selection(state, labels), ask)
     state.mkdir(parents=True, exist_ok=True)
     (state / SELECTION_FILE).write_text(json.dumps(chosen), encoding="utf-8")
     return [command for command in commands if command.label in chosen]
@@ -58,8 +60,12 @@ def _last_selection(state: Path, labels: list[str]) -> list[str] | None:
     return kept if kept and kept != labels else None
 
 
-def _ask_selection(labels: list[str], last: list[str] | None, ask: Ask) -> list[str]:
+def _ask_selection(
+    labels: list[str], front: list[str], last: list[str] | None, ask: Ask
+) -> list[str]:
     options = [("everything", labels)]
+    if front and front != labels and front != last:
+        options.append(("front only", front))
     if last:
         options.insert(0, ("as last time", last))
     print(f"\n{ui.paint('What should run?', bold=True)}")

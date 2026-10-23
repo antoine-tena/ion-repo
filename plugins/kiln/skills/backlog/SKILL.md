@@ -1,6 +1,6 @@
 ---
 name: backlog
-description: Pick the next ticket from docs/backlog/backlog.md, add a ticket (bug, improvement, idea, task), record a ticket as started or done, or plan which tickets go into the next releases, in a repo that tracks its work this way. Use when the user asks what to do next, wants to note something to do or an idea, after starting or finishing a ticket, or when they ask what the next versions should contain.
+description: Pick the next ticket of docs/backlog/backlog.md, add one (bug, improvement, idea, task), record one as started or done, or plan the next releases. Use when the user asks what to do next, wants to note a task or an idea, after starting or finishing a ticket, or to plan the next versions.
 argument-hint: "[T-NN | new <what> | start T-NN | done T-NN | plan]"
 ---
 
@@ -8,10 +8,13 @@ In a repo without `docs/backlog/backlog.md`, say so and offer to set it up: a ki
 by default (`kiln update` brings it to an older repo, and moves an old `docs/a-faire/` there);
 elsewhere, copy the structure of kiln's template (`template/docs/backlog/`).
 
-`docs/backlog/backlog.md` is the **only** up-to-date source: everything is there, ordered by
-priority (🔴 critical, 🟠 important, 🟡 normal, ⚪ background), with the "✅ Done" log at the
-bottom. `docs/backlog/rejected.md` lists what was turned down. **Read the "How to use" section
-at the top of the file first**: it wins if it differs from what follows.
+`docs/backlog/backlog.md` is the **only** up-to-date list of open work, ordered by priority
+(🔴 critical, 🟠 important, 🟡 normal, ⚪ background), with `Next free: T-NN` in its header.
+`docs/backlog/done.md` logs the closed tickets, `docs/backlog/rejected.md` what was turned down:
+open them only to write in them or when asked about past work, never to pick a ticket. The
+"How to use" section of `docs/backlog/README.md` wins if it differs from what follows; read it
+when unsure. Do not read the whole `backlog.md`: start from the overview below, then read only
+the tickets involved (`grep -n` their heading, then `Read` with an offset).
 
 A ticket: a `### T-NN · Title` heading, then the lines `- **Type**:`, `- **Status**:`,
 `- **Opened**: YYYY-MM-DD`, `- **Effort**: … · **Owner**: … · **Due**: …`, `- **Origin**: …`,
@@ -43,8 +46,8 @@ it is and that they take it (or hand it over by changing the owner). Otherwise s
 in the current code, propose a short plan, then create the branch (in a worktree, skill
 `/kiln:worktree`) and set the status to `in progress — branch …`.
 
-**`new <what>`**: add a ticket with the "next free" ID from the "How to use" section (then
-increment it), the type that fits (`idea` when nothing is decided yet), `todo`, today's date as
+**`new <what>`**: add a ticket with the `Next free: T-NN` ID of the header (then increment
+it), the type that fits (`idea` when nothing is decided yet), `todo`, today's date as
 `Opened`, in the section matching its priority (⚪ background for an idea still to explore).
 If the backlog has a `## 🚀 Releases` section, also place the ticket in the release where it
 fits best, **whatever its position**: a new idea may join v0.4.1 while v0.5.3 is the last
@@ -54,8 +57,8 @@ planned one; create a release only when none fits, following the rules of `plan`
 **Status** line to `in progress — branch <name>, since YYYY-MM-DD`, and a free **Owner** (`—`)
 to the user's `@login`.
 
-**`done T-NN`**: remove the ticket from its section and add at the **top** of the "✅ Done" log a
-line `- **YYYY-MM-DD** · T-NN · Title — what was done (branch) · opened YYYY-MM-DD`. A
+**`done T-NN`**: remove the ticket from its section and add at the **top** of the log of
+`done.md` (under its introduction) a line `- **YYYY-MM-DD** · T-NN · Title — what was done (branch) · opened YYYY-MM-DD`. A
 half-done ticket stays in place: tick the steps done, write what is left. Keep the style and
 tone of the file. Remove the ticket from `## 🚀 Releases` too; a release left empty means it is
 ready for its candidate: say so.

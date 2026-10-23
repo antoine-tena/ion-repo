@@ -73,10 +73,11 @@ dans le repo public que des chiffres agrégés, sans rien qui identifie le proje
 ## Versions
 
 **Pourquoi** (choix d'antoine, 15 octobre 2026) : kiln doit rester stable pour les repos qui en
-dépendent, alors qu'il change beaucoup ; d'où une version qui ne sort que quand la suivante est
-prête ici, en candidate sur ses propres repos (`-rc`, comme Python ou Linux) : pas de délai
-fixe, c'est la suivante prête qui évite le correctif d'urgence (précisé par antoine le
-16 octobre 2026), et le 0.x du semver, prévu pour un début où tout peut casser (comme uv ou ruff), plutôt
+dépendent, alors qu'il change beaucoup ; d'où une version qui tourne d'abord en candidate sur
+ses propres repos (`-rc`, comme Python ou Linux) et ne sort qu'une fois qu'elle a fait ses
+preuves, mesurées et non supposées (amendé par antoine le 21 octobre 2026 : « la suivante
+prête » ne mesurait pas le rodage, retenait les correctifs derrière les nouveautés, et le
+16 octobre avait vu quatre promotions en une journée), et le 0.x du semver, prévu pour un début où tout peut casser (comme uv ou ruff), plutôt
 qu'un quatrième chiffre. Les clients se mettent à jour à chaque version, correctif compris.
 Suivi de ce qui reste : `docs/backlog/backlog.md`.
 
@@ -149,11 +150,18 @@ publie sur PyPI le paquet `kiln-cli` par `pypi.yml`) :
    commandes ci-dessous), branche poussée, **CI de GitHub attendue sur son commit** (macOS et
    tests de bout en bout, qui ne tournent que là : la rc.1 de la v0.4.0 était sortie sur un rouge
    que personne n'avait lu), tag `vX.Y.Z-rc.1` poussé seulement au vert. Les postes au canal `internal` (`kiln set
-   channel=internal`, celui d'antoine) la suivent : `kiln update --all` y fait passer tous les repos
-   générés. Un correctif de la candidate : commit `fix:` sur sa branche, tag `-rc.N+1`.
-2. **Promotion**, quand `kiln version` la dit prête (une candidate plus récente existe, sans
-   délai d'attente, et la CI de GitHub de la candidate est verte) : tag `vX.Y.Z` sur le commit exact de sa
-   dernière candidate, fusion dans `main`, reversement dans `develop`, puis `kiln update --all --rehearse` (chaque repo répété sur un clone) et, au vert, `kiln update --all`.
+   channel=internal`) la suivent : `kiln update --all` y fait passer tous les repos
+   générés. Le poste d'antoine est au canal **`beta`** (son choix du 21 octobre 2026 : en pleine
+   amélioration de kiln, une nouveauté doit servir tout de suite) : l'outil est le checkout
+   `~/code/kiln` installé en éditable, donc `develop` lu en direct, sans version ni mise à jour ;
+   les versions restent ce qui part chez les autres. Un correctif de la candidate : commit `fix:` sur sa branche, tag `-rc.N+1`.
+2. **Promotion**, quand `kiln version` la dit prête, sur des faits (`release.py`) : la CI de
+   GitHub de la candidate est verte, **24 heures de rodage** depuis son tag (chaque `-rc.N`
+   relance le compte), et **au moins un repo du dossier de code mis à jour vers elle** (`kiln
+   update` y a fait passer les contrôles du repo). **Voie rapide** : une candidate qui ne contient
+   que des correctifs depuis la dernière version publique (aucun `feat`, rien de cassant) sort
+   après **2 heures**, sans repo exigé ; une faille de sécurité sort tout de suite. Alors : tag
+   `vX.Y.Z` sur le commit exact de sa dernière candidate, fusion dans `main`, reversement dans `develop`, puis `kiln update --all --rehearse` (chaque repo répété sur un clone) et, au vert, `kiln update --all`.
    Le canal `public` (par défaut) ne voit que ces versions.
 
 Chaque version, correctif compris, finit par `kiln update --all` : les repos générés citent leurs
@@ -201,10 +209,12 @@ sur Hacker News, titre et réponses compris, est écrit à la main par antoine (
 
 ## Contrôles
 
-`uv run pytest -q` (réparti sur tous les cœurs par pytest-xdist : une vingtaine de secondes ;
-`-n 0` pour un seul processus, au débogage), `uv run ruff check`
-et `uv run ruff format --check`. Le crochet pre-commit de kiln (`.pre-commit-config.yaml`, posé par
-`kiln install`) lance ruff à chaque commit et mypy avant chaque push. Le catalogue étant déclaré en dossier local sur le poste
+À la fusion dans `develop` : `uv run ruff check` et `uv run ruff format --check` sur les seuls
+fichiers modifiés par la branche, rien d'autre ; ni mypy, ni test, ni CI de GitHub (choix
+d'antoine, 21 octobre 2026). La CI de GitHub (`kiln.yml`) ne tourne que sur `release/**`,
+avant `main`, et à la main. `uv run pytest -q` (réparti sur tous les cœurs par pytest-xdist ; `-n 0` pour un seul
+processus, au débogage) tourne en entier à la release (`kiln version cut`), qui joue tout. Le crochet pre-commit de kiln (`.pre-commit-config.yaml`, posé par
+`kiln install`) lance ruff à chaque commit, rien avant un push. Le catalogue étant déclaré en dossier local sur le poste
 d'antoine, les sessions ouvertes appellent les hooks et la status line **dans l'arbre principal**
 (`~/code/kiln/plugins/…`) : un fichier retiré ou renommé casse aussitôt chaque session (hook
 introuvable = outil bloqué). Un chemin de plugin qui change garde donc un renvoi à l'ancien

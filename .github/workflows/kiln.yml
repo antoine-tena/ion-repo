@@ -1,15 +1,13 @@
 name: kiln
 
 # Checks of kiln itself: ruff, mypy, the test suite (every stack combination is rendered), on
-# Linux and macOS. End-to-end tests (every framework generated, installed and checked; projects
-# of earlier releases updated to this one) run on release branches, every night, and on demand.
+# Linux and macOS, with the end-to-end tests (every framework generated, installed and checked;
+# projects of earlier releases updated to this one). Only on release branches, the way to
+# `main`, and on demand: a merge into develop runs fast linters only (choice of antoine,
+# 21 October 2026).
 on:
   push:
-    branches: [ main, develop, "release/**" ]
-  pull_request:
-    branches: [ main, develop ]
-  schedule:
-    - cron: "17 3 * * *"
+    branches: [ "release/**" ]
   workflow_dispatch:
 
 jobs:
@@ -37,7 +35,7 @@ jobs:
 
   e2e:
     if: >-
-      github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+      github.event_name == 'workflow_dispatch'
       || startsWith(github.ref, 'refs/heads/release/')
     runs-on: ubuntu-latest
     timeout-minutes: 60

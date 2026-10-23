@@ -92,6 +92,16 @@ def test_develop_wins_without_origin_head(tmp_path: Path) -> None:
     assert integration_branch(repo) == "develop"
 
 
+def test_local_develop_wins_without_origin(tmp_path: Path) -> None:
+    repo = make_repo(tmp_path / "projet", "https://github.com/antoine-tena/kiln.git")
+    git = ["git", "-c", "user.email=t@t", "-c", "user.name=t"]
+    subprocess.run([*git, "commit", "-q", "--allow-empty", "-m", "init"], cwd=repo, check=True)
+    subprocess.run(["git", "switch", "-q", "-c", "develop"], cwd=repo, check=True)
+    subprocess.run(["git", "branch", "-q", "-D", "main"], cwd=repo, check=True)
+
+    assert integration_branch(repo) == "develop"
+
+
 def test_template_state_compares_releases() -> None:
     assert template_state("v0.4.0", "v0.4.0") == "v0.4.0 up to date"
     assert template_state("v0.3.2", "v0.4.0") == "v0.3.2 → v0.4.0"

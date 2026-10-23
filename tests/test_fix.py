@@ -87,7 +87,10 @@ def test_each_converter_closes_its_rule(tmp_path: Path, rule_id: str) -> None:
 
 def test_every_converter_named_by_a_rule_has_a_case() -> None:
     assert {rule.id for rule in RULES.values() if rule.fixer} == set(CONVERTED) | {
-        "LOCKED-DEPENDENCIES"  # needs uv and the index: run by hand on the training repos
+        "LOCKED-DEPENDENCIES",  # needs uv and the index: run by hand on the training repos
+        # The compressor finds its own gaps and runs the tests: tests/test_compressor.py.
+        "DEAD-CODE",
+        "UNUSED-DEPENDENCIES",
     }
 
 

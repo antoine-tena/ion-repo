@@ -1,6 +1,6 @@
 ---
 name: review
-description: Review a branch's commits and diff before they become public for good - messages, authorship, forbidden trailers, stray files, secrets, fixups to fold - and tidy the history while it can still be rewritten; with `--repo`, review the whole repo before a release (published commits since the last tag, leftover remote branches, worktrees). Run by /kiln:merge before merging and by /kiln:release before tagging; use also when the user asks whether a branch or the repo is clean, presentable, ready to be seen.
+description: Review a branch's commits and diff before they go public - messages, authorship, forbidden trailers, stray files, secrets, fixups - and tidy its history; `--repo`: the whole repo before a release. Run by /kiln:merge and /kiln:release; use when the user asks if a branch or the repo is clean.
 argument-hint: "[branch | --repo]"
 ---
 

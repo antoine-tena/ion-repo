@@ -1,6 +1,6 @@
 ---
 name: release
-description: Ship a release - a release/vN branch from develop, full checks (CI, migrations, contract, settings), the release announcement (what's-new window, email), merge into main tagged vN, deployment, merge back into develop. Use when the user asks to release, ship or deploy a version to production, or for an urgent production fix.
+description: Ship a release: a release/vN branch from develop, full checks (CI, migrations, contract, settings), the announcement (what's-new window, email), main merged and tagged vN, deployment, back into develop. Use when the user asks to release, ship or deploy a version, or for an urgent production fix.
 argument-hint: "[vN] [develop commit]"
 ---
 
@@ -26,7 +26,8 @@ No production there: the tag publishes. Two commands replace the steps below.
    `kiln update` turns into a ticket of each repo's backlog), delete the draft line, commit; then
    `kiln version cut` again: full checks, tag `-rc.N` pushed. A fix of the candidate: a `fix:`
    commit on the branch, then `cut` again.
-3. `kiln version promote` when `kiln version` says a candidate is ready: tag on its exact commit,
+3. `kiln version promote` when `kiln version` says a candidate is ready (`--urgent`, only when
+   its owner asks: no soak nor repo, its CI green still required): tag on its exact commit,
    merged into `main` and `develop`; `pypi.yml` publishes the package and the GitHub Release.
 4. `kiln update --all` only with the user's yes.
 
@@ -87,6 +88,8 @@ The project's commands (often `scripts/ops/deploy-backend.sh --dry-run`, then wi
 `deploy-frontend.sh`), the API before the front. Then check: the script's smoke test, production
 logs for a few minutes (the project's diagnosis skill if any), the announcement visible. If
 something breaks: back to the previous release through the project's procedure, and say so.
+No deployment configured (no `scripts/ops/deploy-*.sh`, nothing in `CLAUDE.md`): the release ends
+at the tag on `main`; say so and skip to the next step.
 
 ## 9. Merge back and tidy
 ```bash

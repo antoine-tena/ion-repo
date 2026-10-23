@@ -14,7 +14,7 @@ from pathlib import Path
 
 from kiln import ui
 from kiln.charter.config import charter_path
-from kiln.config import UserConfig, config_path, load_config
+from kiln.config import UserConfig, config_path, detect_system, load_config
 from kiln.install import (
     BASE_PLUGIN,
     SYSTEM_HINTS,
@@ -85,7 +85,7 @@ def print_finding(finding: Finding) -> None:
 
 
 def workstation_findings(config: UserConfig, stack: Stack | None) -> list[Finding]:
-    system = config.system or "linux"
+    system = config.system or detect_system()
     findings = [
         _tool("git", required=True, fix=INSTALL_HINTS["git"]),
         _tool("uv", required=True, fix=INSTALL_HINTS["uv"]),
@@ -121,11 +121,17 @@ def _tool(
     fix: str,
     version_command: list[str] | None = None,
 ) -> Finding:
+    level = Level.FAIL if required else Level.WARN
     if shutil.which(name) is None:
-        level = Level.FAIL if required else Level.WARN
         needed = "required by this repo" if required else "missing (useful for some stacks)"
         return Finding(level, name, needed, fix)
-    return Finding(Level.OK, name, probe(version_command or [name, "--version"]) or "present")
+    completed = _completed(version_command or [name, "--version"])
+    output = (completed.stdout or completed.stderr).strip() if completed else ""
+    first_line = output.splitlines()[0] if output else ""
+    # A stub that only says the tool is missing, like macOS's /usr/bin/java without a JDK.
+    if completed is not None and completed.returncode != 0:
+        return Finding(level, name, f"not working: {first_line or 'no output'}", fix)
+    return Finding(Level.OK, name, first_line or "present")
 
 
 def _github() -> Finding:
@@ -261,15 +267,6 @@ def _installed(path: Path, label: str, fix: str) -> Finding:
 
 
 # --- Tools ---
-
-
-def probe(command: list[str]) -> str:
-    """First line of a command's output (stdout, else stderr); empty if it fails."""
-    completed = _completed(command)
-    if completed is None:
-        return ""
-    output = (completed.stdout or completed.stderr).strip()
-    return output.splitlines()[0] if output else ""
 
 
 def _completed(

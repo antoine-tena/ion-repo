@@ -253,19 +253,9 @@ def _update_worktree(worktree: Path, *, allow_major: bool) -> list[str]:
 
 
 def integration_branch(root: Path) -> str:
-    preferred = subprocess.run(
-        [
-            "git",
-            "rev-parse",
-            "--verify",
-            "-q",
-            f"refs/remotes/origin/{PREFERRED_INTEGRATION_BRANCH}",
-        ],
-        cwd=root,
-        capture_output=True,
-        check=False,
-    )
-    if preferred.returncode == 0:
+    """`develop` when origin has it, otherwise origin's default branch; a repo not yet on
+    GitHub (no origin) takes its local `develop` when there is one."""
+    if _has_ref(root, f"refs/remotes/origin/{PREFERRED_INTEGRATION_BRANCH}"):
         return PREFERRED_INTEGRATION_BRANCH
     completed = subprocess.run(
         ["git", "symbolic-ref", "--short", "refs/remotes/origin/HEAD"],
@@ -274,8 +264,21 @@ def integration_branch(root: Path) -> str:
         text=True,
         check=False,
     )
-    head = completed.stdout.strip()
-    return head.removeprefix("origin/") if completed.returncode == 0 else DEFAULT_INTEGRATION_BRANCH
+    if completed.returncode == 0:
+        return completed.stdout.strip().removeprefix("origin/")
+    if _has_ref(root, f"refs/heads/{PREFERRED_INTEGRATION_BRANCH}"):
+        return PREFERRED_INTEGRATION_BRANCH
+    return DEFAULT_INTEGRATION_BRANCH
+
+
+def _has_ref(root: Path, reference: str) -> bool:
+    found = subprocess.run(
+        ["git", "rev-parse", "--verify", "-q", reference],
+        cwd=root,
+        capture_output=True,
+        check=False,
+    )
+    return found.returncode == 0
 
 
 def _clear_stale_worktree(root: Path, worktree: Path, branch: str, integration: str) -> bool:

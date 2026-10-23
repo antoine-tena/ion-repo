@@ -48,6 +48,9 @@ CONFIG_PATH = (
 )
 # Release channel that follows candidates (`interne` before kiln 0.4).
 INTERNAL_CHANNELS = ("internal", "interne")
+# The tool runs kiln's `develop`: the checkout of the code directory, installed editable.
+BETA_CHANNEL = "beta"
+DEFAULT_CODE_DIR = Path.home() / "code"
 TIMEOUT_SECONDS = 3
 CHANGELOG_URL = "https://raw.githubusercontent.com/antoine-tena/kiln/{tag}/CHANGELOG.md"
 # `## v0.3.4 — 2026-10-16`; a breaking line starts with `**Cassant**` (French) or `**Breaking**`.
@@ -91,13 +94,33 @@ def release_key(ref: str) -> tuple[int, int, int, int] | None:
     return (*(int(match.group(i)) for i in (1, 2, 3)), int(candidate) if candidate else FINAL)
 
 
-def follows_candidates() -> bool:
-    """Is the machine on the internal channel (`channel = "internal"` in kiln's config)?"""
+def machine_settings() -> dict[str, Any]:
     try:
-        values = tomllib.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+        return tomllib.loads(CONFIG_PATH.read_text(encoding="utf-8"))
     except OSError, ValueError:
-        return False
-    return values.get("channel", values.get("canal")) in INTERNAL_CHANNELS
+        return {}
+
+
+def channel() -> str:
+    values = machine_settings()
+    return str(values.get("channel", values.get("canal", "")))
+
+
+def follows_candidates() -> bool:
+    """Is the machine on the internal or the beta channel (`channel` in kiln's config)?"""
+    return channel() in (*INTERNAL_CHANNELS, BETA_CHANNEL)
+
+
+def is_beta() -> bool:
+    return channel() == BETA_CHANNEL
+
+
+def kiln_checkout() -> Path | None:
+    """kiln's checkout in the code directory (`code_dir`), the source of the beta channel."""
+    values = machine_settings()
+    code_dir = Path(str(values.get("code_dir", values.get("dossier_code", DEFAULT_CODE_DIR))))
+    checkout = code_dir.expanduser() / "kiln"
+    return checkout if (checkout / KILN_PACKAGE_MARKER).is_file() else None
 
 
 def run(*command: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
@@ -112,8 +135,9 @@ PYPI_NAME = TOOL_NAMES[0]
 
 
 def installed_kiln() -> tuple[str, str] | None:
-    """("pypi", version), ("git", commit) or ("directory", what it was built from: `v0.4.0-rc.1`,
-    `v0.3.4-105-gd800ca1`, "" when unknown) of the installed tool; None when it is missing."""
+    """("pypi", version), ("git", commit), ("editable", the checkout read live) or ("directory",
+    what a copy was built from: `v0.4.0-rc.1`, `v0.3.4-105-gd800ca1`, "" when unknown) of the
+    installed tool; None when it is missing."""
     tool_dir = run("uv", "tool", "dir").stdout.strip()
     if not tool_dir:
         return None
@@ -133,6 +157,8 @@ def installed_kiln() -> tuple[str, str] | None:
             origin = json.loads(direct_url.read_text())
             if "vcs_info" in origin:
                 return ("git", str(origin["vcs_info"].get("commit_id", "")))
+            if origin.get("dir_info", {}).get("editable"):
+                return ("editable", str(origin.get("url", "")).removeprefix("file://"))
             return ("directory", recorded_build(metadata.parent))
     return None
 
@@ -191,6 +217,18 @@ def is_tool_outdated(install: tuple[str, str] | None, tag: str, release_commit: 
     return where != tag
 
 
+def is_beta_tool_outdated(install: tuple[str, str] | None) -> bool:
+    """On the beta channel, the tool is kiln's checkout installed editable (never outdated: read
+    live), otherwise GitHub's `develop` at its last commit."""
+    checkout = kiln_checkout()
+    if checkout is not None:
+        return install is None or install[0] != "editable" or Path(install[1]) != checkout
+    if install is None or install[0] != "git":
+        return True
+    heads = run("git", "ls-remote", f"{KILN_GIT_URL}.git", "refs/heads/develop").stdout.split()
+    return bool(heads) and install[1] != heads[0]
+
+
 def is_repo_late(commit: str, tag: str) -> bool:
     current, latest = release_key(commit), release_key(tag)
     return latest is not None and (current is None or current < latest)
@@ -205,6 +243,10 @@ def tool_update_command(install: tuple[str, str] | None, tag: str) -> str:
         "--scope user"
     )
     legacy = "uv tool uninstall kiln && " if has_legacy_tool() else ""
+    if is_beta():
+        checkout = kiln_checkout()
+        source = f"--editable {checkout}" if checkout else f'"git+{KILN_GIT_URL}@develop"'
+        return f"{legacy}uv tool install --force {source} && {plugins}"
     key = release_key(tag)
     final = key is not None and key[3] == FINAL
     # PyPI only has promoted releases: a candidate (internal channel) comes from GitHub.
@@ -350,7 +392,21 @@ def kiln_repo(cwd: str) -> tuple[Path, str] | None:
     commit = answer(answers, "_commit")
     if not commit or not any(m in answer(answers, "_src_path") for m in KILN_SOURCE_MARKERS):
         return None
-    return root, commit
+    return root, integrated_commit(root, commit)
+
+
+def integrated_commit(root: Path, commit: str) -> str:
+    """The template commit of the integration branch when it is ahead of the checked-out
+    branch's: a branch cut before a teammate merged `kiln update` is not late (#50)."""
+    branch = integration_branch(root)
+    if branch is None:
+        return commit
+    shown = run("git", "-C", str(root), "show", f"origin/{branch}:{ANSWERS_FILE}")
+    merged = answer(shown.stdout, "_commit") if shown.returncode == 0 else ""
+    merged_key, own_key = release_key(merged), release_key(commit)
+    if merged_key is not None and (own_key is None or merged_key > own_key):
+        return merged
+    return commit
 
 
 def remove_legacy_link(root: Path) -> None:
@@ -619,10 +675,10 @@ def offer(
     latest = release()
     if latest is None:
         return None
-    tag, release_commit = latest
+    tag = latest[0]
     repo_due = reminders.is_due(state, str(root)) and is_repo_late(commit, tag)
     install = installed_kiln()
-    tool_due = is_tool_outdated(install, tag, release_commit)
+    tool_due = is_beta_tool_outdated(install) if is_beta() else is_tool_outdated(install, *latest)
     if not tool_due and not repo_due:
         return None
     notes = (changelog or fetch_changelog)(tag)
@@ -657,6 +713,9 @@ def instructions(
 
 def tool_status() -> str:
     """`up to date`, or the command that updates the installed tool (skill `/kiln:update`)."""
+    if is_beta():
+        install = installed_kiln()
+        return tool_update_command(install, "") if is_beta_tool_outdated(install) else "up to date"
     latest = latest_release()
     if latest is None:
         return "up to date"

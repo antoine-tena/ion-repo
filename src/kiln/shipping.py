@@ -8,9 +8,10 @@
   commit awaited (macOS and the end-to-end tests run only there), then tag `-rc.N` (the next N)
   pushed, only on green; a fix of the candidate is a `fix:` commit on the branch, then `cut`
   again.
-- **promote**: a candidate whose CI is green, tag `vX.Y.Z` on its exact commit (its message is
-  the changelog entry), merged into `main` and back into `develop`, pushed; `pypi.yml` publishes
-  the package and the GitHub Release. `kiln update --all` stays a separate step, with consent.
+- **promote**: a candidate that proved itself (CI green, soaked, run by a repo), tag `vX.Y.Z`
+  on its exact commit (its message is the changelog entry), merged into `main` and back into
+  `develop`, pushed; `pypi.yml` publishes the package and the GitHub Release. `kiln update
+  --all` stays a separate step, with consent.
 """
 
 import datetime
@@ -26,8 +27,11 @@ from kiln import github_ci, ui
 from kiln.backlog import AFTER_UPDATING
 from kiln.release import (
     VERSION_MODULE,
+    Evidence,
     Tag,
+    _adoption,
     _subjects_since,
+    evidence,
     latest_candidates,
     next_version,
     promotion_verdict,
@@ -352,13 +356,15 @@ def _last_candidate(version: str, tags: list[Tag]) -> str | None:
 # --- promote -----------------------------------------------------------------------------------
 
 
-def promote(root: Path, wanted: str | None = None) -> None:
+def promote(root: Path, wanted: str | None = None, is_urgent: bool = False) -> None:
     _require_kiln_repo(root)
     tags = read_tags(root)
+    adopted = _adoption()
     candidate = pick_candidate(
         latest_candidates(tags),
         wanted,
-        lambda tag: github_ci.verdict(root, _commit_of(root, tag.name)),
+        lambda tag: evidence(root, tag, tags, adopted),
+        is_urgent,
     )
     version = candidate.version.base_version
     commit = _commit_of(root, candidate.name)
@@ -384,25 +390,31 @@ def promote(root: Path, wanted: str | None = None) -> None:
     ui.note("then, with consent: kiln update --all")
 
 
-def pick_candidate(candidates: list[Tag], wanted: str | None, ci_of: Callable[[Tag], str]) -> Tag:
-    """The candidate asked for, or the oldest one ready; never one a newer candidate does not
-    cover yet, nor one whose CI (`ci_of`, GitHub's verdict) is not green."""
+def pick_candidate(
+    candidates: list[Tag],
+    wanted: str | None,
+    evidence_of: Callable[[Tag], Evidence],
+    is_urgent: bool = False,
+) -> Tag:
+    """The candidate asked for, or the oldest one ready: CI green, soaked, run by a repo (see
+    `promotion_verdict`); `is_urgent`: the CI alone."""
+    now = datetime.datetime.now(datetime.UTC)
     if wanted is not None:
         version = Version(wanted.removeprefix("v"))
         chosen = [tag for tag in candidates if Version(tag.version.base_version) == version]
         if not chosen:
             raise KilnError(f"no candidate of v{version} waiting for promotion")
         candidate = chosen[0]
-        verdict, ready = promotion_verdict(candidate, candidates, ci_of(candidate))
+        verdict, ready = promotion_verdict(candidate, evidence_of(candidate), now, is_urgent)
         if not ready:
             raise KilnError(f"{candidate.name}: {verdict}")
         return candidate
     for candidate in candidates:
-        if promotion_verdict(candidate, candidates, ci_of(candidate))[1]:
+        if promotion_verdict(candidate, evidence_of(candidate), now, is_urgent)[1]:
             return candidate
     raise KilnError(
-        "no candidate ready: a newer candidate has to exist first (kiln version cut), and the CI "
-        "of the one to promote must be green (kiln version)"
+        "no candidate ready: its CI green, a day of soak (two hours for fixes only) and a repo "
+        "updated to it (kiln version says what each one waits for)"
     )
 
 

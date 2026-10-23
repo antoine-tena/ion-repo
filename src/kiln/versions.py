@@ -11,6 +11,7 @@ The `public` channel, the default, only sees promoted releases. Each release has
 import json
 import re
 import subprocess
+import sys
 from dataclasses import dataclass
 from importlib import resources
 from importlib.metadata import Distribution, PackageNotFoundError, distribution
@@ -18,7 +19,7 @@ from pathlib import Path
 
 from packaging.version import InvalidVersion, Version
 
-from kiln.config import INTERNAL_CHANNEL, load_config
+from kiln.config import BETA_CHANNEL, INTERNAL_CHANNEL, load_config
 
 KILN_GIT_URL = "https://github.com/antoine-tena/kiln"
 # Package name on PyPI; `kiln` before, still there on machines not yet updated.
@@ -28,6 +29,8 @@ CHANGELOG_FILE = "CHANGELOG.md"
 # Written into the package by `hatch_build.py`: what a copy of a checkout was built from.
 BUILD_INFO_FILE = "_build.json"
 DIRTY_SUFFIX = "-dirty"
+# Folder where Homebrew installs its formulas: a tool under it came from the tap.
+HOMEBREW_CELLAR = "Cellar"
 # `v0.4.0`, `v0.4.0-rc.2`, and what `git describe` appends (`v0.4.0-3-gabc1234`).
 RELEASE_TAG = re.compile(r"^v(\d+\.\d+\.\d+(?:-rc\.\d+)?)(?:-(\d+)-g([0-9a-f]+))?$")
 RELEASE_HEADING = re.compile(r"^## (v\d+\.\d+\.\d+)(?:\s+[-—·]\s+(.+))?$")
@@ -61,8 +64,13 @@ def tag_of(ref: str) -> str | None:
 
 
 def follows_candidates() -> bool:
-    """Does this machine follow the candidates (`internal` channel)?"""
-    return load_config().channel == INTERNAL_CHANNEL
+    """Does this machine follow the candidates (`internal` or `beta` channel)?"""
+    return load_config().channel in (INTERNAL_CHANNEL, BETA_CHANNEL)
+
+
+def is_beta() -> bool:
+    """Does this machine run kiln's `develop` (`beta` channel)?"""
+    return load_config().channel == BETA_CHANNEL
 
 
 def latest_release(source: str = KILN_GIT_URL, *, candidates: bool | None = None) -> str | None:
@@ -100,7 +108,10 @@ def _installed_distribution() -> Distribution | None:
 
 
 def install_source() -> str:
-    """Where the tool comes from: `pypi`, `git` (a GitHub revision) or `folder` (a checkout)."""
+    """Where the tool comes from: `pypi`, `homebrew` (the tap's formula, T-12), `git` (a GitHub
+    revision) or `folder` (a checkout)."""
+    if HOMEBREW_CELLAR in Path(sys.prefix).resolve().parts:
+        return "homebrew"
     dist = _installed_distribution()
     direct_url = (dist.read_text("direct_url.json") or "") if dist else ""
     if not direct_url:
@@ -112,9 +123,22 @@ def upgrade_command(version: str) -> str:
     """Command that installs version `vX.Y.Z` of the tool, the way it was installed: PyPI only
     has promoted releases, a candidate goes through GitHub."""
     release = release_version(version)
-    if install_source() == "pypi" and release is not None and not release.is_prerelease:
+    source = install_source()
+    if source == "homebrew" and release is not None and not release.is_prerelease:
+        return "brew upgrade kiln"
+    if source == "pypi" and release is not None and not release.is_prerelease:
         return f'uv tool install --force "{PYPI_NAME}=={release}"'
     return f'uv tool install --force "git+{KILN_GIT_URL}@{version}"'
+
+
+def beta_install_command(code_dir: Path) -> str:
+    """Command that makes the tool kiln's `develop` (`beta` channel): the checkout of the code
+    directory installed editable, read live (each merge into `develop` is there at once),
+    otherwise GitHub's `develop`."""
+    checkout = code_dir / "kiln"
+    if (checkout / "src" / "kiln" / "versions.py").is_file():
+        return f"uv tool install --force --editable {checkout}"
+    return f'uv tool install --force "git+{KILN_GIT_URL}@develop"'
 
 
 def tool_release_tag() -> str | None:

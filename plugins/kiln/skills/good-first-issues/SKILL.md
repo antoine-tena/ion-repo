@@ -1,6 +1,6 @@
 ---
 name: good-first-issues
-description: Keep a small, steady stock of `good first issue` issues open on GitHub, drawn from the backlog and reserved for outside contributors, so a newcomer who wants to help always finds a task ready; nothing is posted without the user's yes. Use when the user asks for good first issues, wants to attract contributors, or when /kiln:contribution has just merged a PR that closed one.
+description: Keep a small stock of `good first issue` issues open on GitHub, drawn from the backlog for outside contributors; nothing posted without the user's yes. Use when the user asks for good first issues or to attract contributors, or when /kiln:contribution has just merged a PR that closed one.
 argument-hint: "[target number | off]"
 ---
 

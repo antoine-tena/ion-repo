@@ -10,6 +10,7 @@ from pathlib import Path
 
 from kiln import renames, ui
 from kiln.config import (
+    BETA_CHANNEL,
     CHANNELS,
     DEFAULT_STATUSLINE,
     STATUSLINE_CHOICES,
@@ -21,6 +22,7 @@ from kiln.config import (
 )
 from kiln.shell import KilnError
 from kiln.statusline import apply_statusline_choice
+from kiln.versions import beta_install_command
 
 MACHINE_KEYS = ("system", "owner", "team", "code_dir", "channel", "statusline")
 
@@ -32,7 +34,10 @@ def show_machine(config: UserConfig) -> None:
         "owner": config.owner or "(none)",
         "team": ", ".join(config.team) or "(none)",
         "code_dir": str(config.code_dir),
-        "channel": f"{config.channel} (public: promoted releases; internal: candidates too)",
+        "channel": (
+            f"{config.channel} (public: promoted releases; internal: candidates too; "
+            "beta: kiln's develop, live)"
+        ),
         "statusline": f"{statusline} ({' / '.join(STATUSLINE_CHOICES)})",
     }
     width = max(len(key) for key in MACHINE_KEYS)
@@ -42,6 +47,15 @@ def show_machine(config: UserConfig) -> None:
     print()
     ui.note("Change: kiln set key=value [key=value…] (e.g. kiln set team=alice,bob).")
     ui.note("A repo's settings: go into the repo, then kiln set.")
+
+
+def only_machine_keys(assignments: list[str]) -> bool:
+    """Keys that only exist for the machine (`statusline=…`, `channel=…`): `kiln set` in a repo
+    applies them to the machine rather than refusing them."""
+    from kiln.settings import SETTABLE_KEYS
+
+    keys = [renames.MACHINE_KEYS.get(k, k) for k, _, _ in (a.partition("=") for a in assignments)]
+    return bool(keys) and all(k in MACHINE_KEYS and k not in SETTABLE_KEYS for k in keys)
 
 
 def apply_machine(config: UserConfig, assignments: list[str]) -> UserConfig:
@@ -80,9 +94,12 @@ def apply_machine(config: UserConfig, assignments: list[str]) -> UserConfig:
 def run_machine(assignments: list[str]) -> None:
     config = load_config()
     if assignments:
-        previous = config.statusline
+        previous = config
         config = apply_machine(config, assignments)
         save_config(config)
-        if config.statusline and config.statusline != previous:
+        if config.statusline and config.statusline != previous.statusline:
             ui.note(apply_statusline_choice(config.statusline))
+        if config.channel == BETA_CHANNEL != previous.channel:
+            command = beta_install_command(config.code_dir)
+            ui.note(f"Beta channel: make the tool kiln's develop now: {command}")
     show_machine(config)

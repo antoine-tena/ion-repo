@@ -1,6 +1,6 @@
 ---
 name: report
-description: Report a defect in what kiln provides (a generated file, a shared rule of the charter, a skill, hook or status line of a kiln plugin, a reusable workflow, the kiln or charter command) to https://github.com/antoine-tena/kiln - a pull request when the fix is clear and local, an issue otherwise, posted only with the user's consent. Use when a problem turns out to come from kiln rather than from this repo (rule [REPORT-TO-KILN]), or when the user asks to report something to kiln.
+description: Report a defect of kiln (generated file, charter rule, plugin skill or hook, reusable workflow, kiln or charter command) to antoine-tena/kiln: a PR when the fix is clear, an issue otherwise, only with the user's consent. Use when a problem comes from kiln ([REPORT-TO-KILN]) or the user asks.
 argument-hint: "[what went wrong]"
 ---
 

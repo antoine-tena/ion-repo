@@ -66,8 +66,9 @@ uv tool install kiln-cli     # la commande est kiln ; uv installe Python 3.14 s'
 kiln install                 # hors d'un repo : le plugin Claude Code de kiln dans chaque session
 ```
 
-Ou pour essayer sans rien installer : `uvx kiln-cli new mon-app` pour un nouveau repo,
-`uvx kiln-cli adopt` dans un repo que vous avez déjà. macOS, Linux et Windows par WSL ;
+Avec Homebrew : `brew install antoine-tena/kiln/kiln`. Ou pour essayer sans rien installer :
+`uvx kiln-cli new mon-app` pour un nouveau repo, `uvx kiln-cli adopt` dans un repo que vous
+avez déjà. macOS, Linux et Windows par WSL ;
 [pnpm](https://pnpm.io/) pour les fronts JavaScript, [podman](https://podman.io/) pour les
 conteneurs.
 
@@ -122,7 +123,8 @@ seule, retour arrière automatique, sauvegardes restaurées), un front Nuxt sur 
 
 Une version de kiln sort d'abord en candidate, taguée seulement quand sa CI est verte sous Linux
 et macOS, y compris une mise à jour depuis chaque version depuis la v0.3.0, par un outil
-installé. Elle est promue quand la candidate suivante est prête, puis répétée sur un clone de
+installé. Elle est promue une fois rodée (24 heures, au moins un repo passé dessus ; 2 heures pour une
+candidate de correctifs seuls), puis répétée sur un clone de
 chaque repo avant que `kiln update --all` la fusionne, un worktree par repo. Les repos citent les
 workflows de kiln à la version exacte qu'ils suivent : rien ne leur arrive entre deux versions,
 et `kiln update` montre les nouveautés de chaque version qu'il traverse. Un repo repris par

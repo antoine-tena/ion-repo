@@ -226,3 +226,10 @@ def test_update_reports_what_kiln_changed_in_frozen_files(
 
     out = capsys.readouterr().out
     assert "ci.yml" in out and "-b\n+b2" in out
+
+
+def test_waiver_also_applies_to_a_rule_that_scans_the_whole_repo(repo: Path) -> None:
+    checked = Repo(repo, load_charter(repo))
+    checked.waived = ["src/long.py"]
+
+    assert repo / "src/long.py" not in checked.tracked([])

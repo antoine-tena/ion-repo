@@ -16,9 +16,8 @@ from kiln import ui
 from kiln.dev import background, containers, menu
 from kiln.dev.backing import start_backing_services, stop_backing_services
 from kiln.dev.foreground import run_foreground, service_prefix
-from kiln.dev.processes import dev_processes, read_env_file
+from kiln.dev.processes import dev_processes, read_env_file, runs_beyond_front
 from kiln.shell import KilnError, step
-from kiln.stack import FRONTEND_DIR
 
 ACTIONS = ("status", "logs", "stop")
 
@@ -59,7 +58,7 @@ def _start(root: Path, *, foreground: bool, only: list[str] | None, ask: menu.As
     if not every:
         raise KilnError("nothing to run: a command-line tool runs with uv run")
     commands = menu.select(every, background.state_dir(root), only, ask)
-    if any(command.directory != FRONTEND_DIR for command in commands):
+    if runs_beyond_front(commands):
         start_backing_services(root)
     step(" · ".join(f"{command.label} ({command.directory}/)" for command in commands))
     if foreground:

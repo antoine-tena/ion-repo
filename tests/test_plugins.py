@@ -33,6 +33,21 @@ def test_every_cited_skill_exists() -> None:
     assert sorted(missing) == []
 
 
+# Une description de skill est relue à chaque message de chaque session (T-162) : courte,
+# déclencheurs gardés. Les skills repris d'un autre auteur (`author:`) gardent la leur.
+DESCRIPTION_MAX = 300
+
+
+def test_skill_descriptions_stay_short() -> None:
+    too_long = {}
+    for skill in (ROOT / "plugins").glob("*/skills/*/SKILL.md"):
+        front_matter = skill.read_text().split("---")[1]
+        description = re.search(r"^description: (.*)$", front_matter, re.M)
+        if description and "author:" not in front_matter and len(description[1]) > DESCRIPTION_MAX:
+            too_long[str(skill.relative_to(ROOT))] = len(description[1])
+    assert too_long == {}
+
+
 def test_each_skill_is_named_after_its_folder() -> None:
     # Ligne à ligne et non en YAML : Claude Code accepte « Sans CI : elle… » sans guillemets.
     for skill in (ROOT / "plugins").glob("*/skills/*/SKILL.md"):

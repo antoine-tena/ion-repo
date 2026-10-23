@@ -20,7 +20,7 @@ from typing import Any
 
 from kiln import ui
 from kiln.dev.foreground import PREFIX_COLORS, service_prefix, stop_all
-from kiln.dev.processes import signal_group, spawn
+from kiln.dev.processes import runs_beyond_front, signal_group, spawn
 from kiln.shell import KilnError, capture, spinner_line
 from kiln.stack import Command
 
@@ -42,7 +42,11 @@ SETTLE_SECONDS = 3
 POLL_SECONDS = 0.25
 STOP_SECONDS = 10
 TAIL_LINES = 40
-LOOPBACK = "127.0.0.1"
+# Both loopbacks: a server bound to `localhost` may listen on IPv6 only (Nuxt on macOS).
+LOOPBACKS = (
+    (socket.AF_INET, "127.0.0.1"),
+    (socket.AF_INET6, "::1"),
+)
 
 
 def state_dir(root: Path) -> Path:
@@ -103,10 +107,11 @@ def start(root: Path, commands: list[Command]) -> None:
     for stale in folder.glob("*.json"):
         stale.unlink()
     env = {**os.environ, "PYTHONUNBUFFERED": "1"}
+    full_stack = runs_beyond_front(commands)
     processes = []
     for command in commands:
         with (folder / f"{command.label}.log").open("w", encoding="utf-8") as output:
-            processes.append(spawn(root, command, env, output))
+            processes.append(spawn(root, command, env, output, full_stack=full_stack))
         record = {"pid": processes[-1].pid, "port": DEV_PORTS.get(command.label)}
         (folder / f"{command.label}.json").write_text(json.dumps(record), encoding="utf-8")
     try:
@@ -140,9 +145,16 @@ def _is_ready(port: int | None, elapsed: float) -> bool:
 
 
 def _listens(port: int) -> bool:
-    with socket.socket() as probe:
-        probe.settimeout(POLL_SECONDS)
-        return probe.connect_ex((LOOPBACK, port)) == 0
+    return any(_answers(family, host, port) for family, host in LOOPBACKS)
+
+
+def _answers(family: socket.AddressFamily, host: str, port: int) -> bool:
+    try:
+        with socket.socket(family) as probe:
+            probe.settimeout(POLL_SECONDS)
+            return probe.connect_ex((host, port)) == 0
+    except OSError:  # no IPv6 on this machine
+        return False
 
 
 def show_status(root: Path) -> None:

@@ -1,6 +1,6 @@
 ---
 name: token
-description: Set up the credentials of a service (PyPI, Stripe, an API, a host…) in a `.<service>/` folder at the repo root - `token` (the raw secret, chmod 600) and `config` (key=value, comments on the token's scope) - and give the user the one command that pastes the token without showing it. Use when a task needs an API key or a token, or when the user wants to give one.
+description: Set up a service's credentials (PyPI, Stripe, an API, a host…) in a `.<service>/` folder at the repo root (`token`, chmod 600, and `config` on its scope), with one command that pastes the token unseen. Use when a task needs an API key or a token, or when the user wants to give one.
 argument-hint: "<service> [what the token is for]"
 ---
 

@@ -57,6 +57,27 @@ def test_answers_are_read_without_yaml() -> None:
     assert hook.answer(KILN_ANSWERS, "absent") == ""
 
 
+def test_an_update_merged_on_the_integration_branch_is_not_offered_again(
+    tmp_path: Path,
+) -> None:
+    # A branch cut before a teammate merged `kiln update` into develop (#50).
+    def git(*args: str) -> None:
+        subprocess.run(["git", "-C", str(tmp_path), *args], check=True, capture_output=True)
+
+    git("init", "-q", "-b", "develop")
+    answers = tmp_path / ".copier-answers.yml"
+    answers.write_text(KILN_ANSWERS.replace("8e6427b", "v0.4.4-63-gb2b0bb5"))
+    git("add", ".")
+    git("commit", "-qm", "update")
+    git("update-ref", "refs/remotes/origin/develop", "HEAD")
+    hook = load_hook()
+
+    assert hook.integrated_commit(tmp_path, "e63f9f0") == "v0.4.4-63-gb2b0bb5"
+    assert hook.integrated_commit(tmp_path, "v0.4.5-rc.1") == "v0.4.5-rc.1"
+    git("update-ref", "-d", "refs/remotes/origin/develop")
+    assert hook.integrated_commit(tmp_path, "e63f9f0") == "e63f9f0"
+
+
 def test_releases_order_by_number_not_by_text() -> None:
     hook = load_hook()
 
@@ -464,3 +485,65 @@ def test_every_start_recalls_that_errors_may_come_from_kiln(
 
     said = json.loads(capsys.readouterr().out)["hookSpecificOutput"]["additionalContext"]
     assert said == hook.ERROR_ORIGIN
+
+
+def beta_machine(hook: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """A machine on the beta channel, with kiln's checkout in its code directory."""
+    checkout = tmp_path / "code/kiln"
+    (checkout / "src/kiln").mkdir(parents=True)
+    (checkout / "src/kiln/versions.py").write_text("")
+    config = tmp_path / "config.toml"
+    config.write_text(f'channel = "beta"\ncode_dir = "{tmp_path / "code"}"\n')
+    monkeypatch.setattr(hook, "CONFIG_PATH", config)
+    return checkout
+
+
+def test_on_the_beta_channel_the_editable_checkout_is_never_outdated(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    hook = load_hook()
+    checkout = beta_machine(hook, tmp_path, monkeypatch)
+    fake_tool(
+        tmp_path / "tools",
+        "kiln-cli",
+        "kiln_cli-0.4.4.dist-info",
+        json.dumps({"url": f"file://{checkout}", "dir_info": {"editable": True}}),
+    )
+    uv_tool_dir(hook, tmp_path / "tools", monkeypatch)
+
+    assert hook.follows_candidates()
+    assert hook.installed_kiln() == ("editable", str(checkout))
+    assert hook.tool_status() == "up to date"
+
+
+def test_on_the_beta_channel_a_release_is_replaced_by_the_checkout(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    hook = load_hook()
+    checkout = beta_machine(hook, tmp_path, monkeypatch)
+    monkeypatch.setattr(hook, "installed_kiln", lambda: ("pypi", "v0.4.4"))
+    monkeypatch.setattr(hook, "has_legacy_tool", lambda: False)
+
+    assert hook.tool_status().startswith(f"uv tool install --force --editable {checkout} && ")
+
+
+def test_on_the_beta_channel_without_checkout_the_tool_follows_github_develop(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    hook = load_hook()
+    config = tmp_path / "config.toml"
+    config.write_text(f'canal = "beta"\ndossier_code = "{tmp_path}"\n')
+    monkeypatch.setattr(hook, "CONFIG_PATH", config)
+    monkeypatch.setattr(hook, "has_legacy_tool", lambda: False)
+
+    def run(*command: str) -> subprocess.CompletedProcess[str]:
+        assert command[-1] == "refs/heads/develop"
+        return subprocess.CompletedProcess(command, 0, stdout="c2\trefs/heads/develop\n")
+
+    monkeypatch.setattr(hook, "run", run)
+
+    assert not hook.is_beta_tool_outdated(("git", "c2"))
+    assert hook.is_beta_tool_outdated(("git", "c1"))
+    assert "git+https://github.com/antoine-tena/kiln@develop" in hook.tool_update_command(
+        ("git", "c1"), ""
+    )

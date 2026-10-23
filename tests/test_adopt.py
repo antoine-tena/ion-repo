@@ -61,3 +61,17 @@ def test_adoption_refuses_kiln_repos_and_dirty_trees(repo: Path) -> None:
 def test_project_name_follows_the_template_format() -> None:
     assert adopt.project_name(Path("Mon_Outil")) == "mon-outil"
     assert adopt.project_name(Path("2048")) == "projet-2048"
+
+
+def test_project_name_of_a_worktree_is_its_main_tree_s(tmp_path: Path) -> None:
+    main = tmp_path / "club"
+    subprocess.run(["git", "init", "-q", str(main)], check=True)
+    subprocess.run(
+        ["git", "-C", str(main), "-c", "user.name=t", "-c", "user.email=t@t",
+         "commit", "-q", "--allow-empty", "-m", "init"],
+        check=True,
+    )  # fmt: skip
+    worktree = main / ".claude/worktrees/chore-backlog"
+    subprocess.run(["git", "-C", str(main), "worktree", "add", "-q", str(worktree)], check=True)
+
+    assert adopt.project_name(worktree) == "club"

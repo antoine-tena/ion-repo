@@ -103,8 +103,14 @@ def check_adoptable(root: Path) -> None:
 
 
 def project_name(root: Path) -> str:
-    """Short name in the template's format (lowercase, digits, dashes), from the folder."""
-    name = re.sub(r"[^a-z0-9]+", "-", root.name.lower()).strip("-")
+    """Short name in the template's format (lowercase, digits, dashes), from the folder of the
+    main tree: a worktree's folder is named after its branch."""
+    try:
+        common = capture(["git", "rev-parse", "--path-format=absolute", "--git-common-dir"], root)
+        folder = Path(common).parent.name
+    except KilnError, OSError:  # not a git repo, or no such folder yet
+        folder = root.name
+    name = re.sub(r"[^a-z0-9]+", "-", folder.lower()).strip("-")
     return name if re.match(r"[a-z]", name) else f"projet-{name}".rstrip("-")
 
 

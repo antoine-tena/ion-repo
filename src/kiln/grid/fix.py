@@ -6,6 +6,7 @@ source. `--dry-run` shows the plan and the diff on a throwaway worktree, the rep
 """
 
 import datetime
+import os
 import shutil
 import subprocess
 import tempfile
@@ -72,21 +73,28 @@ def run_checks(root: Path, commands: list[list[str]]) -> bool:
     for command in commands:
         if shutil.which(command[0]) is None:
             return False
-        done = subprocess.run(command, cwd=root, capture_output=True, check=False)
+        # No bytecode written: `git add --all` would commit it in a repo that does not ignore it.
+        environment = {**os.environ, "PYTHONDONTWRITEBYTECODE": "1"}
+        done = subprocess.run(command, cwd=root, env=environment, capture_output=True, check=False)
         if done.returncode != 0:
             return False
     return True
 
 
 def plan(root: Path, only: str | None = None) -> list[Rule]:
-    """The failing scored rules a converter can close, waived ones aside."""
+    """The failing scored rules a converter can close, waived ones aside. A rule out of the
+    score (the compressor's, `trial`) runs only when `only` names it: its converter finds its
+    own gaps, and spends test runs to prove each one."""
     report = score.score_repo(root)
     failing = {found.rule for found in report.findings if found.status == score.FAILED}
     rules = [rule for rule in load_rules() if rule.id in failing and rule.fixer in FIXERS]
     if only is not None:
         wanted = only.upper()
-        if not any(rule.id == wanted for rule in load_rules()):
+        named = [rule for rule in load_rules() if rule.id == wanted]
+        if not named:
             raise KilnError(f"no rule {only}: kiln grid lists them")
+        if not named[0].is_scored and named[0].fixer in FIXERS:
+            return named
         rules = [rule for rule in rules if rule.id == wanted]
     return rules
 

@@ -4,10 +4,11 @@
   included, like Claude Code; the minor only moves for a decided milestone
   (`kiln version --minor`). From 1.0, strict semver, like Next.js: breaking → major,
   `feat` → minor, the rest → patch.
-- **Promotion**: a candidate (`vX.Y.Z-rc.N`, the last of its version) goes public when a
-  candidate of a newer version exists and GitHub's CI of its commit is green: the next one
-  ready, not a delay, avoids the emergency fix. The repos of the code folder tell who already
-  took it.
+- **Promotion**: a candidate (`vX.Y.Z-rc.N`, the last of its version) goes public once it has
+  proved itself, on facts: GitHub's CI of its commit green, then a day of soak since its tag and
+  at least one repo of the code folder updated to it (`kiln update` runs that repo's checks).
+  A candidate of fixes only (no `feat`, nothing breaking since the last public release) takes
+  the short lane: two hours, no repo required. The soak restarts at each `-rc.N`.
 
 Read only: `kiln version cut` and `kiln version promote` (shipping.py) tag and merge.
 """
@@ -28,7 +29,10 @@ from kiln.versions import release_version
 
 BREAKING_SUBJECT = re.compile(r"^\w+(\([^)]*\))?!:")
 FEATURE_SUBJECT = re.compile(r"^feat(\([^)]*\))?:")
+FIX_ONLY_SUBJECT = re.compile(r"^(fix|docs|test|chore|ci|build|style)(\([^)]*\))?:")
 INTEGRATION_REF = "origin/develop"
+SOAK = datetime.timedelta(hours=24)
+FIX_SOAK = datetime.timedelta(hours=2)
 BACKLOG = Path("docs") / "backlog" / "backlog.md"
 PLANNED_RELEASE = re.compile(r"^### v(\d+\.\d+\.\d+) · (.+)$")
 VERSION_MODULE = Path("src") / "kiln" / "versions.py"
@@ -39,6 +43,16 @@ class Tag:
     name: str
     version: Version
     created: datetime.datetime
+
+
+@dataclass(frozen=True)
+class Evidence:
+    """What a candidate has proved: GitHub's CI of its commit (`github_ci.verdict`), the repos
+    of the code folder updated to it, and whether it holds fixes only."""
+
+    ci: str
+    users: tuple[str, ...] = ()
+    is_fixes_only: bool = False
 
 
 def show_release_status(root: Path, *, milestone: bool = False) -> None:
@@ -56,11 +70,11 @@ def show_release_status(root: Path, *, milestone: bool = False) -> None:
         print(f"    {ui.paint('none', ui.STONE)}")
     adopted = _adoption()
     for candidate in candidates:
-        ci = github_ci.verdict(root, capture(["git", "rev-list", "-n", "1", candidate.name], root))
-        verdict, ready = promotion_verdict(candidate, candidates, ci)
+        found = evidence(root, candidate, tags, adopted)
+        verdict, ready = promotion_verdict(candidate, found, now)
         mark = ui.paint("✓", ui.MOSS) if ready else ui.paint("·", ui.STONE)
         age = (now - candidate.created).days
-        users = adopted.get(candidate.name, [])
+        users = found.users
         print(
             f"    {mark} {ui.paint(f'{candidate.name:<16}', bold=True)} {age} d  {verdict}"
             + (ui.paint(f"  · {', '.join(users)}", ui.STONE) if users else "")
@@ -136,14 +150,52 @@ def latest_candidates(tags: list[Tag]) -> list[Tag]:
     return [latest[final] for final in sorted(latest)]
 
 
-def promotion_verdict(candidate: Tag, candidates: list[Tag], ci: str) -> tuple[str, bool]:
-    """Ready when a newer candidate exists and GitHub's CI of this one is green (`ci`, from
-    `github_ci.verdict`)."""
-    if ci != github_ci.SUCCESS:
-        return f"CI not green ({ci}): not promotable", False
-    if not any(other.version > candidate.version for other in candidates):
-        return "waiting for a next release ready", False
+def promotion_verdict(
+    candidate: Tag, found: Evidence, now: datetime.datetime, is_urgent: bool = False
+) -> tuple[str, bool]:
+    """Ready when its CI is green, its soak is over and, unless it holds fixes only, a repo of
+    the code folder runs it; an urgent promotion (decided by the owner) only needs the CI."""
+    if found.ci != github_ci.SUCCESS:
+        return f"CI not green ({found.ci}): not promotable", False
+    if is_urgent:
+        return f"urgent: promote to v{candidate.version.base_version}", True
+    left = candidate.created + (FIX_SOAK if found.is_fixes_only else SOAK) - now
+    if left > datetime.timedelta(0):
+        lane = "fixes only, " if found.is_fixes_only else ""
+        return f"soaking ({lane}{_hours(left)} left)", False
+    if not found.users and not found.is_fixes_only:
+        return "soaked, but no repo runs it yet: kiln update --all", False
     return f"ready: promote to v{candidate.version.base_version}", True
+
+
+def evidence(
+    root: Path, candidate: Tag, tags: list[Tag], adopted: dict[str, list[str]]
+) -> Evidence:
+    """What `candidate` has proved, read from GitHub, the code folder and its commits."""
+    commit = capture(["git", "rev-list", "-n", "1", candidate.name], root)
+    public = [
+        tag for tag in tags if not tag.version.is_prerelease and tag.version < candidate.version
+    ]
+    since = f"{public[-1].name}..{candidate.name}" if public else candidate.name
+    log = capture(["git", "log", "--no-merges", "--format=%s%n%b%x00", since], root)
+    subjects = [entry.strip() for entry in log.split("\x00") if entry.strip()]
+    return Evidence(
+        github_ci.verdict(root, commit),
+        tuple(adopted.get(candidate.name, [])),
+        is_fixes_only(subjects),
+    )
+
+
+def is_fixes_only(subjects: list[str]) -> bool:
+    """Commits that fix without adding or breaking anything (`fix`, `docs`, `chore`…)."""
+    return bool(subjects) and all(
+        FIX_ONLY_SUBJECT.match(subject) and "BREAKING CHANGE" not in subject for subject in subjects
+    )
+
+
+def _hours(left: datetime.timedelta) -> str:
+    hours = max(1, round(left.total_seconds() / 3600))
+    return f"{hours} h"
 
 
 def next_version(last: Version, subjects: list[str], *, milestone: bool = False) -> str:

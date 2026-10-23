@@ -1,6 +1,6 @@
 ---
 name: modernize
-description: Close the gaps of the grid that need judgment (split a big file, name with meaning, type strictly, write tests), one at a time, from `kiln score --roadmap` - only the places it quotes opened, a safety net of tests first, proof by `kiln score --rule ID`, one commit per gap. Use when the user asks to modernize a repo, raise its kiln score, or work through the roadmap.
+description: Close the grid gaps that need judgment (split a big file, name with meaning, type strictly, write tests) one at a time from `kiln score --roadmap`: tests first, proof by `kiln score --rule ID`, one commit per gap. Use when the user asks to modernize a repo, raise its kiln score or work the roadmap.
 argument-hint: "[RULE-ID]"
 ---
 

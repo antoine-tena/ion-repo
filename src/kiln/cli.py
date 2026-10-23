@@ -116,6 +116,9 @@ def build_parser() -> argparse.ArgumentParser:
     check_parser.add_argument(
         "--tests", action="store_true", help="the test suites too (the release runs them)"
     )
+    check_parser.add_argument(
+        "--all", action="store_true", help="the whole repo, not only the branch's changes"
+    )
     _add_ci_command(commands)
     commands.add_parser("contract", help="regenerate openapi.json and the frontend types")
     version_parser = commands.add_parser(
@@ -128,6 +131,9 @@ def build_parser() -> argparse.ArgumentParser:
         help="cut: release branch, then candidate; promote: the candidate ready, made public",
     )
     version_parser.add_argument("number", nargs="?", help="promote: the version (vX.Y.Z)")
+    version_parser.add_argument(
+        "--urgent", action="store_true", help="promote: no soak nor repo, the CI green only"
+    )
     version_parser.add_argument(
         "--minor", action="store_true", help="the next one is a milestone: bump the minor"
     )
@@ -198,7 +204,7 @@ def _dispatch_version(arguments: argparse.Namespace, root: Path) -> None:
     elif arguments.action == "promote":
         from kiln import shipping
 
-        shipping.promote(root, arguments.number)
+        shipping.promote(root, arguments.number, arguments.urgent)
     else:
         from kiln import release
 
@@ -488,7 +494,9 @@ def dispatch(arguments: argparse.Namespace) -> list[str]:
         from kiln import install
 
         install.install_machine()
-    elif arguments.command == "set" and (arguments.machine or not _is_in_repo()):
+    elif arguments.command == "set" and (
+        arguments.machine or not _is_in_repo() or _machine_keys_only(arguments.assignments)
+    ):
         from kiln import machine
 
         machine.run_machine(arguments.assignments)
@@ -545,7 +553,7 @@ def _dispatch_in_repo(arguments: argparse.Namespace, root: Path) -> None:
     elif command == "check":
         from kiln import check
 
-        check.check_project(root, arguments.tests)
+        check.check_project(root, arguments.tests, arguments.all)
     elif command == "ci":
         _dispatch_ci(root, arguments)
     elif command == "contract":
@@ -562,6 +570,12 @@ def _dispatch_in_repo(arguments: argparse.Namespace, root: Path) -> None:
             settings.apply_settings(root, arguments.assignments)
         else:
             settings.show_settings(root)
+
+
+def _machine_keys_only(assignments: list[str]) -> bool:
+    from kiln import machine
+
+    return machine.only_machine_keys(assignments)
 
 
 def _is_in_repo() -> bool:

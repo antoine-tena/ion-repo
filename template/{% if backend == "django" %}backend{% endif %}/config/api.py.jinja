@@ -3,7 +3,7 @@
 
 from django.conf import settings
 from django.http import HttpRequest
-from ninja import NinjaAPI, Router, Schema
+from ninja import NinjaAPI, Router, Schema, Status
 
 from config.health import is_database_reachable
 
@@ -34,11 +34,11 @@ def get_health(request: HttpRequest) -> HealthResponse:
     response={HTTP_OK: HealthResponse, HTTP_SERVICE_UNAVAILABLE: HealthResponse},
     auth=None,
 )
-def get_readiness(request: HttpRequest) -> tuple[int, HealthResponse]:
+def get_readiness(request: HttpRequest) -> Status[HealthResponse]:
     if not is_database_reachable():
         unavailable = HealthResponse(status=HEALTH_STATUS_UNAVAILABLE, version=settings.APP_VERSION)
-        return HTTP_SERVICE_UNAVAILABLE, unavailable
-    return HTTP_OK, HealthResponse(status=HEALTH_STATUS_OK, version=settings.APP_VERSION)
+        return Status(HTTP_SERVICE_UNAVAILABLE, unavailable)
+    return Status(HTTP_OK, HealthResponse(status=HEALTH_STATUS_OK, version=settings.APP_VERSION))
 
 
 api.add_router("/", health_router)

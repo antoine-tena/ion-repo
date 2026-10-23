@@ -14,3 +14,9 @@ saveExact: true
 updateConfig:
   ignoreDependencies:
     - typescript
+
+# openapi-typescript 7 still declares TypeScript 5 as its peer; it generates the same types with
+# TypeScript 6 (checked October 2026). Remove once a release accepts TypeScript 6.
+peerDependencyRules:
+  allowedVersions:
+    openapi-typescript>typescript: '6'

@@ -2,108 +2,64 @@
 
 Everything left to do on kiln, in a single list ordered by priority. Started on
 **2026-10-15**, rewritten on **2026-10-17** from the vision of that day (`docs/vision/`;
-the measures of the two real repos stay private, see "Repos d'entraînement" in `CLAUDE.md`). What is done is in the "✅ Done" section at
-the bottom; what was turned down is in [rejected.md](rejected.md). **Nothing else is open.**
+the measures of the two real repos stay private, see "Repos d'entraînement" in `CLAUDE.md`). Closed tickets are in
+[done.md](done.md), what was turned down in [rejected.md](rejected.md); how to write a ticket:
+[README.md](README.md). **Nothing else is open.**
 
 North star: **kiln v0.5.0, launched publicly on Wednesday 11 November 2026: any Django or Nuxt
 repo scored in seconds against a sourced grid of today's best practices, brought up to it by
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
----
-
-## How to use (humans and agents)
-
-**A ticket** = a `### T-NN · Title` heading, then five fixed lines, then the details:
-
-    ### T-NN · Short title that says what to achieve
-    - **Type**: task
-    - **Status**: todo
-    - **Opened**: YYYY-MM-DD
-    - **Effort**: S · **Owner**: … · **Due**: —
-    - **Origin**: where it comes from
-
-    Why, what to do (as a `- [ ]` checklist when there are several steps), where to look.
-
-- **ID** `T-NN`: stable, never reused, quoted as is in commits and branches (tickets opened
-  before 16 October 2026 were `AF-NN`, same number). **Next free: T-162.**
-- **Type**, one of: `bug` (something is broken); `improvement` (it works, it could work
-  better); `idea` (nothing exists yet, to be explored); `task` (work that is neither: a release,
-  a decision, a check).
-- **Status**, one of: `todo`; `in progress — branch <name>, since YYYY-MM-DD`;
-  `blocked — waiting for <who or what>`; `to verify — <where>`.
-- **Priority** = the section the ticket lives in; changing it means moving the ticket.
-  🔴 critical (now), 🟠 important (before the north star), 🟡 normal, ⚪ background
-  (long-running work, debt, ideas still to be explored).
-- **Effort**, in Claude Code session time on the Pro plan kiln is built with: XS under
-  15 minutes, S about half an hour, M about an hour, L two to three hours (split it when it can
-  be split). Measured on kiln: on 16 October 2026, 9.3 session-hours shipped four promotions and
-  the move to English (about 8,000 lines changed): some twenty times faster than the former
-  estimates in human time.
-- **Budget**: the Pro quota restarts every Tuesday at 8:00 (Paris). It lasted 42 session-hours
-  the week of 6 October and 33 the week of 13 October (limit reached on Friday at 14:03), all
-  projects together; a 5-hour window runs out after 2 to 3.5 hours of work. kiln plans on
-  25 session-hours a week, about 7 per release, spread over the week (about 5 a day, all
-  projects): spent by Friday, it leaves the Saturday and Monday releases without budget. No
-  fleet of subagents, no headless run without a budget said beforehand.
-- **Releases**: the `## 🚀 Releases` section at the top places every open ticket in a planned
-  release (`/kiln:backlog plan`); numbers and dates are planned, not promised, until the
-  candidate is cut. One release every two days (`CLAUDE.md`, "Versions"), about 7 session-hours
-  of work each.
-- **Closing a ticket**: remove it from its section and add a line at the top of the "✅ Done"
-  log: `- **YYYY-MM-DD** · T-NN · Title — what was done (branch) · opened YYYY-MM-DD`.
-- **Locations quoted are hints, not addresses.**
-- Overview: `grep -E '^(## |### T-|- \*\*Status)' docs/backlog/backlog.md`.
-- **Good first issues**: keep 3 open on GitHub, reserved for outside contributors (skill
-  `/kiln:good-first-issues`); their tickets have **Owner**: `contributor — #NN`.
-- **The reference repo** is the vision's training ground: a non-profit's production site
-  (Django + Nuxt) adopted by kiln. Read-only from kiln's sessions: anything that writes runs on a
-  local copy (antoine, 17 October 2026).
+**Next free: T-166.**
 
 ---
 
 ## 🚀 Releases
 
-From Tuesday 20 October 2026, when the Pro week starts again: a candidate every two days,
-promoted when the next one is cut. Up to the launch, each release is planned at about 4 of the
-7 session-hours it has: the rest is margin. The launch date is fixed (T-03); the version it
-waits for is v0.5.0.
+A candidate every two days, about 4 of its 7 session-hours planned, the rest margin. v0.4.0 to
+v0.4.4 went out a week ahead of the first plan (v0.4.4 promoted on Wed 21 Oct instead of a
+candidate on Wed 28 Oct): the week won goes to the releases below, and v0.5.0 keeps its date.
+The launch date is fixed (T-03); the version it waits for is v0.5.0.
 
-### v0.4.0 · kiln speaks English
-Promoted on Mon 19 Oct (`v0.4.0-rc.2`, CI green; PyPI and GitHub Release published). The
-milestone decided by antoine. ⚠ breaking: CLI names, `copier.yml` questions, charter rule IDs,
-workflow inputs, plugin and skill names, all converted by `kiln update`.
+### Shipped: v0.4.0 to v0.4.4
+- v0.4.0 · kiln speaks English: promoted on Mon 19 Oct, the milestone decided by antoine
+  (⚠ breaking, all converted by `kiln update`).
+- v0.4.1 · The grid, as data: `kiln grid`, 105 drafts from the reference repo.
+- v0.4.2 · Any repo scored against the best, in seconds: T-125, T-46, T-157.
+- v0.4.3 · What a script can fix, fixed by script: T-126, T-127, T-128.
+- v0.4.4 · The rest handed to Claude: T-129, T-161, and most of T-130 (the template's gaps
+  closed), promoted on Wed 21 Oct. T-130's proof and T-90 slipped to v0.4.5.
 
-### v0.4.1 · The grid, as data
-Candidate `v0.4.1-rc.1` cut on Mon 19 Oct (CI green, end-to-end tests included): `kiln grid`,
-105 drafts from the reference repo, adopted repos' workflows at the public tag, private repos'
-CI on the machine, both READMEs complete and checked. Promoted when `v0.4.2-rc.1` is cut.
-
-### v0.4.2 · Any repo scored against the best, in seconds
-Candidate Sat 24 Oct. The launch hook: `uvx kiln-cli score` on the repo people already have,
-without a token.
-- ✅ T-125 · Grid v1: the rules kiln launches with (L)
-- ✅ T-46 · `kiln score`: any repo measured against the grid in seconds, no tokens (L)
-- ✅ T-157 · Credit #45 and #46 in the notes of v0.4.2 (XS)
-
-### v0.4.3 · What a script can fix, fixed by script
-Candidate Mon 26 Oct. The fixes that cost no token, each proven by the repo's own checks.
-- ✅ T-126 · `kiln fix`: every scriptable gap closed on a branch, with proof (M)
-- ✅ T-127 · First converters: supply chain and CI (M)
-- ✅ T-128 · First converters: Python and containers (L)
-
-### v0.4.4 · The rest handed to Claude, and kiln passes its own grid
-Candidate Wed 28 Oct. Claude only gets what needs judgment, and kiln's repos show the way.
-- ✅ T-129 · What needs judgment goes to Claude: `kiln score --roadmap` and `/kiln:modernize` (M)
-- T-130 · Generated repos pass the whole grid (M)
+### v0.4.5 · kiln and its repos at 100 on their own grid
+Candidate Fri 23 Oct. A tool that grades other repos must score 100 itself, visibly, before
+anyone else runs it; T-160 removes the last gap of a fresh repo.
+- T-130 · Generated repos pass the whole grid: the proof left (S)
 - T-90 · kiln passes its own grid: pinned actions, least privilege, provenance, Scorecard (M)
-- ✅ T-161 · Install kiln on the whole machine, in one command (S)
+- T-160 · A front with no backend ships a smoke test (M)
+- Its notes credit the outside fixes merged on 23 Oct: `kiln dev` sees IPv6 servers (#54),
+  `kiln check` without `backend/.env.example` (#55), no pre-commit hook without its config (#56),
+  each line ending `(#n, thanks @NathanBarrachin)`.
 
-### v0.4.5 · Never lets it rot, and the grid learns
-Candidate Fri 30 Oct. Updates go down by themselves, gaps come back up with consent.
+### v0.4.6 · Every gap seen, wherever the code lives
+Candidate Sun 25 Oct. The score and the fixes reach what they miss today: GitHub settings,
+`backend/` and `frontend/` folders, compose services, loose requirements; the reference repo's
+score proves it in each note.
+- T-159 · What T-126 to T-128 left: compose hardening, pyproject from requirements, `kiln update` (M)
+- T-158 · `kiln score` reads the GitHub settings when `gh` is logged in (S)
+- T-134 · The reference repo's score in every release note (S)
+
+### v0.4.7 · Never lets it rot, and the grid learns
+Candidate Tue 27 Oct. Updates go down by themselves, gaps come back up with consent.
 - T-59 · kiln-bot: the grid's fixes as a weekly pull request (L)
 - T-38 · What the grid does not know, reported with consent (M)
-- T-134 · The reference repo's score in every release note (S)
+
+### v0.4.8 · Data projects done right
+Candidate Thu 29 Oct. The two issues of kiln's first outside reporter (#43, #44) closed before
+the launch: a Streamlit or Dash project deploys where it can run, and its models stay tied to
+their code.
+- T-155 · A Streamlit or Dash front gets a deployment that fits, or none is assumed (M)
+- T-156 · Committed trained models tied to the code that made them (M)
 
 ### v0.5.0 · Public launch: the proof and the page
 Candidate Sun 1 Nov, promoted Tue 3 Nov. Milestone decided by antoine (16 October 2026), its
@@ -121,10 +77,10 @@ releases.
 - T-142 · Launch rehearsal: a stranger's first ten minutes, replayed (M)
 - T-53 · Readable by Claude, measured: the A/B test (M) — only if the budget allows; its number
   joins the launch article only if it is net
+- T-145 · A public benchmark: Claude Code with and without kiln (L) — same condition, after T-53
 
 ### v0.5.2 · Launch week: what the rehearsal found
 Candidate Thu 5 Nov: the fixes of T-142, nothing else.
-- T-05 · Check the first real run of the workflows on GitHub (XS) (blocked: GitHub billing)
 
 ### v0.5.3 · Launch day
 Candidate Sat 7 Nov, promoted on Mon 9 Nov by the next candidate: the version strangers
@@ -157,8 +113,6 @@ comes first; these tickets give way to it.
 - T-55 · README in Chinese, Japanese, Spanish and Portuguese (S)
 - T-57 · A tutorial series: bring a Django repo up to date in an afternoon (M)
 - T-58 · A public roadmap on GitHub Projects (M)
-- T-145 · A public benchmark: Claude Code with and without kiln (M)
-- T-12 · Homebrew formula in a tap (S) (blocked: demand)
 
 ### v0.6.0 · Claude closes the gaps alone
 Milestone decided by antoine (16 October 2026: Claude does the work in the repo), its content
@@ -188,11 +142,61 @@ build on kiln. From here, strict semver: breaking → major, `feat` → minor.
 - T-69 · Community grid packs from any git repo (L)
 - T-122 · `kiln version` proposes 1.0.0 (S)
 
----
-
 ## 🔴 Critical
 
 ## 🟠 Important
+
+### T-163 · Skills call one kiln command, the backlog first
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-21
+- **Effort**: L · **Owner**: Claude · **Due**: —
+- **Origin**: antoine, 21 October 2026, after T-162: "skills should use one command line at most"
+
+A skill that runs git, gh and file reads step by step pays each step in tokens and leaves every
+output in the conversation, re-read by each later message; a kiln command does the mechanics in
+one call and answers in a few lines. The backlog first: one full read costs about 20k tokens
+here and 36k in the reference repo, and Claude read it nearly 500 times in three weeks.
+- [ ] `kiln backlog next`, `show T-NN`, `add`, `start`, `done`: one ticket in or out, never the
+  whole file; `/kiln:backlog` calls them and nothing else.
+- [ ] Then the mechanical skills, one command each (`merge`, `cleanup`, `worktree`, `update`);
+  a skill keeps only what needs judgment.
+- [ ] `test_plugins.py`: one shell command per skill at most, the skills that need judgment over
+  several commands (`review`, `release`, `contribution`) listed with their reason.
+
+### T-164 · French docs brought up to date at the candidate
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-21
+- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Origin**: antoine, 21 October 2026, after T-162: the docs in two languages, kept up to date in
+  every branch, make about a quarter of kiln's file edits
+
+Branches update the English docs only (`README.md`, `docs/reference.md`); the candidate
+(`/kiln:release`, before `-rc.1`) translates in one pass what changed since the last version
+into `README.fr.md` and `docs/reference.fr.md`.
+- [ ] `test_docs.py`: the checks between the two languages run at the release only (`kiln
+  version cut`), the English ones on every merge.
+- [ ] `/kiln:release`: the translation step, from the English diff since the last tag.
+- [ ] `CLAUDE.md` ("a change updates the docs in its branch"): English in the branch, French at
+  the candidate.
+
+### T-165 · Write less code, measured: a ladder before writing
+- **Type**: idea
+- **Status**: todo
+- **Opened**: 2026-10-21
+- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Origin**: the most-starred token savers, 21 October 2026: ponytail (a skill, about 45 % fewer
+  tokens and more risky logic tested, by its maintainer's own benchmark)
+
+Before writing, Claude climbs a ladder and stops at the first rung that works: does this code
+need to exist, does the repo already have it, the standard library, an installed dependency, a
+few lines; never cut: validation at the boundaries, security, data loss, accessibility, a test
+for each risky logic. Same pillar as T-138 and T-139, which remove code that exists; this one
+keeps it from being written.
+- [ ] A few lines in `template/.claude/rules/kiln/` (they are read at every message).
+- [ ] Measured before it stays, with T-53's method: the same tasks with and without, tokens,
+  lines written, tests, bugs caught; dropped if it does not win.
 
 ### T-159 · What T-126 to T-128 left: compose hardening, pyproject from requirements, `kiln update`
 - **Type**: improvement
@@ -237,8 +241,8 @@ Fixing the grid in kiln fixes it everywhere at once; a kiln repo below 100 would
 pitch hollow.
 - [ ] `kiln new` Django + Nuxt, at each size: 100 on the rules that apply; the end-to-end tests
   fail when a template change lowers it.
-- [ ] The template's gaps closed (from the 17 October audit: actions by SHA, cooldown,
-  Debian 13, read-only containers).
+- [x] The template's gaps closed (from the 17 October audit: actions by SHA, cooldown,
+  Debian 13, read-only containers): shipped in v0.4.4.
 - [ ] `kiln update` takes an older generated repo to 100 (the converters of T-126).
 - [ ] The frozen templates (T-133) measured, their score in the docs.
 
@@ -546,16 +550,27 @@ layouts directly.
 - [ ] The result published either way; the readability rules of the grid follow it (a rule the
   measurement does not support goes back to `assess`).
 
-### T-05 · Check the first real run of the workflows on GitHub
-- **Type**: task
-- **Status**: blocked — waiting for GitHub billing (CI stopped)
-- **Opened**: 2026-10-15
-- **Effort**: XS · **Owner**: Claude · **Due**: —
-- **Origin**: actions at the workflow's commit, 15 October 2026
+### T-167 · The branch guard reads the session's folder, not the command's
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-10-21
+- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Origin**: T-05 probe, 2026-10-21
 
-kiln's workflows clone kiln at `job.workflow_sha` (an April 2026 property, unknown to
-actionlint) with a fallback to `develop`. On the first run, check that the version taken is the
-tag's, and that `.kiln` is removed before the project's checks.
+`plugins/kiln/hooks/branch_guard.py` refused `cd <scratch repo> && git commit` on a branch of
+another repo with "never commit on develop": it checks the branch of the session's folder and
+ignores a leading `cd` (`git -C` got through). It should judge the repo the command runs in.
+
+### T-168 · A repo from `kiln new` + `gh repo create --push` has no CI workflow on GitHub
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-10-21
+- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Origin**: T-05 probe, 2026-10-21
+
+After the first push, `ci.yml` was not registered (dispatch answered 404 for minutes); a second
+commit touching the file registered it. Reproduce with `kiln publish`, then find out whether it
+is GitHub's or kiln's doing.
 
 ## 🟡 Normal
 
@@ -575,18 +590,18 @@ drop the exemption.
 
 ### T-155 · A Streamlit or Dash front gets a deployment that fits, or none is assumed
 - **Type**: bug
-- **Status**: todo
+- **Status**: in progress
 - **Opened**: 2026-10-20
 - **Effort**: M · **Owner**: Claude · **Due**: —
 - **Origin**: issue #43 (darnak69, 16 October 2026)
 
-- [ ] `front_deploiement=vercel` refused for Streamlit and Dash (they need a long-running
+- [x] `frontend_deploy=vercel` refused for Streamlit and Dash (they need a long-running
   Python server with websockets).
-- [ ] With no deployment set, nothing generated cites `deploy.yml` or `scripts/ops/deploy-*.sh`
-  (comment of `ci.yml`, last step of the `version` skill).
+- [x] With no deployment set, nothing generated cites `deploy.yml` or `scripts/ops/deploy-*.sh`
+  (comment of `ci.yml`; the `release` skill ends at the tag when nothing deploys).
 - [ ] A target that fits: `vps` (podman + Caddy) opened to the front image, with a
-  `/_stcore/health` probe; the Streamlit `Containerfile` gets its health probe and its `uv`
-  image pinned by digest. Closes #43.
+  `/_stcore/health` probe (already in `compose.yaml`; the `uv` image is already pinned by
+  digest). Closes #43.
 
 ### T-156 · Committed trained models tied to the code that made them
 - **Type**: idea
@@ -938,20 +953,6 @@ zsh is the default shell on macOS: most newcomers there get no completion today.
 - [ ] Each problem `kiln doctor` finds and can fix safely (pre-commit missing, plugin not
   installed, outdated kiln) is fixed after one confirmation; the others keep their command and
   direct link.
-
-### T-12 · Homebrew formula in an `antoine-tena/homebrew-kiln` tap
-- **Type**: improvement
-- **Status**: blocked — waiting for demand (an issue asking for it) or homebrew-core notability
-- **Opened**: 2026-10-16
-- **Effort**: S · **Owner**: Claude · **Due**: —
-- **Origin**: distribution, 16 October 2026
-
-`brew install antoine-tena/kiln/kiln` for macOS and Linux, formula updated on each promotion.
-Not now (antoine, 16 October 2026): kiln needs uv anyway, so `uv tool install kiln-cli` and
-`uvx kiln-cli` cover its users, and a formula lists about 30 dependencies to keep up to date.
-The tap https://github.com/antoine-tena/homebrew-kiln is created to keep the name (README only,
-issues off). The official homebrew-core requires an already known project.
-
 ### T-138 · Less code to carry, measured first: the compressor's dry run
 - **Type**: idea
 - **Status**: todo
@@ -970,7 +971,10 @@ issues off). The official homebrew-core requires an already known project.
 
 ### T-139 · The compressor: removals proven by types, tests and behaviour
 - **Type**: idea
-- **Status**: blocked — waiting for T-138 (a net number)
+- **Status**: in progress — started before T-138's number, at antoine's request (21 October
+  2026); the compressor's own dry run gives that number. Merged into develop on 22 October
+  2026: `kiln fix --rule DEAD-CODE` and `--rule UNUSED-DEPENDENCIES`, proven by the type
+  checker and the tests; the behaviour comparison and the dependency replacement remain
 - **Opened**: 2026-10-17
 - **Effort**: L · **Owner**: Claude · **Due**: —
 - **Origin**: vision of 17 October 2026, fourth pillar
@@ -979,7 +983,7 @@ No open tool removes existing code with a proof.
 - [ ] `kiln fix` removes what T-138 found, each removal proven in steps (type checker, then
   tests, then behaviour compared); an unproven removal is not applied. Type first, compress
   after.
-- [ ] Never rewritten: cryptography, parsers, time zones, Unicode.
+- [x] Never rewritten: cryptography, parsers, time zones, Unicode.
 - [ ] Replacing a dependency by the part actually used comes second, after measurements: the
   most striking, and the riskiest.
 
@@ -987,16 +991,23 @@ No open tool removes existing code with a proof.
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-18
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: L · **Owner**: Claude · **Due**: —
 - **Origin**: vision of 17 October 2026, ideas in reserve ("a public benchmark, Claude Code with
-  and without kiln, that could serve as proof")
+  and without kiln, that could serve as proof"); widened on 21 October 2026 at antoine's
+  request: the tokens kiln saves, shown each session
 
-T-53 measures one hypothesis (small files); this one measures the whole promise.
-- [ ] The same tasks given to headless Claude Code on a repo before and after `kiln fix` and
-  `/kiln:modernize`: red CIs, tokens, rules broken, tasks done; its cost on the Pro quota said
-  before it runs, stopped at the budget.
+T-53 measures one hypothesis (small files); this one measures the whole promise. Only rtk's
+savings are measured live (`rtk gain`); the rest (repo map, skills, charter) can only be
+estimated, and an estimate is credible only from a published A/B run.
+- [ ] The same tasks given to headless Claude Code (`claude -p`, its usage read per run) on
+  local copies of the training repos, with and without kiln, then before and after `kiln fix`
+  and `/kiln:modernize`, several runs each: tokens, turns, red CIs, rules broken, tasks done;
+  its cost on the Pro quota said before it runs, stopped at the budget.
 - [ ] Published with its method and script whatever the result; after T-53, which sets the
-  method.
+  method. If the number is net, it joins the README and the launch (T-03).
+- [ ] Status line: rtk's savings since the session started (measured, cached), and the
+  benchmark's figure marked `≈` with a link to its method; tokens, never dollars (a Pro plan
+  pays no tokens).
 
 ### T-69 · Community grid packs from any git repo
 - **Type**: idea
@@ -1012,153 +1023,3 @@ An ecosystem is what turns a tool into a project people star and contribute to.
   their detectors and fixers run.
 - [ ] An index of reviewed packs in kiln; an author kit (template, contract tests, a workflow
   that tests the pack against each kiln release).
-
-## ✅ Done
-
-- **2026-10-21** · T-129 · What needs judgment goes to Claude — `kiln score --roadmap` (sure gaps first, then the smallest, places and proof; approximate ones "to confirm"), `--write` (backlog tickets, once each), `--rule ID` (fails while open), a false positive dismissed by a waiver on its path (grid IDs accepted by the charter), skill `/kiln:modernize` (tests first, one commit per gap, the rule ID in its body for T-137) (feat/roadmap) · opened 2026-10-17
-- **2026-10-21** · T-161 · Install kiln on the whole machine, in one command — `kiln install` outside a repo (or `--machine`): the CLI as a uv tool, the catalogue and `kiln@kiln` at user scope, the machine settings, only what is missing; `kiln doctor` points to it (feat/install-machine) · opened 2026-10-21
-- **2026-10-20** · T-126, T-127, T-128 · `kiln fix` and its first 14 converters — one commit per rule on `kiln/fix-<date>`, checks before and after, red undone, `--dry-run`, `--rule`; supply chain and CI, Python, containers and runtimes; the university copy went from 35 to 61; leftovers in T-159 (feat/kiln-fix) · opened 2026-10-17
-- **2026-10-20** · T-157 · #45 and #46 credited in the v0.4.2 notes (release/v0.4.2) · opened 2026-10-20
-- **2026-10-20** · T-46 · `kiln score` — any repo against the 40 scored rules: score out of 100 and per pillar, three gaps first, waivers apart, uncovered stacks listed, `--all`, `--json` (schema 1), `--badge`, `--online`; about 1 s on the reference repo; GitHub settings left to T-158 (feat/kiln-score) · opened 2026-10-16
-- **2026-10-20** · T-125 · Grid v1 — 40 scored rules (nine drafts promoted, 25 new), each sourced and dated, with a passing and a failing example, run on local copies of both training repos: rules that can flag wrongly launch `review` or `ratchet`; 1.0 s on the reference repo (feat/grid-v1) · opened 2026-10-17
-- **2026-10-19** · T-143 · Decide the name before the launch — antoine keeps **kiln**, after
-  the facts of `docs/vision/nom.md` (Kiln-AI, two agent tools of the same name, `kiln` taken on
-  PyPI and npm); the package stays `kiln-cli` · opened 2026-10-18
-- **2026-10-19** · T-14 · Delete the old PyPI token — done by antoine: only the `kiln-cli`
-  token scoped to the project remains, the one `pypi.yml` publishes with · opened 2026-10-16
-- **2026-10-19** · T-124 · The reference repo's rules sorted on the two axes — its 108 named
-  rules and 15 backend pillars, plus what lives outside its charter (operations, structure,
-  tracking), read only and anonymized, merged where they repeat into 105 draft rules
-  (`level = "assess"`, out of the score): each with theme, scope, regime, profiles, whether a
-  script can detect and fix it, and the kiln charter rule that enforces it; `kiln grid` shows
-  adopt and trial by default (feat/grid-reference) · opened 2026-10-17
-- **2026-10-19** · T-133 · The other templates frozen while Django and Nuxt reach the top —
-  said in both READMEs and at the end of `kiln new` for another stack; the end-to-end matrix
-  keeps them all (docs/frozen-stacks) · opened 2026-10-17
-- **2026-10-19** · T-146 · kiln moves the workflows' tag forward in adopted repos —
-  `kiln update` (and `--all`, `--rehearse`) in an adopted repo moves only the
-  `antoine-tena/kiln/...@ref` references to the latest public release, after checking each
-  input against the workflow at that tag; `kiln adopt` does it at adoption, `kiln status` shows
-  the quoted tag (feat/adopted-tag) · opened 2026-10-19
-- **2026-10-19** · T-123 · The grid as data: one small file per rule, on two axes —
-  `src/kiln/grid/` (format, closed lists, validation, facts of a repo, declarative detectors and
-  Python checks, `kiln grid`), six `adopt` rules with sources checked on 19 October; each rule
-  needs a passing and a failing example (feat/grid-data) · opened 2026-10-17
-- **2026-10-19** · T-152 · A private repo's CI runs on the machine — answer `ci_runner`
-  (`local` by default, `github` for a public repo, picked from the visibility by `kiln update`),
-  `ci.yml` without push triggers, `/kiln:merge` runs `kiln ci`, the status line and the session
-  start read its git note; antoine's GitHub free plan kept running out of minutes
-  (feat/local-ci-private) · opened 2026-10-19
-- **2026-10-19** · T-147 · One answer to "which kiln version" — only a release updates a repo,
-  the package records the commit it is built from, `--version` says what is installed; antoine's
-  machine on `v0.4.0-rc.2` from GitHub; annway's update rehearsed green with it
-  (fix/version-truth) · opened 2026-10-19
-- **2026-10-19** · T-151 · The checks run before every merge into `develop` — `/kiln:merge`
-  runs the repo's checks first and reads GitHub's verdict after; antoine's global instructions
-  say so, skill names of 0.4 there too (fix/version-truth) · opened 2026-10-19
-- **2026-10-19** · T-150 · `kiln update` rehearsed on a copy first — `kiln update --rehearse`
-  (and `--all --rehearse`); the public fixture `antoine-tena/kiln-rehearsal` (Java, v0.3.3-rc.2,
-  lived in) rehearsed then updated by the end-to-end tests (fix/version-truth) · opened 2026-10-19
-- **2026-10-19** · T-149 · A red check stops the release — `cut` waits for GitHub's CI of the
-  release branch and tags only on green; `kiln version` and `promote` hold back a red
-  candidate; the session start tells Claude of a red integration branch (fix/version-truth) ·
-  opened 2026-10-19
-- **2026-10-19** · T-148 · End-to-end tests take the user's path — every release since v0.3.0
-  updated through a tool installed by uv, the template at GitHub's address (`insteadOf`); Java
-  updated; 0.4 tags rendered under their names; tests out of the machine's Copier cache
-  (fix/version-truth) · opened 2026-10-19
-- **2026-10-19** · T-04 · Decide whether the adopted repo quotes kiln's workflows at a tag —
-  antoine: at a tag. The reference repo quotes `@v0.3.4` (inputs and charter checked
-  compatible), the tag moved by hand until T-146 · opened 2026-10-15
-- **2026-10-19** · T-23 · Finish kiln in English: the changelog, then the candidate — every
-  `CHANGELOG.md` entry in English, the v0.4.0 note with its breaking changes first;
-  `v0.4.0-rc.1` cut with `kiln version cut`, `v0.3.4` promoted with `kiln version promote`
-  (PyPI, GitHub Release); #36 closed (docs/changelog-en, release/v0.4.0) · opened 2026-10-16
-- **2026-10-19** · T-29 · A release in two commands, announced on GitHub — `kiln version cut`
-  (release branch in its worktree, changelog entry drafted from the commits, breaking first,
-  numbers of the package and of the changed plugins; once the draft is rewritten: checks, tag
-  `-rc.N`), `kiln version promote` (tag on the last candidate, `main`, `develop`), the GitHub
-  Release made by `pypi.yml`, the plan's open tickets in `kiln version`, `/kiln:release` calls
-  them (feat/release-commands) · opened 2026-10-16
-- **2026-10-19** · T-27 · The edit hook checks only the edited file — `charter file <path>`:
-  the bans on that file alone, in about 0.15 s; ratchets, floors, repo-wide bans and local
-  rules left to the commit and CI; the report says how to waive (feat/edit-hook-one-file) ·
-  opened 2026-10-16
-- **2026-10-18** · Backlog checked against the vision of 17 October 2026 — three tickets
-  (T-143 the name, T-144 faster checks, T-145 the benchmark), details added to T-123, T-125,
-  T-129, T-30, T-135, T-136, T-138 and T-141; two ideas in reserve declined for now
-  ([rejected.md](rejected.md)) (docs/backlog-vision-gaps)
-- **2026-10-17** · Backlog rewritten from the vision of 17 October 2026 — kiln keeps repos up to
-  date with the best practices and easy for Claude to read, Django and Nuxt first; efforts in
-  Claude Code session time on the Pro plan; plan dated up to the launch of v0.5.0 on
-  11 November 2026 (T-03); 55 tickets declined for now ([rejected.md](rejected.md)), 20 new
-  (T-123 to T-142) (docs/backlog-vision)
-- **2026-10-17** · T-52, T-78, T-92, T-93, T-101, T-102, T-103, T-105 · `AGENTS.md`, context
-  budget, front tests, database safety, repo hygiene, licences, release notes, backups — merged
-  into T-141, as rules of the grid · opened 2026-10-16
-- **2026-10-17** · T-95 · `kiln why` and `/kiln:onboard` — `kiln why` merged into T-123
-  (`kiln grid RULE-ID`), `/kiln:onboard` declined · opened 2026-10-16
-- **2026-10-17** · T-60 · `kiln update --dry-run` and `--undo` — merged into T-126 (`kiln fix
-  --dry-run`, the fixes on a branch of their own) · opened 2026-10-16
-- **2026-10-17** · T-34 · A second door: kiln for the repo you already have — merged into T-46
-  (`uvx kiln-cli score` is that door) and T-30 · opened 2026-10-16
-- **2026-10-17** · T-44 · `/kiln:backlog plan` — plan mode puts every ticket in a named release,
-  new tickets placed anywhere (feat/backlog-plan, feat/backlog-plan-all); reading the plan from
-  `kiln version` moved to T-29 · opened 2026-10-16
-- **2026-10-17** · T-31 · Neutral defaults instead of a real project's — time zone from the
-  machine, `example.com` placeholders, the Java package asked (feat/template-en) · opened
-  2026-10-16
-- **2026-10-17** · T-28 · Quiet session hook outside kiln repos — no adoption offer, no
-  `.claude/kiln` link, a plain backoff for update reminders (feat/plugin-kiln) · opened
-  2026-10-16
-- **2026-10-17** · T-25 · Plugin `kiln` with English skills — plugins `kiln`, `django`,
-  `nuxt`, `vps` with a `renames` map, English skills and hooks, generated repos on the
-  catalogue's `main` (feat/plugin-kiln); plugin versions bumped by the release moved to T-29 ·
-  opened 2026-10-16
-- **2026-10-17** · T-24 · Generated instructions in `.claude/rules/kiln/`, by path and by size —
-  one file per topic, stack rules loaded only on their files, the root `CLAUDE.md` owned by the
-  project (feat/template-en) · opened 2026-10-16
-- **2026-10-17** · T-22 · Release v0.3.4 and promote v0.3.3 — `v0.3.4-rc.1` cut and `v0.3.3`
-  promoted on 16 October (fix/first-run); `v0.3.4` is promoted by the v0.4.0 candidate (T-23) ·
-  opened 2026-10-16
-- **2026-10-17** · T-08 · Copier migrations for breaking releases — done another way: the
-  conversions live in the tool (`migrations.py`, `renames.py`), run by `kiln update` after
-  Copier (v0.3.4, feat/template-en) · opened 2026-10-15
-- **2026-10-16** · T-26 · A friendlier `kiln new` — three questions (what you are building, size, language), the rest by default or option, `--all-questions` for the whole questionnaire; ends on the next steps and a first prompt (feat/cli-en) · opened 2026-10-16
-- **2026-10-16** · T-09 · Tests running in the main tree during a merge — `.claude/worktrees/` in kiln's `.gitignore`, so a template copied from a dirty tree never sees the nested worktrees (fix/first-run) · opened 2026-10-15
-- **2026-10-16** · T-06, T-13 · Translation and project language — merged into T-23 · opened 2026-10-15
-- **2026-10-16** · T-21 · Credit #41 in the notes of the next release — line in the `v0.3.3` entry of `CHANGELOG.md` (release/v0.3.3) · opened 2026-10-16
-- **2026-10-16** · T-20 · Bash completion (`kiln completion bash`) — PR #41 by @HarshRajSinghania, fixed up and merged, issue #40 closed · opened 2026-10-16
-- **2026-10-16** · T-18 · Promoting a release makes `kiln update` conflict on `ci.yml` — cause confirmed (Copier's old render takes the promoted tag from `git describe`); the three-way merge is redone with the project's tag, reproduced in a test (fix/conflit-promotion) · opened 2026-10-16
-- **2026-10-16** · T-19 · kiln has no pre-push hook — `.pre-commit-config.yaml` (ruff at commit, mypy before push), set by `kiln install` (chore/pre-push-kiln) · opened 2026-10-16
-- **2026-10-16** · T-16 · A failed `kiln update --all` leaves a worktree that blocks the next
-  run — a worktree with no change and no commit of its own is removed after the failure and
-  before the next run; one with work in it is kept and named (`fix/update-reseau`) · opened 2026-10-16
-- **2026-10-16** · T-15 · `kiln update --all` crashes with a Python traceback when GitHub is
-  unreachable — Copier's git failure becomes one line in the summary, "GitHub injoignable"
-  when the network is down (`fix/update-reseau`) · opened 2026-10-16
-- **2026-10-16** · T-11 · Publish kiln on PyPI as `kiln-cli` — distribution and `kiln-cli`
-  command, install source and update through PyPI, `pypi.yml` on the promotion tag, README;
-  the first upload is checked by T-14 · opened 2026-10-16
-
-- **2026-10-16** · T-01 · Promote v0.3.0, the first public release — `v0.3.1-rc.1` cut, then
-  `v0.3.0` tagged on the commit of `v0.3.0-rc.1`, merged into `main`, back into `develop`;
-  the internal repos moved to `v0.3.1-rc.1` (`kiln update --all`) · opened 2026-10-15
-- **2026-10-16** · T-02 · Review PR #39 (`kiln --version`) from an outside contributor —
-  reviewed with the new skill `base:contribution`, version computed only on demand (commit
-  pushed on top of the contributor's), merged (`b71f91a`), issue #35 closed; credit to add to
-  the next changelog entry (T-01) · opened 2026-10-15
-- **2026-10-16** · Backlog in English: `docs/a-faire/` becomes `docs/backlog/` (`backlog.md`,
-  `rejected.md`, `urgent.md`), `T-NN` tickets with a type and an opening date, skill
-  `base:backlog`, status line reading both formats, old trackers converted by `kiln update`
-  (`feat/backlog`).
-- **2026-10-16** · "Claude Code's workshop" positioning: tagline "Make Claude Code build
-  production-grade repos — and keep them that way." (README, `pyproject.toml`, `CLAUDE.md`,
-  welcome subtitle), GitHub repo description and topics (`docs/positionnement`).
-- **2026-10-15** · Semver in 0.x, candidates (`-rc.N`) and promotion, `interne` channel,
-  `kiln version`, workflows quoted at the exact tag, actions at the workflow's commit
-  (`feat/semver`); candidate `v0.3.0-rc.1` adopted by the internal repos; gitleaks and
-  `workflow_call` brought up from an internal repo into the template (`feat/secrets-scan`).
-- **2026-10-15** · Interface (banner, welcome screen, spinner, summary), `kiln doctor`, prefixed
-  output of `kiln dev`, debt (typed status line and `charte`), command tests and pytest-xdist,
-  English GitHub showcase.

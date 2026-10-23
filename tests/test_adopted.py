@@ -161,3 +161,21 @@ def test_an_adopted_repo_moves_to_todays_names_keeping_its_rule_ids(tmp_path: Pa
     assert "      backend: backend\n      frontend: frontend\n" in ci
     assert "      back: kept\n" in ci
     assert adopted_names.convert_legacy_names(tmp_path) == []
+
+
+def test_an_adopted_repo_moves_its_a_faire_to_the_backlog(tmp_path: Path) -> None:
+    (tmp_path / "docs/a-faire").mkdir(parents=True)
+    (tmp_path / "docs/a-faire/a-faire.md").write_text(
+        "# À faire\n\nIntro.\n\n---\n\n## 🔴 Critique\n\n### AF-07 · Payer\n- **État** : à faire\n"
+    )
+    (tmp_path / "docs/backlog").mkdir(parents=True)
+    (tmp_path / "docs/backlog/backlog.md").write_text("# Backlog\n\n---\n\n## 🔴 Critical\n")
+    (tmp_path / "notes.py").write_text("# see AF-07\n")
+    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
+    subprocess.run(["git", "-C", str(tmp_path), "add", "-A"], check=True)
+
+    adopted._move_legacy_backlog(tmp_path)
+
+    assert "### T-07 · Payer" in (tmp_path / "docs/backlog/backlog.md").read_text()
+    assert not (tmp_path / "docs/a-faire").exists()
+    assert adopted_names.ticket_mentions(tmp_path) == ["notes.py"]

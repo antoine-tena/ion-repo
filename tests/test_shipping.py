@@ -7,8 +7,8 @@ from pathlib import Path
 import pytest
 from packaging.version import Version
 
-from kiln import github_ci, shipping
-from kiln.release import Tag, read_tags
+from kiln import github_ci, release, shipping
+from kiln.release import Evidence, Tag, read_tags
 from kiln.shell import KilnError
 
 CHANGELOG = "# What's new\n\nHeader.\n\n## v0.1.0 — 2026-10-01\n- First release.\n"
@@ -110,13 +110,18 @@ def test_cut_drafts_then_tags_a_candidate_once_the_entry_is_rewritten(repo: Path
     assert "v0.1.1-rc.1" in git(repo, "ls-remote", "--tags", "origin")
 
 
-def test_promote_waits_for_a_newer_candidate_then_publishes(repo: Path) -> None:
+def test_promote_waits_for_the_soak_and_a_repo_then_publishes(
+    repo: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     publish(repo, "feat: one")
     shipping.cut(repo)
     rewrite_draft(repo / ".claude/worktrees/release-v0.1.1")
     shipping.cut(repo)
     with pytest.raises(KilnError, match="no candidate ready"):
-        shipping.promote(repo)
+        shipping.promote(repo)  # tagged a moment ago: still soaking
+    monkeypatch.setattr(release, "SOAK", datetime.timedelta(0))
+    with pytest.raises(KilnError, match="no candidate ready"):
+        shipping.promote(repo)  # soaked, but no repo of the machine runs it
 
     publish(repo, "fix: two")
     shipping.cut(repo)  # the open release is a candidate already: the next one starts
@@ -129,6 +134,7 @@ def test_promote_waits_for_a_newer_candidate_then_publishes(repo: Path) -> None:
     )
     rewrite_draft(repo / ".claude/worktrees/release-v0.1.2")
     shipping.cut(repo)
+    monkeypatch.setattr(shipping, "_adoption", lambda: {"v0.1.1-rc.1": ["club"]})
     shipping.promote(repo)
 
     git(repo, "fetch", "-q", "origin")
@@ -141,16 +147,15 @@ def test_promote_waits_for_a_newer_candidate_then_publishes(repo: Path) -> None:
 
 def test_promote_refuses_a_candidate_not_ready() -> None:
     now = datetime.datetime.now(datetime.UTC)
-    tags = [Tag("v0.1.1-rc.1", Version("0.1.1rc1"), now)]
+    tags = [Tag("v0.1.1-rc.1", Version("0.1.1rc1"), now - datetime.timedelta(days=2))]
 
-    with pytest.raises(KilnError, match="waiting"):
-        shipping.pick_candidate(tags, "v0.1.1", lambda _: "success")
-    # A newer candidate is not enough: the CI of the one promoted must be green.
-    tags.append(Tag("v0.1.2-rc.1", Version("0.1.2rc1"), now))
+    with pytest.raises(KilnError, match="no repo runs it"):
+        shipping.pick_candidate(tags, "v0.1.1", lambda _: Evidence("success"))
     with pytest.raises(KilnError, match=r"CI not green \(failure\)"):
-        shipping.pick_candidate(tags, "v0.1.1", lambda _: "failure")
+        shipping.pick_candidate(tags, "v0.1.1", lambda _: Evidence("failure", ("club",)))
     with pytest.raises(KilnError, match="no candidate ready"):
-        shipping.pick_candidate(tags, None, lambda _: "running")
+        shipping.pick_candidate(tags, None, lambda _: Evidence("running", ("club",)))
+    assert shipping.pick_candidate(tags, None, lambda _: Evidence("success", ("club",))) == tags[0]
 
 
 def test_cut_tags_nothing_while_the_ci_of_the_release_is_red(

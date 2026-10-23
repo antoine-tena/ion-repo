@@ -6,6 +6,7 @@ dependencies and the list of unverified rules follow.
 """
 
 import shutil
+import subprocess
 from pathlib import Path
 
 import yaml  # fourni par copier
@@ -17,7 +18,7 @@ from kiln.rules import write_unverified_rules
 from kiln.shell import KilnError, require_tools, step
 from kiln.stack import BACKEND_DIR, BUILD_ARTIFACTS, FRONTEND_DIR, Stack, load_stack, read_answers
 from kiln.statusline import apply_statusline_settings
-from kiln.update import apply_template, check_working_branch, report_changes
+from kiln.update import apply_template, check_working_branch, conflicted_files, report_changes
 
 SETTABLE_KEYS = (
     "size",
@@ -39,6 +40,7 @@ SETTABLE_KEYS = (
     "java_package",
     "timezone",
     "serena",
+    "compact_window",
     "deploy",
     "vps_host",
     "api_domain",
@@ -51,6 +53,14 @@ SETTABLE_KEYS = (
     "prod_health_url",
 )
 LIST_KEYS = frozenset({"team"})
+# The demo of a new project's front (a backend health badge, its typed client): it leans on the
+# template's constants and generated API types, which a front already built has replaced.
+STARTER_FILES = (
+    "app/components/HealthStatus.vue",
+    "app/composables/useHealth.ts",
+    "app/composables/useApi.ts",
+    "components/HealthStatus.tsx",
+)
 # A language set per use turns the per-use questions on (`language_custom`).
 PER_USE_LANGUAGES = frozenset(key for key in SETTABLE_KEYS if key.startswith("language_"))
 
@@ -76,10 +86,18 @@ def parse_assignments(assignments: list[str]) -> dict[str, object]:
         if key in LIST_KEYS and not raw_value.startswith("["):
             parsed[key] = [login.strip() for login in raw_value.split(",") if login.strip()]
         else:
-            parsed[key] = yaml.safe_load(raw_value) if raw_value else ""
+            parsed[key] = _scalar(raw_value)
         if key in PER_USE_LANGUAGES:
             parsed["language_custom"] = True
     return renames.answers(parsed)
+
+
+def _scalar(raw_value: str) -> object:
+    """`true`, `12` or a word read as YAML; a sentence such as `a : b` stays the text typed."""
+    if not raw_value:
+        return ""
+    value = yaml.safe_load(raw_value)
+    return value if isinstance(value, (str, bool, int, float, list)) else raw_value
 
 
 def apply_settings(root: Path, assignments: list[str]) -> None:
@@ -91,6 +109,8 @@ def apply_settings(root: Path, assignments: list[str]) -> None:
     apply_template(root, changes)
     stack = load_stack(root)
     remove_replaced_artifacts(root, previous_stack, stack)
+    remove_starter_files(root, previous_stack, stack, tracked=_tracked_files(root))
+    stop_on_conflicts(root)
     apply_statusline_settings(root)
     if stack.pnpm_dir is not None:
         require_tools("pnpm")
@@ -99,6 +119,40 @@ def apply_settings(root: Path, assignments: list[str]) -> None:
     write_unverified_rules(root, stack)
     report_changes(root)
     check_project(root)
+
+
+def _tracked_files(root: Path) -> set[str]:
+    listed = subprocess.run(
+        ["git", "ls-files"], cwd=root, capture_output=True, text=True, check=True
+    )
+    return set(listed.stdout.splitlines())
+
+
+def remove_starter_files(root: Path, previous: Stack, current: Stack, *, tracked: set[str]) -> None:
+    """The front's demo brought by a new backend, removed when the front already existed: it
+    would not type-check against the project's own constants and API types."""
+    if current.backend == previous.backend or previous.frontend in ("", "none"):
+        return
+    if current.frontend != previous.frontend:
+        return
+    for name in STARTER_FILES:
+        relative = f"{FRONTEND_DIR}/{name}"
+        path = root / relative
+        if path.is_file() and relative not in tracked:
+            path.unlink()
+            print(f"Removed: {relative} (demo of a new front; this one already has its pages)")
+
+
+def stop_on_conflicts(root: Path) -> None:
+    """Locks and installs read package.json and pyproject.toml: never with conflict markers."""
+    conflicted = conflicted_files(root)
+    if conflicted:
+        raise KilnError(
+            "settings applied, conflicts left to resolve by hand: "
+            + ", ".join(conflicted)
+            + ". Resolve them, commit, then run the same `kiln set` again"
+            " to lock, install and check."
+        )
 
 
 def remove_replaced_artifacts(root: Path, previous: Stack, current: Stack) -> None:

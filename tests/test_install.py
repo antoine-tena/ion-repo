@@ -73,3 +73,12 @@ def test_outside_a_repo_install_sets_up_the_machine(
     except SystemExit as exit_request:
         assert not exit_request.code
     assert calls == ["machine"]
+
+
+def test_git_hooks_need_their_configuration(machine: list[list[str]], tmp_path: Path) -> None:
+    install.install_git_hooks(tmp_path)
+    assert machine == []
+
+    (tmp_path / ".pre-commit-config.yaml").write_text("repos: []\n")
+    install.install_git_hooks(tmp_path)
+    assert machine == [["pre-commit", "install"]]

@@ -1,6 +1,6 @@
 ---
 name: preview
-description: See a page or a dialog of the frontend as users do - a screenshot on three phones (iPhone 16, Galaxy A55, Galaxy S24) and a computer (1920 × 1080), logged in or not, then look at them. Use to check a rendering (new page, dialog, visual touch-up, overflow on mobile) or when the user asks to "see" something on mobile and desktop.
+description: See a frontend page or dialog as users do: screenshots on three phones (iPhone 16, Galaxy A55, Galaxy S24) and a 1920 × 1080 computer, logged in or not, then look at them. Use to check a rendering (new page, dialog, visual touch-up, mobile overflow) or when the user asks to see something.
 argument-hint: "<path or URL> [account]"
 ---
 

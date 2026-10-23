@@ -10,9 +10,14 @@ from typing import Any
 import pytest
 
 from kiln.config import UserConfig
-from kiln.machine import apply_machine
+from kiln.machine import apply_machine, only_machine_keys
 from kiln.shell import KilnError
-from kiln.statusline import apply_statusline_choice, is_kiln_statusline
+from kiln.statusline import (
+    REFRESH_SECONDS,
+    apply_statusline_choice,
+    ensure_statusline,
+    is_kiln_statusline,
+)
 
 SCRIPT = Path(__file__).parent.parent / "plugins" / "kiln" / "scripts" / "statusline.py"
 OWN = {"type": "command", "command": "~/bin/ma-ligne.sh"}
@@ -45,6 +50,15 @@ def home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 def settings(home: Path) -> dict[str, Any]:
     loaded: dict[str, Any] = json.loads((home / ".claude" / "settings.json").read_text())
     return loaded
+
+
+def test_machine_keys_set_in_a_repo_go_to_the_machine() -> None:
+    # `kiln set statusline=custom` in a repo was refused: only repo keys were known there (#47).
+    assert only_machine_keys(["statusline=custom"])
+    assert only_machine_keys(["channel=beta", "statusline=band"])
+    assert not only_machine_keys(["team=a"])  # a repo key as well: the repo's
+    assert not only_machine_keys(["statusline=band", "name=x"])
+    assert not only_machine_keys([])
 
 
 def test_statusline_choice_is_checked() -> None:
@@ -94,6 +108,41 @@ def test_switching_styles_keeps_the_kiln_command(home: Path) -> None:
     assert "$HOME" in settings(home)["statusLine"]["command"]  # écrite à la main, gardée
 
 
+def test_the_kiln_statusline_reruns_on_a_timer(home: Path) -> None:
+    # Claude Code ne relance le script qu'à ses événements : sans minuteur, git et la CI
+    # lus en arrière-plan attendent le message suivant.
+    (home / ".claude" / "settings.json").write_text(
+        json.dumps(
+            {"statusLine": {"command": 'python3 "$HOME/kiln/plugins/kiln/scripts/statusline.py"'}}
+        )
+    )
+
+    apply_statusline_choice("plain")
+
+    assert settings(home)["statusLine"]["refreshInterval"] == REFRESH_SECONDS
+
+
+def test_a_set_up_machine_gets_the_timer_at_install(home: Path) -> None:
+    (home / ".claude" / "settings.json").write_text(
+        json.dumps(
+            {"statusLine": {"command": 'python3 "$HOME/kiln/plugins/base/scripts/statusline.py"'}}
+        )
+    )
+
+    ensure_statusline(UserConfig(statusline="plain"))
+
+    assert settings(home)["statusLine"]["refreshInterval"] == REFRESH_SECONDS
+
+
+def test_no_claude_code_leaves_the_status_line_alone(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("HOME", str(tmp_path))
+
+    assert ensure_statusline(UserConfig()) == UserConfig()
+    assert not (tmp_path / ".claude").exists()
+
+
 def test_secret_scan_ignores_rendered_examples(tmp_path: Path) -> None:
     script = load_script()
     for name in ("template/.env.example.jinja", ".env.sample", "backend/.env", ".stripe/token"):
@@ -123,7 +172,7 @@ def test_integration_branch_is_not_counted_as_unmerged(tmp_path: Path) -> None:
 def sample(script: ModuleType) -> object:
     item, status = script.Item, script.Status()
     status.repo = [[item("demo", role="title"), item("⎇ develop")], [item("~2", 1)]]
-    status.session = [[item("Opus", role="strong")], [item("ctx", 0, gauge=34.0)]]
+    status.session = [[item("Opus", role="strong")], [item("ctx", 0, gauge=34.0, amount="136k")]]
     status.tasks = [[item("65 tasks"), item(f"urgent{X}10", 3), item(f"blocked{X}14", short="")]]
     status.env = [
         [item(f"uv{X}8")],
@@ -131,6 +180,64 @@ def sample(script: ModuleType) -> object:
         [item(":3000 :8000")],
     ]
     return status
+
+
+def session_items(script: ModuleType, payload: dict[str, Any]) -> dict[str, tuple[int, str, Any]]:
+    """Session et usage de la status line, par texte : (niveau, quantité, jauge)."""
+    status = script.Status()
+    script.collect_session(status, payload, "")
+    return {i.text: (i.level, i.amount, i.gauge) for g in status.session + status.usage for i in g}
+
+
+def context(tokens: int) -> dict[str, Any]:
+    usage = {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 990,
+        "cache_read_input_tokens": tokens,
+    }
+    return {"context_window_size": 1_000_000, "used_percentage": 25, "current_usage": usage}
+
+
+AT_400K, AT_900K = {"autoCompactWindow": "400k"}, {"autoCompactWindow": 900000}
+
+
+@pytest.mark.parametrize(
+    ("settings", "gauge"),
+    [
+        ({"settings.json": {"autoCompactWindow": 400000}}, 62.5),
+        ({"settings.json": AT_900K, "settings.local.json": AT_400K}, 62.5),  # le local l'emporte
+        ({"settings.json": {**AT_900K, "modelSettings": {"opus": AT_400K}}}, 62.5),  # /autocompact
+        ({}, 25.0),
+    ],
+)
+def test_context_in_tokens_its_gauge_full_at_the_compaction(
+    settings: dict[str, Any], gauge: float, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("HOME", str(tmp_path / "home"))
+    monkeypatch.delenv("CLAUDE_CODE_AUTO_COMPACT_WINDOW", raising=False)
+    (tmp_path / "repo" / ".claude").mkdir(parents=True)
+    for name, content in settings.items():
+        (tmp_path / "repo" / ".claude" / name).write_text(json.dumps(content), encoding="utf-8")
+    payload = {
+        "context_window": context(249_000),
+        "workspace": {"project_dir": str(tmp_path / "repo")},
+        "model": {"id": "opus"},
+    }
+
+    items = session_items(load_script(), payload)
+
+    assert items["ctx"] == (2, "250k", gauge)  # 250k : chaque message coûte cher
+
+
+def test_the_context_turns_red_once_the_cache_is_cold() -> None:
+    script = load_script()
+
+    def level(warm: bool) -> int:
+        cache = {"hit_ratio": 0.9, "warm": warm}
+        items = session_items(script, {"context_window": context(59_000), "prompt_cache": cache})
+        return int(items["ctx"][0])
+
+    assert (level(True), level(False)) == (0, 3)  # cache expiré : tout réécrit au message suivant
 
 
 @pytest.mark.parametrize("style", ["plain", "band", "classic", "classic-band"])

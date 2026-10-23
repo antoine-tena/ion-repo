@@ -28,4 +28,4 @@ def register(fixer: Fixer) -> None:
 
 
 # Each module registers its converters on import.
-from kiln.grid.fixers import ci, containers, python  # noqa: E402, F401
+from kiln.grid.fixers import ci, containers, python, slimming  # noqa: E402, F401

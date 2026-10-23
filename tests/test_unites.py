@@ -1,9 +1,11 @@
+import contextlib
 import datetime
 import json
 import os
 import subprocess
 import sys
 import zipfile
+from collections.abc import Iterator
 from pathlib import Path
 
 import copier
@@ -11,20 +13,34 @@ import pytest
 from packaging.version import Version
 from plumbum import ProcessExecutionError
 
-from kiln import cli, github, ui
+from kiln import check, cli, github, ui
 from kiln.banner import LOGO, _project_summary, render_logo
 from kiln.check import _check_commands, _ci_django_job
+from kiln.ci.jobs import Plan, Services
+from kiln.ci.workflow import Job
 from kiln.config import UserConfig
 from kiln.deps import _major_bounds
 from kiln.dev import read_env_file, service_prefix
 from kiln.dev.backing import backing_services
 from kiln.doctor import Level, workstation_findings
 from kiln.install import ensure_env_file, moved_from, pnpm_behind, sync_command
-from kiln.release import Tag, latest_candidates, next_version, promotion_verdict
+from kiln.release import (
+    Evidence,
+    Tag,
+    is_fixes_only,
+    latest_candidates,
+    next_version,
+    promotion_verdict,
+)
 from kiln.rules import charter_rules, verified_rules, write_unverified_rules
-from kiln.settings import parse_assignments, remove_replaced_artifacts
+from kiln.settings import (
+    parse_assignments,
+    remove_replaced_artifacts,
+    remove_starter_files,
+    stop_on_conflicts,
+)
 from kiln.shell import KilnError, quiet_git
-from kiln.stack import Stack, answers_if_any, load_stack, stack_from_answers
+from kiln.stack import Command, Stack, answers_if_any, load_stack, stack_from_answers
 from kiln.template import DEFAULT_TEMPLATE_SOURCE, template_revision
 from kiln.update import (
     apply_template,
@@ -80,6 +96,24 @@ def test_typing_follows_the_charter_when_it_declares_it(
     assert _check_commands(tmp_path / "bare", stack)[2].argv == ("uv", "run", "mypy", ".")
 
 
+def test_a_docs_only_change_runs_the_charter_on_its_files_alone(tmp_path: Path) -> None:
+    stack = Stack(backend="django", frontend="nuxt", has_podman=False)
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "docs/notes.md").write_text("notes\n")
+
+    commands = _check_commands(tmp_path, stack, changed=["docs/notes.md", "docs/gone.md"])
+
+    assert [command.argv for command in commands] == [("charter", "file", "docs/notes.md")]
+
+
+def test_a_backend_change_runs_the_backend_checks_not_the_frontend_ones(tmp_path: Path) -> None:
+    stack = Stack(backend="django", frontend="nuxt", has_podman=False)
+
+    commands = _check_commands(tmp_path, stack, changed=["backend/gone.py"])
+
+    assert {command.directory for command in commands} == {"backend"}
+
+
 def test_backend_tests_take_the_databases_of_the_ci_job(tmp_path: Path) -> None:
     assert _ci_django_job(tmp_path, "backend") is None  # no ci.yml: the compose's databases
     workflows = tmp_path / ".github" / "workflows"
@@ -98,6 +132,31 @@ def test_backend_tests_take_the_databases_of_the_ci_job(tmp_path: Path) -> None:
     assert plan.services.redis == "docker.io/library/redis:8-alpine"
     assert dict(plan.env) == {"DEBUG": "True"}
     assert _ci_django_job(tmp_path, "api") is None
+
+
+def test_backend_tests_first_remove_the_containers_of_a_killed_run(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls: list[str] = []
+    plan = Plan(Job("backend", "django"), (), services=Services("club", "postgres:18", ""))
+    monkeypatch.setattr(check, "_ci_django_job", lambda *_: plan)
+
+    def remove_orphans() -> int:
+        calls.append("orphans")
+        return 2
+
+    monkeypatch.setattr(check, "remove_orphan_containers", remove_orphans)
+
+    @contextlib.contextmanager
+    def services(*_: object) -> Iterator[dict[str, str]]:
+        calls.append("services")
+        yield {}
+
+    monkeypatch.setattr(check, "running_services", services)
+    monkeypatch.setattr(check, "run_status", lambda *_: 0)
+
+    assert check._run_check(tmp_path, Command("backend pytest", "backend", ("pytest",))) == 0
+    assert calls == ["orphans", "services"]
 
 
 def test_java_backend_is_checked_by_the_maven_wrapper() -> None:
@@ -156,6 +215,51 @@ def test_team_accepts_a_comma_list() -> None:
     assert parse_assignments(["team=a, b", "podman=true"]) == {"team": ["a", "b"], "podman": True}
     # Names of before kiln 0.4.0 still work.
     assert parse_assignments(["equipe=a", "frontend=aucun"]) == {"team": ["a"], "frontend": "none"}
+
+
+def test_sentence_with_a_colon_stays_text() -> None:
+    sentence = "Covoiturage : proposer un trajet"
+    assert parse_assignments([f"description={sentence}"]) == {"description": sentence}
+
+
+def test_starter_files_go_when_the_front_already_existed(tmp_path: Path) -> None:
+    composables = tmp_path / "frontend/app/composables"
+    composables.mkdir(parents=True)
+    (composables / "useApi.ts").write_text("new\n")
+    (composables / "useHealth.ts").write_text("kept by the project\n")
+
+    remove_starter_files(
+        tmp_path,
+        Stack(backend="java", frontend="nuxt", has_podman=False),
+        Stack(backend="django", frontend="nuxt", has_podman=False),
+        tracked={"frontend/app/composables/useHealth.ts"},
+    )
+
+    assert not (composables / "useApi.ts").exists()
+    assert (composables / "useHealth.ts").exists()
+
+
+def test_starter_files_stay_with_a_new_front(tmp_path: Path) -> None:
+    composables = tmp_path / "frontend/app/composables"
+    composables.mkdir(parents=True)
+    (composables / "useApi.ts").write_text("new\n")
+
+    remove_starter_files(
+        tmp_path,
+        Stack(backend="java", frontend="none", has_podman=False),
+        Stack(backend="django", frontend="nuxt", has_podman=False),
+        tracked=set(),
+    )
+
+    assert (composables / "useApi.ts").exists()
+
+
+def test_conflicts_stop_before_the_locks(tmp_path: Path) -> None:
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    (tmp_path / "package.json").write_text("<<<<<<< before updating\n{}\n")
+
+    with pytest.raises(KilnError, match=r"package\.json"):
+        stop_on_conflicts(tmp_path)
 
 
 def test_unknown_key_is_refused() -> None:
@@ -240,6 +344,12 @@ def test_env_file_gets_a_local_secret_and_is_kept(tmp_path: Path) -> None:
     assert first.startswith("DJANGO_SECRET_KEY=") and len(first.splitlines()[0]) > 30
     assert "DJANGO_DEBUG=True" in first
     assert (tmp_path / ".env").read_text() == first
+
+
+def test_env_file_without_example_is_skipped(tmp_path: Path) -> None:
+    ensure_env_file(tmp_path)
+
+    assert not (tmp_path / ".env").exists()
 
 
 def test_replaced_frontend_loses_its_lockfile(tmp_path: Path) -> None:
@@ -389,6 +499,33 @@ def test_doctor_blocks_on_a_tool_the_repo_needs(monkeypatch: pytest.MonkeyPatch)
     assert findings["podman"].level is Level.WARN
 
 
+def test_doctor_sees_a_stub_that_only_says_the_tool_is_missing(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # macOS has /usr/bin/java without a JDK: found, but `java -version` fails (#49).
+    monkeypatch.setattr("kiln.doctor.shutil.which", lambda name: f"/usr/bin/{name}")
+    monkeypatch.setattr("kiln.doctor._latest_release", lambda: None)
+    stub = subprocess.CompletedProcess(["java"], 1, "", "Unable to locate a Java Runtime.\n")
+    monkeypatch.setattr("kiln.doctor._completed", lambda command, cwd=None: stub)
+
+    findings = {f.label: f for f in workstation_findings(UserConfig(system="macos"), None)}
+
+    assert findings["java"].level is Level.WARN
+    assert "Unable to locate a Java Runtime" in findings["java"].detail
+    assert findings["java"].fix == "brew install openjdk@25"
+
+
+def test_doctor_without_a_chosen_system_detects_it(monkeypatch: pytest.MonkeyPatch) -> None:
+    # A repo adopted with uvx never asked for the system: macOS was told to use apt (#48).
+    monkeypatch.setattr("kiln.doctor.shutil.which", lambda name: None)
+    monkeypatch.setattr("kiln.doctor._latest_release", lambda: None)
+    monkeypatch.setattr("kiln.doctor.detect_system", lambda: "macos")
+
+    findings = {f.label: f for f in workstation_findings(UserConfig(), None)}
+
+    assert findings["podman"].fix.startswith("brew install podman")
+
+
 def test_dev_prefixes_line_up_outside_a_terminal() -> None:
     assert service_prefix("nuxt", 6, ui.FIRE) == "nuxt   │ "
 
@@ -403,19 +540,36 @@ def test_next_version_bumps_the_patch_in_0x_even_when_breaking() -> None:
     assert next_version(Version("1.2.3"), ["fix: x\n\nBREAKING CHANGE: y"]) == "2.0.0"
 
 
-def test_a_candidate_is_promoted_as_soon_as_the_next_is_ready() -> None:
+def test_a_candidate_is_promoted_once_it_has_proved_itself() -> None:
     now = datetime.datetime(2026, 11, 10, tzinfo=datetime.UTC)
-    old = Tag("v0.3.0-rc.2", Version("0.3.0rc2"), now - datetime.timedelta(hours=2))
-    young = Tag("v0.3.1-rc.1", Version("0.3.1rc1"), now - datetime.timedelta(hours=1))
+    day_old = Tag("v0.3.0-rc.2", Version("0.3.0rc2"), now - datetime.timedelta(hours=25))
+    young = Tag("v0.3.1-rc.1", Version("0.3.1rc1"), now - datetime.timedelta(hours=3))
+    run_by_a_repo = Evidence("success", ("club",))
 
-    assert promotion_verdict(old, [old, young], "success")[1]
-    assert not promotion_verdict(young, [old, young], "success")[1]
-    assert not promotion_verdict(old, [old], "success")[1]
-    # A red or unfinished CI holds the candidate back, whatever comes after it.
+    assert promotion_verdict(day_old, run_by_a_repo, now)[1]
+    # Nobody waits for a next release any more; a young candidate soaks, whatever follows it.
+    verdict, ready = promotion_verdict(young, run_by_a_repo, now)
+    assert not ready and "soaking (21 h left)" in verdict
+    # Soaked but run by no repo of the machine: it has verified nothing yet.
+    verdict, ready = promotion_verdict(day_old, Evidence("success"), now)
+    assert not ready and "kiln update --all" in verdict
+    # Fixes only: two hours, no repo required.
+    assert promotion_verdict(young, Evidence("success", is_fixes_only=True), now)[1]
+    assert promotion_verdict(young, Evidence("success"), now, is_urgent=True)[1]
+    assert not promotion_verdict(young, Evidence("failure"), now, is_urgent=True)[1]
+    # A red or unfinished CI holds the candidate back, whatever else it proved.
     for ci in ("failure", "running", "none"):
-        verdict, ready = promotion_verdict(old, [old, young], ci)
+        verdict, ready = promotion_verdict(day_old, Evidence(ci, ("club",), True), now)
         assert not ready and ci in verdict
-    assert latest_candidates([old, young]) == [old, young]
+    assert latest_candidates([day_old, young]) == [day_old, young]
+
+
+def test_fixes_only_means_nothing_added_nor_broken() -> None:
+    assert is_fixes_only(["fix(check): x", "docs: y", "chore(release): v0.4.4"])
+    assert not is_fixes_only(["fix: x", "feat(dev): y"])
+    assert not is_fixes_only(["fix!: x"])
+    assert not is_fixes_only(["fix: x\n\nBREAKING CHANGE: y"])
+    assert not is_fixes_only([])
 
 
 def test_version_flag_prints_the_installed_version(
@@ -575,6 +729,37 @@ def test_a_tool_that_is_not_a_release_updates_no_repo(
     ):
         template_revision(DEFAULT_TEMPLATE_SOURCE)
     assert template_revision("/un/dossier/local") == "HEAD"
+
+
+@pytest.mark.parametrize(
+    ("recorded", "expected"),
+    [("v0.4.4-16-gf767dbf", "v0.4.4-16-gf767dbf"), ("v0.4.4-16-gf767dbf-dirty", None)],
+)
+def test_on_the_beta_channel_the_template_is_taken_at_the_tool_commit(
+    monkeypatch: pytest.MonkeyPatch, recorded: str, expected: str | None
+) -> None:
+    monkeypatch.setattr(
+        "kiln.versions._installed_distribution", lambda: _FakeDistribution("0.4.4", FOLDER)
+    )
+    monkeypatch.setattr("kiln.versions._recorded_build", lambda: recorded)
+    monkeypatch.setattr("kiln.template.is_beta", lambda: True)
+
+    if expected is None:
+        with pytest.raises(KilnError, match="uncommitted changes"):
+            template_revision(DEFAULT_TEMPLATE_SOURCE)
+    else:
+        assert template_revision(DEFAULT_TEMPLATE_SOURCE) == expected
+
+
+def test_the_beta_channel_installs_the_checkout_of_the_code_directory(tmp_path: Path) -> None:
+    from kiln.machine import apply_machine
+    from kiln.versions import beta_install_command
+
+    assert apply_machine(UserConfig(), ["channel=beta"]).channel == "beta"
+    assert "@develop" in beta_install_command(tmp_path)
+    (tmp_path / "kiln/src/kiln").mkdir(parents=True)
+    (tmp_path / "kiln/src/kiln/versions.py").write_text("")
+    assert beta_install_command(tmp_path) == f"uv tool install --force --editable {tmp_path}/kiln"
 
 
 def test_a_folder_install_is_what_it_was_built_from_not_the_folder_today(

@@ -61,8 +61,9 @@ uv tool install kiln-cli     # the command is kiln; uv fetches Python 3.14 if ne
 kiln install                 # outside a repo: kiln's Claude Code plugin in every session
 ```
 
-Or try it without installing anything: `uvx kiln-cli new my-app` for a new repo,
-`uvx kiln-cli adopt` in one you already have. macOS, Linux and Windows through WSL;
+With Homebrew: `brew install antoine-tena/kiln/kiln`. Or try it without installing anything:
+`uvx kiln-cli new my-app` for a new repo, `uvx kiln-cli adopt` in one you already have. macOS,
+Linux and Windows through WSL;
 [pnpm](https://pnpm.io/) for JavaScript fronts, [podman](https://podman.io/) for containers.
 
 ## Quick start
@@ -116,7 +117,7 @@ backups), a Nuxt front to Vercel.
 
 A kiln release first ships as a candidate, tagged only once its CI is green on Linux and macOS,
 including an update from every release since v0.3.0 through an installed tool. It is promoted
-when the next candidate is ready, then rehearsed on a clone of each repo before
+once it has soaked (24 hours and at least one repo updated to it; 2 hours for fixes only), then rehearsed on a clone of each repo before
 `kiln update --all` merges it, one worktree per repo. Repos quote kiln's workflows at the exact
 release they follow, so nothing reaches them between releases, and `kiln update` shows what is
 new in each release it crosses. A repo brought in by `kiln adopt` follows kiln's workflows at the

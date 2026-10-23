@@ -184,6 +184,16 @@ serena:
   help: Serena for Claude Code (symbol navigation, big codebases)? Later with `kiln set serena=true`.
   default: false
 
+# Claude Code compacts a conversation when its context reaches this many tokens. Every message
+# re-reads the whole context, so a session left to grow to a 1M window costs several times a
+# fresh one; 400000 only touches the longest sessions. 1000000: Claude Code's own default.
+compact_window:
+  type: int
+  help: Context size, in tokens, at which Claude Code compacts a conversation (100000 to 1000000)?
+  default: 400000
+  validator: >-
+    {% if compact_window < 100000 or compact_window > 1000000 %}Between 100000 and 1000000.{% endif %}
+
 # Production on a server of one's own: `vps` adds config/vps/ (Caddy, production stack, switch
 # with rollback, tested backups), scripts/ops/ and docs/operations/. Django backend only, served
 # by podman. Later with `kiln set deploy=vps`.
@@ -232,6 +242,8 @@ frontend_deploy:
     "Vercel": vercel
   default: none
   when: "{{ frontend == 'nuxt' }}"
+  validator: >-
+    {% if frontend_deploy == 'vercel' and frontend in ['streamlit', 'dash'] %}Vercel cannot host a Streamlit or Dash app: it needs a long-running Python server with websockets.{% endif %}
 
 # Work tracking, in every repo: docs/backlog/ (skill kiln:backlog).
 north_star:

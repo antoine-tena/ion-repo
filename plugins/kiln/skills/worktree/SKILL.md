@@ -20,4 +20,7 @@ an argument, propose one from the task.
    worktree>` (copies the ignored `.env*` files of the main tree, installs the dependencies of
    each `pnpm-lock.yaml` / `package-lock.json`). If the repo also provides
    `.claude/worktree-setup.sh`, run it next with the same argument.
-4. Then work only in that worktree (absolute paths) and give its path.
+4. Move the session into it with Claude Code's `EnterWorktree` tool (`path` = the worktree):
+   the status line, the hooks and the relative paths then describe the branch being worked on,
+   not the main tree's integration branch. Without that tool, work only in the worktree
+   (absolute paths). Give its path.

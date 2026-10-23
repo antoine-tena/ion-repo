@@ -16,7 +16,8 @@ from pathlib import Path
 import yaml  # brought by copier
 
 from kiln import ui
-from kiln.adopted_names import convert_legacy_names, remaining_mentions
+from kiln.adopted_names import convert_legacy_names, remaining_mentions, ticket_mentions
+from kiln.backlog import BACKLOG_DIR, LEGACY_DIR, migrate_legacy_backlog
 from kiln.grid.fixers import resolve
 from kiln.shell import KilnError, step
 from kiln.versions import latest_release
@@ -99,6 +100,8 @@ def update_adopted(root: Path) -> None:
         mentions = remaining_mentions(root)
         if mentions:
             ui.note(f"still cited in the repo's own text, to reread: {', '.join(mentions)}")
+    if (root / LEGACY_DIR / "a-faire.md").is_file():
+        _move_legacy_backlog(root)
     step("Adopted repo: kiln's workflows moved to the last public release")
     before = quoted_refs(root)
     changed = move_to_release(root)
@@ -107,6 +110,21 @@ def update_adopted(root: Path) -> None:
         return
     after = quoted_refs(root)
     ui.success(f"{', '.join(sorted(before))} → {', '.join(sorted(after))}: {', '.join(changed)}")
+
+
+def _move_legacy_backlog(root: Path) -> None:
+    """`docs/a-faire/` to kiln's `docs/backlog/`, as `kiln update` does in a generated repo: the
+    template's backlog laid down first, then the tickets converted (`AF-NN` → `T-NN`)."""
+    from kiln.adopt import copy_backlog  # kiln.adopt imports this module
+
+    step("Adopted repo: docs/a-faire/ becomes docs/backlog/ (skill /kiln:backlog)")
+    if not (root / BACKLOG_DIR).exists():
+        copy_backlog(root, None)
+    migrate_legacy_backlog(root)
+    ui.success("tickets AF-NN are T-NN now, same numbers")
+    cited = ticket_mentions(root)
+    if cited:
+        ui.note(f"still cited as AF-NN in {len(cited)} files, to rename: {', '.join(cited[:5])}…")
 
 
 def _workflow_files(root: Path) -> list[Path]:

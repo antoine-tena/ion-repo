@@ -20,9 +20,10 @@ CONFIG_RELATIVE_PATH = Path("kiln") / "config.toml"
 DEFAULT_CODE_DIR = Path.home() / "code"
 
 SYSTEMS = ("linux", "wsl", "macos")
-# Release channel: `public` (promoted releases) or `internal` (candidates included).
-PUBLIC_CHANNEL, INTERNAL_CHANNEL = "public", "internal"
-CHANNELS = (PUBLIC_CHANNEL, INTERNAL_CHANNEL)
+# Release channel: `public` (promoted releases), `internal` (candidates included) or `beta`
+# (the tool runs kiln's `develop`, read live from the checkout of the code directory).
+PUBLIC_CHANNEL, INTERNAL_CHANNEL, BETA_CHANNEL = "public", "internal", "beta"
+CHANNELS = (PUBLIC_CHANNEL, INTERNAL_CHANNEL, BETA_CHANNEL)
 # Claude Code's status line: a kiln style, none, or the user's own (`custom`).
 STATUSLINE_STYLES = ("plain", "band", "classic", "classic-band")
 NO_STATUSLINE, CUSTOM_STATUSLINE = "none", "custom"

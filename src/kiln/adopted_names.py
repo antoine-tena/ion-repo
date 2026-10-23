@@ -64,6 +64,18 @@ def remaining_mentions(root: Path) -> list[str]:
     return listed.stdout.split()
 
 
+def ticket_mentions(root: Path) -> list[str]:
+    """Tracked files that still cite a ticket by its former `AF-NN` number."""
+    listed = subprocess.run(
+        ["git", "grep", "-l", "-w", "-E", "AF-[0-9]+", "--", ".", ":!docs/backlog"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return listed.stdout.split()
+
+
 def _rewrite(path: Path, convert: Callable[[str], str]) -> bool:
     if not path.is_file():
         return False

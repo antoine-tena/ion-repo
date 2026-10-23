@@ -1,5 +1,6 @@
 """`kiln dev`: the Procfile.dev, the background (`-d`, status, logs, stop) and its arguments."""
 
+import socket
 import subprocess
 import time
 from collections.abc import Callable, Iterator
@@ -10,7 +11,7 @@ import pytest
 from kiln import cli
 from kiln.dev import background, run_dev
 from kiln.dev.menu import select
-from kiln.dev.processes import dev_processes, procfile_commands
+from kiln.dev.processes import dev_processes, procfile_commands, runs_beyond_front, spawn
 from kiln.shell import KilnError
 from kiln.stack import Command
 
@@ -129,6 +130,27 @@ def test_a_big_project_asks_and_remembers_the_choice(tmp_path: Path) -> None:
     assert labels(select(PROCESSES, tmp_path, ask=replies("2"))) == ["django", "nuxt", "worker"]
 
 
+def test_the_front_alone_is_offered_when_there_is_a_backend(tmp_path: Path) -> None:
+    every = [*PROCESSES[::2], Command("nuxt", "frontend", ("true",))]
+    assert labels(select(every, tmp_path, ask=replies("2"))) == ["nuxt"]
+    # The last choice is then the front: it is not offered twice.
+    assert labels(select(every, tmp_path, ask=replies("3", "1 2"))) == ["django", "worker"]
+
+
+def test_the_front_alone_keeps_its_env_and_leaves_the_env_dev(project: Path) -> None:
+    front = project / "frontend"
+    front.mkdir()
+    (front / ".env").write_text("API=https://api.example.org\n", encoding="utf-8")
+    (front / ".env.dev").write_text("API=http://localhost:8000\n", encoding="utf-8")
+    nuxt = Command("nuxt", "frontend", ("sh", "-c", 'printf %s "$API"'))
+    outputs = []
+    for full_stack in (False, True):
+        process = spawn(project, nuxt, {}, subprocess.PIPE, full_stack=full_stack)
+        outputs.append(process.communicate()[0])
+    assert outputs == ["https://api.example.org", "http://localhost:8000"]
+    assert not runs_beyond_front([nuxt])
+
+
 def test_the_choice_survives_the_start_of_the_processes(project: Path) -> None:
     (project / "backend/Procfile.dev").write_text(
         "api: sleep 60\nworker: sleep 60\nscheduler: sleep 60\n", encoding="utf-8"
@@ -159,3 +181,15 @@ def test_a_worktree_keeps_the_databases_another_one_still_uses(project: Path) ->
     assert not background.others_running(project)
     background.stop(project)
     assert not background.others_running(other)
+
+
+@pytest.mark.parametrize(("family", "host"), background.LOOPBACKS)
+def test_a_server_is_seen_on_either_loopback(family: socket.AddressFamily, host: str) -> None:
+    try:
+        server = socket.socket(family)
+        server.bind((host, 0))
+    except OSError:
+        pytest.skip(f"no {host} on this machine")
+    with server:
+        server.listen()
+        assert background._listens(server.getsockname()[1])
