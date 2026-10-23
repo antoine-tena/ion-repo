@@ -9,6 +9,7 @@ import subprocess
 from pathlib import Path
 
 from kiln import ui
+from kiln.adopted_names import HOOKS_FILE
 from kiln.config import UserConfig, ensure_system, load_config
 from kiln.dev.backing import start_backing_services
 from kiln.shell import KilnError, require_tools, run, step
@@ -83,11 +84,20 @@ def install_project(root: Path) -> None:
         step(f"{stack.pnpm_dir}: pnpm dependencies")
         run(["pnpm", "install", "--frozen-lockfile"], root / stack.pnpm_dir)
     step("git guards (pre-commit) and status line")
-    run(["pre-commit", "install"], root)
+    install_git_hooks(root)
     apply_statusline_settings(root)
     ensure_statusline(config)
     command_name = answers_if_any(root).get("name", "<command>")
     ui.success(f"Ready. Run the project: {_launch_hint(stack, command_name)}")
+
+
+def install_git_hooks(root: Path) -> None:
+    """pre-commit's hook, only with its configuration: without it, the hook refuses every
+    commit (an adopted repo may have none)."""
+    if not (root / HOOKS_FILE).is_file():
+        print(f"no {HOOKS_FILE}: git hooks not installed.")
+        return
+    run(["pre-commit", "install"], root)
 
 
 def install_machine() -> None:
