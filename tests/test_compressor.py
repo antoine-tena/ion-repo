@@ -1,6 +1,7 @@
 """The compressor (T-139): what it may remove, how it cuts, and that nothing unproven stays out."""
 
 import ast
+import shutil
 import subprocess
 import textwrap
 from pathlib import Path
@@ -55,9 +56,13 @@ def make(root: Path, files: dict[str, str]) -> Path:
     return root
 
 
-def guard(root: Path, path: str, name: str, line: int, executed=None) -> str:  # noqa: ANN001
+def guard(
+    root: Path, path: str, name: str, line: int, executed: dict[str, set[int]] | None = None
+) -> str:
     repo = read_repo(root)
-    qualname, node, parents = candidates.locate(root / path, name, line)
+    located = candidates.locate(root / path, name, line)
+    assert located is not None
+    qualname, node, parents = located
     found = Candidate(CODE, path, qualname, "vulture")
     return candidates._guard_code(
         repo, found, node, parents, candidates._word_index(repo), False, executed
@@ -95,7 +100,9 @@ def test_a_definition_already_gone_is_not_removed_twice(tmp_path: Path) -> None:
 def test_vulture_line_of_a_property_is_its_decorator(tmp_path: Path) -> None:
     path = tmp_path / "core.py"
     path.write_text(CORE)
-    qualname, node, _ = candidates.locate(path, "dead", 9)
+    located = candidates.locate(path, "dead", 9)
+    assert located is not None
+    qualname, node, _ = located
     assert qualname == "dead" and node.lineno == 10
 
 
@@ -218,7 +225,12 @@ def test_a_removal_runs_only_the_steps_of_its_project(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     ran: list[str] = []
-    monkeypatch.setattr(proof, "_run", lambda root, command: ran.append(command[0]) or True)
+
+    def run(root: Path, command: tuple[str, ...]) -> bool:
+        ran.append(command[0])
+        return True
+
+    monkeypatch.setattr(proof, "_run", run)
     steps = [
         proof.Step("backend: mypy", proof.TYPES, ("mypy",), folder="backend"),
         proof.Step("frontend: pnpm run test", proof.TESTS, ("pnpm",), folder="frontend"),
@@ -231,7 +243,7 @@ def test_no_test_that_passes_proves_nothing(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(proof, "_pytest", lambda root, step, data=None: {"t::a": "failed"})
-    monkeypatch.setattr(proof.shutil, "which", lambda name: name)
+    monkeypatch.setattr(shutil, "which", lambda name: name)
     base = proof.baseline(tmp_path, [proof.Step("pytest", proof.TESTS, ("pytest",), True)])
     assert not base.proves and base.dropped == ["pytest: no test passes"]
 
@@ -258,7 +270,11 @@ def test_a_breaking_removal_is_found_by_halves_and_put_back(
         tree.clear()
         tree.update(accepted)
 
-    monkeypatch.setattr(removal, "remove", lambda root, item: tree.add(item.name) is None)
+    def remove(root: Path, item: Candidate) -> bool:
+        tree.add(item.name)
+        return True
+
+    monkeypatch.setattr(removal, "remove", remove)
     monkeypatch.setattr(removal, "sync_environment", lambda root, folders: None)
     monkeypatch.setattr(compressor, "_checkpoint", checkpoint)
     monkeypatch.setattr(compressor, "_undo", undo)

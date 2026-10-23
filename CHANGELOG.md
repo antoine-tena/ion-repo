@@ -6,6 +6,20 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 `release/vX.Y.Z` branch, rewritten before its first candidate. Names are those of their release:
 entries before v0.4.0 quote kiln's former French names.
 
+## v0.4.5 — 2026-10-23
+- Generated repos run GitHub's CI only on `release/**` branches (and by hand), no longer on each push: a merge into `develop` runs the fast linters on the files it changed, the release runs everything. `kiln check` looks at the branch's changed files only. `kiln update` brings the new `ci.yml`.
+- Claude Code sessions stay cheaper: generated repos compact at 400k tokens (`kiln set compact_window=…`) and leave claude.ai connectors to each person; the status line shows the context in tokens, turns it red once the prompt cache has expired, and refreshes every 5 seconds; `/kiln:merge` suggests `/clear` only when it saves something.
+- `kiln fix --rule DEAD-CODE` and `--rule UNUSED-DEPENDENCIES` (trial rules, out of the score): dead code and unused dependencies removed, each removal proven by the repo's checks.
+- kiln installs with Homebrew: a formula is pushed to the tap at each release, every package pinned by its hash.
+- `kiln dev` offers the front alone, on its own `.env`; `.env.dev` overrides `.env` on the machine.
+- `kiln update` turns an adopted repo's `docs/a-faire/` into its backlog, as in generated repos.
+- `kiln dev` sees a server listening on IPv6 only, such as Nuxt on macOS (#54, thanks @NathanBarrachin).
+- `kiln check` and `kiln install` no longer crash in a repo without `backend/.env.example` (#55, thanks @NathanBarrachin).
+- `kiln install` installs pre-commit's hook only when the repo has a `.pre-commit-config.yaml`, so commits keep working in an adopted repo (#56, thanks @NathanBarrachin).
+- `kiln install` without Claude Code installed no longer fails on the plugin catalogue: the status line waits for the next run.
+- A Streamlit or Dash front can no longer be deployed to Vercel, and nothing generated cites a deployment that does not exist (part of #43).
+- Fixes: a waiver limited to paths lifts a rule that scans the whole repo (#57); `kiln set` keeps a value such as `a : b` as text, stops on conflicts, and a machine-only key set in a repo goes to the machine; `kiln doctor` gives the right install hint on macOS; no `kiln update` offered when the integration branch already has it; new generated files are exempt from the charter; containers of a killed `kiln check` are removed.
+
 ## v0.4.4 — 2026-10-21
 - **Breaking**: `kiln check` no longer runs the test suites (pytest, Maven tests): lint, types and charter only, so a merge stays fast; `kiln check --tests` runs them, and the release runs them all (`kiln ci`). Nothing to convert.
 - **Breaking**: `kiln dev` runs in the background and gives the terminal back once each server answers; `--foreground` keeps the old interleaved output until Ctrl+C. Nothing to convert: a script that relied on it adds `--foreground`.
