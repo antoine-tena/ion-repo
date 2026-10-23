@@ -56,7 +56,10 @@ def run_dev(
 def _start(root: Path, *, foreground: bool, only: list[str] | None, ask: menu.Ask | None) -> None:
     every = dev_processes(root)
     if not every:
-        raise KilnError("nothing to run: a command-line tool runs with uv run")
+        raise KilnError(
+            "nothing to run: no server of the stack, no dev script in package.json,"
+            " no Procfile.dev (`name: command`, one per line)"
+        )
     commands = menu.select(every, background.state_dir(root), only, ask)
     if runs_beyond_front(commands):
         start_backing_services(root)
