@@ -168,6 +168,29 @@ def test_one_commit_per_rule_on_a_work_branch(tmp_path: Path) -> None:
     assert "Source: https://pypi.org/project/typing/" in log and fix.UNVERIFIED in log
 
 
+def test_the_checks_type_the_files_the_mypy_config_names(tmp_path: Path) -> None:
+    root = make(tmp_path, {"pyproject.toml": '[tool.mypy]\nfiles = ["src"]\n', "uv.lock": ""})
+    assert ["uv", "run", "mypy"] in fix.check_commands(root)
+
+    (root / "pyproject.toml").write_text("[tool.mypy]\nstrict = true\n")
+    assert ["uv", "run", "mypy", "."] in fix.check_commands(root)
+
+
+def test_checks_red_before_the_fix_are_named_not_taken_for_no_tests(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    root = make(tmp_path, CONVERTED["TS-EXPECT-ERROR"])
+    monkeypatch.setattr(fix, "check_commands", lambda root: [["true"], ["mypy", "."]])
+    monkeypatch.setattr(fix, "run_checks", lambda root, commands: commands != [["mypy", "."]])
+
+    fix.fix(root, only="TS-EXPECT-ERROR")
+
+    log = git(root, "log", "--format=%b", "main..")
+    assert "unverified: `mypy .` was red before the fix" in log
+    assert fix.UNVERIFIED not in log
+    assert "`mypy .` was red before the fix" in capsys.readouterr().out
+
+
 def test_a_converter_that_turns_the_checks_red_is_undone(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
