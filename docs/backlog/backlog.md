@@ -37,6 +37,9 @@ anyone else runs it; T-160 removes the last gap of a fresh repo.
 - T-130 · Generated repos pass the whole grid: the proof left (S)
 - T-90 · kiln passes its own grid: pinned actions, least privilege, provenance, Scorecard (M)
 - T-160 · A front with no backend ships a smoke test (M)
+- Its notes credit the outside fixes merged on 23 Oct: `kiln dev` sees IPv6 servers (#54),
+  `kiln check` without `backend/.env.example` (#55), no pre-commit hook without its config (#56),
+  each line ending `(#n, thanks @NathanBarrachin)`.
 
 ### v0.4.6 · Every gap seen, wherever the code lives
 Candidate Sun 25 Oct. The score and the fixes reach what they miss today: GitHub settings,
