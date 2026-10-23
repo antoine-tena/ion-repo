@@ -6,6 +6,51 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 `release/vX.Y.Z` branch, rewritten before its first candidate. Names are those of their release:
 entries before v0.4.0 quote kiln's former French names.
 
+## v0.4.5 — 2026-10-23
+<!-- draft: rewrite for users, breaking changes first, then delete this line -->
+- No Claude Code yet, the status line waits instead of failing
+- No pre-commit hook without its config
+- Kiln check without backend/.env.example
+- Vercel refused for a Streamlit or Dash front, no deploy.yml cited
+- Kiln dev sees servers listening on IPv6
+- Dérogation ignorée sans motif de chemin
+- The right install hint on macOS, and a stub is not a tool
+- A machine-only key set in a repo goes to the machine
+- Merge suggests /clear only when it saves something
+- Worktree moves the session into the new worktree
+- No kiln update offered when the integration branch already has it
+- Rerun kiln's status line every 5 seconds
+- Tasks always first in plain
+- A Homebrew formula pushed to the tap at each promoted release
+- Readiness probe returns Status
+- New generated files are exempt
+- Colon values, conflicts, front demo
+- A compressor proof runs only the steps of the projects its batch touches
+- The compressor removes dead code and unused dependencies, each removal proven
+- The checks write no bytecode, so a repo that does not ignore it gets none committed
+- Local develop is the integration branch
+- Claude.ai connectors left to each person
+- The context in red once the cache has expired
+- Compaction through the autoCompactWindow setting
+- Closed tickets in done.md, the how-to in README.md
+- Beta channel, the tool runs develop
+- Descriptions under 300 characters
+- Suggest /clear after a merge
+- Context in tokens, cold cache
+- Compaction at 400k, no connectors
+- Only the branch's changed files
+- Find AF-NN mentions on macOS too (no \b in its regex)
+- AF mentions found on macOS too
+- Promote --urgent, CI only
+- Test suites only with --tests
+- An adopted repo's a-faire becomes its backlog
+- A hand-kept a-faire converts whole
+- The front alone, on its own .env
+- Containers of a killed run removed
+- A candidate is promoted once it has soaked
+- .env.dev surcharge le .env en local
+- Skill accepts adopted repos
+
 ## v0.4.4 — 2026-10-21
 - **Breaking**: `kiln check` no longer runs the test suites (pytest, Maven tests): lint, types and charter only, so a merge stays fast; `kiln check --tests` runs them, and the release runs them all (`kiln ci`). Nothing to convert.
 - **Breaking**: `kiln dev` runs in the background and gives the terminal back once each server answers; `--foreground` keeps the old interleaved output until Ctrl+C. Nothing to convert: a script that relied on it adds `--foreground`.
