@@ -35,6 +35,11 @@ jobs:
         run: uv run mypy
       - name: Tests
         run: uv run pytest -q
+      # A tool that grades other repos scores 100 on its own grid, or the release waits (T-90).
+      - name: kiln score
+        run: |
+          uv run kiln score
+          uv run kiln score --json | uv run python -c 'import json, sys; sys.exit(json.load(sys.stdin)["score"] != 100)'
 
   e2e:
     if: >-
