@@ -134,6 +134,15 @@ def test_a_set_up_machine_gets_the_timer_at_install(home: Path) -> None:
     assert settings(home)["statusLine"]["refreshInterval"] == REFRESH_SECONDS
 
 
+def test_no_claude_code_leaves_the_status_line_alone(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("HOME", str(tmp_path))
+
+    assert ensure_statusline(UserConfig()) == UserConfig()
+    assert not (tmp_path / ".claude").exists()
+
+
 def test_secret_scan_ignores_rendered_examples(tmp_path: Path) -> None:
     script = load_script()
     for name in ("template/.env.example.jinja", ".env.sample", "backend/.env", ".stripe/token"):

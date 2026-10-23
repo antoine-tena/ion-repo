@@ -48,9 +48,13 @@ def claude_settings_path() -> Path:
     return Path.home() / ".claude" / "settings.json"
 
 
+def known_marketplaces() -> Path:
+    return Path.home() / ".claude" / "plugins" / "known_marketplaces.json"
+
+
 def kiln_script() -> Path:
     """The `kiln` plugin's script, where Claude Code put the kiln marketplace."""
-    known = Path.home() / ".claude" / "plugins" / "known_marketplaces.json"
+    known = known_marketplaces()
     try:
         location = json.loads(known.read_text())["kiln"]["installLocation"]
     except (OSError, ValueError, KeyError) as error:
@@ -103,7 +107,10 @@ def apply_statusline_choice(choice: str, settings_path: Path | None = None) -> s
 
 def ensure_statusline(config: UserConfig) -> UserConfig:
     """At the first `kiln install`: the default style, or `custom` when the user already has a
-    status line of their own; the choice is kept in the machine settings."""
+    status line of their own; the choice is kept in the machine settings. Without kiln's plugins
+    (no Claude Code yet), nothing: there is no script to point at."""
+    if not known_marketplaces().exists():
+        return config
     path = claude_settings_path()
     settings = json.loads(path.read_text()) if path.exists() else {}
     current = settings.get("statusLine")
