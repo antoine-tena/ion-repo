@@ -96,6 +96,17 @@ def test_kiln_update_in_an_adopted_repo_moves_the_tag_only(
     assert adopted.quoted_refs(repo) == {"v0.4.0"}
 
 
+def test_on_the_beta_channel_an_adopted_repo_follows_kilns_develop(
+    repo: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(adopted, "is_beta", lambda: True)
+    monkeypatch.setattr(adopted, "_fetch", fetch)
+
+    adopted.update_adopted(repo)
+
+    assert adopted.quoted_refs(repo) == {"develop"}
+
+
 def test_status_says_when_an_adopted_repo_quotes_an_older_release(repo: Path) -> None:
     assert fleet.adopted_state(repo, "v0.4.0") == "adopted develop, v0.3.4 → v0.4.0"
     adopted.move_to_release(repo, "v0.4.0", fetch)

@@ -6,6 +6,7 @@ there. What it does take from kiln is its reusable workflows, quoted at a tag
 never reaches it before a release (antoine, 19 October 2026, T-04). `kiln update` moves those
 references, and nothing else, to the latest public release, once each input the repo passes
 (`with:`) is checked against the workflow it will call; a removed input stops it, untouched.
+On the `beta` channel, they move to kiln's `develop` instead, as a generated repo's do.
 """
 
 import re
@@ -20,9 +21,10 @@ from kiln.adopted_names import convert_legacy_names, remaining_mentions, ticket_
 from kiln.backlog import BACKLOG_DIR, LEGACY_DIR, migrate_legacy_backlog
 from kiln.grid.fixers import resolve
 from kiln.shell import KilnError, step
-from kiln.versions import latest_release
+from kiln.versions import is_beta, latest_release
 
 WORKFLOW_DIR = Path(".github") / "workflows"
+BETA_REF = "develop"
 # `uses: antoine-tena/kiln/.github/workflows/charter.yml@v0.4.0`, a comment after it kept; or
 # pinned, `…/charter.yml@<sha> # v0.4.0` ([PINNED-ACTIONS]), where the comment holds the tag.
 KILN_USES = re.compile(
@@ -102,9 +104,13 @@ def update_adopted(root: Path) -> None:
             ui.note(f"still cited in the repo's own text, to reread: {', '.join(mentions)}")
     if (root / LEGACY_DIR / "a-faire.md").is_file():
         _move_legacy_backlog(root)
-    step("Adopted repo: kiln's workflows moved to the last public release")
+    beta = is_beta()
+    step(
+        "Adopted repo: kiln's workflows moved to "
+        + ("its develop (beta channel)" if beta else "the last public release")
+    )
     before = quoted_refs(root)
-    changed = move_to_release(root)
+    changed = move_to_release(root, BETA_REF if beta else None)
     if not changed:
         ui.success(f"already at {', '.join(sorted(before)) or 'no kiln workflow'}")
         return
