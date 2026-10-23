@@ -48,6 +48,45 @@ def test_a_procfile_line_runs_in_its_folder_and_replaces_a_server_of_the_same_na
     ]
 
 
+def test_a_folder_the_stack_does_not_serve_runs_its_package_dev_scripts(tmp_path: Path) -> None:
+    (tmp_path / "package.json").write_text(
+        '{"scripts": {"dev": "vite", "server": "node --watch server/index.ts",'
+        ' "build": "vite build", "start": "node dist/server.js"}}',
+        encoding="utf-8",
+    )
+    (tmp_path / "pnpm-lock.yaml").touch()
+    (tmp_path / "Procfile.dev").write_text("server: node --watch api.ts\n", encoding="utf-8")
+
+    assert [(command.label, command.argv) for command in dev_processes(tmp_path)] == [
+        ("dev", ("pnpm", "run", "dev")),
+        ("server", ("sh", "-c", "node --watch api.ts")),
+    ]
+
+
+def test_start_runs_only_without_a_dev_script_and_a_served_folder_keeps_its_server(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "backend").mkdir()
+    (tmp_path / "backend/package.json").write_text(
+        '{"scripts": {"start": "node index.js"}}', encoding="utf-8"
+    )
+    (tmp_path / "frontend").mkdir()
+    (tmp_path / "frontend/nuxt.config.ts").touch()
+    (tmp_path / "frontend/package.json").write_text(
+        '{"scripts": {"dev": "nuxt dev"}}', encoding="utf-8"
+    )
+
+    assert [(command.label, command.argv) for command in dev_processes(tmp_path)] == [
+        ("nuxt", ("pnpm", "dev")),
+        ("backend-start", ("npm", "run", "start")),
+    ]
+
+
+def test_nothing_to_run_says_what_kiln_looks_for(project: Path) -> None:
+    with pytest.raises(KilnError, match=r"package\.json.*Procfile\.dev"):
+        run_dev(project)
+
+
 def test_detached_processes_are_read_then_stopped(
     project: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
