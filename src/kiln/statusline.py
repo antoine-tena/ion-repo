@@ -10,6 +10,7 @@ remove it, never with `custom`. The repo's settings live in kiln's answers (`sta
 import json
 from dataclasses import replace
 from pathlib import Path
+from typing import Any, TypeGuard
 
 from kiln.config import (
     CUSTOM_STATUSLINE,
@@ -67,7 +68,7 @@ def kiln_script() -> Path:
     return script
 
 
-def is_kiln_statusline(entry: object) -> bool:
+def is_kiln_statusline(entry: object) -> TypeGuard[dict[str, Any]]:
     command = str(entry.get("command", "")) if isinstance(entry, dict) else ""
     return any(script.as_posix() in command for script in (SCRIPT, LEGACY_SCRIPT))
 

@@ -53,7 +53,8 @@ def _cut_definition(path: Path, qualname: str) -> bool:
     kept = lines[:start]
     if len(body) == 1:
         # The last statement of a class: `pass` keeps it valid.
-        indent = re.match(r"\s*", lines[node.lineno - 1]).group(0)
+        line = lines[node.lineno - 1]
+        indent = line[: len(line) - len(line.lstrip())]
         kept.append(f"{indent}pass\n")
     kept += lines[end:]
     path.write_text(_tidy_blank_lines("".join(kept)), encoding="utf-8")

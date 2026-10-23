@@ -159,7 +159,8 @@ def dead_code(
         if located is None:
             continue
         qualname, node, parents = located
-        candidate = Candidate(CODE, path, qualname, "vulture", node.end_lineno - _start(node) + 1)
+        size = (node.end_lineno or node.lineno) - _start(node) + 1
+        candidate = Candidate(CODE, path, qualname, "vulture", size)
         reason = _guard_code(repo, candidate, node, parents, words, library, executed)
         if reason:
             skipped.append(Skipped(candidate, reason))
