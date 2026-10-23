@@ -17,6 +17,9 @@ on:
         type: string
         default: production
 
+permissions:
+  contents: read
+
 jobs:
   vercel:
     runs-on: ubuntu-latest

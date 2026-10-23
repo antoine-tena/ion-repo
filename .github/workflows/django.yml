@@ -41,6 +41,9 @@ on:
         type: boolean
         default: true
 
+permissions:
+  contents: read
+
 jobs:
   django:
     runs-on: ubuntu-latest

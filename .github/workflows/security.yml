@@ -27,6 +27,9 @@ on:
         type: string
         default: high
 
+permissions:
+  contents: read
+
 jobs:
   audit:
     runs-on: ubuntu-latest

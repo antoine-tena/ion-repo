@@ -39,6 +39,9 @@ on:
         type: string
         default: ""
 
+permissions:
+  contents: read
+
 jobs:
   infra:
     runs-on: ubuntu-latest

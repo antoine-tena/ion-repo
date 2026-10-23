@@ -32,6 +32,9 @@ on:
         type: number
         default: 80
 
+permissions:
+  contents: read
+
 jobs:
   python:
     runs-on: ubuntu-latest

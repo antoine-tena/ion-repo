@@ -14,6 +14,9 @@ on:
         type: string
         default: frontend
 
+permissions:
+  contents: read
+
 jobs:
   sbom:
     runs-on: ubuntu-latest

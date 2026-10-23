@@ -5,6 +5,9 @@ name: Charter (former name)
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   charter:
     uses: ./.github/workflows/charter.yml

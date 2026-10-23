@@ -5,6 +5,9 @@ name: Charter
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   charter:
     runs-on: ubuntu-latest
