@@ -102,6 +102,25 @@ def test_pinned_actions_keep_their_version_as_a_comment(tmp_path: Path) -> None:
     assert f"uses: 'owner/repo/.github/workflows/x.yml@{SHA}' # kept" in text
 
 
+def test_dependabot_also_updates_the_actions_of_composite_actions(tmp_path: Path) -> None:
+    composite = "runs:\n  using: composite\n  steps:\n"
+    root = make(
+        tmp_path,
+        {
+            WORKFLOW: "jobs:\n  a:\n    steps:\n      - uses: ./.github/actions/setup\n",
+            ".github/actions/setup/action.yml": f"{composite}    - uses: astral-sh/setup-uv@v7\n",
+            "actions/plain/action.yml": f"{composite}    - run: echo nothing to update\n",
+        },
+    )
+
+    ci.add_dependabot(read_repo(root))
+
+    text = (root / ".github/dependabot.yml").read_text()
+    folders = '    directories:\n      - "/"\n      - "/.github/actions/setup"\n'
+    assert f"github-actions\n{folders}" in text
+    assert "/actions/plain" not in text
+
+
 def test_a_workflow_that_writes_is_left_to_judgment(tmp_path: Path) -> None:
     root = make(tmp_path, {WORKFLOW: "jobs:\n  a:\n    steps:\n      - run: git push\n"})
     assert ci.add_permissions(read_repo(root)) == []
