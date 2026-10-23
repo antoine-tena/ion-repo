@@ -206,7 +206,12 @@ def ensure_env_file(backend_dir: Path) -> None:
     if env_file.exists():
         print("backend/.env already exists, kept.")
         return
-    template_lines = (backend_dir / ".env.example").read_text().splitlines()
+    example = backend_dir / ".env.example"
+    # An adopted repo may have none: nothing to draw from, the backend reads its own settings.
+    if not example.exists():
+        print("backend/.env.example missing, no backend/.env created.")
+        return
+    template_lines = example.read_text().splitlines()
     secret_key = secrets.token_urlsafe(SECRET_KEY_BYTES)
     env_lines = [
         f"{SECRET_KEY_VARIABLE}={secret_key}"

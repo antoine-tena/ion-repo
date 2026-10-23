@@ -346,6 +346,12 @@ def test_env_file_gets_a_local_secret_and_is_kept(tmp_path: Path) -> None:
     assert (tmp_path / ".env").read_text() == first
 
 
+def test_env_file_without_example_is_skipped(tmp_path: Path) -> None:
+    ensure_env_file(tmp_path)
+
+    assert not (tmp_path / ".env").exists()
+
+
 def test_replaced_frontend_loses_its_lockfile(tmp_path: Path) -> None:
     (tmp_path / "frontend").mkdir()
     (tmp_path / "frontend/pnpm-lock.yaml").write_text("lockfileVersion: '9.0'\n")
