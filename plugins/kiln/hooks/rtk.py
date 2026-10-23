@@ -6,12 +6,17 @@ Without rtk in the PATH, the hook does nothing. The rewrite comes from `rtk hook
 its permission decision (`allow`): the rewritten command goes through the usual permissions,
 like the original. A repo opts out with `git config kiln.rtk false` (`rtk.desactive true`
 before kiln 0.4).
+
+In a worktree of `.claude/worktrees/`, git commands stay as typed: Claude Code's worktree
+isolation refuses any git it cannot read as targeting the worktree, and `rtk git …` is one.
 """
 
 import json
+import re
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 raw = sys.stdin.read()
 cwd = json.loads(raw).get("cwd") or "."
@@ -38,6 +43,10 @@ except json.JSONDecodeError:
     sys.exit(0)
 specific = output.get("hookSpecificOutput") or {}
 if "updatedInput" not in specific:
+    sys.exit(0)
+RTK_GIT = re.compile(r"\brtk\s+git\b")
+in_claude_worktree = "/.claude/worktrees/" in Path(cwd).resolve().as_posix() + "/"
+if in_claude_worktree and RTK_GIT.search(str(specific["updatedInput"].get("command", ""))):
     sys.exit(0)
 print(
     json.dumps(
