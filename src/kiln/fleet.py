@@ -20,7 +20,7 @@ from kiln.install import install_project
 from kiln.shell import KilnError, capture, require_tools, run, step
 from kiln.stack import ANSWERS_FILE, answers_if_any, load_stack, read_answers
 from kiln.update import conflicted_files, update_project
-from kiln.versions import latest_release, release_version
+from kiln.versions import is_beta, latest_release, release_version
 
 KILN_SOURCE_MARKERS = ("antoine-tena/kiln", "antoine-tena/init-repo")
 SEARCH_DEPTH = 3
@@ -118,7 +118,8 @@ def show_status(code_dir: Path) -> None:
     for repo in find_repos(code_dir):
         state = template_state(repo.template_commit, latest)
         waived.update(_print_status(code_dir, repo.root, state))
-    public = latest_release(candidates=False)
+    # On the beta channel, an adopted repo follows kiln's develop (`kiln update`).
+    public = adopted.BETA_REF if is_beta() else latest_release(candidates=False)
     for root in find_adopted(code_dir):
         waived.update(_print_status(code_dir, root, adopted_state(root, public)))
     if waived:
