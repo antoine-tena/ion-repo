@@ -13,7 +13,7 @@ import pytest
 from packaging.version import Version
 from plumbum import ProcessExecutionError
 
-from kiln import check, cli, github, ui
+from kiln import check, cli, deps, github, ui
 from kiln.banner import LOGO, _project_summary, render_logo
 from kiln.check import _check_commands, _ci_django_job
 from kiln.ci.jobs import Plan, Services
@@ -868,3 +868,14 @@ def test_git_runs_without_background_housekeeping_while_copier_works(
     assert setting("gc.auto") == ""
     assert os.environ["GIT_CONFIG_COUNT"] == "1"
     assert "GIT_CONFIG_KEY_1" not in os.environ
+
+
+def test_synced_pnpm_dependencies_run_the_postinstall_a_skipped_install_leaves_out(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    ran: list[list[str]] = []
+    monkeypatch.setattr(deps, "run", lambda command, cwd: ran.append(command))
+
+    deps.sync_dependencies(tmp_path, Stack(backend="none", frontend="nuxt", has_podman=False))
+
+    assert ran == [["pnpm", "install"], ["pnpm", "run", "--if-present", "postinstall"]]

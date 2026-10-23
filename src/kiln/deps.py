@@ -33,10 +33,14 @@ def lock_dependencies(root: Path, stack: Stack) -> None:
 
 
 def sync_dependencies(root: Path, stack: Stack) -> None:
+    """Environments as the locks say. `pnpm add` skips the project's `postinstall` (Nuxt's
+    `nuxt prepare`, which writes `.nuxt/`), and a `pnpm install` that finds nothing to do skips it
+    too: it runs on its own, or a fresh worktree's lint lacks `.nuxt/eslint.config.mjs`."""
     for directory in stack.python_dirs:
         run(["uv", "sync"], root / directory)
     if stack.pnpm_dir is not None:
         run(["pnpm", "install"], root / stack.pnpm_dir)
+        run(["pnpm", "run", "--if-present", "postinstall"], root / stack.pnpm_dir)
 
 
 def update_dependencies(root: Path, stack: Stack, *, allow_major: bool) -> None:
