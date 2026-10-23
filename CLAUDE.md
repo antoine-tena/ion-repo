@@ -36,8 +36,10 @@ un dossier ou un module.
   question) ; `scripts/statusline.py`), `django/`, `nuxt/`, `vps/`,
   `stripe/`, `serena/` ; `base/` : renvois des anciens chemins des hooks et scripts (sessions ouvertes, status line).
 - `.github/workflows/` : workflows réutilisables appelés par les repos générés, plus ceux de
-  kiln (`kiln.yml` contrôles, `pypi.yml` publication du paquet `kiln-cli` au tag promu) ;
-  `actions/` : actions composites (`charter`, son ancien nom `charte`, `services`).
+  kiln (`kiln.yml` contrôles, dont `kiln score` à 100, `pypi.yml` publication du paquet
+  `kiln-cli` au tag promu) ; `actions/` : actions composites (`charter`, son ancien nom
+  `charte`, `services`) ; `.github/dependabot.yml` : mises à jour proposées (uv, actions des
+  workflows et des actions composites, après 7 jours).
 - Vitrine publique : `README.md` (et sa traduction `README.fr.md`), `CONTRIBUTING.md`,
   `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1), `SECURITY.md`, `LICENSE` (MIT),
   `.github/ISSUE_TEMPLATE/`, `.github/pull_request_template.md` ; référence complète

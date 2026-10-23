@@ -254,12 +254,16 @@ pitch hollow.
 - **Origin**: growth review, 16 October 2026; rewritten 17 October 2026: a tool that rewrites
   other people's repos must pass its own grid, visibly
 
-- [ ] Third-party actions pinned by SHA in kiln's workflows and actions; `permissions:` minimal
-  everywhere; zizmor in kiln's CI.
+- [x] Third-party actions pinned by SHA in kiln's workflows and actions, their exact version in
+  a comment, moved by Dependabot (composite actions included); `permissions: contents: read` on
+  every workflow that sets none (23 October 2026, branch `chore/modernize-score`).
+- [ ] zizmor in kiln's CI.
 - [ ] Build provenance attested on each GitHub Release (`actions/attest-build-provenance`);
   PyPI keeps its token (antoine's preference for a key over a manual setting, 16 October 2026).
 - [ ] The OpenSSF Scorecard workflow and its badge.
-- [ ] `kiln score` on kiln itself in its CI: 100 on the universal rules.
+- [x] `kiln score` on kiln itself in its CI: 100 on every rule (32 of 32, from 77), the release
+  CI fails below; the grid's Python rules no longer flag the examples kept in strings (23 October
+  2026, branch `chore/modernize-score`).
 
 ### T-59 · kiln-bot: the grid's fixes as a weekly pull request
 - **Type**: improvement
