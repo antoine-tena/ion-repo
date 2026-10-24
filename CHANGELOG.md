@@ -7,20 +7,15 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 entries before v0.4.0 quote kiln's former French names.
 
 ## v0.4.6 — 2026-10-24
-<!-- draft: rewrite for users, breaking changes first, then delete this line -->
-- What the grid does not know, told to kiln with consent
-- Committed trained models tied to the code that made them
-- A Streamlit or Dash front deploys to the VPS on its own
-- Vite + React frontend, for kiln new and adoption
-- Bring a repo to the level of kiln new
-- Install a folder's node dependencies before running its scripts
-- Refuse to start a server whose port is already taken
-- Move an installed kiln plugin to the marketplace version
-- An adopted repo on develop is current on the beta channel
-- Run the pnpm postinstall a no-op install skips
-- An adopted repo follows kiln's develop on the beta channel
-- Run the dev scripts of a package.json the stack does not serve
-- Rtk leaves git alone in a Claude worktree
+- `kiln adopt` brings an existing repo to the level of `kiln new`: `CLAUDE.md`, the Claude rules, the size's charter, pre-commit hooks, the CI calling kiln's workflows and the backlog, for the stack it finds in `backend/` and `frontend/`. Nothing the repo has is overwritten: those files, and its code folders, are kept under `kept` in `.copier-answers.yml`, and `kiln update` then keeps the repo current like a generated one (#59).
+- **After updating**: in a repo adopted before 0.4.6, run `kiln adopt` again on a work branch to lay the rest of the template; until then `kiln update` only moves its workflows' tag.
+- A Vite + React front, for `kiln new --frontend vite-react` and for adoption: Vite 8, React 19, Tailwind, Vitest, strict `tsc`, its Claude rules and CI.
+- A Streamlit or Dash front deploys to your own server with `deploy=vps`: its image behind Caddy (websockets included), switched and rolled back by `scripts/ops/deploy-frontend.sh`, no database to run (#43, thanks @darnak69).
+- Data projects tie committed trained models to their code: a manifest per model (code hash, seed, dataset, metrics), tests that fail when the code moved on or the metrics drop, and the grid rule `MODEL-TRACED` (#44, thanks @darnak69).
+- `kiln score` names what the grid does not cover yet (Celery, SQLAlchemy, React…) and the rules waived again and again, then offers, in a terminal, to tell kiln with exactly those lines: one issue per gap, a 👍 when it is already open (#42, thanks @darnak69).
+- `kiln dev` refuses to start a server whose port another process holds, and names that process or the worktree running it (#60); it installs a folder's missing Node dependencies before running its scripts.
+- The tool update moves the kiln plugin to its new version too, instead of leaving the old one installed (#58, thanks @NathanBarrachin).
+- An adopted repo runs the dev scripts of a `package.json` the stack does not serve, and follows kiln's `develop` on the beta channel; pnpm's postinstall runs even when an install has nothing to add; the grid counts `.test.tsx` files as tests.
 
 ## v0.4.5 — 2026-10-23
 - Generated repos run GitHub's CI only on `release/**` branches (and by hand), no longer on each push: a merge into `develop` runs the fast linters on the files it changed, the release runs everything. `kiln check` looks at the branch's changed files only. `kiln update` brings the new `ci.yml`.
