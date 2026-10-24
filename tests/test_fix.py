@@ -21,6 +21,7 @@ RULES = {rule.id: rule for rule in load_rules()}
 @pytest.fixture(autouse=True)
 def offline(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(resolve, "commit_of", lambda repo, ref: SHA)
+    monkeypatch.setattr(resolve, "exact_version", lambda repo, sha: "v4.2.2")
     monkeypatch.setattr(resolve, "latest_release", lambda repo, major=None: "v4.2.0")
     monkeypatch.setattr(resolve, "image_digest", lambda image: DIGEST)
 
@@ -94,12 +95,42 @@ def test_every_converter_named_by_a_rule_has_a_case() -> None:
     }
 
 
-def test_pinned_actions_keep_their_version_as_a_comment(tmp_path: Path) -> None:
+def test_pinned_actions_keep_their_exact_version_as_a_comment(tmp_path: Path) -> None:
     root = make(tmp_path, CONVERTED["PINNED-ACTIONS"])
     ci.pin_actions(read_repo(root))
     text = (root / WORKFLOW).read_text()
-    assert f"uses: actions/checkout@{SHA} # v4\n" in text
+    assert f"uses: actions/checkout@{SHA} # v4.2.2\n" in text
     assert f"uses: 'owner/repo/.github/workflows/x.yml@{SHA}' # kept" in text
+
+
+def test_the_exact_version_is_the_most_precise_tag_on_the_commit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    refs = {"main": SHA, "v7": SHA, "v7.0": SHA, "v7.0.1": SHA, "v7.0.0": "0" * 40}
+    monkeypatch.undo()  # the real lookup, on faked refs
+    monkeypatch.setattr(resolve, "remote_refs", lambda repo: refs)
+
+    assert resolve.exact_version("actions/checkout", SHA) == "v7.0.1"
+    assert resolve.exact_version("actions/checkout", "1" * 40) is None
+
+
+def test_dependabot_also_updates_the_actions_of_composite_actions(tmp_path: Path) -> None:
+    composite = "runs:\n  using: composite\n  steps:\n"
+    root = make(
+        tmp_path,
+        {
+            WORKFLOW: "jobs:\n  a:\n    steps:\n      - uses: ./.github/actions/setup\n",
+            ".github/actions/setup/action.yml": f"{composite}    - uses: astral-sh/setup-uv@v7\n",
+            "actions/plain/action.yml": f"{composite}    - run: echo nothing to update\n",
+        },
+    )
+
+    ci.add_dependabot(read_repo(root))
+
+    text = (root / ".github/dependabot.yml").read_text()
+    folders = '    directories:\n      - "/"\n      - "/.github/actions/setup"\n'
+    assert f"github-actions\n{folders}" in text
+    assert "/actions/plain" not in text
 
 
 def test_a_workflow_that_writes_is_left_to_judgment(tmp_path: Path) -> None:
@@ -135,6 +166,29 @@ def test_one_commit_per_rule_on_a_work_branch(tmp_path: Path) -> None:
     log = git(root, "log", "--format=%s%n%b", "main..")
     assert "fix(NO-OBSOLETE-BACKPORTS): obsolete backports removed" in log
     assert "Source: https://pypi.org/project/typing/" in log and fix.UNVERIFIED in log
+
+
+def test_the_checks_type_the_files_the_mypy_config_names(tmp_path: Path) -> None:
+    root = make(tmp_path, {"pyproject.toml": '[tool.mypy]\nfiles = ["src"]\n', "uv.lock": ""})
+    assert ["uv", "run", "mypy"] in fix.check_commands(root)
+
+    (root / "pyproject.toml").write_text("[tool.mypy]\nstrict = true\n")
+    assert ["uv", "run", "mypy", "."] in fix.check_commands(root)
+
+
+def test_checks_red_before_the_fix_are_named_not_taken_for_no_tests(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    root = make(tmp_path, CONVERTED["TS-EXPECT-ERROR"])
+    monkeypatch.setattr(fix, "check_commands", lambda root: [["true"], ["mypy", "."]])
+    monkeypatch.setattr(fix, "run_checks", lambda root, commands: commands != [["mypy", "."]])
+
+    fix.fix(root, only="TS-EXPECT-ERROR")
+
+    log = git(root, "log", "--format=%b", "main..")
+    assert "unverified: `mypy .` was red before the fix" in log
+    assert fix.UNVERIFIED not in log
+    assert "`mypy .` was red before the fix" in capsys.readouterr().out
 
 
 def test_a_converter_that_turns_the_checks_red_is_undone(

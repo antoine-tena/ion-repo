@@ -181,7 +181,10 @@ CASES: dict[str, dict[str, dict[str, str]]] = {
         "fail": {"a.vue": '<script setup lang="ts">\n// @ts-ignore\n</script>\n'},
     },
     "NAIVE-DATETIMES": {
-        "pass": {"a.py": "now = datetime.now(UTC)\nlater = timezone.now()\n"},
+        "pass": {
+            "a.py": "now = datetime.now(UTC)\nlater = timezone.now()\n"
+            "local = datetime.now().astimezone()\n"
+        },
         "fail": {"a.py": "now = datetime.datetime.utcnow()\n"},
     },
     "SQL-PARAMETERS": {
@@ -289,6 +292,42 @@ def test_a_failing_regex_says_where(tmp_path: Path) -> None:
     repo = make_repo(tmp_path, {WORKFLOW: f"steps:\n  - uses: a/b@{SHA}\n  - uses: c/d@main\n"})
 
     assert detectors.detect(rule.detector, repo).locations == (f"{WORKFLOW}:3",)
+
+
+@pytest.mark.parametrize(
+    ("rule_id", "source"),
+    [
+        ("NOQA-CODES", 'FAILING = "import os  # noqa\\n"\n'),
+        ("TYPE-IGNORE-CODES", 'def f() -> None:\n    """Never `x = g()  # type: ignore`."""\n'),
+        ("NAIVE-DATETIMES", "FAILING = 'now = datetime.utcnow()'  # not datetime.now()\n"),
+        ("SQL-PARAMETERS", "FAILING = 'cursor.execute(f\"SELECT {pk}\")'\n"),
+    ],
+)
+def test_a_python_rule_reads_code_not_the_text_of_its_strings(
+    tmp_path: Path, rule_id: str, source: str
+) -> None:
+    rule = next(rule for rule in RULES if rule.id == rule_id)
+    repo = make_repo(tmp_path, {"tests/test_a.py": source})
+
+    assert detectors.detect(rule.detector, repo).status == detectors.PASS
+
+
+def test_code_and_comments_beside_a_string_are_still_read(tmp_path: Path) -> None:
+    rules = {rule.id: rule for rule in RULES}
+    repo = make_repo(
+        tmp_path,
+        {
+            "a.py": 'x = "# noqa"  # noqa\nwhen = f"at {datetime.now()}"\n',
+            "b.py": 'y = 1  # noqa\n"""never closed\n',  # does not tokenize: read whole
+        },
+    )
+
+    noqa = detectors.detect(rules["NOQA-CODES"].detector, repo)
+    naive = detectors.detect(rules["NAIVE-DATETIMES"].detector, repo)
+
+    assert sorted(noqa.locations) == ["a.py:1", "b.py:1"]
+    assert naive.locations == ("a.py:2",)
+    assert detectors.problems({"kind": "regex", "files": "*.py", "pattern": "x", "within": "doc"})
 
 
 def test_the_grid_catches_its_own_mistakes(tmp_path: Path) -> None:

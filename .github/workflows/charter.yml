@@ -5,17 +5,20 @@ name: Charter
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   charter:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # The migrations rule compares with the integration branch.
           fetch-depth: 0
       # kiln at the exact version of this workflow: its actions and the charter command come
       # from there (removed at once, so that the project's checks never see it).
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: antoine-tena/kiln
           ref: ${{ job.workflow_sha || 'develop' }}

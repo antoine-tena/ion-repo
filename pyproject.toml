@@ -100,6 +100,9 @@ select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "RUF", "ANN"]
 
 [tool.mypy]
 strict = true
+# What `uv run mypy` checks, in the CI as in `kiln fix`: the redirect copies of `plugins/base/`
+# would stop a `mypy .` at once (duplicate module names).
+files = ["src", "tests"]
 
 [[tool.mypy.overrides]]
 module = ["copier", "copier.*"]

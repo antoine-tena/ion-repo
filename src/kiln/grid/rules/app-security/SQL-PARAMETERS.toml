@@ -16,6 +16,7 @@ since = "0.4.2"
 [detector]
 kind = "regex"
 files = ["**/*.py"]
+within = "code"
 pattern = '''\.(execute|executemany|raw|extra)\(\s*f[\"']|\.(execute|executemany|raw)\(\s*[\"'][^\"'\n]*[\"']\s*(%\s|\.format\()'''
 
 [[sources]]

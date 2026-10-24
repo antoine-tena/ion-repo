@@ -32,15 +32,18 @@ on:
         type: number
         default: 80
 
+permissions:
+  contents: read
+
 jobs:
   python:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # kiln at the exact version of this workflow, for its actions (removed at once, so that
       # the project's checks never see it).
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: antoine-tena/kiln
           ref: ${{ job.workflow_sha || 'develop' }}
@@ -59,7 +62,7 @@ jobs:
           VARIABLES: ${{ inputs.env }}
         run: printf '%s\n' "$VARIABLES" | grep -v '^\s*$' >> "$GITHUB_ENV"
 
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
         with:
           enable-cache: true
           package-directory: ./${{ inputs.directory }}
@@ -87,7 +90,7 @@ jobs:
 
       - name: Publish the coverage
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ${{ inputs.directory }}-coverage
           path: ${{ inputs.directory }}/coverage.xml

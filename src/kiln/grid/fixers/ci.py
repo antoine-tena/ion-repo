@@ -15,6 +15,7 @@ from kiln.grid.fixers import Fixer, register, resolve
 
 COOLDOWN_DAYS = 7
 DEPENDABOT = ".github/dependabot.yml"
+ACTIONS = ("**/action.yml", "**/action.yaml")
 USES = re.compile(
     r"""^(?P<head>\s*-?\s*uses:\s*)(?P<quote>['"]?)(?P<target>(?!\./|docker://)[^@\s'"]+)"""
     r"""@(?P<ref>[^\s'"#]+)(?P=quote)(?P<tail>.*)$"""
@@ -29,9 +30,10 @@ def _write(repo: Repo, name: str, text: str) -> None:
 
 
 def pin_actions(repo: Repo) -> list[str]:
-    """`uses: owner/repo@v4` → `uses: owner/repo@<sha> # v4`, reusable workflows included."""
+    """`uses: owner/repo@v4` → `uses: owner/repo@<sha> # v4.2.2` (the exact version on that
+    commit, as pinact writes it), reusable workflows included."""
     changed = []
-    files = repo.matching(*WORKFLOWS, "**/action.yml", "**/action.yaml")
+    files = repo.matching(*WORKFLOWS, *ACTIONS)
     for name in files:
         lines = repo.text(name).splitlines(keepends=True)
         edited = False
@@ -42,7 +44,8 @@ def pin_actions(repo: Repo) -> list[str]:
             owner_repo = "/".join(found["target"].split("/")[:2])
             sha = resolve.commit_of(owner_repo, found["ref"])
             tail = found["tail"]
-            comment = tail if "#" in tail else f" # {found['ref']}{tail}"
+            version = resolve.exact_version(owner_repo, sha) or found["ref"]
+            comment = tail if "#" in tail else f" # {version}{tail}"
             ending = "\n" if line.endswith("\n") else ""
             q = found["quote"]
             lines[index] = f"{found['head']}{q}{found['target']}@{sha}{q}{comment}{ending}"
@@ -86,13 +89,27 @@ def add_cooldown(repo: Repo) -> list[str]:
     return changed
 
 
+def _folder(name: str) -> str:
+    """A file's folder as Dependabot names it: `/` at the root, `/.devcontainer` below it."""
+    parent = PurePosixPath(name).parent.as_posix()
+    return "/" if parent == "." else f"/{parent}"
+
+
 def _folders(repo: Repo, *patterns: str) -> list[str]:
-    found = {
-        "/" + str(PurePosixPath(name).parent).removeprefix(".").strip("/")
-        for name in repo.matching(*patterns)
-        if "node_modules/" not in name
+    return sorted(
+        {_folder(name) for name in repo.matching(*patterns) if "node_modules/" not in name}
+    )
+
+
+def _actions_folders(repo: Repo) -> list[str]:
+    """`/` for the workflows, then each composite action that uses others: Dependabot reads
+    no other folder unless told."""
+    composites = {
+        _folder(name)
+        for name in repo.matching(*ACTIONS)
+        if any(USES.match(line) for line in repo.text(name).splitlines())
     }
-    return sorted(folder if folder != "/" else "/" for folder in found)
+    return sorted(({"/"} if repo.matching(*WORKFLOWS) else set()) | composites)
 
 
 def ecosystems(repo: Repo) -> list[tuple[str, list[str]]]:
@@ -109,7 +126,7 @@ def ecosystems(repo: Repo) -> list[tuple[str, list[str]]]:
         ),
         ("npm", _folders(repo, "**/package.json")),
         ("docker", _folders(repo, *CONTAINER_FILES)),
-        ("github-actions", ["/"] if repo.matching(*WORKFLOWS) else []),
+        ("github-actions", _actions_folders(repo)),
     ]
     return [(name, folders) for name, folders in found if folders]
 

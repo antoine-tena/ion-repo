@@ -3,7 +3,9 @@
 A detector is the `[detector]` table of a rule file. Its `kind`:
 - `file`: `paths` (globs) present, or absent with `expect = "absent"`;
 - `regex`: `pattern` searched in `files` (globs); `expect = "none"` (the default) fails on each
-  match, with its location, `expect = "match"` passes on the first one;
+  match, with its location, `expect = "match"` passes on the first one; in a Python file,
+  `within = "code"` keeps the matches that start outside its strings and comments, `within =
+  "comments"` those that start in a comment (a file that does not tokenize is read whole);
 - `toml`, `json`, `yaml`: the dotted `key` in each file of `files`, present (or equal to
   `equals`), or absent with `expect = "absent"`;
 - `python`: `check`, a function of `PYTHON_CHECKS`, for what no pattern can say.
@@ -11,8 +13,10 @@ No file to look at means the rule does not apply (`n/a`), never a pass.
 """
 
 import datetime
+import io
 import json
 import re
+import tokenize
 import tomllib
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
@@ -24,6 +28,9 @@ from kiln.grid.facts import Repo
 
 PASS, FAIL, NOT_APPLICABLE = "pass", "fail", "n/a"
 KINDS = ("file", "regex", "toml", "json", "yaml", "python")
+# Where a regex match counts in a Python file: an example in a string is not the code itself.
+WITHIN = ("code", "comments")
+STRING_TOKENS = frozenset({tokenize.STRING, tokenize.FSTRING_MIDDLE, tokenize.TSTRING_MIDDLE})
 # Locations kept per rule: enough to act on, not a dump.
 MAX_LOCATIONS = 20
 
@@ -74,6 +81,8 @@ def problems(detector: Mapping[str, object]) -> list[str]:
             re.compile(str(detector["pattern"]), re.MULTILINE)
         except re.error as error:
             found.append(f"detector regex: {error}")
+    if kind == "regex" and detector.get("within", "code") not in WITHIN:
+        found.append(f"detector regex: `within` is one of {', '.join(WITHIN)}")
     if kind == "python" and detector.get("check") not in PYTHON_CHECKS:
         found.append(f"detector python: no check named {detector.get('check')!r}")
     return found
@@ -99,16 +108,57 @@ def _regex(detector: Mapping[str, object], repo: Repo) -> Outcome:
         return Outcome(NOT_APPLICABLE)
     pattern = re.compile(str(detector["pattern"]), re.MULTILINE)
     wants_match = detector.get("expect", "none") == "match"
+    within = str(detector.get("within", ""))
     locations: list[str] = []
     for name in files:
         text = repo.text(name)
-        for found in pattern.finditer(text):
+        for found in _matches(pattern, text, within if name.endswith(".py") else ""):
             if wants_match:
                 return Outcome(PASS, (name,))
             locations.append(f"{name}:{text.count(chr(10), 0, found.start()) + 1}")
     if wants_match:
         return Outcome(FAIL, detail="no file matches")
     return Outcome(FAIL, tuple(locations[:MAX_LOCATIONS])) if locations else Outcome(PASS)
+
+
+def _matches(pattern: re.Pattern[str], text: str, within: str) -> list[re.Match[str]]:
+    """The matches of `pattern` in a file; `within` the code or the comments of a Python
+    source, tokenized only when something matched (most files have nothing)."""
+    found = list(pattern.finditer(text))
+    if not within or not found:
+        return found
+    spans = _python_spans(text)
+    if spans is None:
+        return found
+    strings, comments = spans
+    if within == "comments":
+        return [match for match in found if _inside(match.start(), comments)]
+    return [match for match in found if not _inside(match.start(), strings + comments)]
+
+
+Spans = list[tuple[int, int]]
+
+
+def _python_spans(text: str) -> tuple[Spans, Spans] | None:
+    """Where the strings and the comments of a Python source lie, as offsets in `text`; None
+    when it does not tokenize."""
+    line_starts = [0, *(found.end() for found in re.finditer("\n", text))]
+    strings: Spans = []
+    comments: Spans = []
+    try:
+        for token in tokenize.generate_tokens(io.StringIO(text).readline):
+            if token.type in STRING_TOKENS or token.type == tokenize.COMMENT:
+                (start_row, start_column), (end_row, end_column) = token.start, token.end
+                start = line_starts[start_row - 1] + start_column
+                end = line_starts[end_row - 1] + end_column
+                (comments if token.type == tokenize.COMMENT else strings).append((start, end))
+    except tokenize.TokenError, SyntaxError:
+        return None
+    return strings, comments
+
+
+def _inside(offset: int, spans: Spans) -> bool:
+    return any(start <= offset < end for start, end in spans)
 
 
 def _key(kind: str, detector: Mapping[str, object], repo: Repo) -> Outcome:

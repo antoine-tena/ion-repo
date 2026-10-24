@@ -58,7 +58,8 @@ def check_commands(root: Path) -> list[list[str]]:
         if "ruff" in tools:
             commands.append([*runner, "ruff", "check"])
         if "mypy" in tools:
-            commands.append([*runner, "mypy", "."])
+            # The files its config names, which `mypy` alone checks: `.` would read the rest too.
+            commands.append([*runner, "mypy", *([] if tools["mypy"].get("files") else ["."])])
         if "pytest" in tools or (root / "tests").is_dir():
             commands.append([*runner, "pytest", "-q"])
     package = root / "package.json"
@@ -122,14 +123,22 @@ def fix(root: Path, *, dry_run: bool = False, only: str | None = None) -> list[O
     branch = f"kiln/fix-{datetime.date.today().isoformat()}"
     git(root, "switch", "-c", branch)
     commands = check_commands(root)
-    green_before = bool(commands) and run_checks(root, commands)
-    outcomes = [_apply(root, rule, commands, green_before) for rule in rules]
+    red = next((command for command in commands if not run_checks(root, [command])), None)
+    # Why the checks cannot judge the converters; empty when they can.
+    if not commands:
+        unverified = UNVERIFIED
+    elif red:
+        unverified = f"unverified: `{' '.join(red)}` was red before the fix"
+    else:
+        unverified = ""
+    outcomes = [_apply(root, rule, commands, unverified) for rule in rules]
     after = score.score_repo(root).score
-    _summary(outcomes, before, after, branch, verified=green_before)
+    _summary(outcomes, before, after, branch, unverified)
     return outcomes
 
 
-def _apply(root: Path, rule: Rule, commands: list[list[str]], verified: bool) -> Outcome:
+def _apply(root: Path, rule: Rule, commands: list[list[str]], unverified: str) -> Outcome:
+    """`unverified` says why the checks cannot judge this converter; empty when they can."""
     fixer = FIXERS[rule.fixer]
     ui.step(f"{rule.id}: {fixer.summary}")
     try:
@@ -141,16 +150,16 @@ def _apply(root: Path, rule: Rule, commands: list[list[str]], verified: bool) ->
     _stage(root, changed)
     if not git(root, "diff", "--cached", "--name-only"):
         return Outcome(rule.id, "unchanged", note="nothing to change")
-    if verified and not run_checks(root, commands):
+    if not unverified and not run_checks(root, commands):
         git(root, "reset", "-q", "--hard")
         git(root, "clean", "-fdq")
         return Outcome(rule.id, "reverted", tuple(changed), "the checks turned red: undone")
     source = rule.sources[0].url if rule.sources else ""
     body = f"{rule.why}\n\nSource: {source}\nRule: kiln grid {rule.id}"
-    if not verified:
-        body += f"\n\n{UNVERIFIED}"
+    if unverified:
+        body += f"\n\n{unverified}"
     git(root, "commit", "-q", "-m", f"fix({rule.id}): {fixer.summary}", "-m", body)
-    return Outcome(rule.id, "fixed", tuple(changed), "" if verified else UNVERIFIED)
+    return Outcome(rule.id, "fixed", tuple(changed), unverified)
 
 
 def _stage(root: Path, changed: list[str]) -> None:
@@ -189,13 +198,13 @@ def _dry_run(root: Path, rules: list[Rule]) -> list[Outcome]:
 
 
 def _summary(
-    outcomes: list[Outcome], before: int | None, after: int | None, branch: str, *, verified: bool
+    outcomes: list[Outcome], before: int | None, after: int | None, branch: str, unverified: str
 ) -> None:
     lines = [
         f"{found.rule}: {found.status}{f' ({found.note})' if found.note else ''}"
         for found in outcomes
     ]
     lines.append(f"score: {before} → {after} (kiln score for what is left to judgment)")
-    if not verified:
-        lines.append(f"{UNVERIFIED} (or already red): read each commit before merging")
+    if unverified:
+        lines.append(f"{unverified}: read each commit before merging")
     ui.panel(f"kiln fix on {branch}", lines)
