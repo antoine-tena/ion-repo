@@ -108,7 +108,6 @@ comes first; these tickets give way to it.
 - T-10 · Interface polish (S)
 - T-99 · `kiln doctor --fix` (S)
 - T-153 · `statusline.ci locale`: a French value left in generated repos (S)
-- T-169 · `kiln new` asks about your situation, not about tools (L)
 - T-176 · `kiln fix` options: several rules, `--skip`, `--json`, `--pr`, `--dry-run --verify` (M)
 
 ### v0.5.5 · Findings where people look, upgrades proven
@@ -134,6 +133,10 @@ for, the session start, `kiln status`, each Bash call), and the checks kiln runs
 ### v0.5.8 · For more people
 - T-57 · A tutorial series: bring a Django repo up to date in an afternoon (M)
 - T-58 · A public roadmap on GitHub Projects (M)
+
+### v0.5.9 · `kiln new` fits the person
+The quick door and the tailored one share the recap and the machine profile: built together.
+- T-169 · `kiln new` asks about your situation, not about tools (L)
 - T-184 · `kiln new` tailored: it starts from what you know, then what the project needs (L)
 
 ### v0.6.0 · Claude closes the gaps alone
@@ -780,6 +783,7 @@ empty for Claude.
   podman, serena, time zone, `compact_window`, status line, owner and team.
 - [ ] `tests/test_questions.py`, the references (both languages), and the demo
   (`docs/assets/kiln-new.tape`) re-recorded.
+- [ ] Built with T-184 (the tailored door): one recap, one machine profile for both.
 
 ### T-184 · `kiln new` tailored: it starts from what you know, then what the project needs
 - **Type**: improvement
