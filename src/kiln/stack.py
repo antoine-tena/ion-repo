@@ -185,6 +185,14 @@ def read_answers(root: Path) -> dict[str, object]:
     return renames.answers(loaded) if isinstance(loaded, dict) else {}
 
 
+def kept_of(root: Path) -> list[str]:
+    """What a repo adopted by `kiln adopt` keeps as its own (`kept`): never written by kiln."""
+    if not (root / ANSWERS_FILE).exists():
+        return []
+    kept = read_answers(root).get("kept") or []
+    return [str(path) for path in kept] if isinstance(kept, list) else []
+
+
 def answers_if_any(root: Path) -> dict[str, object]:
     """Copier answers; for an adopted repo, the size declared in its charter."""
     if (root / ANSWERS_FILE).exists():
