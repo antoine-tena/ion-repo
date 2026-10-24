@@ -49,8 +49,9 @@ un dossier ou un module.
   sur le repo public `antoine-tena/kiln-demo-legacy`, gardé vieux exprès), et l'image de partage
   `social-preview.png` (déposée à la main dans les réglages de GitHub).
 - `docs/backlog/` : suivi du travail, en anglais (skill `/kiln:backlog`), dont la prochaine
-  promotion de version ; `backlog.md` finit par la vision qui ordonne les tickets (`## 🧭 Vision`)
-  et les idées de `kiln score` (`## 💡`, pas des tickets) ; `docs/assets/` : images de la vitrine.
+  promotion de version ; `backlog.md` finit par son mode d'emploi (`## 📖`), la vision qui
+  ordonne les tickets (`## 🧭 Vision`) et les idées de `kiln score` (`## 💡`, pas des tickets) ;
+  à côté, seulement `done.md` et `urgent.md` ; `docs/assets/` : images de la vitrine.
 - `scripts/screenshots.py` : dessine les images du README à partir des vraies sorties de kiln
   (et le logo, l'image de partage) ; `scripts/social_preview.py` : l'image de partage en PNG
   (Playwright) ; `scripts/demo_shell.sh` : le shell des démos enregistrées (kiln de ce dossier,
