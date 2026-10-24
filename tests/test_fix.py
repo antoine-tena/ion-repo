@@ -163,6 +163,13 @@ def test_a_converter_that_turns_the_checks_red_is_undone(
     assert git(root, "log", "--oneline", "main..") == ""
 
 
+def test_a_kiln_repo_is_checked_whole_before_and_after(tmp_path: Path) -> None:
+    # `kiln check` alone looks at the branch's changes: a converter touching a file with older
+    # debt (a Dockerfile the charter bans) would be blamed for it and undone.
+    root = make(tmp_path, {".copier-answers.yml": "_commit: v0.4.5\n"})
+    assert fix.check_commands(root) == [["kiln", "check", "--all"]]
+
+
 def test_a_dry_run_writes_nothing(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     root = make(tmp_path, CONVERTED["TS-EXPECT-ERROR"])
 
