@@ -6,6 +6,12 @@ Three kinds, not to be confused.
 
 Final decisions: do not propose them again, even if an audit recommends it.
 
+**2026-10-24**, antoine's decision with T-177: kiln's own docs are in English only, in no other
+language.
+- T-164 · French docs brought up to date at the candidate: no French docs left to translate
+- T-55 · README in Chinese, Japanese, Spanish and Portuguese: every translation is a copy to keep
+  in step at each release
+
 ## Declined for now
 
 **2026-10-17**, when the backlog was rewritten from the vision of that day (antoine's request):

@@ -122,7 +122,6 @@ comes first; these tickets give way to it.
 - T-174 · More converters: the code (M)
 
 ### v0.5.7 · For more people
-- T-55 · README in Chinese, Japanese, Spanish and Portuguese (S)
 - T-57 · A tutorial series: bring a Django repo up to date in an afternoon (M)
 - T-58 · A public roadmap on GitHub Projects (M)
 
@@ -184,10 +183,9 @@ French draft.
   asks for the English README or reference to change (or `<!-- readme: unchanged, why -->`).
 - [ ] `CLAUDE.md` (map of the repo, "Le README, entièrement à jour", "Contrôles") and the
   `tout-a-jour` memory: one language for kiln's docs.
-- [ ] T-164 (French docs translated at the candidate) has nothing left to do: moved to
-  `rejected.md` once antoine confirms. T-30 no longer keeps a French summary. T-55 (README in
-  Chinese, Japanese, Spanish, Portuguese) stays a separate choice for antoine: cheap if limited
-  to the README with a release-time check, unlike a translated reference.
+- T-164 (French docs translated at the candidate) and T-55 (README in Chinese, Japanese,
+  Spanish, Portuguese) ruled out by antoine on 24 Oct (`rejected.md`); T-30 keeps no French
+  summary.
 
 ### T-166 · An adopted repo whose code is not in `backend/` or `frontend/` gets its stack too
 - **Type**: improvement
@@ -231,23 +229,6 @@ here and 36k in the reference repo, and Claude read it nearly 500 times in three
   a skill keeps only what needs judgment.
 - [ ] `test_plugins.py`: one shell command per skill at most, the skills that need judgment over
   several commands (`review`, `release`, `contribution`) listed with their reason.
-
-### T-164 · French docs brought up to date at the candidate
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-21
-- **Effort**: M · **Owner**: Claude · **Due**: —
-- **Origin**: antoine, 21 October 2026, after T-162: the docs in two languages, kept up to date in
-  every branch, make about a quarter of kiln's file edits
-
-Branches update the English docs only (`README.md`, `docs/reference.md`); the candidate
-(`/kiln:release`, before `-rc.1`) translates in one pass what changed since the last version
-into `README.fr.md` and `docs/reference.fr.md`.
-- [ ] `test_docs.py`: the checks between the two languages run at the release only (`kiln
-  version cut`), the English ones on every merge.
-- [ ] `/kiln:release`: the translation step, from the English diff since the last tag.
-- [ ] `CLAUDE.md` ("a change updates the docs in its branch"): English in the branch, French at
-  the candidate.
 
 ### T-165 · Write less code, measured: a ladder before writing
 - **Type**: idea
@@ -940,20 +921,6 @@ A slow check ends up not being run, and the time goes into the tools, not into k
   more than six months old, end-of-life dates crossed, release candidates turned stable.
 - [ ] One pull request to kiln with the proposed level changes and their sources, decided by the
   doctrine (maturity, sources), never by a count.
-
-### T-55 · README in Chinese, Japanese, Spanish and Portuguese
-- **Type**: task
-- **Status**: todo
-- **Opened**: 2026-10-16
-- **Effort**: S · **Owner**: Claude · **Due**: —
-- **Origin**: growth review, 16 October 2026
-
-A large share of the stars on developer tools come from Chinese, Japanese and Brazilian
-communities, who share translated READMEs widely.
-- [ ] `README.zh-CN.md`, `README.ja.md`, `README.es.md`, `README.pt-BR.md`, linked from the
-  language line of the README.
-- [ ] A check at release time: same sections and same commands as `README.md`, otherwise the
-  release lists which translation is behind.
 
 ### T-57 · A tutorial series: bring a Django repo up to date in an afternoon
 - **Type**: task
