@@ -61,6 +61,7 @@ def _start(root: Path, *, foreground: bool, only: list[str] | None, ask: menu.As
             " no Procfile.dev (`name: command`, one per line)"
         )
     commands = menu.select(every, background.state_dir(root), only, ask)
+    background.check_ports_free(root, commands)
     if runs_beyond_front(commands):
         start_backing_services(root)
     step(" · ".join(f"{command.label} ({command.directory}/)" for command in commands))

@@ -10,6 +10,7 @@ log.
 import contextlib
 import json
 import os
+import re
 import signal
 import socket
 import subprocess
@@ -59,15 +60,62 @@ def records(root: Path) -> dict[str, dict[str, Any]]:
 
 def others_running(root: Path) -> bool:
     """Whether another worktree of the repo still runs processes, on the same databases."""
+    return any(is_alive(record["pid"]) for _, record in _others_records(root))
+
+
+def _others_records(root: Path) -> list[tuple[Path, dict[str, Any]]]:
+    """The records of the repo's other worktrees, with the git folder each one lives in."""
     common = Path(capture(["git", "rev-parse", "--path-format=absolute", "--git-common-dir"], root))
     folders = [common / STATE_DIR, *(common / "worktrees").glob(f"*/{STATE_DIR}")]
     own = state_dir(root).resolve()
-    return any(
-        is_alive(record["pid"])
+    return [
+        (folder.parent, record)
         for folder in folders
         if folder.resolve() != own
         for record in _records_in(folder).values()
-    )
+    ]
+
+
+def check_ports_free(root: Path, commands: list[Command]) -> None:
+    """Refuses to start a server whose port another process holds: its readiness would be
+    answered by that process, and the URL shown would serve someone else's code (#60)."""
+    taken = [
+        (command.label, port)
+        for command in commands
+        if (port := DEV_PORTS.get(command.label)) is not None and _listens(port)
+    ]
+    if not taken:
+        return
+    lines = [f"port {port} ({label}) is taken by {_holder(root, port)}" for label, port in taken]
+    raise KilnError("\n".join(lines))
+
+
+def _holder(root: Path, port: int) -> str:
+    for git_dir, record in _others_records(root):
+        if record.get("port") == port and is_alive(record["pid"]):
+            tree = _worktree_of(git_dir)
+            return f"kiln dev of {tree}: `kiln dev stop` there"
+    process = _listener(port)
+    return f"{process}: stop it, then kiln dev" if process else "another process"
+
+
+def _worktree_of(git_dir: Path) -> str:
+    gitdir_file = git_dir / "gitdir"  # a linked worktree points to its `.git` file
+    if gitdir_file.is_file():
+        return str(Path(gitdir_file.read_text(encoding="utf-8").strip()).parent)
+    return str(git_dir.parent)
+
+
+def _listener(port: int) -> str | None:
+    """`name (pid N)` of the process listening on the port, when `ss` can tell."""
+    try:
+        listing = subprocess.run(
+            ["ss", "-Hltnp", f"sport = :{port}"], capture_output=True, text=True, check=False
+        ).stdout
+    except OSError:  # no `ss` (macOS)
+        return None
+    found = re.search(r'users:\(\("([^"]+)",pid=(\d+)', listing)
+    return f"{found[1]} (pid {found[2]})" if found else None
 
 
 def _records_in(folder: Path) -> dict[str, dict[str, Any]]:
