@@ -42,6 +42,7 @@ from kiln.template import template_revision, template_source
 from kiln.update import PROTECTED_BRANCHES
 from kiln.versions import follows_candidates
 
+BACKLOG_DIR = Path("docs") / "backlog"
 DEFAULT_SIZE = "ember"
 GITIGNORE = ".gitignore"
 COMPOSE_FILE = "compose.yaml"
@@ -186,6 +187,24 @@ def _render(source: str, destination: Path, answers: dict[str, object]) -> None:
         quiet=True,
         unsafe=False,
     )
+
+
+def copy_backlog(root: Path, template: str | None) -> None:
+    """The template's `docs/backlog/` alone (a repo adopted under kiln 0.3, `kiln update`)."""
+    source = template_source(template)
+    with tempfile.TemporaryDirectory() as tmp:
+        rendered = Path(tmp) / "rendered"
+        _render(
+            source,
+            rendered,
+            {
+                "name": project_name(root),
+                "backend": "none",
+                "frontend": "none",
+                "kept": [ANSWERS_FILE],
+            },
+        )
+        shutil.copytree(rendered / BACKLOG_DIR, root / BACKLOG_DIR)
 
 
 def _lay(root: Path, rendered: Path, kept: list[str]) -> list[str]:

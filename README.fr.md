@@ -35,10 +35,11 @@ aucune IA et ne demande aucune clé d'API.
 - Un nouveau repo en trois questions (ce que vous construisez, sa taille, la langue de
   l'équipe) : code, tests, linters, CI, crochets pre-commit, conteneurs et les consignes que
   Claude lit en premier.
-- Un repo que vous avez déjà, si vieux soit-il : `kiln adopt` le fait suivre kiln sur une
-  branche de travail, sans toucher à aucun fichier existant. Les règles sont vérifiées après
-  chaque modification de Claude, le passif qu'elles relèvent est listé pour que Claude le
-  résorbe, et `kiln check`, `kiln dev` et `kiln status` le servent comme un repo créé par kiln.
+- Un repo que vous avez déjà, si vieux soit-il : `kiln adopt` l'amène au niveau de `kiln new`
+  sur une branche de travail, en posant la CI, les crochets, les règles et les consignes qui lui
+  manquent sans écraser aucun fichier. Les règles sont vérifiées après chaque modification de
+  Claude, le passif qu'elles relèvent est listé pour que Claude le résorbe, et `kiln update` le
+  tient à jour comme un repo créé par kiln.
 - `kiln update` rejoue le modèle, prend les mises à jour compatibles des dépendances, convertit
   ce qu'une version a renommé et lance vos contrôles avant que vous ne commitiez. `--rehearse`
   l'essaie d'abord sur un clone jetable, `--all` met à jour chaque repo du dossier de code.
@@ -87,7 +88,7 @@ Un repo que vous avez déjà, sur une branche de travail :
 
 ```console
 $ git switch -c chore/kiln-adopt
-$ kiln adopt                  # les règles et un backlog, aucun fichier touché ; puis le passif
+$ kiln adopt                  # ce qu'écrit kiln new, aucun fichier écrasé ; puis le passif
 $ claude                      # Claude Code le résorbe, avec les règles, skills et hooks de kiln
 ```
 
@@ -128,8 +129,7 @@ candidate de correctifs seuls), puis répétée sur un clone de
 chaque repo avant que `kiln update --all` la fusionne, un worktree par repo. Les repos citent les
 workflows de kiln à la version exacte qu'ils suivent : rien ne leur arrive entre deux versions,
 et `kiln update` montre les nouveautés de chaque version qu'il traverse. Un repo repris par
-`kiln adopt` suit les workflows de kiln à la dernière version, que `kiln update` fait avancer
-aussi.
+`kiln adopt` se met à jour de la même façon.
 
 ## La grille
 

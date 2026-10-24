@@ -167,9 +167,12 @@ publie sur PyPI le paquet `kiln-cli` par `pypi.yml`) :
 Chaque version, correctif compris, finit par `kiln update --all` : les repos générés citent leurs
 workflows au tag exact dont ils partent (`ci.yml`), et `kiln update` le fait avancer. Les
 workflows de kiln prennent leurs actions et la commande `charte` à leur propre commit
-(`job.workflow_sha`). Les dépôts adoptés citent les workflows au tag
-de la dernière version publique (choix d'antoine, 19 octobre 2026, T-04) et ne rejouent pas
-de modèle : `kiln update` y fait seulement avancer ce tag (`adopted.py`, T-146), après avoir vérifié les entrées passées aux workflows. Modules : `versions.py` (tags, canaux, journal, version de
+(`job.workflow_sha`). Un dépôt adopté par `kiln adopt` est au niveau de `kiln new` (choix
+d'antoine, 24 octobre 2026, #59, qui renverse celui du 19 octobre) : le modèle y est rendu sans
+écraser ses fichiers, notés sous `kept` dans `.copier-answers.yml` et que `kiln update` n'écrit
+jamais, puis rejoué par `kiln update` comme ailleurs. Un dépôt adopté avant la 0.4.6 (une charte,
+sans réponses) ne voit que le tag de ses workflows avancé (`adopted.py`, T-146) jusqu'à ce que
+`kiln adopt` le complète. Modules : `versions.py` (tags, canaux, journal, version de
 l'outil), `release.py` (`kiln version`), `shipping.py` (`kiln version cut`, `kiln version promote`).
 
 ## Le README, entièrement à jour

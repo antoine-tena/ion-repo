@@ -1,49 +1,91 @@
 import subprocess
-import tomllib
 from pathlib import Path
 
 import pytest
+import yaml
 
-from kiln import adopt
+from kiln import adopt, update
 from kiln.shell import KilnError
 
 TEMPLATE_DIR = str(Path(__file__).resolve().parent.parent)
+GIT_IDENTITY = ["-c", "user.name=N", "-c", "user.email=n@example.com", "-c", "commit.gpgsign=false"]
+
+
+def commit(root: Path, message: str) -> None:
+    subprocess.run(["git", "-C", str(root), "add", "-A"], check=True)
+    subprocess.run(
+        ["git", "-C", str(root), *GIT_IDENTITY, "commit", "-q", "-m", message], check=True
+    )
 
 
 @pytest.fixture
 def repo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    """Un repo existant, à soi, sur une branche de travail ; la commande `charte` ne tourne pas."""
+    """An existing repo of one's own, on a work branch; the `charter` command does not run."""
     monkeypatch.setattr(adopt, "run_status", lambda *args, **kwargs: 0)
+    monkeypatch.setattr(adopt, "ci_runner_for", lambda root: "local")
     root = tmp_path / "Mon_Outil"
     subprocess.run(["git", "init", "-q", "-b", "chore/kiln-adopt", str(root)], check=True)
     (root / "outil.py").write_text("print('ok')\n")
-    git = ["git", "-C", str(root), "-c", "user.name=N", "-c", "user.email=n@example.com"]
-    subprocess.run([*git, "add", "-A"], check=True)
-    subprocess.run([*git, "-c", "commit.gpgsign=false", "commit", "-q", "-m", "a"], check=True)
+    (root / "README.md").write_text("# Mon outil\n")
+    (root / ".gitignore").write_text("dist/\n")
+    commit(root, "a")
     return root
 
 
-def test_adoption_adds_the_charter_and_the_backlog_without_touching_the_code(repo: Path) -> None:
+def answers(root: Path) -> dict[str, object]:
+    return yaml.safe_load((root / ".copier-answers.yml").read_text())
+
+
+def test_adoption_lays_what_kiln_new_writes_and_keeps_the_repo_s_files(repo: Path) -> None:
     adopt.adopt_project(repo, size="flame", template=TEMPLATE_DIR)
 
-    charter = tomllib.loads((repo / "charter.toml").read_text())
-    assert charter["size"] == "flame"
-    assert charter["bans"]["forbidden-tools"]["id"] == "UV-PODMAN"
-    assert "Mon Outil" in (repo / "docs/backlog/backlog.md").read_text()
+    for laid in (
+        "CLAUDE.md",
+        ".claude/rules/kiln/charter.md",
+        ".claude/settings.json",
+        ".pre-commit-config.yaml",
+        ".github/workflows/ci.yml",
+        "docs/backlog/backlog.md",
+    ):
+        assert (repo / laid).is_file(), laid
+    assert 'size = "flame"' in (repo / "charter.toml").read_text()
+    assert (repo / "README.md").read_text() == "# Mon outil\n"
     assert (repo / "outil.py").read_text() == "print('ok')\n"
+    gitignore = (repo / ".gitignore").read_text()
+    assert gitignore.startswith("dist/\n") and "\n# kiln\n" in gitignore
+    assert answers(repo)["kept"] == [".gitignore", "README.md"]
+    assert answers(repo)["backend"] == answers(repo)["frontend"] == "none"
     assert not (repo / "backend").exists()
 
 
-def test_adoption_keeps_an_existing_backlog(repo: Path) -> None:
-    (repo / "docs/backlog").mkdir(parents=True)
-    (repo / "docs/backlog/backlog.md").write_text("à moi\n")
-    subprocess.run(["git", "-C", str(repo), "add", "-A"], check=True)
-    git = ["git", "-C", str(repo), "-c", "user.name=N", "-c", "user.email=n@example.com"]
-    subprocess.run([*git, "-c", "commit.gpgsign=false", "commit", "-q", "-m", "b"], check=True)
+def test_a_stack_in_its_folders_gets_its_rules_but_its_code_stays_its_own(repo: Path) -> None:
+    (repo / "frontend").mkdir()
+    (repo / "frontend/nuxt.config.ts").write_text("export default {}\n")
+    commit(repo, "nuxt")
 
     adopt.adopt_project(repo, template=TEMPLATE_DIR)
 
-    assert (repo / "docs/backlog/backlog.md").read_text() == "à moi\n"
+    assert (repo / ".claude/rules/kiln/nuxt.md").is_file()
+    assert sorted(path.name for path in (repo / "frontend").iterdir()) == ["nuxt.config.ts"]
+    assert "frontend" in answers(repo)["kept"]
+    assert answers(repo)["frontend"] == "nuxt"
+
+
+def test_kiln_update_replays_the_template_and_spares_what_the_repo_keeps(
+    tmp_path: Path, repo: Path
+) -> None:
+    template = tmp_path / "kiln"
+    subprocess.run(["git", "clone", "-q", "--no-tags", TEMPLATE_DIR, str(template)], check=True)
+    adopt.adopt_project(repo, template=str(template))
+    commit(repo, "adopt kiln")
+    (template / "template/.editorconfig").write_text("root = true\n# newer\n")
+    (template / "template/README.md.jinja").write_text("# {{ title }}, newer\n")
+    commit(template, "template moves on")
+
+    update.apply_template(repo)
+
+    assert (repo / ".editorconfig").read_text() == "root = true\n# newer\n"
+    assert (repo / "README.md").read_text() == "# Mon outil\n"
 
 
 def test_adoption_refuses_kiln_repos_and_dirty_trees(repo: Path) -> None:
@@ -51,11 +93,22 @@ def test_adoption_refuses_kiln_repos_and_dirty_trees(repo: Path) -> None:
     with pytest.raises(KilnError, match="working tree not clean"):
         adopt.check_adoptable(repo)
     (repo / "charte.toml").write_text("")  # adopted before kiln 0.4.0
-    with pytest.raises(KilnError, match="already adopted"):
+    with pytest.raises(KilnError, match="kiln update first moves its names"):
         adopt.check_adoptable(repo)
     (repo / ".copier-answers.yml").write_text("")
     with pytest.raises(KilnError, match="generated by kiln"):
         adopt.check_adoptable(repo)
+
+
+def test_a_repo_adopted_before_is_completed(repo: Path) -> None:
+    (repo / "charter.toml").write_text('size = "spark"\n')
+    commit(repo, "adopted by kiln 0.4.5")
+
+    adopt.adopt_project(repo, template=TEMPLATE_DIR)
+
+    assert (repo / "charter.toml").read_text() == 'size = "spark"\n'
+    assert "charter.toml" in answers(repo)["kept"]
+    assert (repo / ".github/workflows/ci.yml").is_file()
 
 
 def test_project_name_follows_the_template_format() -> None:

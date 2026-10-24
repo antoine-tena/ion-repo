@@ -33,10 +33,10 @@ kiln itself calls no AI and needs no API key.
 
 - A new repo in three questions (what you build, how big, the team's language): code, tests,
   linters, CI, pre-commit hooks, containers and the instructions Claude reads first.
-- A repo you already have, however old: `kiln adopt` brings it under kiln on a work branch,
-  without touching an existing file. The rules are checked after each edit Claude makes, the
-  debt they find is listed for Claude to work off, and `kiln check`, `kiln dev` and
-  `kiln status` serve it like a repo kiln created.
+- A repo you already have, however old: `kiln adopt` brings it to the level of `kiln new` on a
+  work branch, laying the CI, hooks, rules and instructions it lacks without overwriting a file.
+  The rules are checked after each edit Claude makes, the debt they find is listed for Claude to
+  work off, and `kiln update` keeps it current like a repo kiln created.
 - `kiln update` replays the template, takes compatible dependency upgrades, converts what a
   release renamed and runs your checks before you commit. `--rehearse` tries it on a throwaway
   clone first, `--all` updates every repo in your code folder.
@@ -81,7 +81,7 @@ A repo you already have, on a work branch:
 
 ```console
 $ git switch -c chore/kiln-adopt
-$ kiln adopt                 # the rules and a backlog, no file touched; then what falls short
+$ kiln adopt                 # what kiln new writes, no file overwritten; then what falls short
 $ claude                     # Claude Code works it off, with kiln's rules, skills and hooks
 ```
 
@@ -120,8 +120,7 @@ including an update from every release since v0.3.0 through an installed tool. I
 once it has soaked (24 hours and at least one repo updated to it; 2 hours for fixes only), then rehearsed on a clone of each repo before
 `kiln update --all` merges it, one worktree per repo. Repos quote kiln's workflows at the exact
 release they follow, so nothing reaches them between releases, and `kiln update` shows what is
-new in each release it crosses. A repo brought in by `kiln adopt` follows kiln's workflows at the
-latest release, moved forward by `kiln update` too.
+new in each release it crosses. A repo brought in by `kiln adopt` is updated the same way.
 
 ## The grid
 

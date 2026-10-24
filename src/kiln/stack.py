@@ -45,9 +45,13 @@ BACKEND_MARKERS: tuple[tuple[str, str], ...] = (
 )
 FRONTEND_MARKERS: tuple[tuple[str, str], ...] = (
     ("nuxt.config.ts", "nuxt"),
+    ("nuxt.config.js", "nuxt"),
+    ("nuxt.config.mjs", "nuxt"),
     ("next.config.ts", "next"),
     ("next.config.mjs", "next"),
+    ("next.config.js", "next"),
     ("astro.config.mjs", "astro"),
+    ("astro.config.ts", "astro"),
 )
 PODMAN_MARKERS = ("compose.yml", "docker-compose.yml", "config/local/compose.yml")
 
