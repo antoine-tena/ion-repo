@@ -97,7 +97,9 @@ def waive(root: Path, request: WaiveRequest, today: datetime.date | None = None)
     previous = path.read_text("utf-8") if path.exists() else None
     path.write_text(_join(blocks), "utf-8")
     target = rule_id(request.target) if is_rule else request.target
-    problems = [error for error in waivers_of(_repo(root)).errors if target in error]
+    # Read as of the day the waiver was written, not the clock's: a waiver written for a given
+    # day is valid on that day.
+    problems = [error for error in waivers_of(_repo(root), today).errors if target in error]
     if problems:
         _restore(path, previous)
         raise KilnError("waiver refused: " + "; ".join(problems))
