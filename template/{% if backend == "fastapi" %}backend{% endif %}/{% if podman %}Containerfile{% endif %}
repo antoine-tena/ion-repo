@@ -1,7 +1,7 @@
 # Image of backend/: the FastAPI API.
 # Built from the root of the repo (compose.yaml, or podman build -f <directory>/Containerfile .).
 # uv only, never pip; a non-root user ([HARDENED-CONTAINERS]).
-FROM ghcr.io/astral-sh/uv:python3.14-trixie-slim@sha256:db955a4c5fd85c9e08ae2c02f3fcedf76765aebc7c9bc10c55a6bbcc1b0510be
+FROM ghcr.io/astral-sh/uv:python3.14-trixie-slim@sha256:d8e732839dfc4225a1ff698803b478b2223c05636c055d3add41ab9dbec0f315
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=never PYTHONUNBUFFERED=1
 WORKDIR /srv/backend
 COPY backend/pyproject.toml backend/uv.lock backend/.python-version ./
