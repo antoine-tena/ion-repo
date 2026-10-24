@@ -11,7 +11,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-170.**
+**Next free: T-177.**
 
 ---
 
@@ -58,9 +58,13 @@ score proves it in each note.
 - T-158 · `kiln score` reads the GitHub settings when `gh` is logged in (S)
 - T-134 · The reference repo's score in every release note (S)
 - T-166 · An adopted repo whose code is not in `backend/` or `frontend/` gets its stack too (M)
+- T-172 · The checks of `kiln fix` told apart, timed out, their log kept for Claude (S)
+- T-173 · More converters: the CI and the supply chain (M)
 
 ### v0.4.8 · Never lets it rot
-Candidate Thu 29 Oct. Updates go down by themselves.
+Candidate Thu 29 Oct. Updates go down by themselves, and each fix they bring is proven first.
+- T-170 · `kiln fix` proves each commit: its rule closed, no other rule broken (M)
+- T-171 · `kiln fix` works in a throwaway worktree, never in the user's tree (S)
 - T-59 · kiln-bot: the grid's fixes as a weekly pull request (L)
 - T-167 · `kiln dev` in an adopted repo with a compose file offers its services (S)
 
@@ -102,16 +106,19 @@ comes first; these tickets give way to it.
 - T-99 · `kiln doctor --fix` (S)
 - T-153 · `statusline.ci locale`: a French value left in generated repos (S)
 - T-169 · `kiln new` asks about your situation, not about tools (L)
+- T-176 · `kiln fix` options: several rules, `--skip`, `--json`, `--pr`, `--dry-run --verify` (M)
 
 ### v0.5.5 · Findings where people look, upgrades proven
 - T-91 · Findings where people look: SARIF in pull requests and code scanning (M)
 - T-54 · Every candidate proven on real upgrade paths (M)
 - T-77 · Tests in seconds after each edit: only those the change touches (M)
 - T-144 · Checks as fast as they are precise: oxlint, TypeScript 7, ty or pyrefly, measured (M)
+- T-175 · `kiln fix` runs the checks once, then bisects on red (M)
 
 ### v0.5.6 · The grid grows, and stays current
 - T-141 · Grid v2: the themes after the launch (L)
 - T-140 · The grid kept current: its sources watched every week (M)
+- T-174 · More converters: the code (M)
 
 ### v0.5.7 · For more people
 - T-55 · README in Chinese, Japanese, Spanish and Portuguese (S)
@@ -245,6 +252,84 @@ keeps it from being written.
   so a repo with `backend/` and `frontend/` (most of the training fleet, 20 October 2026) gets
   every commit marked "unverified" although it has tests; look one folder down, and run a
   Django project's tests through `manage.py` when its settings start without secrets.
+
+
+### T-170 · `kiln fix` proves each commit: its rule closed, no other rule broken
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-24
+- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
+
+`fix.py` promises "with proof", but `_apply` commits as soon as the converter leaves a diff:
+it never runs the rule's detector again. kiln-bot (T-59) cannot open pull requests on
+strangers' repos until each commit is proven.
+- [ ] After each converter, the rule's detector runs again: `fixed` when it passes, `partial`
+  when it still fails (the diff is kept, the rest goes to `kiln score --roadmap`), `unchanged`
+  when nothing moved.
+- [ ] The whole grid compared before and after each commit: a converter that turns another rule
+  red (`add_ci` writing an unpinned action, say) is undone and reported.
+- [ ] Any exception from a converter is caught, not only `OSError`, `ValueError` and
+  `KilnError`: today a `KeyError` or a `yaml.YAMLError` stops the run halfway with a dirty tree
+  on the `kiln/fix-…` branch. Tree reset, outcome `unchanged (converter bug)`.
+- [ ] A test over every `FIXERS` entry: a second run of the converter changes nothing
+  (idempotence).
+- [ ] The summary gives the points each rule brought, not only the score before and after.
+
+### T-171 · `kiln fix` works in a throwaway worktree, never in the user's tree
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-24
+- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
+
+`kiln fix` runs `git switch -c kiln/fix-<date>` in the user's tree, against kiln's own rule (one
+worktree per branch, no switch in the main tree): a second run the same day fails on the
+existing branch, and a crash leaves the user on a half-done branch.
+- [ ] The converters run in a temporary worktree, as `--dry-run` already does; only the branch
+  remains, the user's tree is never touched.
+- [ ] A dirty tree is no longer refused (the worktree starts from the last commit, said in
+  one line).
+- [ ] A branch name already taken gets a suffix (`kiln/fix-2026-10-24-2`), or the existing
+  branch is updated when it holds only `kiln fix` commits (what kiln-bot needs, T-59).
+
+### T-172 · The checks of `kiln fix` told apart, timed out, their log kept for Claude
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-24
+- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
+
+`run_checks` answers yes or no: no check found, a tool missing and a repo already red before
+the run all end up as "unverified", and a reverted converter vanishes without a trace. Goes with
+the last box of T-159 (checks found beyond the root).
+- [ ] Three cases told apart in the summary: no check found, tool missing (which one, how to
+  install it), already red before `kiln fix` (which command).
+- [ ] A timeout on each check (a `pytest` waiting for an absent database hangs `kiln fix` today).
+- [ ] The output of the check that failed is kept: a reverted converter becomes an entry of
+  `kiln score --roadmap`, with the log, for Claude to finish by hand.
+- [ ] `yarn` and `bun` recognised besides `npm` and `pnpm`; `typecheck` run when `package.json`
+  declares it.
+
+### T-173 · More converters: the CI and the supply chain
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-24
+- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Origin**: review of `kiln fix` asked by antoine, 24 October 2026; 26 `adopt` rules have a
+  detector but no converter
+
+The north star says "brought up to it by script": these `adopt` rules are closed by a script
+without judgment. Each one with its passing and failing case in `tests/test_fix.py`.
+- [ ] WORKFLOW-INJECTION: `${{ github.event… }}` inside a `run:` moved to an `env:` variable
+  (what zizmor's fix does).
+- [ ] VULNERABILITY-AUDIT: a `pip-audit` or `npm audit` step added to the existing CI.
+- [ ] LINT-IN-CI and TESTS-IN-CI: the missing step added to an existing CI (`add_ci` only
+  writes one when there is none).
+- [ ] NO-TRACKED-ENV: `git rm --cached .env`, the file added to `.gitignore`, a
+  `.env.example` with the keys and no values.
+- [ ] Ordered by how often the two training repos miss them (measures in `kiln-private`, never
+  quoted here).
 
 
 ### T-158 · `kiln score` reads the GitHub settings when `gh` is logged in
@@ -582,6 +667,51 @@ commit touching the file registered it. Reproduce with `kiln publish`, then find
 is GitHub's or kiln's doing.
 
 ## 🟡 Normal
+
+### T-174 · More converters: the code
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-24
+- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
+
+The second half of T-173: rules on the code itself, each change proven by the repo's tests.
+- [ ] NOQA-CODES and TYPE-IGNORE-CODES: ruff or mypy run, the code of each error read and
+  written into the bare comment.
+- [ ] JS-LINTER: a minimal flat ESLint config, as `add_ruff` does for Python.
+- [ ] HEALTH-PROBES: a `HEALTHCHECK` in the `Dockerfile` when the port and the route are
+  obvious, left to judgment otherwise.
+- [ ] BARE-EXCEPT: `except:` → `except Exception:`, kept only when the tests stay green.
+
+### T-175 · `kiln fix` runs the checks once, then bisects on red
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-24
+- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
+
+Today the whole test suite runs after each converter: ten rules, ten runs, which kiln-bot pays
+in CI minutes (T-59).
+- [ ] Every converter applied, one commit each, then the checks once; when red, a bisection
+  over the commits finds the culprit, which alone is undone.
+- [ ] The network lookups (commit SHAs, image digests) resolved in parallel before the
+  converters start.
+- [ ] The time saved measured on the two training copies, written in the release note.
+
+### T-176 · `kiln fix` options: several rules, `--skip`, `--json`, `--pr`, `--dry-run --verify`
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-24
+- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
+
+- [ ] `--rule` takes several rules; `--skip RULE` leaves some out.
+- [ ] `--json`: the outcomes for the CI and the skills (`/kiln:modernize`, kiln-bot).
+- [ ] `--pr`: the branch pushed and a pull request opened with the score before and after and
+  the why of each commit (the base kiln-bot reuses, T-59).
+- [ ] `--dry-run --verify`: the checks run on the throwaway copy too.
+- [ ] The references in both languages and the README updated with the options
+  (`tests/test_docs.py`).
 
 ### T-169 · `kiln new` asks about your situation, not about tools
 - **Type**: improvement
