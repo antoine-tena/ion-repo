@@ -38,7 +38,9 @@ frameworks build features; kiln keeps the repo they live in at the level of the 
 - T-108 · An API reference page served by every backend
 - T-96 · `kiln new "…"`: the project described in a sentence
 
-**More stacks and project types**: Django and Nuxt first, the other templates frozen (T-133).
+**More templates and project types**: Django and Nuxt first, the other templates frozen (T-133).
+Scoring other stacks is not ruled out: stack packs after the launch (decision 1 of 24 October
+2026, [backlog-kiln-score.md](backlog-kiln-score.md)).
 - T-07 · Better support for Java projects
 - T-36 · `kiln new` recommends the stack, the user decides
 - T-79, T-80, T-81 · Project types `mcp`, `agent`, `library`
