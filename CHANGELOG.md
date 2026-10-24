@@ -6,6 +6,22 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 `release/vX.Y.Z` branch, rewritten before its first candidate. Names are those of their release:
 entries before v0.4.0 quote kiln's former French names.
 
+## v0.4.6 — 2026-10-24
+<!-- draft: rewrite for users, breaking changes first, then delete this line -->
+- What the grid does not know, told to kiln with consent
+- Committed trained models tied to the code that made them
+- A Streamlit or Dash front deploys to the VPS on its own
+- Vite + React frontend, for kiln new and adoption
+- Bring a repo to the level of kiln new
+- Install a folder's node dependencies before running its scripts
+- Refuse to start a server whose port is already taken
+- Move an installed kiln plugin to the marketplace version
+- An adopted repo on develop is current on the beta channel
+- Run the pnpm postinstall a no-op install skips
+- An adopted repo follows kiln's develop on the beta channel
+- Run the dev scripts of a package.json the stack does not serve
+- Rtk leaves git alone in a Claude worktree
+
 ## v0.4.5 — 2026-10-23
 - Generated repos run GitHub's CI only on `release/**` branches (and by hand), no longer on each push: a merge into `develop` runs the fast linters on the files it changed, the release runs everything. `kiln check` looks at the branch's changed files only. `kiln update` brings the new `ci.yml`.
 - Claude Code sessions stay cheaper: generated repos compact at 400k tokens (`kiln set compact_window=…`) and leave claude.ai connectors to each person; the status line shows the context in tokens, turns it red once the prompt cache has expired, and refreshes every 5 seconds; `/kiln:merge` suggests `/clear` only when it saves something.
