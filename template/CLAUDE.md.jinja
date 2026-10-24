@@ -39,6 +39,9 @@ it holds; no copy of the code.
   API client and constants (`constants.ts`).
 {% elif frontend == 'astro' -%}
 - `frontend/src/`: pages (`pages/`), layouts (`layouts/`), styles, constants (`constants.ts`).
+{% elif frontend == 'vite-react' -%}
+- `frontend/src/`: the app (`App.tsx`, entry `main.tsx`), API client (`lib/`), constants
+  (`constants.ts`); `frontend/index.html`: the page Vite serves.
 {% elif frontend in ['streamlit', 'dash'] -%}
 - `frontend/app.py`: entry point; `frontend/dashboard/`: pages, layout and constants;
   `frontend/tests/`: tests.

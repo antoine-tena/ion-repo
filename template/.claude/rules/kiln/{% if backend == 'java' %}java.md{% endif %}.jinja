@@ -12,7 +12,7 @@ through the wrapper `./mvnw` (nothing to install: it downloads the version pinne
 
 - Check: `./mvnw verify` in `backend/` (compilation with blocking warnings, JUnit tests, JaCoCo
   coverage floor), or `kiln check` at the root.
-- Run: `./mvnw -q package -DskipTests && java -jar target/{{ name }}-0.1.0.jar`{% if frontend in ['nuxt', 'next', 'astro', 'streamlit', 'dash'] %}; `kiln dev` does
+- Run: `./mvnw -q package -DskipTests && java -jar target/{{ name }}-0.1.0.jar`{% if frontend in ['nuxt', 'next', 'astro', 'vite-react', 'streamlit', 'dash'] %}; `kiln dev` does
   it next to the front, with the variables of `backend/.env`{% endif %}.
 - Sources in `src/main/java`, tests in `src/test/java`, root package `{{ java_package }}`, one
   package per domain (`{{ java_package }}.<domain>`).

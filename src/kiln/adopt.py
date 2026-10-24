@@ -34,8 +34,10 @@ from kiln.stack import (
     FRONTEND_MARKERS,
     NO_FRAMEWORK,
     PODMAN_MARKERS,
+    VITE_REACT,
     Stack,
     detect_stack,
+    uses_react,
 )
 from kiln.statusline import apply_statusline_settings
 from kiln.template import template_revision, template_source
@@ -162,7 +164,9 @@ def _say_stack(root: Path, stack: Stack) -> None:
     elsewhere = [
         name
         for marker, name in (*BACKEND_MARKERS, *FRONTEND_MARKERS)
-        if name not in found and (root / marker).exists()
+        if name not in found
+        and (root / marker).exists()
+        and (name != VITE_REACT or uses_react(root))
     ]
     if found:
         ui.note(f"stack: {' + '.join(found)}")

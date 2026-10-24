@@ -21,7 +21,7 @@ PROJECT_NAME = re.compile(r"[a-z][a-z0-9-]*")
 SIZES = ("spark", "ember", "flame", "blaze")
 PROJECT_TYPES = ("app", "api", "site", "dashboard", "analysis", "cli")
 BACKENDS = ("django", "fastapi", "data", "cli", "java", "none")
-FRONTENDS = ("nuxt", "next", "astro", "streamlit", "dash", "none")
+FRONTENDS = ("nuxt", "next", "astro", "vite-react", "streamlit", "dash", "none")
 LANGUAGES = ("en", "fr")
 
 

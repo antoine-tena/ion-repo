@@ -34,6 +34,7 @@ DEV_PORTS = {
     "nuxt": 3000,
     "next": 3000,
     "astro": 4321,
+    "vite-react": 5173,
     "streamlit": 8501,
     "dash": 8050,
 }

@@ -103,7 +103,7 @@ $ claude                      # Claude Code le résorbe, avec les règles, skill
 | Une analyse de données (`analysis`) | polars, marimo, Plotly | — |
 | Un outil en ligne de commande (`cli`) | Python, installable | — |
 
-Next.js, Dash et Java 25 + Maven sont là aussi, et les tests de kiln génèrent et vérifient chaque
+Next.js, Vite + React, Dash et Java 25 + Maven sont là aussi, et les tests de kiln génèrent et vérifient chaque
 combinaison. Django et Nuxt sont complets ; les autres stacks sont figées mais entretenues : les
 nouvelles règles de la grille vont d'abord à Django et Nuxt.
 

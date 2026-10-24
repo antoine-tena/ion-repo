@@ -7,7 +7,7 @@
 {%- set ecosystems = [] %}
 {%- if uv_dirs %}{% set _ = ecosystems.append(('uv', uv_dirs)) %}{% endif %}
 {%- if backend == 'java' %}{% set _ = ecosystems.append(('maven', ['/backend'])) %}{% endif %}
-{%- if frontend in ['nuxt', 'next', 'astro'] %}{% set _ = ecosystems.append(('npm', ['/frontend'])) %}{% endif %}
+{%- if frontend in ['nuxt', 'next', 'astro', 'vite-react'] %}{% set _ = ecosystems.append(('npm', ['/frontend'])) %}{% endif %}
 {%- if container_dirs %}{% set _ = ecosystems.append(('docker', container_dirs)) %}{% endif %}
 {%- set _ = ecosystems.append(('github-actions', ['/'])) -%}
 version: 2

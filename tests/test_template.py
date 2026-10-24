@@ -18,7 +18,7 @@ ANSWERS = {
     "team": ["antoine-tena", "NathanBarrachin"],
 }
 BACKENDS = ("django", "fastapi", "data", "cli", "java", "none")
-FRONTENDS = ("nuxt", "next", "astro", "streamlit", "dash", "none")
+FRONTENDS = ("nuxt", "next", "astro", "vite-react", "streamlit", "dash", "none")
 STACKS = [
     (back, front) for back in BACKENDS for front in FRONTENDS if (back, front) != ("none",) * 2
 ]

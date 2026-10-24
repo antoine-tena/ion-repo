@@ -1,0 +1,15 @@
+import { BACKEND_DOWN, BACKEND_UNHEALTHY, BACKEND_UP } from '../constants';
+
+// [API-CALLS]: the response is checked before it is shown.
+export async function readHealth(): Promise<string> {
+  try {
+    const response = await fetch('/api/health');
+    const payload: unknown = await response.json();
+    const isHealthy = response.ok && typeof payload === 'object' && payload !== null && 'status' in payload;
+    return isHealthy ? BACKEND_UP : BACKEND_UNHEALTHY;
+  } catch (error) {
+    // [EXCEPTIONS]: backend unreachable, shown as such.
+    console.error('health.unreachable', error);
+    return BACKEND_DOWN;
+  }
+}
