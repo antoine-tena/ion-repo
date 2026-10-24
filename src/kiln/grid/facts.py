@@ -31,6 +31,8 @@ class Repo:
     root: Path
     files: tuple[str, ...]  # tracked files, POSIX paths relative to the root
     facts: frozenset[str]
+    # Python and JavaScript packages the repo declares, by their public names.
+    dependencies: frozenset[str] = frozenset()
     # Read once per run: a later read (after `kiln fix` writes) takes a new `read_repo`.
     texts: dict[str, str] = field(default_factory=dict, compare=False, hash=False, repr=False)
 
@@ -56,7 +58,8 @@ def _glob(pattern: str) -> re.Pattern[str]:
 
 def read_repo(root: Path) -> Repo:
     files = tuple(tracked_files(root))
-    return Repo(root, files, frozenset(detect_facts(root, files)))
+    dependencies = _python_dependencies(root, files) | _node_dependencies(root, files)
+    return Repo(root, files, frozenset(detect_facts(root, files)), frozenset(dependencies))
 
 
 def tracked_files(root: Path) -> list[str]:

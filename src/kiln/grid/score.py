@@ -58,6 +58,41 @@ UNCOVERED_SOURCES = {
     ".swift": "Swift",
     ".dart": "Dart",
 }
+# Packages that call for practices of their own, by public name, with what they are. The grid
+# covers one when a rule's scope names it; otherwise it is listed at the end (T-38). Only these
+# names can leave the machine: a private package is never one of them.
+NOTABLE_PACKAGES = {
+    "celery": "task queue",
+    "django-q2": "task queue",
+    "rq": "task queue",
+    "dramatiq": "task queue",
+    "huey": "task queue",
+    "apscheduler": "scheduler",
+    "channels": "websockets",
+    "flask": "web framework",
+    "fastapi": "web framework",
+    "sqlalchemy": "ORM",
+    "alembic": "migrations",
+    "strawberry-graphql": "GraphQL",
+    "graphene": "GraphQL",
+    "streamlit": "dashboard",
+    "dash": "dashboard",
+    "scikit-learn": "machine learning",
+    "torch": "machine learning",
+    "tensorflow": "machine learning",
+    "langchain": "LLM framework",
+    "stripe": "payments",
+    "react": "UI library",
+    "next": "web framework",
+    "svelte": "UI library",
+    "@angular/core": "web framework",
+    "express": "web server",
+    "@nestjs/core": "web framework",
+    "prisma": "ORM",
+    "socket.io": "websockets",
+}
+# A waiver renewed this many times says the rule may not fit: reported as misfiring.
+MISFIRE_RENEWALS = 2
 ENDOFLIFE_API = "https://endoflife.date/api/{product}.json"
 
 
@@ -88,6 +123,7 @@ class Report:
     facts: tuple[str, ...]
     findings: tuple[Finding, ...]
     uncovered: tuple[str, ...] = ()
+    misfired: tuple[str, ...] = ()  # rules waived again and again: they may not fit
     schema: int = SCHEMA
     checked: str = field(default_factory=lambda: datetime.date.today().isoformat())
 
@@ -130,7 +166,8 @@ def score_repo(root: Path, rules: list[Rule] | None = None) -> Report:
         },
         facts=tuple(sorted(repo.facts)),
         findings=tuple(findings),
-        uncovered=tuple(_uncovered(repo)),
+        uncovered=tuple(_uncovered(repo, rules if rules is not None else load_rules())),
+        misfired=tuple(_misfired(waivers)),
     )
 
 
@@ -190,7 +227,7 @@ def _percent(findings: list[Finding]) -> int | None:
     return round(100 * sum(found.status == PASSED for found in findings) / len(findings))
 
 
-def _uncovered(repo: Repo) -> list[str]:
+def _uncovered(repo: Repo, rules: list[Rule]) -> list[str]:
     found = {
         UNCOVERED[PurePosixPath(name).name]
         for name in repo.files
@@ -203,7 +240,23 @@ def _uncovered(repo: Repo) -> list[str]:
         if (stack := UNCOVERED_SOURCES.get(PurePosixPath(name).suffix))
         and stack.split(" (")[0] not in languages
     }
+    named = {rule.scope_name for rule in rules if rule.scope_name}
+    found |= {
+        f"{package} ({what})"
+        for package, what in NOTABLE_PACKAGES.items()
+        if package in repo.dependencies and package not in named
+    }
     return sorted(f"{stack}: not covered by the grid yet" for stack in found)
+
+
+def _misfired(waivers: Waivers) -> list[str]:
+    return sorted(
+        {
+            f"{waiver.rule}: waived again and again ({waiver.renewals} renewals)"
+            for waiver in waivers.actives
+            if waiver.rule and waiver.renewals >= MISFIRE_RENEWALS
+        }
+    )
 
 
 def refresh_end_of_life() -> None:
@@ -270,9 +323,9 @@ def show(report: Report, *, every: bool = False) -> None:
         _section("Met", met, ui.MOSS, locations=False, every=every)
         left_out = [found for found in report.findings if found.status == LEFT_OUT]
         _section("Nothing to look at", left_out, ui.STONE, locations=False, every=every)
-    if report.uncovered:
+    if report.uncovered or report.misfired:
         print(f"\n  {ui.paint('What the grid does not know', ui.FIRE, bold=True)}")
-        for line in report.uncovered:
+        for line in (*report.uncovered, *report.misfired):
             print(ui.paint(f"    {line}", ui.STONE))
     hint = "" if every else "--all for every rule and location · "
     print(ui.paint(f"\n  {hint}kiln grid <ID> for a rule in full", ui.STONE))
