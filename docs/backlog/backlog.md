@@ -11,7 +11,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-173.**
+**Next free: T-170.**
 
 ---
 
@@ -48,8 +48,6 @@ score proves it in each note.
 - T-159 · What T-126 to T-128 left: compose hardening, pyproject from requirements, `kiln update` (M)
 - T-158 · `kiln score` reads the GitHub settings when `gh` is logged in (S)
 - T-134 · The reference repo's score in every release note (S)
-- T-170 · `kiln fix` covers every rule a script can fix, its share of the grid shown (L)
-- T-171 · An adopted repo, once fixed, has only judgment gaps left (S)
 
 ### v0.4.7 · Never lets it rot, and the grid learns
 Candidate Tue 27 Oct. Updates go down by themselves, gaps come back up with consent.
@@ -72,7 +70,6 @@ content defined on 17 October: the version the launch waits for (T-03).
 - T-33 · One promise everywhere: tagline, About, PyPI, social preview (S)
 - T-119 · GitHub Sponsors and `FUNDING.yml` (XS)
 - T-154 · Show your score: a badge other repos display (S)
-- T-172 · `kiln` alone knows what to do: score, then fix; eight commands on the home screen (L)
 
 ### v0.5.1 · Launch week: a stranger's first ten minutes, rehearsed
 Candidate Tue 3 Nov. Fixes only from here to the launch; the week absorbs up to three slipped
@@ -149,72 +146,6 @@ build on kiln. From here, strict semver: breaking → major, `feat` → minor.
 ## 🔴 Critical
 
 ## 🟠 Important
-
-### T-170 · `kiln fix` covers every rule a script can fix, its share of the grid shown
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-24
-- **Effort**: L · **Owner**: Claude · **Due**: —
-- **Origin**: antoine, 24 October 2026: "`kiln fix` is meant to be the most powerful, it needs
-  no AI"; measured that day: 16 converters for 137 rules, about 12 % of the grid
-
-`kiln fix` is what sets kiln apart (deterministic, free, the same result twice), but 18 rules
-marked `fixable = "script"` have no converter: CONTRACT-DRIFT, OPENAPI-IN-REPO, CONSTANT-TIME,
-SECURITY-HEADERS, SESSION-COOKIES, SUBRESOURCE-INTEGRITY, ASYNC-AWAIT, CASE, EXPLICIT-IMPORTS,
-MODERN-PYTHON, MODERN-VUE, ATOMIC-INCREMENTS, COMMON-FIELDS, WORK-TRACKING, STRUCTURED-LOGGING,
-MODERN-IMAGES, SBOM, API-FUZZING.
-- [ ] A converter for each, or the rule moved to `judgment` with the reason when no script
-  can do it safely (a fix that may change behaviour is not a script fix).
-- [ ] The `judgment` rules reread: those a script could close after all (a codemod, ruff or
-  pyupgrade with `--fix`, a config line) become `script`.
-- [ ] `test_grid.py`: a rule marked `script` without a converter fails.
-- [ ] The share measured and shown: `kiln grid` prints it ("N of M rules fixed by script"),
-  the README and the release notes quote it.
-
-### T-171 · An adopted repo, once fixed, has only judgment gaps left
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-24
-- **Effort**: S · **Owner**: Claude · **Due**: —
-- **Origin**: antoine, 24 October 2026: "`kiln score` tells `kiln new` and `kiln adopt` what is
-  expected"; true for `new` (`test_a_released_project_scores_100_on_kiln_grid`), unchecked for
-  `adopt`
-
-The grid sets what is expected; `new` ships at 100, `adopt` then `fix` must leave only what
-needs judgment.
-- [ ] A test in `test_adopt.py`, on the model of the 100 test of `test_template.py`: a bare
-  Django and a bare Nuxt repo adopted, then `kiln fix`, then `score`: every gap left is a
-  `judgment` rule.
-- [ ] `kiln adopt` ends on the score and offers `kiln fix` when it finds gaps a script closes.
-
-### T-172 · `kiln` alone knows what to do: score, then fix; eight commands on the home screen
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-24
-- **Effort**: L · **Owner**: Claude · **Due**: —
-- **Origin**: antoine, 24 October 2026: "wouldn't it be better with far fewer kiln commands,
-  and one main command that knows what to do from where the repo stands?"
-
-Today `kiln` alone prints 19 commands in four groups: a menu to learn before the first step,
-for the very people the promise speaks to ("even if you're not one"). One loop instead:
-the grid, `score` measures, `fix` closes by script, Claude closes the rest; `new` and `adopt`
-are its two doors. Explicit commands stay (skills, CI and docs need precise verbs), and
-nothing runs without a yes.
-- [ ] `kiln` alone reads the state and offers one next step, run on Enter: outside a repo
-  `new` (or the machine install when missing), a repo kiln did not make `adopt`, a fresh
-  clone `install`, no GitHub remote `publish`, behind kiln `update`, gaps a script closes
-  the score then `fix`, otherwise `dev` (`check` when files changed). Out of a terminal it
-  prints the step and runs nothing.
-- [ ] The home screen (`--help`) shows eight commands: `new`, `adopt`, `update`, `dev`,
-  `check`, `score`, `fix`, `set`.
-- [ ] Folded in: `doctor` and `status` into `kiln` alone (outside a repo, the state of the
-  code folder's repos), `ci` into `check --ci`, `contract` run by `dev` and checked by
-  `check` when the API changes, `grid` into `score --rules` (one rule: `score --rule ID`),
-  `waive` into `set --waive`.
-- [ ] Hidden but kept: `install`, `publish`, `version`, `completion`; the old names stay as
-  hidden aliases that say what they became (like `modernize` for the 0.3 names), so nothing
-  breaks; skills, docs and `test_docs.py` move to the new forms.
-- [ ] Before T-30: the README for strangers shows the short list.
 
 ### T-163 · Skills call one kiln command, the backlog first
 - **Type**: improvement

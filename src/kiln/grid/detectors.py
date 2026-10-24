@@ -447,6 +447,33 @@ def python_linter(repo: Repo) -> Outcome:
     return Outcome(FAIL, detail="no ruff, flake8 or pylint settings")
 
 
+# Files of trained weights, by the libraries that write them.
+MODEL_FILES = tuple(
+    f"**/*.{suffix}"
+    for suffix in ("pt", "pth", "ckpt", "joblib", "pkl", "pickle", "onnx", "safetensors", "h5")
+)
+MODEL_MANIFEST_SUFFIX = ".manifest.json"
+MODEL_MANIFEST_KEYS = ("code_sha256", "metrics")
+
+
+def traced_models(repo: Repo) -> Outcome:
+    """Each committed model has its `<model>.manifest.json`, naming its code's hash and metrics."""
+    models = [name for name in repo.matching(*MODEL_FILES) if "site-packages/" not in name]
+    if not models:
+        return Outcome(NOT_APPLICABLE)
+    untraced = []
+    for name in models:
+        try:
+            manifest = json.loads(repo.text(name + MODEL_MANIFEST_SUFFIX))
+        except ValueError:
+            manifest = None
+        if not isinstance(manifest, dict) or any(
+            key not in manifest for key in MODEL_MANIFEST_KEYS
+        ):
+            untraced.append(name)
+    return Outcome(FAIL, tuple(untraced[:MAX_LOCATIONS])) if untraced else Outcome(PASS)
+
+
 PYTHON_CHECKS: dict[str, Callable[[Repo], Outcome]] = {
     "lockfiles": lockfiles,
     "non_root_containers": non_root_containers,
@@ -457,4 +484,5 @@ PYTHON_CHECKS: dict[str, Callable[[Repo], Outcome]] = {
     "hardened_compose": hardened_compose,
     "committed_migrations": committed_migrations,
     "python_linter": python_linter,
+    "traced_models": traced_models,
 }
