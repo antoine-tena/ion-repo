@@ -5,7 +5,7 @@ Everything left to do on kiln, in a single list ordered by priority. Started on
 real repos stay private, see "Repos d'entraînement" in `CLAUDE.md`). Below the tickets: the
 [🧭 Vision](#-vision) that orders them, then the [💡 kiln score ideas](#-kiln-score-the-idea-backlog)
 (1,070 ideas, not tickets). Closed tickets are in [done.md](done.md); how to write a
-ticket: [README.md](README.md). **Nothing else is
+ticket: [📖 How to use](#-how-to-use-humans-and-agents). **Nothing else is
 open.**
 
 North star: **kiln v0.5.0, launched publicly on Wednesday 11 November 2026: any Django or Nuxt
@@ -1296,6 +1296,60 @@ An ecosystem is what turns a tool into a project people star and contribute to.
 
 ---
 
+## 📖 How to use (humans and agents)
+
+Next to this file: [done.md](done.md), the closed tickets, one line each, most recent first
+(written by `/kiln:backlog done`), and [urgent.md](urgent.md), what only a human on the team can
+do (access, payment, decision), one checkbox per action (counted by the status line).
+
+An audit writes its dated report next to these files (`audit-<topic>-YYYY-MM-DD.md`) while it
+runs, copies its open findings into this file (with a pointer to their lines), then moves to `docs/_archive/YYYY-MM-DD-topic/`. Archives **can be read, but everything in them
+is old and must be checked** against the current code; they are never edited.
+
+**A ticket** = a `### T-NN · Title` heading, then five fixed lines, then the details:
+
+    ### T-NN · Short title that says what to achieve
+    - **Type**: task
+    - **Status**: todo
+    - **Opened**: YYYY-MM-DD
+    - **Effort**: S · **Owner**: … · **Due**: —
+    - **Origin**: where it comes from
+
+    Why, what to do (as a `- [ ]` checklist when there are several steps), where to look.
+
+- **ID** `T-NN`: stable, never reused, quoted as is in commits and branches (tickets opened
+  before 16 October 2026 were `AF-NN`, same number). The next free one is at the top of this file
+  (`Next free: T-NN`).
+- **Type**, one of: `bug` (something is broken); `improvement` (it works, it could work
+  better); `idea` (nothing exists yet, to be explored); `task` (work that is neither: a release,
+  a decision, a check).
+- **Status**, one of: `todo`; `in progress — branch <name>, since YYYY-MM-DD`;
+  `blocked — waiting for <who or what>`; `to verify — <where>`.
+- **Priority** = the section the ticket lives in; changing it means moving the ticket.
+  🔴 critical (now), 🟠 important (before the north star), 🟡 normal, ⚪ background
+  (long-running work, debt, ideas still to be explored).
+- **Effort**, in Claude Code session time on the Pro plan kiln is built with: XS under
+  15 minutes, S about half an hour, M about an hour, L two to three hours (split it when it can
+  be split). Measured on kiln: on 16 October 2026, 9.3 session-hours shipped four promotions and
+  the move to English (about 8,000 lines changed): some twenty times faster than the former
+  estimates in human time.
+- **Budget**: the Pro quota restarts every Tuesday at 8:00 (Paris). It lasted 42 session-hours
+  the week of 6 October and 33 the week of 13 October (limit reached on Friday at 14:03), all
+  projects together; a 5-hour window runs out after 2 to 3.5 hours of work. kiln plans on
+  25 session-hours a week, about 7 per release, spread over the week (about 5 a day, all
+  projects): spent by Friday, it leaves the Saturday and Monday releases without budget. No
+  fleet of subagents, no headless run without a budget said beforehand.
+- **Releases**: the `## 🚀 Releases` section at the top places every open ticket in a planned
+  release (`/kiln:backlog plan`); numbers are planned, not promised, until the candidate is cut.
+- **Closing a ticket**: remove it from its section and add a line at the top of
+  [done.md](done.md): `- **YYYY-MM-DD** · T-NN · Title — what was done (branch) · opened YYYY-MM-DD`.
+- **Details in archived audits**: when a ticket quotes lines of `docs/_archive/`, the original
+  finding is there in full; it is old, check it against the current code.
+- **Locations quoted are hints, not addresses.**
+- Overview: `grep -E '^(## |### T-|- \*\*Status)' docs/backlog/backlog.md`.
+
+---
+
 ## 🧭 Vision
 
 Why the tickets above exist and how they are judged. Drafted in French on 17 October 2026 from a
@@ -1569,7 +1623,7 @@ measurements gains 7 points of success and saves 12 % of tokens.
 - Rule ideas use a short notation after their description: the detector's rung (`L0` to `L7`,
   section E; `≈` when the detector is approximate and Claude confirms), `fix S` when a converter
   can close the gap or `fix J` when it takes judgment, then the radar level it would enter at.
-- ⚠ marks an idea that brushes a declined ticket or a licence to check. The six choices this
+- ⚠ marks an idea with a licence to check. The six choices this
   file raised are decided in Part I.
 - Locations quoted are hints, measured on `develop` at `7685fe6`.
 
@@ -1712,10 +1766,6 @@ with its reason; the ideas below follow them.
    (T-39), company and enterprise ask for CI on every pull request, where integration breaks
    between people.
 
-Ideas that brush a declined ticket carry ⚠ and its number (T-94 Windows without WSL, T-117 an
-editor extension, T-48 devcontainers, T-86 monorepos, T-71 `kiln mcp`): those stay declined
-until someone reopens them.
-
 #### Order of battle
 
 Inside the plan of [🚀 Releases](#-releases) as it stands tonight (v0.4.6 is today's candidate;
@@ -1826,12 +1876,12 @@ and JS/TS first, then whichever of Go, Java and Kotlin, C#, PHP, Ruby or Rust th
 - [ ] **C11** Deploy configs read: Dockerfile, Containerfile, compose, Kubernetes manifests (any YAML with `apiVersion` and `kind`), Helm, Kustomize, Skaffold, Tilt, Nomad, systemd units, Caddyfile, nginx, Traefik, Fly, Render, Railway, Heroku, Vercel, Netlify, Cloudflare, Firebase, App Engine, Serverless, SAM.
 - [ ] **C12** Neutral to container engines (Docker, Podman, Buildah, Kaniko, BuildKit): `# syntax=`, `--mount=type=secret` and `type=cache`, Bake files, devcontainer.json read.
 - [ ] **C13** Rules that know operating systems: CRLF and `.gitattributes`, paths Windows refuses, case collisions that break macOS, a setup documented only as a `.sh` script.
-- [ ] **C14** kiln score runs on Linux, macOS, WSL and native Windows (it is Python and git) ⚠ T-94 declined Windows without WSL for kiln as a whole; the score alone may cost little, tested in CI if taken.
+- [ ] **C14** kiln score runs on Linux, macOS, WSL and native Windows (it is Python and git), tested in CI.
 - [ ] **C15** x86-64 and ARM64 (Apple Silicon, Graviton, Raspberry Pi), glibc and musl (Alpine): every bundled tool shipped as a wheel for each, or its rules say "unknown" there.
 - [ ] **C16** Editor and environment files read: `.editorconfig`, `.vscode/` (recommended extensions, settings with personal paths), `.idea/` (workspace files committed), devcontainers, Gitpod, Codespaces, mise and asdf, direnv's `.envrc` (secrets in it), Nix dev shells, flox.
 - [ ] **C17** Any human language in the repo: a README found as `LISEZMOI.md` or `README.zh-CN.md`; generic-name lists per language (`donnees`, `truc`, `datos`, `daten`); typography that isn't a bug (French non-breaking spaces, the doctrine's ruff example); identifiers in any script.
 - [ ] **C18** Air-gapped and corporate networks: offline by default; `--online` honours `HTTPS_PROXY` and custom certificate authorities (`SSL_CERT_FILE`); the data bundle downloadable as one file (`--data bundle.tar.zst`).
-- [ ] **C19** Monorepo tools' project graphs (Nx, Turborepo, Bazel, Pants, Rush, Moon) read for components and their links ⚠ T-86 (declined) is about generating monorepos; scoring them is another matter.
+- [ ] **C19** Monorepo tools' project graphs (Nx, Turborepo, Bazel, Pants, Rush, Moon) read for components and their links.
 - [ ] **C20** The integration branch read from the remote's HEAD (main, master, develop, trunk), never assumed.
 - [ ] **C21** Self-hosted forges on custom domains recognized by their API's signature (GitLab's `/api/v4/version`, Gitea's `/api/v1/version`), with `--online` only.
 - [ ] **C22** Reusable CI pieces (GitHub reusable workflows, GitLab components, CircleCI orbs) followed one level, at their pinned version, with `--online`: a reusable workflow that grants `write-all` is the caller's problem too.
@@ -2060,7 +2110,7 @@ and JS/TS first, then whichever of Go, Java and Kotlin, C#, PHP, Ruby or Rust th
 - [ ] **L09** Pull request comments by the action: the delta, new findings as review comments on the diff's lines, fixed ones thanked.
 - [ ] **L10** GitHub check runs with annotations, sent in batches of 50.
 - [ ] **L11** Scores kept in git notes (`refs/notes/kiln-score`), as `kiln ci` keeps its verdicts: history for free, travelling with the repo when pushed.
-- [ ] **L12** A language server: diagnostics for place rules in any editor, code actions for scripted fixes ⚠ T-117 (a VS Code extension) is declined for now; a language server serves every editor at once, only if adopters ask.
+- [ ] **L12** A language server: diagnostics for place rules in any editor, code actions for scripted fixes: one server for every editor at once.
 - [ ] **L13** The `--json` schema published (`schema.json`), versioned with a changelog, stable at v1.0.
 - [ ] **L14** `--quiet` (the number only) and `--porcelain` (stable lines for scripts).
 - [ ] **L15** `kiln grid --json`: the whole catalogue for other tools.
@@ -2888,7 +2938,7 @@ The first data repos came through issues (#43, #44): v0.4.6 deploys a Streamlit 
 - [ ] **DX05** `NO-GLOBAL-INSTALLS`: tools run from the project (`uvx`, `pnpm dlx`, versioned `npx`), never `sudo pip install` or `npm -g` in the docs. L2 · fix J · trial.
 - [ ] **DX06** `EDITOR-SETTINGS-SHARED`: recommended extensions and format-on-save shared, personal settings ignored. L0 · fix S · assess.
 - [ ] **DX07** `CLEAN-CLONE-WORKS`: a fresh clone installs and passes its checks with the documented commands (`--deep`, in a sandbox). L7 · fix J · trial.
-- [ ] **DX08** `DEVCONTAINER` ⚠ T-48 (declined): a dev container for teams that want one, at `hold` while T-48 stands. L0 · hold.
+- [ ] **DX08** `DEVCONTAINER`: a dev container for teams that want one. L0 · assess.
 
 #### PK · Packaging and publishing (into `supply-chain` and `ci-cd`)
 
