@@ -60,6 +60,20 @@ aucune IA et ne demande aucune clé d'API.
 - La CI d'un repo privé tourne sur votre poste (`kiln ci`, son verdict gardé en note git) et ne
   coûte aucune minute GitHub ; celle d'un repo public tourne sur GitHub, où c'est gratuit.
 
+## Sauver un vieux repo
+
+<p align="center">
+  <img src="docs/assets/kiln-rescue.gif" alt="kiln score donne 23 sur 100 à un vieux repo Django ; suivent kiln adopt, kiln fix et kiln score --roadmap ; Claude Code traite la feuille de route avec /kiln:modernize, un commit par écart ; kiln score lui donne alors 100 sur 100" width="820">
+</p>
+<p align="center"><i>Une vraie exécution sur <a href="https://github.com/antoine-tena/kiln-demo-legacy">kiln-demo-legacy</a>, une application Django laissée telle qu'on l'écrivait vers 2020, jouée en 1,5× et coupée pendant les attentes ; les cinq minutes de Claude Code en accéléré.</i></p>
+
+`kiln score` lui donne 23/100. `kiln adopt` pose les règles, les contrôles et les consignes de
+kiln sans écraser un fichier (39), `kiln fix` comble ce qu'un script peut combler, un commit par
+règle (65), et `kiln score --roadmap` confie le reste à Claude Code. `/kiln:modernize` fige
+d'abord par des tests ce que fait le code aujourd'hui, puis comble chaque écart dans son propre
+commit, prouvé par `kiln score --rule` : 100/100. Le README du repo de démo donne les commandes
+pour la rejouer.
+
 ## Installation
 
 ```sh

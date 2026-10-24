@@ -330,6 +330,10 @@ def show(report: Report, *, every: bool = False) -> None:
     hint = "" if every else "--all for every rule and location · "
     print(ui.paint(f"\n  {hint}kiln grid <ID> for a rule in full", ui.STONE))
     print(ui.paint('  A deviation this repo accepts: kiln waive <ID> --reason "…"', ui.STONE))
+    if report.gaps:
+        # An old repo's gaps run to a hundred lines: the score, said again where the eye ends.
+        gaps = f"{len(report.gaps)} gap{'s' if len(report.gaps) > 1 else ''}"
+        print(f"\n  {title}  {ui.paint(score, ui.GLOW, bold=True)}  {ui.paint(gaps, ui.STONE)}")
 
 
 def _section(
