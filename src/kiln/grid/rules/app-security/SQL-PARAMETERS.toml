@@ -17,7 +17,9 @@ since = "0.4.2"
 kind = "regex"
 files = ["**/*.py"]
 within = "code"
-pattern = '''\.(execute|executemany|raw|extra)\(\s*f[\"']|\.(execute|executemany|raw)\(\s*[\"'][^\"'\n]*[\"']\s*(%\s|\.format\()'''
+# An f-string, or a literal then formatted by `%` or `.format()`: a literal in double quotes
+# often holds single ones (`"… LIKE '%s'" % q`), and the other way round.
+pattern = '''\.(execute|executemany|raw|extra)\(\s*f[\"']|\.(execute|executemany|raw)\(\s*("[^"\n]*"|'[^'\n]*')\s*(%\s|\.format\()'''
 
 [[sources]]
 url = "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"

@@ -17,6 +17,9 @@ FROM = re.compile(r"^(?P<head>\s*FROM\s+(?:--\S+\s+)*)(?P<image>\S+)(?P<tail>.*)
 OLD_DEBIAN = re.compile(r"\b(bookworm|bullseye|buster|stretch)\b")
 NODE_LTS = "24"
 PYTHON_PIN = "3.13"
+RUNTIME_TAG = re.compile(
+    r"(?P<pre>(?:\S+/)?(?P<runtime>python|node)):v?(?P<v>\d+(?:\.\d+)?)(?P<rest>.*)"
+)
 # Bases where a plain user can run the app; others (php-apache binds port 80) are left out.
 USER_READY = frozenset({"python", "node", "debian", "ubuntu", "alpine"})
 
@@ -63,6 +66,24 @@ def _pin(image: str) -> str:
     return f"{name}@{resolve.image_digest(tagged)}"
 
 
+def _runtime_moved(name: str) -> str:
+    """The image's Python or Node moved to a supported line when past its end of life."""
+    found = RUNTIME_TAG.fullmatch(name)
+    if not found:
+        return name
+    runtime, version = found["runtime"], found["v"]
+    line = ".".join(version.split(".")[:2]) if runtime == "python" else version.split(".")[0]
+    if _supported(runtime, line):
+        return name
+    return f"{found['pre']}:{PYTHON_PIN if runtime == 'python' else NODE_LTS}{found['rest']}"
+
+
+def _current(name: str) -> str:
+    """An image moved to a supported runtime and to Debian 13 at once: either move alone may
+    name an image that was never built (`python:3.8-trixie`, `python:3.13-buster`)."""
+    return OLD_DEBIAN.sub("trixie", _runtime_moved(name))
+
+
 def pin_images(repo: Repo) -> list[str]:
     """Each base image pinned by digest, its tag kept for the reader and for Dependabot."""
     return _edit_images(repo, lambda image: None if "@sha256:" in image else _pin(image))
@@ -74,7 +95,7 @@ def move_to_trixie(repo: Repo) -> list[str]:
     def edit(image: str) -> str | None:
         if not OLD_DEBIAN.search(image.split("@")[0]):
             return None
-        moved = OLD_DEBIAN.sub("trixie", image.split("@")[0])
+        moved = _current(image.split("@")[0])
         return _pin(moved) if "@sha256:" in image else moved
 
     return _edit_images(repo, edit)
@@ -167,17 +188,10 @@ def move_runtimes(repo: Repo) -> list[str]:
             changed.add(name)
 
     def edit(image: str) -> str | None:
-        found = re.match(
-            r"(?P<pre>(?:\S+/)?(?P<runtime>python|node)):v?(?P<v>\d+(?:\.\d+)?)(?P<rest>[^@]*)",
-            image,
-        )
-        if not found:
+        name = image.split("@")[0]
+        if _runtime_moved(name) == name:
             return None
-        runtime, version = found["runtime"], found["v"]
-        line = ".".join(version.split(".")[:2]) if runtime == "python" else version.split(".")[0]
-        if _supported(runtime, line):
-            return None
-        moved = f"{found['pre']}:{PYTHON_PIN if runtime == 'python' else NODE_LTS}{found['rest']}"
+        moved = _current(name)
         return _pin(moved) if "@sha256:" in image else moved
 
     changed.update(_edit_images(repo, edit))

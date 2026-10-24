@@ -269,6 +269,20 @@ def test_requirements_pinned_to_exact_versions_are_their_own_lock(tmp_path: Path
 
 
 @pytest.mark.parametrize(
+    "line",
+    [
+        """cursor.execute("SELECT id FROM book WHERE title LIKE '%%%s%%'" % q)""",
+        """cursor.execute('SELECT id FROM book WHERE title = "{}"'.format(q))""",
+    ],
+)
+def test_sql_formatted_around_quotes_of_the_other_kind_is_caught(tmp_path: Path, line: str) -> None:
+    rule = next(rule for rule in RULES if rule.id == "SQL-PARAMETERS")
+    repo = make_repo(tmp_path, {"views.py": f"{line}\n"})
+
+    assert detectors.detect(rule.detector, repo).locations == ("views.py:1",)
+
+
+@pytest.mark.parametrize(
     "test_file",
     ["Converter.Tests/ExtractTests.cs", "src/socialnetwork/BavardTest.java", "tests/BookTest.php"],
 )

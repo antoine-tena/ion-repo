@@ -42,10 +42,12 @@ def git(root: Path, *arguments: str, check: bool = True) -> str:
 
 
 def check_commands(root: Path) -> list[list[str]]:
-    """The repo's own checks: `kiln check` in a kiln repo, otherwise the tests, lint and types
-    its manifests declare."""
+    """The repo's own checks: `kiln check --all` in a kiln repo, otherwise the tests, lint and
+    types its manifests declare. The whole repo, before and after alike: `kiln check` alone
+    looks at the branch's changes, and would blame a converter for the older debt of a file it
+    touched (a Dockerfile the charter bans), then undo it."""
     if (root / ".copier-answers.yml").exists():
-        return [["kiln", "check"]]
+        return [["kiln", "check", "--all"]]
     commands: list[list[str]] = []
     pyproject = root / "pyproject.toml"
     if pyproject.exists():

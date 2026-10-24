@@ -3,12 +3,13 @@ branch, undone when the checks turn red, nothing written by a dry run, and each 
 closing its rule. The network (commit SHAs, digests) is faked."""
 
 import subprocess
+from collections.abc import Callable
 from pathlib import Path
 
 import pytest
 
 from kiln.grid import detectors, fix
-from kiln.grid.facts import read_repo
+from kiln.grid.facts import Repo, read_repo
 from kiln.grid.fixers import FIXERS, ci, containers, python, resolve
 from kiln.grid.model import load_rules
 from kiln.shell import KilnError
@@ -146,6 +147,16 @@ def test_a_server_base_keeps_its_user(tmp_path: Path) -> None:
     assert (root / "Dockerfile").read_text() == 'FROM node:24\nUSER node\nCMD ["x"]\n'
 
 
+@pytest.mark.parametrize("convert", [containers.move_runtimes, containers.move_to_trixie])
+def test_an_old_runtime_on_an_old_debian_moves_both_at_once(
+    tmp_path: Path, convert: Callable[[Repo], list[str]]
+) -> None:
+    # Neither python:3.8-trixie nor python:3.13-buster was ever built.
+    root = make(tmp_path, {"Dockerfile": f"FROM python:3.8-buster@{DIGEST}\n"})
+    convert(read_repo(root))
+    assert (root / "Dockerfile").read_text() == f"FROM python:3.13-trixie@{DIGEST}\n"
+
+
 def test_black_line_length_is_carried_over_to_ruff(tmp_path: Path) -> None:
     root = make(tmp_path, CONVERTED["PYTHON-LINTER"])
     python.add_ruff(read_repo(root))
@@ -204,6 +215,13 @@ def test_a_converter_that_turns_the_checks_red_is_undone(
     assert [(found.rule, found.status) for found in outcomes] == [("TS-EXPECT-ERROR", "reverted")]
     assert "@ts-ignore" in (root / "a.ts").read_text()
     assert git(root, "log", "--oneline", "main..") == ""
+
+
+def test_a_kiln_repo_is_checked_whole_before_and_after(tmp_path: Path) -> None:
+    # `kiln check` alone looks at the branch's changes: a converter touching a file with older
+    # debt (a Dockerfile the charter bans) would be blamed for it and undone.
+    root = make(tmp_path, {".copier-answers.yml": "_commit: v0.4.5\n"})
+    assert fix.check_commands(root) == [["kiln", "check", "--all"]]
 
 
 def test_a_dry_run_writes_nothing(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
