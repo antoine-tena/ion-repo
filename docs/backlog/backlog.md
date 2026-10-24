@@ -11,7 +11,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-177.**
+**Next free: T-178.**
 
 ---
 
@@ -74,6 +74,7 @@ content defined on 17 October: the version the launch waits for (T-03).
 - T-131 · Proof on two real repos, on local copies (M)
 - T-132 · The study: a hundred public Django and Nuxt repos scored (M)
 - T-30 · README and English docs for strangers, with the demo (L)
+- T-177 · kiln's own docs in English only (M)
 - T-33 · One promise everywhere: tagline, About, PyPI, social preview (S)
 - T-119 · GitHub Sponsors and `FUNDING.yml` (XS)
 - T-154 · Show your score: a badge other repos display (S)
@@ -156,6 +157,37 @@ build on kiln. From here, strict semver: breaking → major, `feat` → minor.
 ## 🔴 Critical
 
 ## 🟠 Important
+
+### T-177 · kiln's own docs in English only
+- **Type**: task
+- **Status**: todo
+- **Opened**: 2026-10-24
+- **Effort**: M · **Owner**: Claude · **Due**: before the v0.5.0 candidate (Sun 1 Nov)
+- **Origin**: antoine, 24 October 2026: several languages, or English only? Answer: English
+  only for kiln itself. The public it wants (stars, Hacker News, outside contributors) reads
+  English, as with uv, ruff and Bun; the parity between languages doubles every doc change
+  (`test_docs.py`, `kiln version cut`; 91 commits touched the French files in October) on a Pro
+  plan; and the English reference, the one strangers read, is the one behind (3,510 words
+  against 6,072 in French on 24 Oct). antoine reads the docs through Claude, in French, as the
+  language rule of 21 Oct already has it.
+
+Not touched: the language of the generated repos (`kiln set language_*`, the `copier.yml`
+questions), a feature for French associations and universities (v0.7.0); `docs/vision/` stays a
+French draft.
+- [ ] Bring `docs/reference.md` up to `docs/reference.fr.md`: every section, command, option,
+  setting and example the French one has and the English one lacks, written for strangers.
+- [ ] Remove `README.fr.md` and `docs/reference.fr.md`, and the language line linking them from
+  `README.md` and `docs/reference.md`; `CONTRIBUTING.md` no longer asks for both languages.
+- [ ] `tests/test_docs.py`: `READMES` and `REFERENCES` down to the English files, the parity test
+  between languages removed; `tests/test_plugins.py` follows.
+- [ ] `src/kiln/shipping.py`: `DOCS_BY_LANGUAGE` down to the English pair, so `kiln version cut`
+  asks for the English README or reference to change (or `<!-- readme: unchanged, why -->`).
+- [ ] `CLAUDE.md` (map of the repo, "Le README, entièrement à jour", "Contrôles") and the
+  `tout-a-jour` memory: one language for kiln's docs.
+- [ ] T-164 (French docs translated at the candidate) has nothing left to do: moved to
+  `rejected.md` once antoine confirms. T-30 no longer keeps a French summary. T-55 (README in
+  Chinese, Japanese, Spanish, Portuguese) stays a separate choice for antoine: cheap if limited
+  to the README with a release-time check, unlike a translated reference.
 
 ### T-166 · An adopted repo whose code is not in `backend/` or `frontend/` gets its stack too
 - **Type**: improvement
@@ -471,8 +503,8 @@ token, so it runs in CI for free on any public repo.
   shows, as animations stay paused for those who ask for less motion.
 - [ ] Docs in English in `docs/`: getting started, score, fix, modernize, the grid (one page per
   theme generated from the rule files: the Technology Radar that applies itself), update,
-  charter, plugins, workflows, versions. `README.fr.md` shrinks to a French summary pointing
-  there. Closes #37 and #38 (another good first issue opened instead).
+  charter, plugins, workflows, versions, in English only (T-177). Closes #37 and #38 (another
+  good first issue opened instead).
 - [ ] A comparison page, facts only: what Dependabot and Renovate, Copier and cruft,
   sp-repo-review, OpenRewrite, AWS Transform and Claude Code's `/doctor` do, and what kiln adds
   (from the vision's market table); the r/Python Showcase format asks for it (T-03).
