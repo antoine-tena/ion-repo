@@ -41,25 +41,28 @@ anyone else runs it; T-160 removes the last gap of a fresh repo.
   `kiln check` without `backend/.env.example` (#55), no pre-commit hook without its config (#56),
   each line ending `(#n, thanks @NathanBarrachin)`.
 
-### v0.4.6 · Every gap seen, wherever the code lives
-Candidate Sun 25 Oct. The score and the fixes reach what they miss today: GitHub settings,
+### v0.4.6 · Every issue closed: adoption at full strength
+Candidate Sat 24 Oct, brought forward: antoine asked for every open issue to be resolved before
+the next release. `kiln adopt` brings a repo to the level of `kiln new` and `kiln update` serves
+it afterwards (#59, his choice of 24 October reversing the one of 19 October); a Vite + React
+front; a Streamlit or Dash front deploys to the VPS (#43, T-155); committed models tied to their
+code (#44, T-156); what the grid does not know, told to kiln with consent (#42, T-38); `kiln dev`
+refuses a taken port (#60) and installs missing Node dependencies; the tool update moves the
+plugin too (#58, thanks @NathanBarrachin).
+
+### v0.4.7 · Every gap seen, wherever the code lives
+Candidate Tue 27 Oct. The score and the fixes reach what they miss today: GitHub settings,
 `backend/` and `frontend/` folders, compose services, loose requirements; the reference repo's
 score proves it in each note.
 - T-159 · What T-126 to T-128 left: compose hardening, pyproject from requirements, `kiln update` (M)
 - T-158 · `kiln score` reads the GitHub settings when `gh` is logged in (S)
 - T-134 · The reference repo's score in every release note (S)
+- T-166 · An adopted repo whose code is not in `backend/` or `frontend/` gets its stack too (M)
 
-### v0.4.7 · Never lets it rot, and the grid learns
-Candidate Tue 27 Oct. Updates go down by themselves, gaps come back up with consent.
+### v0.4.8 · Never lets it rot
+Candidate Thu 29 Oct. Updates go down by themselves.
 - T-59 · kiln-bot: the grid's fixes as a weekly pull request (L)
-- T-38 · What the grid does not know, reported with consent (M)
-
-### v0.4.8 · Data projects done right
-Candidate Thu 29 Oct. The two issues of kiln's first outside reporter (#43, #44) closed before
-the launch: a Streamlit or Dash project deploys where it can run, and its models stay tied to
-their code.
-- T-155 · A Streamlit or Dash front gets a deployment that fits, or none is assumed (M)
-- T-156 · Committed trained models tied to the code that made them (M)
+- T-167 · `kiln dev` in an adopted repo with a compose file offers its services (S)
 
 ### v0.5.0 · Public launch: the proof and the page
 Candidate Sun 1 Nov, promoted Tue 3 Nov. Milestone decided by antoine (16 October 2026), its
@@ -146,6 +149,31 @@ build on kiln. From here, strict semver: breaking → major, `feat` → minor.
 ## 🔴 Critical
 
 ## 🟠 Important
+
+### T-166 · An adopted repo whose code is not in `backend/` or `frontend/` gets its stack too
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-24
+- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Origin**: issue #59 (antoine, 23 October 2026), what v0.4.6 left
+
+`kiln adopt` lays the common part only when the framework lives elsewhere (a Vite app at the
+root, `manage.py` at the root): the template's stack files assume `backend/` and `frontend/`.
+- [ ] Where the backend and the front live recorded in the answers (`frontend_dir = "."`), read
+  by the template (CI, rules, charter, dependabot) and by `kiln check` and `kiln dev`.
+- [ ] Tested for each stack at the root, and for the same repo after `kiln update`.
+
+### T-167 · `kiln dev` in an adopted repo with a compose file offers its services
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-24
+- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Origin**: issue #59 (antoine, 23 October 2026): `kiln dev` ran `npm run dev` and
+  `npm run server` while the repo's `compose.yaml` had a `web` and a `server` service
+
+- [ ] When a compose file names services that `kiln dev` would also run from `package.json`, the
+  menu offers the compose services (as `--containers` does in a generated repo).
+
 
 ### T-163 · Skills call one kiln command, the backlog first
 - **Type**: improvement
@@ -279,26 +307,6 @@ token, so it runs in CI for free on any public repo.
 - [ ] Set up in one copy-paste in any repo; the docs say the catch: a pull request opened with
   `GITHUB_TOKEN` does not start the CI, and which token or app to use instead.
 - [ ] In generated repos: `kiln set update_bot=weekly|monthly|off`.
-
-### T-38 · What the grid does not know, reported with consent
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-16
-- **Effort**: M · **Owner**: Claude · **Due**: —
-- **Origin**: antoine, 16 October 2026 (adopters should tell kiln what it lacks); issue #42;
-  rewritten 17 October 2026 (vision: updates go down, gaps come up, every install is a sensor)
-
-- [ ] `kiln score` ends with what it met and the grid does not cover ("Django + django-q:
-  scheduler not covered by the grid") and the rules that misfired (a waiver renewed again, a
-  finding marked wrong).
-- [ ] One question, once per repo: "Tell kiln? It opens an issue with this line only." Never
-  code, paths, internal names or secrets: the user sees exactly what leaves, and says yes.
-- [ ] One issue per gap, not one per user: the signature is looked up among open `grid-gap`
-  issues first, and gets a 👍 when it exists; through `/kiln:report` with `gh`, or a prefilled
-  issue link without it.
-- [ ] A count is a signal, never a decision: a practice enters the grid by the doctrine
-  (maturity, sources), otherwise fake reports could poison it; the most reported gaps become
-  tickets first. Closes #42.
 
 ### T-134 · The reference repo's score in every release note
 - **Type**: improvement
@@ -624,34 +632,6 @@ test of the built site, the home page carrying the site title, through `node --t
 dependency): Astro's `dist/index.html`, Next's prerendered `.next/server/app/index.html`, Nuxt
 prerendering `/` or its server started. Run after `build` in `ci.yml` and in `kiln check`; then
 drop the exemption.
-
-### T-155 · A Streamlit or Dash front gets a deployment that fits, or none is assumed
-- **Type**: bug
-- **Status**: in progress
-- **Opened**: 2026-10-20
-- **Effort**: M · **Owner**: Claude · **Due**: —
-- **Origin**: issue #43 (darnak69, 16 October 2026)
-
-- [x] `frontend_deploy=vercel` refused for Streamlit and Dash (they need a long-running
-  Python server with websockets).
-- [x] With no deployment set, nothing generated cites `deploy.yml` or `scripts/ops/deploy-*.sh`
-  (comment of `ci.yml`; the `release` skill ends at the tag when nothing deploys).
-- [ ] A target that fits: `vps` (podman + Caddy) opened to the front image, with a
-  `/_stcore/health` probe (already in `compose.yaml`; the `uv` image is already pinned by
-  digest). Closes #43.
-
-### T-156 · Committed trained models tied to the code that made them
-- **Type**: idea
-- **Status**: todo
-- **Opened**: 2026-10-20
-- **Effort**: M · **Owner**: Claude · **Due**: —
-- **Origin**: issue #44 (darnak69, 16 October 2026)
-
-For `backend=data`: a manifest next to each committed model (hash of the training code, seed,
-dataset version, metrics) written by the training command; a check that the hash still matches
-the code, or the commit says why; a test template asserting the committed model's metrics stay
-above the recorded ones. Goes in the grid as a rule with its sources (T-123 doctrine), not
-only in the template. Closes #44.
 
 ### T-153 · `statusline.ci locale`: a French value left in generated repos
 - **Type**: bug
