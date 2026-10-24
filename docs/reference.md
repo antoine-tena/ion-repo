@@ -70,7 +70,7 @@ is re-rendered, on a work branch):
 | `timezone` | Time zone of the project's calendar notions (dates are stored in UTC). |
 | `serena` | Serena for Claude Code (symbol navigation on big codebases). |
 | `compact_window` | Claude Code's sessions: the context size, in tokens, at which a conversation compacts (`400000` by default, as every message re-reads the whole context; `1000000` keeps Claude Code's own; `claude --autocompact 1M` lifts it for one launch). |
-| `deploy`, `vps_host`, `api_domain`, `site_url`, `deploy_branch`, `frontend_deploy` | Production: a hardened VPS (SSH host, API domain, site address, deployed branch) and the front on Vercel. |
+| `deploy`, `vps_host`, `api_domain`, `site_url`, `deploy_branch`, `frontend_deploy` | Production: a hardened VPS (SSH host, API domain, site address, deployed branch) for a Django backend, or for a Streamlit or Dash front alone (its image behind Caddy, no database), and a Nuxt front on Vercel. |
 | `north_star` | The goal that orders the priorities of `docs/backlog/`. |
 | `ci_runner` | Where the CI of a release branch runs: `local` (`kiln ci`, no GitHub minutes, a private repo's default) or `github` (free for a public repo). |
 | `statusline_ci`, `prod_health_url` | Claude Code's status line: CI state, and production's health probe. |

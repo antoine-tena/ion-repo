@@ -54,8 +54,8 @@ Puis ouvrir {{ open_url }}.
 - `compose.yaml` et les `Containerfile` : la pile en conteneurs podman.
 {%- endif %}
 {%- if deploy == 'vps' %}
-- `config/vps/` et `scripts/ops/` : la production sur `{{ vps_host }}` (pile, Caddy, bascule,
-  sauvegardes) ; procédure dans [`docs/operations/production.md`](docs/operations/production.md).
+- `config/vps/` et `scripts/ops/` : la production sur `{{ vps_host }}` (pile, Caddy, bascule{{ ',' if backend == 'django' }}
+  {{ 'sauvegardes' if backend == 'django' else '' }}) ; procédure dans [`docs/operations/production.md`](docs/operations/production.md).
 {%- endif %}
 {%- if frontend_deploy == 'vercel' %}
 - `scripts/ops/deploy-frontend.sh` : déploiement du front sur Vercel, d'un commit poussé sur
@@ -211,8 +211,8 @@ Then open {{ open_url }}.
 - `compose.yaml` and the `Containerfile`s: the stack in podman containers.
 {%- endif %}
 {%- if deploy == 'vps' %}
-- `config/vps/` and `scripts/ops/`: production on `{{ vps_host }}` (stack, Caddy, switch,
-  backups); how-to in [`docs/operations/production.md`](docs/operations/production.md).
+- `config/vps/` and `scripts/ops/`: production on `{{ vps_host }}` (stack, Caddy, switch{{ ',' if backend == 'django' }}
+  {{ 'backups' if backend == 'django' else '' }}); how-to in [`docs/operations/production.md`](docs/operations/production.md).
 {%- endif %}
 {%- if frontend_deploy == 'vercel' %}
 - `scripts/ops/deploy-frontend.sh`: deployment of the front on Vercel, from a commit pushed to

@@ -223,6 +223,11 @@ un backend Django avec podman, ajoute une production éprouvée :
 - `docs/operations/production.md` : préparation du serveur, déploiement, retour arrière,
   sauvegardes.
 
+Un front Streamlit ou Dash sans API (backend `data` ou aucun) y a droit aussi, à sa mesure : son
+image seule derrière Caddy (websockets compris), sonde `/_stcore/health` pour Streamlit, bascule et
+retour arrière par `scripts/ops/deploy-frontend.sh`, sans base ni sauvegarde. Vercel reste
+réservé à Nuxt.
+
 Réglages : `vps_host`, `api_domain`, `site_url`, `deploy_branch` (par `kiln set`). Quel
 que soit le déploiement, l'image du backend Django sert gunicorn et ses fichiers statiques
 (WhiteNoise) sans migrer au démarrage, et `/api/health` rend la version en service.

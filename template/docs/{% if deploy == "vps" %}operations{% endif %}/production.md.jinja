@@ -1,3 +1,4 @@
+{% if backend == 'django' -%}
 {% if language_docs == 'fr' -%}
 # Production de {{ title }}
 
@@ -192,4 +193,126 @@ podman logs --tail 100 {{ name }}-backend   # API logs
 ls /var/log/{{ name }}-deploy/              # log of each switch
 cat /opt/{{ name }}/deploy-history.log      # deployed versions
 ```
+{%- endif %}
+{%- else -%}
+{%- set port = 8501 if frontend == 'streamlit' else 8050 %}
+{%- set app = 'Streamlit' if frontend == 'streamlit' else 'Dash' %}
+{%- set health = '/_stcore/health' if frontend == 'streamlit' else '/' %}
+{%- set domain = site_url.split('://')[-1].split('/')[0] %}
+{%- if language_docs == 'fr' %}
+# Production de {{ title }}
+
+Le tableau de bord ({{ app }}) tourne sur un serveur à soi, `{{ vps_host }}`, dans une pile
+podman-compose (`/opt/{{ name }}`), derrière Caddy qui sert `{{ site_url }}`. Ni base ni API : rien
+à migrer ni à sauvegarder. Ce qui tourne sur le serveur est versionné dans `config/vps/` ; ce qui
+se lance du poste, dans `scripts/ops/`. Le descripteur du serveur est `config/vps/project.json`.
+
+| Fichier | Rôle |
+|---|---|
+| `config/vps/compose.yaml` | Pile de production : l'image du front, en lecture seule |
+| `config/vps/Caddyfile` | TLS automatique et relais vers `127.0.0.1:{{ port }}`, websockets compris |
+| `config/vps/deploy-remote.sh` | Bascule en root : image par commit, retour arrière automatique |
+| `config/vps/heal.sh` | Relance des conteneurs dont la sonde échoue, toutes les 5 minutes |
+| `config/vps/setup-deploy-user.sh` | L'utilisateur `deploy`, pour ne plus déployer en root |
+| `scripts/ops/deploy-frontend.sh` | Déploiement depuis le poste (`--dry-run`, `--rollback`) |
+| `scripts/ops/smoke-test.sh` | Test de fumée de l'extérieur, après chaque déploiement |
+
+## Préparer le serveur (une fois)
+
+Sur une Debian ou une Ubuntu récente, en root :
+
+```sh
+apt install podman caddy git curl
+# podman-compose par uv, jamais pip ([UV-PODMAN]) :
+curl -LsSf https://astral.sh/uv/install.sh | sh && uv tool install podman-compose
+ln -s /root/.local/bin/podman-compose /usr/local/bin/podman-compose
+```
+
+Le DNS de `{{ domain }}` pointe vers le serveur avant le premier déploiement : Caddy en a besoin
+pour obtenir le certificat.
+
+## Déployer
+
+```sh
+scripts/ops/deploy-frontend.sh --dry-run   # image et contrôles, sans bascule
+scripts/ops/deploy-frontend.sh             # bascule
+```
+
+Le script refuse un commit dont la CI n'est pas verte (`SKIP_CI=1` en urgence). Sur le serveur, la
+bascule construit l'image `{{ name | replace('-', '_') }}_frontend:<sha>`, valide la pile, le
+Caddyfile et les scripts, bascule le front et attend que `{{ health }}` réponde avec l'image de ce
+commit ; sinon, retour automatique à la précédente. Puis la sonde passe par `{{ site_url }}`.
+
+## Revenir en arrière
+
+```sh
+scripts/ops/deploy-frontend.sh --rollback
+```
+
+## Diagnostiquer
+
+```sh
+podman ps                                   # conteneurs et état de leurs sondes
+podman logs --tail 100 {{ name }}-frontend   # journaux du front
+ls /var/log/{{ name }}-deploy/               # journal de chaque bascule
+```
+{%- else %}
+# Production of {{ title }}
+
+The dashboard ({{ app }}) runs on a server of one's own, `{{ vps_host }}`, in a podman-compose
+stack (`/opt/{{ name }}`), behind Caddy which serves `{{ site_url }}`. No database, no API: nothing
+to migrate or back up. What runs on the server is versioned in `config/vps/`; what is run from the
+workstation is in `scripts/ops/`. The server's descriptor is `config/vps/project.json`.
+
+| File | Role |
+|---|---|
+| `config/vps/compose.yaml` | Production stack: the front's image, read-only |
+| `config/vps/Caddyfile` | Automatic TLS and proxy to `127.0.0.1:{{ port }}`, websockets included |
+| `config/vps/deploy-remote.sh` | Switch as root: one image per commit, automatic rollback |
+| `config/vps/heal.sh` | Restart of the containers whose probe fails, every 5 minutes |
+| `config/vps/setup-deploy-user.sh` | The `deploy` user, to stop deploying as root |
+| `scripts/ops/deploy-frontend.sh` | Deployment from the workstation (`--dry-run`, `--rollback`) |
+| `scripts/ops/smoke-test.sh` | Smoke test from outside, after each deployment |
+
+## Prepare the server (once)
+
+On a recent Debian or Ubuntu, as root:
+
+```sh
+apt install podman caddy git curl
+# podman-compose through uv, never pip ([UV-PODMAN]):
+curl -LsSf https://astral.sh/uv/install.sh | sh && uv tool install podman-compose
+ln -s /root/.local/bin/podman-compose /usr/local/bin/podman-compose
+```
+
+The DNS of `{{ domain }}` points to the server before the first deployment: Caddy needs it to get
+the certificate.
+
+## Deploy
+
+```sh
+scripts/ops/deploy-frontend.sh --dry-run   # image and checks, no switch
+scripts/ops/deploy-frontend.sh             # switch
+```
+
+The script refuses a commit whose CI is not green (`SKIP_CI=1` in an emergency). On the server, the
+switch builds the image `{{ name | replace('-', '_') }}_frontend:<sha>`, validates the stack, the
+Caddyfile and the scripts, switches the front and waits for `{{ health }}` to answer from that
+commit's image; otherwise, automatic rollback to the previous one. Then the probe goes through
+`{{ site_url }}`.
+
+## Roll back
+
+```sh
+scripts/ops/deploy-frontend.sh --rollback
+```
+
+## Diagnose
+
+```sh
+podman ps                                   # containers and the state of their probes
+podman logs --tail 100 {{ name }}-frontend   # front logs
+ls /var/log/{{ name }}-deploy/               # log of each switch
+```
+{%- endif %}
 {%- endif %}

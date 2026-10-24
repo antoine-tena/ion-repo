@@ -85,7 +85,7 @@ verdict of the release (`green-ci.sh`), without replaying CI.
 
 ## 8. Deploy
 The project's commands (often `scripts/ops/deploy-backend.sh --dry-run`, then without, then
-`deploy-frontend.sh`), the API before the front. Then check: the script's smoke test, production
+`deploy-frontend.sh`; a dashboard alone, `deploy-frontend.sh` only), the API before the front. Then check: the script's smoke test, production
 logs for a few minutes (the project's diagnosis skill if any), the announcement visible. If
 something breaks: back to the previous release through the project's procedure, and say so.
 No deployment configured (no `scripts/ops/deploy-*.sh`, nothing in `CLAUDE.md`): the release ends

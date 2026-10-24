@@ -100,3 +100,34 @@ def test_vercel_brings_only_the_front_deployment(tmp_path: Path) -> None:
     assert script.stat().st_mode & 0o111
     subprocess.run(["bash", "-n", str(script)], check=True)
     assert not (project_dir / "config/vps").exists()
+
+
+@pytest.mark.parametrize(("backend", "frontend"), [("data", "streamlit"), ("none", "dash")])
+def test_a_dashboard_alone_deploys_its_own_image_without_a_database(
+    tmp_path: Path, backend: str, frontend: str
+) -> None:
+    # A Streamlit or Dash front needs a long-running server with websockets: the VPS fits (#43).
+    answers = {key: value for key, value in VPS_ANSWERS.items() if key != "api_domain"}
+    project_dir = generate(tmp_path / "demo", backend=backend, frontend=frontend, **answers)
+
+    compose = yaml.safe_load((project_dir / "config/vps/compose.yaml").read_text())
+    assert set(compose["services"]) == {"frontend"}
+    assert compose["services"]["frontend"]["read_only"] is True
+    port = 8501 if frontend == "streamlit" else 8050
+    assert f"reverse_proxy 127.0.0.1:{port}" in (project_dir / "config/vps/Caddyfile").read_text()
+    assert "demo.example.com {" in (project_dir / "config/vps/Caddyfile").read_text()
+    assert "apiUrl" not in json.loads((project_dir / "config/vps/project.json").read_text())
+    assert not (project_dir / "config/vps/backup.sh").exists()
+    assert not (project_dir / "scripts/ops/deploy-backend.sh").exists()
+    for script in ("config/vps/deploy-remote.sh", "scripts/ops/deploy-frontend.sh"):
+        path = project_dir / script
+        assert path.stat().st_mode & 0o100
+        subprocess.run(["bash", "-n", str(path)], check=True)
+    remote = (project_dir / "config/vps/deploy-remote.sh").read_text()
+    assert "SERVICE=frontend" in remote and "HAS_DB=0" in remote
+    assert "Production of" in (project_dir / "docs/operations/production.md").read_text()
+
+
+def test_vps_is_refused_for_a_front_that_needs_an_api_elsewhere(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="Django backend, or a Streamlit or Dash front"):
+        generate(tmp_path / "demo", backend="fastapi", frontend="nuxt", **VPS_ANSWERS)

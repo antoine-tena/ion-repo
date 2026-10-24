@@ -205,8 +205,9 @@ compact_window:
     {% if compact_window < 100000 or compact_window > 1000000 %}Between 100000 and 1000000.{% endif %}
 
 # Production on a server of one's own: `vps` adds config/vps/ (Caddy, production stack, switch
-# with rollback, tested backups), scripts/ops/ and docs/operations/. Django backend only, served
-# by podman. Later with `kiln set deploy=vps`.
+# with rollback, tested backups), scripts/ops/ and docs/operations/. For a Django backend, or a
+# Streamlit or Dash front without an API (its own image, no database), served by podman. Later
+# with `kiln set deploy=vps`.
 deploy:
   type: str
   help: Production deployment?
@@ -214,9 +215,9 @@ deploy:
     "None for now": none
     "VPS (podman, Caddy, backups)": vps
   default: none
-  when: "{{ backend == 'django' }}"
+  when: "{{ backend == 'django' or (backend in ['none', 'data', 'cli'] and frontend in ['streamlit', 'dash']) }}"
   validator: >-
-    {% if deploy == 'vps' and backend != 'django' %}The VPS deployment is made for the Django backend.{% elif deploy == 'vps' and not podman %}The VPS deployment needs containers: podman=true.{% endif %}
+    {% if deploy == 'vps' and backend != 'django' and frontend not in ['streamlit', 'dash'] %}The VPS deployment is made for a Django backend, or a Streamlit or Dash front.{% elif deploy == 'vps' and not podman %}The VPS deployment needs containers: podman=true.{% endif %}
 
 vps_host:
   type: str
@@ -228,7 +229,7 @@ api_domain:
   type: str
   help: Public domain of the API (Caddy gets its TLS certificate)
   default: "api.{{ name }}.example.com"
-  when: "{{ deploy == 'vps' }}"
+  when: "{{ deploy == 'vps' and backend == 'django' }}"
 
 site_url:
   type: str

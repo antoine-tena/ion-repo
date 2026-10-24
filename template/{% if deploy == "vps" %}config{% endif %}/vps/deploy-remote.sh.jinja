@@ -1,25 +1,33 @@
 #!/usr/bin/env bash
-# Switches the API on the server, as root. Called by scripts/ops/deploy-backend.sh.
+{%- set api = backend == 'django' %}
+# Switches the {{ 'API' if api else 'app' }} on the server, as root. Called by scripts/ops/deploy-{{ 'backend' if api else 'frontend' }}.sh.
 #
 # Installed at each deployment as /usr/local/sbin/{{ name }}-deploy-remote: the only command the
 # `deploy` user may run through sudo (config/vps/setup-deploy-user.sh).
 #
 #   {{ name }}-deploy-remote base <branch>        commit of the branch known to the server
-#   {{ name }}-deploy-remote deploy key=value…    switch (arguments: scripts/ops/deploy-backend.sh)
+#   {{ name }}-deploy-remote deploy key=value…    switch (arguments: scripts/ops/deploy-{{ 'backend' if api else 'frontend' }}.sh)
 #   {{ name }}-deploy-remote rollback             back to the previous version
 #
 # Each image is kept under the SHA of its commit (the KEEP_IMAGES latest); DEPLOYED names the one
 # in service. Rollback starts from there, never from :latest, and it is automatic when the new
-# version does not answer. Migrations are not undone: after a schema migration, going back means
-# restoring the backup taken before the switch ([REVERSIBLE-DEPLOYMENT]).
+# version does not answer.{% if api %} Migrations are not undone: after a schema migration, going back means
+# restoring the backup taken before the switch ([REVERSIBLE-DEPLOYMENT]).{% endif %}
 set -euo pipefail
 
 NAME={{ name }}
 DB_USER={{ name | replace('-', '_') }}
-API_DOMAIN={{ api_domain }}
+SERVICE={{ 'backend' if api else 'frontend' }}
+# What the image is built from: the service's folder, and the data code a dashboard imports.
+SOURCES="{{ 'backend' if api else ('frontend backend' if backend == 'data' else 'frontend') }}"
+# A database to migrate and back up: the Django API only.
+HAS_DB={{ 1 if api else 0 }}
+PORT={{ 8000 if api else (8501 if frontend == 'streamlit' else 8050) }}
+HEALTH_PATH={{ '/api/health' if api else ('/_stcore/health' if frontend == 'streamlit' else '/') }}
+PUBLIC_HOST={{ api_domain if api else site_url.split('://')[-1].split('/')[0] }}
 {% raw -%}
 ROOT="/opt/$NAME"
-IMAGE="localhost/${DB_USER}_backend"
+IMAGE="localhost/${DB_USER}_$SERVICE"
 BUILD="/opt/$NAME-build"
 KEEP_IMAGES=5
 REPO_ENV="$ROOT/.env"
@@ -57,13 +65,20 @@ run_image() {  # run_image <image> <commande…>
   podman run --rm --network host --env-file "$ENV_FILE" "$image" "$@"
 }
 
-# Local probe, without Caddy nor TLS: the host and scheme Django expects are set by hand.
+# Local probe, without Caddy nor TLS: the host and scheme Django expects are set by hand. The API
+# names its version; an app without one is checked to run the image of that version.
 wait_for_version() {
   local health
   for _ in $(seq 1 40); do
-    health="$(curl -fsS --max-time 5 -H "Host: $API_DOMAIN" -H 'X-Forwarded-Proto: https' \
-      http://127.0.0.1:8000/api/health 2> /dev/null || true)"
-    grep -q "$1" <<< "$health" && return 0
+    if [ "$HAS_DB" = 1 ]; then
+      health="$(curl -fsS --max-time 5 -H "Host: $PUBLIC_HOST" -H 'X-Forwarded-Proto: https' \
+        "http://127.0.0.1:$PORT$HEALTH_PATH" 2> /dev/null || true)"
+      grep -q "$1" <<< "$health" && return 0
+    elif curl -fsS -o /dev/null --max-time 5 "http://127.0.0.1:$PORT$HEALTH_PATH" 2> /dev/null \
+      && [ "$(podman inspect -f '{{.Image}}' "$NAME-$SERVICE" 2> /dev/null)" \
+        = "$(podman image inspect -f '{{.Id}}' "$(tag_of "$1")")" ]; then
+      return 0
+    fi
     sleep 3
   done
   return 1
@@ -91,20 +106,20 @@ migrate_with() {
 
 switch_to() {  # switch_to <sha>
   podman tag "$(tag_of "$1")" "$IMAGE:latest"
-  compose up -d --no-deps --force-recreate backend
+  compose up -d --no-deps --force-recreate "$SERVICE"
   wait_for_version "$1"
 }
 
 rollback_to() {  # rollback_to <sha>
   podman image exists "$(tag_of "$1")" || die "image $(tag_of "$1") is missing: rollback impossible."
   [ -f compose.yaml.previous ] && install -m 600 compose.yaml.previous compose.yaml
-  switch_to "$1" || die "version ${1:0:12} does not answer either (podman logs $NAME-backend)."
+  switch_to "$1" || die "version ${1:0:12} does not answer either (podman logs $NAME-$SERVICE)."
   echo "$1" > DEPLOYED
 }
 
 fail_and_roll_back() {
   echo "FAILED: $1" >&2
-  podman logs --tail 30 "$NAME-backend" >&2 || true
+  podman logs --tail 30 "$NAME-$SERVICE" >&2 || true
   [ -n "${PREV:-}" ] || die "no previous version known; backup taken before the switch: ${BACKUP:-none}."
   echo "Automatic rollback to ${PREV:0:12}…" >&2
   rollback_to "$PREV"
@@ -143,13 +158,17 @@ prune_images() {
 # Scripts, systemd units and Caddyfile of the received version, installed on the server.
 install_server_files() {
   local script
-  for script in backup restore-test heal; do
+  local timers=("$NAME-heal.timer")
+  [ "$HAS_DB" = 1 ] && timers+=("$NAME-backup.timer" "$NAME-restore-test.timer")
+  for script in "$BUILD"/config/vps/*.sh; do
+    script="$(basename "$script" .sh)"
+    [ "$script" = deploy-remote ] || [ "$script" = setup-deploy-user ] && continue
     install -m 700 "$BUILD/config/vps/$script.sh" "/usr/local/sbin/$NAME-$script"
   done
   install -m 700 "$BUILD/config/vps/deploy-remote.sh" "/usr/local/sbin/$NAME-deploy-remote"
   install -m 644 "$BUILD"/config/vps/*.service "$BUILD"/config/vps/*.timer /etc/systemd/system/
   systemctl daemon-reload
-  systemctl enable --now "$NAME-backup.timer" "$NAME-restore-test.timer" "$NAME-heal.timer" > /dev/null 2>&1
+  systemctl enable --now "${timers[@]}" > /dev/null 2>&1
   # Restarts `restart: always` containers after a reboot of the server.
   systemctl enable podman-restart.service > /dev/null 2>&1 || true
   if ! cmp -s "$BUILD/config/vps/Caddyfile" /etc/caddy/Caddyfile; then
@@ -168,9 +187,10 @@ build_candidate() {
   fi
   [ "$(git rev-parse "refs/remotes/origin/$BRANCH")" = "$TARGET" ] || die "the server did not receive $TARGET."
   rm -rf "$BUILD" && mkdir -p "$BUILD"
-  git archive "$TARGET" backend config/vps | tar -x -C "$BUILD"
-  echo "$TARGET" > "$BUILD/backend/GIT_SHA"
-  podman build --pull=newer --network=host -q -f "$BUILD/backend/Containerfile" -t "$TAG" "$BUILD" >> "$LOG"
+  # shellcheck disable=SC2086 # one word per folder
+  git archive "$TARGET" $SOURCES config/vps | tar -x -C "$BUILD"
+  echo "$TARGET" > "$BUILD/$SERVICE/GIT_SHA"
+  podman build --pull=newer --network=host -q -f "$BUILD/$SERVICE/Containerfile" -t "$TAG" "$BUILD" >> "$LOG"
   [ "$(podman run --rm --entrypoint cat "$TAG" GIT_SHA)" = "$TARGET" ] || die "image $TAG does not carry version $TARGET."
   echo "Image $TAG ready."
   podman-compose -f "$BUILD/config/vps/compose.yaml" config > /dev/null 2>> "$LOG" || die "invalid compose stack."
@@ -178,8 +198,10 @@ build_candidate() {
   caddy validate --adapter caddyfile --config "$BUILD/config/vps/Caddyfile" >> "$LOG" 2>&1 || die "invalid Caddyfile."
   local script
   for script in "$BUILD"/config/vps/*.sh; do bash -n "$script"; done
-  write_env_file
-  run_image "$TAG" python manage.py check --deploy --fail-level ERROR
+  if [ "$HAS_DB" = 1 ]; then
+    write_env_file
+    run_image "$TAG" python manage.py check --deploy --fail-level ERROR
+  fi
   echo "Compose stack, Caddyfile, scripts and production settings are valid."
 }
 
@@ -227,33 +249,37 @@ cmd_deploy() {
   fi
 
   install_server_files
-  wait_for_db
-  "/usr/local/sbin/$NAME-backup" pre-deploy
-  BACKUP="$(find /root/backups -maxdepth 1 -name "$NAME-pre-deploy-*.dump" -printf '%T@ %p\n' | sort -rn | head -1 | cut -d' ' -f2-)"
   PREV="$(cat DEPLOYED 2> /dev/null || true)"
+  if [ "$HAS_DB" = 1 ]; then
+    wait_for_db
+    "/usr/local/sbin/$NAME-backup" pre-deploy
+    BACKUP="$(find /root/backups -maxdepth 1 -name "$NAME-pre-deploy-*.dump" -printf '%T@ %p\n' | sort -rn | head -1 | cut -d' ' -f2-)"
+  fi
   [ -f compose.yaml ] && install -m 600 compose.yaml compose.yaml.previous
   install -m 600 "$BUILD/config/vps/compose.yaml" compose.yaml
-  compose up -d --no-deps db
-  wait_for_db
-
-  migrate_with "$TAG"
-  switch_to "$TARGET" || fail_and_roll_back "backend ${TARGET:0:12} does not answer on /api/health."
+  if [ "$HAS_DB" = 1 ]; then
+    compose up -d --no-deps db
+    wait_for_db
+    migrate_with "$TAG"
+  fi
+  switch_to "$TARGET" || fail_and_roll_back "$SERVICE ${TARGET:0:12} does not answer on $HEALTH_PATH."
   wait_for_healthy_containers
   echo "$TARGET" > DEPLOYED
   [ -n "$PREV" ] && [ "$PREV" != "$TARGET" ] && echo "$PREV" > DEPLOYED.previous
   echo "$(date -Is) deploy $TARGET" >> deploy-history.log
   prune_images
 
-  # End-to-end probe, through Caddy and TLS.
-  local health=""
+  # End-to-end probe, through Caddy and TLS: the version for the API, an answer for an app.
+  local health="" expected="$TARGET"
+  [ "$HAS_DB" = 1 ] || expected=.
   for _ in $(seq 1 10); do
-    health="$(curl -fsS --max-time 10 "https://$API_DOMAIN/api/health" 2> /dev/null || true)"
-    grep -q "$TARGET" <<< "$health" && break
+    health="$(curl -fsS --max-time 10 "https://$PUBLIC_HOST$HEALTH_PATH" 2> /dev/null || true)"
+    grep -q "$expected" <<< "$health" && break
     sleep 3
   done
-  grep -q "$TARGET" <<< "$health" \
-    || die "the API answers locally but not through https://$API_DOMAIN (Caddy, DNS, TLS?): ${health:-no answer}."
-  echo "Probe https://$API_DOMAIN/api/health: version $TARGET in service."
+  grep -q "$expected" <<< "$health" \
+    || die "$SERVICE answers locally but not through https://$PUBLIC_HOST (Caddy, DNS, TLS?): ${health:-no answer}."
+  echo "Probe https://$PUBLIC_HOST$HEALTH_PATH: version $TARGET in service."
 }
 
 case "${1:-}" in
