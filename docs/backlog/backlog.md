@@ -484,9 +484,12 @@ token, so it runs in CI for free on any public repo.
   conditions, a link to the script that reruns it (T-131, T-132); then how it works in five
   steps (score, fix, roadmap for Claude, verified by the script, continuous), the grid, and
   "Built for Claude Code; the score and the fixes need no AI at all".
-- [ ] A second tape: `kiln score` on a public example repo (never a team's project shown at
-  fault), `kiln fix`, the score again, the kiln-bot pull request; its first frame says what it
-  shows, as animations stay paused for those who ask for less motion.
+- [x] A second tape (24 October 2026, `docs/assets/kiln-rescue.tape`): on the public
+  `antoine-tena/kiln-demo-legacy`, a Django app kept deliberately outdated (never a team's
+  project shown at fault), `kiln score` 23, `kiln adopt` 39, `kiln fix` 65, the roadmap, a real
+  Claude Code on `/kiln:modernize` as a time-lapse (about ten minutes), `kiln score` 100. The
+  `kiln new` tape now ends on `kiln score` at 100/100.
+- [ ] The kiln-bot pull request in the rescue tape, once kiln-bot exists (T-59).
 - [ ] Docs in English in `docs/`: getting started, score, fix, modernize, the grid (one page per
   theme generated from the rule files: the Technology Radar that applies itself), update,
   charter, plugins, workflows, versions, in English only (T-177). Closes #37 and #38 (another

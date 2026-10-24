@@ -44,8 +44,9 @@ un dossier ou un module.
   `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1), `SECURITY.md`, `LICENSE` (MIT),
   `.github/ISSUE_TEMPLATE/`, `.github/pull_request_template.md` ; référence complète
   `docs/reference.md` et `docs/reference.fr.md` ; images `docs/assets/` (dessinées par
-  `scripts/screenshots.py`, vérifiées par `test_docs.py`), dont la démo animée
-  `kiln-new.gif` enregistrée par VHS depuis `kiln-new.tape` et l'image de partage
+  `scripts/screenshots.py`, vérifiées par `test_docs.py`), dont les deux démos animées
+  enregistrées par VHS, `kiln-new.gif` (`kiln-new.tape`) et `kiln-rescue.gif` (`kiln-rescue.tape`,
+  sur le repo public `antoine-tena/kiln-demo-legacy`, gardé vieux exprès), et l'image de partage
   `social-preview.png` (déposée à la main dans les réglages de GitHub).
 - `docs/backlog/` : suivi du travail, en anglais (skill `/kiln:backlog`), dont la prochaine
   promotion de version ; `docs/assets/` : images de la vitrine ; `docs/vision/` : l'idée de
@@ -53,7 +54,9 @@ un dossier ou un module.
 - `scripts/screenshots.py` : dessine les images du README à partir des vraies sorties de kiln
   (et le logo, l'image de partage) ; `scripts/social_preview.py` : l'image de partage en PNG
   (Playwright) ; `scripts/demo_shell.sh` : le shell des démos enregistrées (kiln de ce dossier,
-  sans numéro de version, dans un dossier jetable sur le disque) ; `scripts/refresh_images.py` :
+  sans numéro de version, dans un dossier jetable sur le disque, modèle rendu comme une version,
+  Claude Code comme chez un visiteur) ; `scripts/shrink_demo.sh` : une démo enregistrée ramenée
+  sous 5 Mo (palette, passage figé coupé) ; `scripts/refresh_images.py` :
   images de base du modèle épinglées au digest de leur tag (avant chaque candidate).
 - `tests/` : `test_template.py` (rendu du modèle pour chaque stack), `test_cli.py` (la commande :
   accueil, erreurs, bilan, sorties hors terminal, anciens noms), `test_questions.py` (questions de `kiln new`), `test_new.py` (ce que `kiln new` dit à la fin), `test_grid.py` (la grille), `test_score.py` (`kiln score`), `test_gap_report.py` (signalement des manques de la grille), `test_fix.py` (`kiln fix` et ses conversions), `test_adopted.py` (repos adoptés), `test_unites.py`,
@@ -202,8 +205,9 @@ d'une version dont ni le README ni la référence d'une langue n'ont changé (sa
 dans sa branche, pas à la release. Les images se regardent dans un vrai navigateur avant de les
 commiter (`textLength` et les espaces ne se rendent bien que là).
 
-La démo animée (`docs/assets/kiln-new.gif`) se réenregistre avant chaque candidate, quand ce
-qu'elle montre a changé : `vhs docs/assets/kiln-new.tape` (vhs, ttyd et ffmpeg). Une seule
+Les démos animées (`docs/assets/kiln-new.gif`, `kiln-rescue.gif`) se réenregistrent avant chaque
+candidate, quand ce qu'elles montrent a changé : `vhs docs/assets/<démo>.tape` (vhs, ttyd et
+ffmpeg ; `kiln-rescue` lance un vrai Claude Code, une dizaine de minutes de session). Une seule
 promesse partout (README, « About » de GitHub, résumé PyPI, image de partage), choisie par
 antoine le 20 octobre 2026 : « Claude Code's workshop », puis « Start every new project, and
 rescue every old one, like a senior engineer would — even if you're not one. », et sous elle

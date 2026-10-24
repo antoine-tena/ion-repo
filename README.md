@@ -54,6 +54,19 @@ kiln itself calls no AI and needs no API key.
 - A private repo's CI runs on your machine (`kiln ci`, its verdict kept as a git note) and spends
   no GitHub minutes; a public repo's runs on GitHub, where it is free.
 
+## Rescue an old repo
+
+<p align="center">
+  <img src="docs/assets/kiln-rescue.gif" alt="kiln score puts an old Django repo at 23 out of 100; kiln adopt, kiln fix and kiln score --roadmap follow; Claude Code works through the roadmap with /kiln:modernize, one commit per gap; kiln score then gives it 100 out of 100" width="820">
+</p>
+<p align="center"><i>A real run on <a href="https://github.com/antoine-tena/kiln-demo-legacy">kiln-demo-legacy</a>, a Django app left as it was written around 2020, played at 1.5× with the waits cut; Claude Code's five minutes as a time-lapse.</i></p>
+
+`kiln score` puts it at 23/100. `kiln adopt` lays kiln's rules, checks and instructions without
+overwriting a file (39), `kiln fix` closes what a script can, one commit per rule (65), and
+`kiln score --roadmap` hands the rest to Claude Code. `/kiln:modernize` pins what the code does
+today with tests first, then closes each gap in its own commit, proven by `kiln score --rule`:
+100/100. The demo repo's README gives the commands to replay it.
+
 ## Install
 
 ```sh
