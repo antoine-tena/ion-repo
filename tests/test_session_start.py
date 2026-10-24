@@ -547,3 +547,17 @@ def test_on_the_beta_channel_without_checkout_the_tool_follows_github_develop(
     assert "git+https://github.com/antoine-tena/kiln@develop" in hook.tool_update_command(
         ("git", "c1"), ""
     )
+
+
+def test_tool_update_moves_an_installed_plugin_to_the_marketplace_version(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # `claude plugin install` is a no-op for a plugin already installed (#58).
+    hook = load_hook()
+    uv_tool_dir(hook, tmp_path, monkeypatch)
+
+    command = hook.tool_update_command(("pypi", "v0.4.0"), "v0.4.1")
+    assert command.endswith(
+        "claude plugin install kiln@kiln --scope user && "
+        "claude plugin update kiln@kiln --scope user"
+    )
