@@ -4,9 +4,9 @@ Everything left to do on kiln, in a single list ordered by priority. Started on
 **2026-10-15**, rewritten on **2026-10-17** from the vision of that day (the measures of the two
 real repos stay private, see "Repos d'entraînement" in `CLAUDE.md`). Below the tickets: the
 [🧭 Vision](#-vision) that orders them, then the [💡 kiln score ideas](#-kiln-score-the-idea-backlog)
-(1,070 ideas, not tickets). Closed tickets are in [done.md](done.md); how to write a
-ticket: [📖 How to use](#-how-to-use-humans-and-agents). **Nothing else is
-open.**
+(1,070 ideas, not tickets). Closed tickets are in [done.md](done.md), what was turned down in
+[rejected.md](rejected.md); how to write a ticket: [📖 How to use](#-how-to-use-humans-and-agents).
+**Nothing else is open.**
 
 North star: **kiln v0.5.0, launched publicly on Wednesday 11 November 2026: any Django or Nuxt
 repo scored in seconds against a sourced grid of today's best practices, brought up to it by
@@ -195,7 +195,7 @@ moved into this file, in English, on 24 Oct.
 - [ ] `CLAUDE.md` (map of the repo, "Le README, entièrement à jour", "Contrôles") and the
   `tout-a-jour` memory: one language for kiln's docs.
 - T-164 (French docs translated at the candidate) and T-55 (README in Chinese, Japanese,
-  Spanish, Portuguese) ruled out by antoine on 24 Oct; T-30 keeps no French
+  Spanish, Portuguese) ruled out by antoine on 24 Oct (`rejected.md`); T-30 keeps no French
   summary.
 
 ### T-166 · An adopted repo whose code is not in `backend/` or `frontend/` gets its stack too
@@ -1299,7 +1299,8 @@ An ecosystem is what turns a tool into a project people star and contribute to.
 ## 📖 How to use (humans and agents)
 
 Next to this file: [done.md](done.md), the closed tickets, one line each, most recent first
-(written by `/kiln:backlog done`), and [urgent.md](urgent.md), what only a human on the team can
+(written by `/kiln:backlog done`), [rejected.md](rejected.md), what was turned down, dropped or
+ruled out for good, and [urgent.md](urgent.md), what only a human on the team can
 do (access, payment, decision), one checkbox per action (counted by the status line).
 
 An audit writes its dated report next to these files (`audit-<topic>-YYYY-MM-DD.md`) while it
@@ -1358,7 +1359,8 @@ university repo; the details stay private, see "Repos d'entraînement" in `CLAUD
 research; moved here and condensed on 24 October 2026. What the vision planned became tickets
 (the grid as data T-123, `kiln score` T-46, `kiln fix` T-126 to T-128, the roadmap T-129, gap
 reports T-38, profiles T-39, the A/B test T-53, the study T-132, tests at the lowest cost T-135
-and T-136, the compressor T-138 and T-139, the benchmark T-145).
+and T-136, the compressor T-138 and T-139, the benchmark T-145); its ideas in reserve and the
+paths it dropped are in [rejected.md](rejected.md).
 
 ### In one sentence
 
@@ -1623,7 +1625,7 @@ measurements gains 7 points of success and saves 12 % of tokens.
 - Rule ideas use a short notation after their description: the detector's rung (`L0` to `L7`,
   section E; `≈` when the detector is approximate and Claude confirms), `fix S` when a converter
   can close the gap or `fix J` when it takes judgment, then the radar level it would enter at.
-- ⚠ marks an idea with a licence to check. The six choices this
+- ⚠ marks an idea that brushes a declined ticket or a licence to check. The six choices this
   file raised are decided in Part I.
 - Locations quoted are hints, measured on `develop` at `7685fe6`.
 
@@ -1730,8 +1732,8 @@ with its reason; the ideas below follow them.
 
 1. **Every stack scored; the templates stay frozen.** `kiln adopt` promises to bring any repo up,
    and a Go or Java repo scored on the 14 universal rules and those of its tools gets a hollow
-   number. Generating keeps T-133's line (Django and Nuxt first, the other templates frozen);
-   scoring opens stack by stack after the launch, in the
+   number. Generating keeps T-133's line (Django and Nuxt first, the other templates frozen;
+   `rejected.md` now says "templates"); scoring opens stack by stack after the launch, in the
    order the corpus and T-38's gap reports show, each pack with its facts, rules, examples and
    measured precision.
 2. **Equal weights stay; critical findings cap the score.** The number keeps meaning "the share
@@ -1765,6 +1767,10 @@ with its reason; the ideas below follow them.
    before each release; a CI on every pull request is the other accepted way. With profiles
    (T-39), company and enterprise ask for CI on every pull request, where integration breaks
    between people.
+
+Ideas that brush a declined ticket carry ⚠ and its number (T-94 Windows without WSL, T-117 an
+editor extension, T-48 devcontainers, T-86 monorepos, T-71 `kiln mcp`): those stay declined
+until someone reopens them.
 
 #### Order of battle
 
@@ -1876,12 +1882,12 @@ and JS/TS first, then whichever of Go, Java and Kotlin, C#, PHP, Ruby or Rust th
 - [ ] **C11** Deploy configs read: Dockerfile, Containerfile, compose, Kubernetes manifests (any YAML with `apiVersion` and `kind`), Helm, Kustomize, Skaffold, Tilt, Nomad, systemd units, Caddyfile, nginx, Traefik, Fly, Render, Railway, Heroku, Vercel, Netlify, Cloudflare, Firebase, App Engine, Serverless, SAM.
 - [ ] **C12** Neutral to container engines (Docker, Podman, Buildah, Kaniko, BuildKit): `# syntax=`, `--mount=type=secret` and `type=cache`, Bake files, devcontainer.json read.
 - [ ] **C13** Rules that know operating systems: CRLF and `.gitattributes`, paths Windows refuses, case collisions that break macOS, a setup documented only as a `.sh` script.
-- [ ] **C14** kiln score runs on Linux, macOS, WSL and native Windows (it is Python and git), tested in CI.
+- [ ] **C14** kiln score runs on Linux, macOS, WSL and native Windows (it is Python and git) ⚠ T-94 declined Windows without WSL for kiln as a whole; the score alone may cost little, tested in CI if taken.
 - [ ] **C15** x86-64 and ARM64 (Apple Silicon, Graviton, Raspberry Pi), glibc and musl (Alpine): every bundled tool shipped as a wheel for each, or its rules say "unknown" there.
 - [ ] **C16** Editor and environment files read: `.editorconfig`, `.vscode/` (recommended extensions, settings with personal paths), `.idea/` (workspace files committed), devcontainers, Gitpod, Codespaces, mise and asdf, direnv's `.envrc` (secrets in it), Nix dev shells, flox.
 - [ ] **C17** Any human language in the repo: a README found as `LISEZMOI.md` or `README.zh-CN.md`; generic-name lists per language (`donnees`, `truc`, `datos`, `daten`); typography that isn't a bug (French non-breaking spaces, the doctrine's ruff example); identifiers in any script.
 - [ ] **C18** Air-gapped and corporate networks: offline by default; `--online` honours `HTTPS_PROXY` and custom certificate authorities (`SSL_CERT_FILE`); the data bundle downloadable as one file (`--data bundle.tar.zst`).
-- [ ] **C19** Monorepo tools' project graphs (Nx, Turborepo, Bazel, Pants, Rush, Moon) read for components and their links.
+- [ ] **C19** Monorepo tools' project graphs (Nx, Turborepo, Bazel, Pants, Rush, Moon) read for components and their links ⚠ T-86 (declined) is about generating monorepos; scoring them is another matter.
 - [ ] **C20** The integration branch read from the remote's HEAD (main, master, develop, trunk), never assumed.
 - [ ] **C21** Self-hosted forges on custom domains recognized by their API's signature (GitLab's `/api/v4/version`, Gitea's `/api/v1/version`), with `--online` only.
 - [ ] **C22** Reusable CI pieces (GitHub reusable workflows, GitLab components, CircleCI orbs) followed one level, at their pinned version, with `--online`: a reusable workflow that grants `write-all` is the caller's problem too.
@@ -2110,7 +2116,7 @@ and JS/TS first, then whichever of Go, Java and Kotlin, C#, PHP, Ruby or Rust th
 - [ ] **L09** Pull request comments by the action: the delta, new findings as review comments on the diff's lines, fixed ones thanked.
 - [ ] **L10** GitHub check runs with annotations, sent in batches of 50.
 - [ ] **L11** Scores kept in git notes (`refs/notes/kiln-score`), as `kiln ci` keeps its verdicts: history for free, travelling with the repo when pushed.
-- [ ] **L12** A language server: diagnostics for place rules in any editor, code actions for scripted fixes: one server for every editor at once.
+- [ ] **L12** A language server: diagnostics for place rules in any editor, code actions for scripted fixes ⚠ T-117 (a VS Code extension) is declined for now; a language server serves every editor at once, only if adopters ask.
 - [ ] **L13** The `--json` schema published (`schema.json`), versioned with a changelog, stable at v1.0.
 - [ ] **L14** `--quiet` (the number only) and `--porcelain` (stable lines for scripts).
 - [ ] **L15** `kiln grid --json`: the whole catalogue for other tools.
@@ -2938,7 +2944,7 @@ The first data repos came through issues (#43, #44): v0.4.6 deploys a Streamlit 
 - [ ] **DX05** `NO-GLOBAL-INSTALLS`: tools run from the project (`uvx`, `pnpm dlx`, versioned `npx`), never `sudo pip install` or `npm -g` in the docs. L2 · fix J · trial.
 - [ ] **DX06** `EDITOR-SETTINGS-SHARED`: recommended extensions and format-on-save shared, personal settings ignored. L0 · fix S · assess.
 - [ ] **DX07** `CLEAN-CLONE-WORKS`: a fresh clone installs and passes its checks with the documented commands (`--deep`, in a sandbox). L7 · fix J · trial.
-- [ ] **DX08** `DEVCONTAINER`: a dev container for teams that want one. L0 · assess.
+- [ ] **DX08** `DEVCONTAINER` ⚠ T-48 (declined): a dev container for teams that want one, at `hold` while T-48 stands. L0 · hold.
 
 #### PK · Packaging and publishing (into `supply-chain` and `ci-cd`)
 
