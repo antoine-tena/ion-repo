@@ -11,7 +11,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-179.**
+**Next free: T-180.**
 
 ---
 
@@ -769,6 +769,19 @@ empty for Claude.
   podman, serena, time zone, `compact_window`, status line, owner and team.
 - [ ] `tests/test_questions.py`, the references (both languages), and the demo
   (`docs/assets/kiln-new.tape`) re-recorded.
+
+### T-179 · A new Django repo's tests start without warnings
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-10-24
+- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
+- **Origin**: recording the `kiln new` demo (24 October 2026): `kiln check --all --tests` on a
+  fresh Django + Nuxt repo passes with 6 warnings
+
+`UserWarning: No directory at: …/backend/staticfiles/`, raised by WhiteNoise's middleware
+(`django/core/handlers/base.py:63`) in each test that builds a request: `STATIC_ROOT` does not
+exist before `collectstatic`. A repo kiln has just made should run its tests clean; settle it in
+the template (the test settings, or the folder created), not by silencing the warning.
 
 ### T-160 · A front with no backend ships a smoke test
 - **Type**: improvement

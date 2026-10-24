@@ -207,7 +207,9 @@ commiter (`textLength` et les espaces ne se rendent bien que là).
 
 Les démos animées (`docs/assets/kiln-new.gif`, `kiln-rescue.gif`) se réenregistrent avant chaque
 candidate, quand ce qu'elles montrent a changé : `vhs docs/assets/<démo>.tape` (vhs, ttyd et
-ffmpeg ; `kiln-rescue` lance un vrai Claude Code, une dizaine de minutes de session). Une seule
+ffmpeg, installés hors de tout gestionnaire dans `~/.cache/kiln-demo-tools/bin`, environ 190 Mo,
+à mettre devant le `PATH` ; `kiln-rescue` lance un vrai Claude Code, 5 à 10 minutes de session à
+chaque enregistrement, puis `scripts/shrink_demo.sh` la ramène sous 5 Mo). Une seule
 promesse partout (README, « About » de GitHub, résumé PyPI, image de partage), choisie par
 antoine le 20 octobre 2026 : « Claude Code's workshop », puis « Start every new project, and
 rescue every old one, like a senior engineer would — even if you're not one. », et sous elle
