@@ -7,7 +7,9 @@ worker, a scheduler, a CSS watcher. A name taken by the stack (`django`) replace
 A folder the stack does not serve (an adopted repo: Vite and Express at the root) runs the
 scripts of its `package.json` that keep running while one edits: `dev`, `dev:*`, `server`,
 `serve`, `watch`, `watch:*`, else `start`; through the package manager its lock names (npm
-without one). A `Procfile.dev` line of the same name replaces such a script.
+without one). A `Procfile.dev` line of the same name replaces such a script. Its dependencies are
+installed first when `node_modules/` is missing or older than the lock (a fresh clone): the
+script would otherwise stop on `vite: not found`.
 
 Each process gets the `.env` of its folder, then, when a process outside the front runs too, its
 `.env.dev` (what the full local stack changes, such as the API's address or a production key to
@@ -45,6 +47,14 @@ LOCK_MANAGERS = (
     ("bun.lockb", "bun"),
     ("package-lock.json", "npm"),
 )
+# Install from the lock, by package manager, and the file it writes once done.
+NODE_INSTALLS = {
+    "pnpm": (("pnpm", "install", "--frozen-lockfile"), ".modules.yaml"),
+    "yarn": (("yarn", "install", "--frozen-lockfile"), ".yarn-integrity"),
+    "bun": (("bun", "install", "--frozen-lockfile"), ""),
+    "npm": (("npm", "ci"), ".package-lock.json"),
+}
+NPM_WITHOUT_LOCK = ("npm", "install")
 
 
 def dev_processes(root: Path) -> list[Command]:
@@ -98,6 +108,25 @@ def package_script_commands(root: Path, directory: str) -> list[Command]:
         Command(prefix + name.replace(":", "-"), directory, (manager, "run", name))
         for name in names
     ]
+
+
+def node_installs(root: Path, commands: list[Command]) -> list[Command]:
+    """The installs the commands' folders need: a `package.json` whose `node_modules/` is
+    missing or older than its lock."""
+    installs = []
+    for directory in dict.fromkeys(command.directory for command in commands):
+        folder = root / directory
+        if not (folder / PACKAGE_FILE).is_file():
+            continue
+        lock = next((folder / name for name, _ in LOCK_MANAGERS if (folder / name).is_file()), None)
+        argv, marker = NODE_INSTALLS[package_manager(folder)]
+        installed = folder / "node_modules" / marker
+        if installed.exists() and (
+            lock is None or lock.stat().st_mtime <= installed.stat().st_mtime
+        ):
+            continue
+        installs.append(Command("dependencies", directory, argv if lock else NPM_WITHOUT_LOCK))
+    return installs
 
 
 def package_manager(directory: Path) -> str:

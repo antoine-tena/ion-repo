@@ -12,7 +12,14 @@ import pytest
 from kiln import cli
 from kiln.dev import background, run_dev
 from kiln.dev.menu import select
-from kiln.dev.processes import dev_processes, procfile_commands, runs_beyond_front, spawn
+from kiln.dev.processes import (
+    dev_processes,
+    node_installs,
+    package_script_commands,
+    procfile_commands,
+    runs_beyond_front,
+    spawn,
+)
 from kiln.shell import KilnError
 from kiln.stack import Command
 
@@ -269,3 +276,25 @@ def test_a_port_held_by_another_worktree_points_to_its_kiln_dev_stop(
 
         with pytest.raises(KilnError, match=r"kiln dev of /code/repo-feature: `kiln dev stop`"):
             run_dev(project)
+
+
+def test_a_fresh_clone_installs_its_node_dependencies_from_the_lock(tmp_path: Path) -> None:
+    # Without node_modules/, `npm run dev` stops on `vite: not found` (#59).
+    (tmp_path / "package.json").write_text('{"scripts": {"dev": "vite"}}', encoding="utf-8")
+    (tmp_path / "package-lock.json").write_text("{}", encoding="utf-8")
+    commands = package_script_commands(tmp_path, ".")
+
+    assert [install.argv for install in node_installs(tmp_path, commands)] == [("npm", "ci")]
+
+    installed = tmp_path / "node_modules/.package-lock.json"
+    installed.parent.mkdir()
+    installed.write_text("{}", encoding="utf-8")
+    assert node_installs(tmp_path, commands) == []
+
+    lock_time = installed.stat().st_mtime + 10
+    os.utime(tmp_path / "package-lock.json", (lock_time, lock_time))
+    assert [install.argv for install in node_installs(tmp_path, commands)] == [("npm", "ci")]
+
+
+def test_a_folder_without_package_json_installs_nothing(tmp_path: Path) -> None:
+    assert node_installs(tmp_path, [Command("worker", ".", ("sleep", "1"))]) == []
