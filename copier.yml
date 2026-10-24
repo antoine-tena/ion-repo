@@ -104,6 +104,15 @@ team:
   help: GitHub logins of the team (reviewers), as a YAML list
   default: "[{{ owner }}]"
 
+# A repo brought under kiln by `kiln adopt`: the files it already had, which the template would
+# have written (README.md, its own CI…), and its own code folders; neither backend nor frontend
+# is then needed. kiln never writes them, at adoption nor at `kiln update`. Never asked: only
+# `kiln adopt` answers it, and a repo that `kiln new` generated does not record it.
+kept:
+  type: yaml
+  default: "[]"
+  when: "{{ kept | length > 0 }}"
+
 # The project type only advises: it preselects the backend and the frontend below, which stay
 # free. Table of advice: kiln's README, "What you get".
 project_type:
@@ -148,7 +157,7 @@ frontend:
   default: >-
     {% if project_type == 'app' %}nuxt{% elif project_type == 'site' %}astro{% elif project_type == 'dashboard' %}streamlit{% else %}none{% endif %}
   validator: >-
-    {% if backend == 'none' and frontend == 'none' %}A backend or a frontend is needed.{% endif %}
+    {% if backend == 'none' and frontend == 'none' and not kept %}A backend or a frontend is needed.{% endif %}
 
 podman:
   type: bool

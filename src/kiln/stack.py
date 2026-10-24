@@ -45,9 +45,13 @@ BACKEND_MARKERS: tuple[tuple[str, str], ...] = (
 )
 FRONTEND_MARKERS: tuple[tuple[str, str], ...] = (
     ("nuxt.config.ts", "nuxt"),
+    ("nuxt.config.js", "nuxt"),
+    ("nuxt.config.mjs", "nuxt"),
     ("next.config.ts", "next"),
     ("next.config.mjs", "next"),
+    ("next.config.js", "next"),
     ("astro.config.mjs", "astro"),
+    ("astro.config.ts", "astro"),
 )
 PODMAN_MARKERS = ("compose.yml", "docker-compose.yml", "config/local/compose.yml")
 
@@ -183,6 +187,14 @@ def read_answers(root: Path) -> dict[str, object]:
     loaded = yaml.safe_load(answers_path.read_text())
     # Under today's names, whatever the release of kiln that wrote them.
     return renames.answers(loaded) if isinstance(loaded, dict) else {}
+
+
+def kept_of(root: Path) -> list[str]:
+    """What a repo adopted by `kiln adopt` keeps as its own (`kept`): never written by kiln."""
+    if not (root / ANSWERS_FILE).exists():
+        return []
+    kept = read_answers(root).get("kept") or []
+    return [str(path) for path in kept] if isinstance(kept, list) else []
 
 
 def answers_if_any(root: Path) -> dict[str, object]:

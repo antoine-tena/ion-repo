@@ -70,7 +70,7 @@ def create_project(request: NewProjectRequest) -> Path:
             source,
             request.destination,
             data=request.answers,
-            user_defaults=_user_defaults(should_publish=should_publish),
+            user_defaults=user_defaults(should_publish=should_publish),
             vcs_ref=template_revision(source),
             use_prereleases=follows_candidates(),
             unsafe=False,
@@ -120,7 +120,7 @@ def next_steps(request: NewProjectRequest, root: Path) -> list[str]:
     return lines
 
 
-def _user_defaults(*, should_publish: bool) -> dict[str, object]:
+def user_defaults(*, should_publish: bool) -> dict[str, object]:
     """Default owner and team: this machine's settings, otherwise the account logged in to gh
     (only when publishing: no network call for a local project)."""
     config = load_config()

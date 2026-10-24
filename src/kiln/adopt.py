@@ -1,15 +1,16 @@
-"""`kiln adopt`: brings under kiln a repo it did not generate.
+"""`kiln adopt`: brings under kiln a repo it did not generate, to the level of `kiln new`.
 
-The full template assumes its own tree (`backend/`, `frontend/`): it does not apply to a repo
-that has its own. Adoption only lays down what does not depend on it, without touching an
-existing file:
-- `charter.toml`: the size and the rules that hold anywhere (uv and podman, no audit
-  references), which the `charter` command checks after each edit (hook of the `kiln` plugin);
-- `docs/backlog/`: work tracking (skill `/kiln:backlog`), drawn from the template.
+The template is rendered with the answers kiln infers from the repo (its stack, from the marker
+files of `backend/` and `frontend/`; its size; its owner, from the `origin` remote), and every
+file the repo does not have yet is laid: `CLAUDE.md`, `.claude/rules/kiln/`, the size's
+`charter.toml`, the pre-commit hooks, the CI calling kiln's workflows, `docs/backlog/`… Nothing
+the repo already has is overwritten: those files, and the stack's code folders (`backend/`,
+`frontend/`, the repo's own code), are recorded under `kept` in `.copier-answers.yml`, which
+`kiln update` never writes either. The `.gitignore` gets the template's missing lines.
 
-The repo becomes "adopted" (a charter without Copier answers): `kiln status`, `check`, `dev`,
-`install` and `doctor` serve it; `kiln update` leaves it, having no answers to replay. The debt
-the charter finds at adoption is shown: to pay off, or its rule to remove.
+From then on the repo is served like a generated one: `kiln update` replays the template on it.
+A repo adopted before kiln 0.4.6 (a charter, no answers) is completed by `kiln adopt` again. The
+debt the charter finds at adoption is shown: to pay off, or its rule to remove.
 """
 
 import re
@@ -20,59 +21,226 @@ from pathlib import Path
 import copier
 
 from kiln import adopted, ui
-from kiln.charter.config import CHARTER_FILE, charter_path
+from kiln.charter.config import LEGACY_CHARTER_FILE
+from kiln.migrations import ci_runner_for
+from kiln.new import user_defaults
 from kiln.rules import write_unverified_rules
 from kiln.shell import KilnError, capture, require_tools, run_status, step
-from kiln.stack import ANSWERS_FILE, detect_stack
+from kiln.stack import (
+    ANSWERS_FILE,
+    BACKEND_DIR,
+    BACKEND_MARKERS,
+    FRONTEND_DIR,
+    FRONTEND_MARKERS,
+    NO_FRAMEWORK,
+    PODMAN_MARKERS,
+    Stack,
+    detect_stack,
+)
+from kiln.statusline import apply_statusline_settings
 from kiln.template import template_revision, template_source
 from kiln.update import PROTECTED_BRANCHES
 from kiln.versions import follows_candidates
 
 BACKLOG_DIR = Path("docs") / "backlog"
 DEFAULT_SIZE = "ember"
-# Lightest stack of the template: only its common files (the tracking) are taken.
-RENDER_STACK = {"backend": "cli", "frontend": "none"}
-
-CHARTER = """\
-# Rules checked by kiln's `charter` command (`charter --detail`): after each edit (hook of
-# kiln's Claude Code plugin), and in CI or before each commit once added there. Repo adopted by
-# `kiln adopt`: only the rules that hold anywhere. Bans hold everywhere. Others (logging,
-# personal data, ratchets…) are added by hand, after the charter.toml `kiln new` writes.
-
-size = "{size}"
-exclude = ["/migrations/", "/node_modules/", "/vendor/"]
-unverified_rules = "scripts/ci/unverified-rules.txt"
-
-[bans.forbidden-tools]
-id = "UV-PODMAN"
-
-# References to an audit report ("audit H36", "(CART-06)") rot with it. Add to `prefixes` the
-# prefixes of the project's audit findings as they come.
-[bans.audit-references]
-id = "AUDIT-REFERENCES"
-prefixes = "AUDIT"
-exclude = '(^docs/|^charter\\.toml$|/migrations/|-lock\\.yaml$|\\.lock$)'
-"""
+GITIGNORE = ".gitignore"
+COMPOSE_FILE = "compose.yaml"
+# The project type only preselects the stack: the one that fits what was found.
+PROJECT_TYPES = {"django": "app", "fastapi": "api", "data": "analysis", "cli": "cli"}
+FRONT_PROJECT_TYPES = {"astro": "site", "streamlit": "dashboard", "dash": "dashboard"}
+_GITHUB_REMOTE = re.compile(r"github\.com[:/]([^/]+)/")
 
 
 def adopt_project(root: Path, *, size: str = DEFAULT_SIZE, template: str | None = None) -> None:
     require_tools("git", "uv")
     check_adoptable(root)
-    step("Charter")
-    (root / CHARTER_FILE).write_text(CHARTER.format(size=size))
-    write_unverified_rules(root, detect_stack(root))
-    if (root / BACKLOG_DIR).exists():
-        ui.note(f"{BACKLOG_DIR}/ already exists: kept as is.")
-    else:
-        step("Work tracking")
-        copy_backlog(root, template)
+    # The repo's own workflows only: the template's quote the release they come from.
     _quote_released_workflows(root)
+    stack = detect_stack(root)
+    _say_stack(root, stack)
+    step("Template: what kiln new would have written")
+    source = template_source(template)
+    answers = adoption_answers(root, size, stack)
+    with tempfile.TemporaryDirectory() as tmp:
+        rendered = Path(tmp) / "rendered"
+        _render(source, rendered, answers)
+        kept = kept_paths(root, rendered, stack)
+        if kept:
+            # Rendered again, so that the answers file records what the repo keeps.
+            shutil.rmtree(rendered)
+            _render(source, rendered, {**answers, "kept": kept})
+        added = _lay(root, rendered, kept)
+        if GITIGNORE in kept and (rendered / GITIGNORE).is_file():
+            _merge_gitignore(root, (rendered / GITIGNORE).read_text(encoding="utf-8"))
+    write_unverified_rules(root, stack)
+    apply_statusline_settings(root)
+    _report(added, kept)
     step("Debt found by the charter")
     if shutil.which("charter") is None or run_status(["charter"], root, live=True) == 0:
         ui.note("No deviation.")
     else:
         ui.note("Deviations above: fix them, or remove their rule from charter.toml.")
-    ui.note("Review, commit, then merge (skill /kiln:merge).")
+    ui.note("Review, commit, then merge (skill /kiln:merge); kiln update keeps it current.")
+
+
+def check_adoptable(root: Path) -> None:
+    if (root / ANSWERS_FILE).exists():
+        raise KilnError("repo generated by kiln: nothing to adopt (kiln update keeps it current)")
+    if (root / LEGACY_CHARTER_FILE).exists():
+        raise KilnError(
+            f"{LEGACY_CHARTER_FILE}: adopted under kiln 0.3, kiln update first moves its names"
+        )
+    branch = capture(["git", "branch", "--show-current"], root)
+    if branch in (*PROTECTED_BRANCHES, "master"):
+        raise KilnError(f"on {branch}: create a branch first (e.g. chore/kiln-adopt)")
+    if capture(["git", "status", "--porcelain"], root):
+        raise KilnError("working tree not clean: commit or set aside the changes")
+
+
+def adoption_answers(root: Path, size: str, stack: Stack) -> dict[str, object]:
+    """What `kiln new` would have been told for this repo."""
+    project_type = PROJECT_TYPES.get(stack.backend) or FRONT_PROJECT_TYPES.get(stack.frontend)
+    answers: dict[str, object] = {
+        "name": project_name(root),
+        "size": size,
+        "backend": stack.backend,
+        "frontend": stack.frontend,
+        "project_type": project_type or "app",
+        "podman": stack.has_podman,
+        "ci_runner": ci_runner_for(root),
+        # Not empty, so that a repo without a stack is accepted; the real list comes after.
+        "kept": [ANSWERS_FILE],
+    }
+    if owner := _remote_owner(root):
+        answers["owner"] = owner
+    return answers
+
+
+def kept_paths(root: Path, rendered: Path, stack: Stack) -> list[str]:
+    """What the repo keeps as its own: the files of the template it already has, its code
+    folders, and the template's compose file when it has its own."""
+    folders = [
+        directory
+        for directory, name in ((BACKEND_DIR, stack.backend), (FRONTEND_DIR, stack.frontend))
+        if name != NO_FRAMEWORK or (root / directory).exists()
+    ]
+    files = [
+        path.relative_to(rendered).as_posix()
+        for path in sorted(rendered.rglob("*"))
+        if path.is_file() and (root / path.relative_to(rendered)).exists()
+    ]
+    files = [name for name in files if not name.startswith(tuple(f"{d}/" for d in folders))]
+    own_compose = any((root / marker).exists() for marker in PODMAN_MARKERS)
+    compose = [COMPOSE_FILE] if own_compose and (rendered / COMPOSE_FILE).exists() else []
+    return sorted({*folders, *files, *compose} - {ANSWERS_FILE})
+
+
+def project_name(root: Path) -> str:
+    """Short name in the template's format (lowercase, digits, dashes), from the folder of the
+    main tree: a worktree's folder is named after its branch."""
+    try:
+        common = capture(["git", "rev-parse", "--path-format=absolute", "--git-common-dir"], root)
+        folder = Path(common).parent.name
+    except KilnError, OSError:  # not a git repo, or no such folder yet
+        folder = root.name
+    name = re.sub(r"[^a-z0-9]+", "-", folder.lower()).strip("-")
+    return name if re.match(r"[a-z]", name) else f"projet-{name}".rstrip("-")
+
+
+def _remote_owner(root: Path) -> str | None:
+    try:
+        url = capture(["git", "remote", "get-url", "origin"], root)
+    except KilnError:
+        return None
+    found = _GITHUB_REMOTE.search(url)
+    return found[1] if found else None
+
+
+def _say_stack(root: Path, stack: Stack) -> None:
+    found = [name for name in (stack.backend, stack.frontend) if name != NO_FRAMEWORK]
+    elsewhere = [
+        name
+        for marker, name in (*BACKEND_MARKERS, *FRONTEND_MARKERS)
+        if name not in found and (root / marker).exists()
+    ]
+    if found:
+        ui.note(f"stack: {' + '.join(found)}")
+    if elsewhere:
+        ui.note(
+            f"{', '.join(elsewhere)} at the root: kiln's files for it expect {BACKEND_DIR}/ or "
+            f"{FRONTEND_DIR}/; the common part only"
+        )
+    elif not found:
+        ui.note("no stack of kiln found: the common part only (CI, hooks, rules, charter)")
+
+
+def _render(source: str, destination: Path, answers: dict[str, object]) -> None:
+    copier.run_copy(
+        source,
+        destination,
+        data=answers,
+        user_defaults=user_defaults(should_publish=False),
+        vcs_ref=template_revision(source),
+        use_prereleases=follows_candidates(),
+        defaults=True,
+        quiet=True,
+        unsafe=False,
+    )
+
+
+def copy_backlog(root: Path, template: str | None) -> None:
+    """The template's `docs/backlog/` alone (a repo adopted under kiln 0.3, `kiln update`)."""
+    source = template_source(template)
+    with tempfile.TemporaryDirectory() as tmp:
+        rendered = Path(tmp) / "rendered"
+        _render(
+            source,
+            rendered,
+            {
+                "name": project_name(root),
+                "backend": "none",
+                "frontend": "none",
+                "kept": [ANSWERS_FILE],
+            },
+        )
+        shutil.copytree(rendered / BACKLOG_DIR, root / BACKLOG_DIR)
+
+
+def _lay(root: Path, rendered: Path, kept: list[str]) -> list[str]:
+    """Copies what the repo does not have; returns the paths laid."""
+    added = []
+    kept_folders = tuple(f"{name}/" for name in kept)
+    for path in sorted(rendered.rglob("*")):
+        name = path.relative_to(rendered).as_posix()
+        if not path.is_file() or name in kept or name.startswith(kept_folders):
+            continue
+        target = root / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, target)
+        added.append(name)
+    return added
+
+
+def _merge_gitignore(root: Path, template_text: str) -> None:
+    """The template's `.gitignore` lines the repo's lacks, appended under a heading."""
+    own = root / GITIGNORE
+    present = set(own.read_text(encoding="utf-8").splitlines())
+    missing = [
+        line
+        for line in template_text.splitlines()
+        if line.strip() and not line.startswith("#") and line not in present
+    ]
+    if missing:
+        text = own.read_text(encoding="utf-8").rstrip("\n")
+        own.write_text(f"{text}\n\n# kiln\n" + "\n".join(missing) + "\n", encoding="utf-8")
+        ui.note(f"{GITIGNORE}: {len(missing)} line(s) of the template added")
+
+
+def _report(added: list[str], kept: list[str]) -> None:
+    ui.success(f"{len(added)} file(s) laid")
+    if kept:
+        ui.note(f"kept as the repo's own (never written by kiln): {', '.join(kept)}")
 
 
 def _quote_released_workflows(root: Path) -> None:
@@ -88,43 +256,3 @@ def _quote_released_workflows(root: Path) -> None:
         return
     if changed:
         ui.note(f"moved: {', '.join(changed)}")
-
-
-def check_adoptable(root: Path) -> None:
-    if (root / ANSWERS_FILE).exists():
-        raise KilnError("repo generated by kiln: nothing to adopt (kiln update keeps it current)")
-    if charter_path(root) is not None:
-        raise KilnError(f"{charter_path(root)} already exists: repo already adopted")
-    branch = capture(["git", "branch", "--show-current"], root)
-    if branch in (*PROTECTED_BRANCHES, "master"):
-        raise KilnError(f"on {branch}: create a branch first (e.g. chore/kiln-adopt)")
-    if capture(["git", "status", "--porcelain"], root):
-        raise KilnError("working tree not clean: commit or set aside the changes")
-
-
-def project_name(root: Path) -> str:
-    """Short name in the template's format (lowercase, digits, dashes), from the folder of the
-    main tree: a worktree's folder is named after its branch."""
-    try:
-        common = capture(["git", "rev-parse", "--path-format=absolute", "--git-common-dir"], root)
-        folder = Path(common).parent.name
-    except KilnError, OSError:  # not a git repo, or no such folder yet
-        folder = root.name
-    name = re.sub(r"[^a-z0-9]+", "-", folder.lower()).strip("-")
-    return name if re.match(r"[a-z]", name) else f"projet-{name}".rstrip("-")
-
-
-def copy_backlog(root: Path, template: str | None) -> None:
-    source = template_source(template)
-    with tempfile.TemporaryDirectory() as rendered:
-        copier.run_copy(
-            source,
-            rendered,
-            data={"name": project_name(root), **RENDER_STACK},
-            vcs_ref=template_revision(source),
-            use_prereleases=follows_candidates(),
-            defaults=True,
-            quiet=True,
-            unsafe=False,
-        )
-        shutil.copytree(Path(rendered) / BACKLOG_DIR, root / BACKLOG_DIR)
