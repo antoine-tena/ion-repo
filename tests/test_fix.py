@@ -3,12 +3,13 @@ branch, undone when the checks turn red, nothing written by a dry run, and each 
 closing its rule. The network (commit SHAs, digests) is faked."""
 
 import subprocess
+from collections.abc import Callable
 from pathlib import Path
 
 import pytest
 
 from kiln.grid import detectors, fix
-from kiln.grid.facts import read_repo
+from kiln.grid.facts import Repo, read_repo
 from kiln.grid.fixers import FIXERS, ci, containers, python, resolve
 from kiln.grid.model import load_rules
 from kiln.shell import KilnError
@@ -113,6 +114,16 @@ def test_a_server_base_keeps_its_user(tmp_path: Path) -> None:
     root = make(tmp_path / "node", {"Dockerfile": 'FROM node:24\nCMD ["x"]\n'})
     containers.add_user(read_repo(root))
     assert (root / "Dockerfile").read_text() == 'FROM node:24\nUSER node\nCMD ["x"]\n'
+
+
+@pytest.mark.parametrize("convert", [containers.move_runtimes, containers.move_to_trixie])
+def test_an_old_runtime_on_an_old_debian_moves_both_at_once(
+    tmp_path: Path, convert: Callable[[Repo], list[str]]
+) -> None:
+    # Neither python:3.8-trixie nor python:3.13-buster was ever built.
+    root = make(tmp_path, {"Dockerfile": f"FROM python:3.8-buster@{DIGEST}\n"})
+    convert(read_repo(root))
+    assert (root / "Dockerfile").read_text() == f"FROM python:3.13-trixie@{DIGEST}\n"
 
 
 def test_black_line_length_is_carried_over_to_ruff(tmp_path: Path) -> None:
