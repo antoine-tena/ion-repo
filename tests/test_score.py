@@ -128,6 +128,20 @@ def test_json_badge_and_screen(
     assert "kiln score" in screen and "NOQA-CODES" in screen and "app.py:1" in screen
 
 
+def test_the_score_closes_a_screen_long_with_gaps(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # An old repo lists a hundred lines of gaps: its score would scroll out of sight.
+    root = make(tmp_path, {**GOOD, "app.py": "import os  # noqa\n"})
+    report = score.score_repo(root)
+    score.show(report)
+    last = capsys.readouterr().out.rstrip().splitlines()[-1]
+    assert f"{report.score}/100" in last and "1 gap" in last
+
+    score.show(score.score_repo(make(tmp_path / "good", GOOD)))
+    assert "gap" not in capsys.readouterr().out.rstrip().splitlines()[-1]
+
+
 def test_a_missing_folder_is_said(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
