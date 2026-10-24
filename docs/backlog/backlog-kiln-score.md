@@ -182,7 +182,7 @@ and from v0.5.1 to the launch only fixes go in):
 | v0.5.0 "the proof and the page" | H: precision sampled on T-132's corpus, Python rules made code-aware (stdlib `tokenize`), the rules' own examples out of their reach; I: the critical cap and the potential line | the study publishes numbers: they must be right, and "58 now, 74 after `kiln fix`" is the demo |
 | v0.5.4 "the first week with strangers" | K: what strangers hit first (Python 3.14 needed, a crash on an odd repo, a flag to find); U: the first gap reports read | the launch brings repos nobody here has seen |
 | v0.5.5 "findings where people look" | L: SARIF with T-91, annotations, job summary; J: the cache and `--changed` beside T-77 | people run it in CI and on bigger repos |
-| v0.5.6 "the grid grows, and stays current" | Part III with T-141: the exact rules promoted first (`USE-TZ`, `NO-MASS-ASSIGNMENT`, `PORTS-ON-LOCALHOST`, `DOCKERIGNORE`, `CI-TIMEOUTS`, `NO-DEBUGGER`, `NO-CONFLICT-MARKERS`, `VUE-V-FOR-KEY`, `HTML-LANG`, `NO-SIGNALS`, `SESSION-COOKIES`, `NO-PERSISTED-CREDENTIALS`); Q with T-140; C: GitLab CI | the grid grows on what the corpus measured, never the week of the launch |
+| v0.5.7 "the grid grows, and stays current" | Part III with T-141: the exact rules promoted first (`USE-TZ`, `NO-MASS-ASSIGNMENT`, `PORTS-ON-LOCALHOST`, `DOCKERIGNORE`, `CI-TIMEOUTS`, `NO-DEBUGGER`, `NO-CONFLICT-MARKERS`, `VUE-V-FOR-KEY`, `HTML-LANG`, `NO-SIGNALS`, `SESSION-COOKIES`, `NO-PERSISTED-CREDENTIALS`); Q with T-140; C: GitLab CI | the grid grows on what the corpus measured, never the week of the launch |
 | v0.6.0 "Claude closes the gaps alone" | O: context packs, effort and token estimates, ordered gaps | the roadmap becomes the whole input of an unattended run |
 | v0.6.1 "less code to carry" | the slimming rules (`DEPENDENCY-BUDGET`, `DUPLICATION`, `DEAD-CODE`, `UNUSED-DEPENDENCIES`) proven by the compressor | T-138 measures first |
 | v0.7.0 "a whole organisation's repos" | D, P, K: kinds, profiles, remote scoring without cloning | a university or an association network scores every repo |
@@ -437,7 +437,7 @@ and JS/TS first, then whichever of Go, Java and Kotlin, C#, PHP, Ruby or Rust th
 - [ ] **I08** Effort to 100 from the rules' effort estimates, in session hours, the backlog's unit.
 - [ ] **I09** A percentile against the study's distribution, bundled: "better than 82 % of public Django repos" (aggregates only, no repo named).
 - [ ] **I10** `grid_version` in every report and badge; `kiln score --grid 0.4.5` re-scores with an older grid (bundled history) to compare like with like.
-- [ ] **I11** New `adopt` rules announced one release ahead ("counts from v0.5.6: you meet it", or "you will lose 2 points: `kiln fix` closes it"): no score drops overnight.
+- [ ] **I11** New `adopt` rules announced one release ahead ("counts from v0.5.7: you meet it", or "you will lose 2 points: `kiln fix` closes it"): no score drops overnight.
 - [ ] **I12** `kiln score --history`: the score at each tag or merge (cheap with the cache), drawn as a curve; "41 to 78 since adoption".
 - [ ] **I13** The score of a change: "this branch takes the score from 74 to 76; 1 new finding, 3 fixed". The gate is "no new finding", never an absolute number.
 - [ ] **I14** Anti-gaming: presence rules check content (a README with install and usage, a SECURITY.md with a contact, tests that assert, CI that runs on pull requests and pushes). An empty file earns nothing.

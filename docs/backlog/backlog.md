@@ -11,7 +11,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-180.**
+**Next free: T-184.**
 
 ---
 
@@ -113,15 +113,23 @@ comes first; these tickets give way to it.
 - T-91 · Findings where people look: SARIF in pull requests and code scanning (M)
 - T-54 · Every candidate proven on real upgrade paths (M)
 - T-77 · Tests in seconds after each edit: only those the change touches (M)
-- T-144 · Checks as fast as they are precise: oxlint, TypeScript 7, ty or pyrefly, measured (M)
 - T-175 · `kiln fix` runs the checks once, then bisects on red (M)
 
-### v0.5.6 · The grid grows, and stays current
+### v0.5.6 · kiln never makes you wait
+The same features, sooner: what was measured slow on 24 October (the suite every release waits
+for, the session start, `kiln status`, each Bash call), and the checks kiln runs in other repos.
+- T-180 · The test suite renders each set of answers once, copier stops asking git per file (M)
+- T-181 · The session start does not wait for GitHub (S)
+- T-182 · `kiln status` in half a second (S)
+- T-183 · One hook per Bash call instead of two (S)
+- T-144 · Checks as fast as they are precise: oxlint, TypeScript 7, ty or pyrefly, measured (M)
+
+### v0.5.7 · The grid grows, and stays current
 - T-141 · Grid v2: the themes after the launch (L)
 - T-140 · The grid kept current: its sources watched every week (M)
 - T-174 · More converters: the code (M)
 
-### v0.5.7 · For more people
+### v0.5.8 · For more people
 - T-57 · A tutorial series: bring a Django repo up to date in an afternoon (M)
 - T-58 · A public roadmap on GitHub Projects (M)
 
@@ -875,6 +883,78 @@ old release.
   reads the result).
 - [ ] The hooks, skills and status line run against the current and the previous Claude Code
   release; `claude plugin eval` suites for the main skills.
+
+### T-180 · The test suite renders each set of answers once, and copier stops asking git per file
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-24
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: antoine, 24 October 2026: how to make kiln much faster without changing a single
+  feature?
+
+Measured that day on 16 cores: `uv run pytest -q` takes 56 s, every `kiln version cut` waits
+for it, and copier's renders are 696 s of the ~900 s the workers spend (77 %). The suite renders
+223 times for 164 distinct sets of answers; one render takes 1.0 s alone, 3 to 4 s under the
+load of 16 workers.
+- [ ] A render cache for the session, keyed by template, `vcs_ref` and answers: each set is
+  rendered once, then copied into the test's `tmp_path` (the tests that edit the render keep
+  their own copy). 59 renders saved, about a quarter of the render time.
+- [ ] Tests that only read the default render share one, per module.
+- [ ] Upstream fix in copier: `Worker._sync_git_index_executable_bit` (`copier/_main.py`, 9.18.2)
+  runs `git config --type=bool --get core.fileMode` once per rendered file, 62 times per render;
+  read once per worker. Measured: 1.01 s → 0.84 s per render (−17 %), which `kiln new` and
+  `kiln update` gain too. A pull request to copier, then the version bumped here.
+- [ ] Suite time before and after written in the merge commit.
+
+### T-181 · The session start does not wait for GitHub
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-24
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: same measurement as T-180, 24 October 2026
+
+`plugins/kiln/hooks/session_start.py` takes 1.3 s at every session start, almost all of it in
+one network call, `gh run list --branch develop --limit 20` (1.5 s, the red CI check), made in
+sequence. Off the `beta` channel, `git ls-remote` of the update check comes on top of it.
+- [ ] The CI verdict read from a cache refreshed in the background (as the status line already
+  does with `Popen`), with a short lifetime; the first session of the day may say nothing.
+- [ ] Otherwise, at least the network calls run at the same time, not one after the other.
+- [ ] Same messages, same cases: `tests/test_session_start.py` unchanged.
+
+### T-182 · `kiln status` in half a second
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-24
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: same measurement as T-180, 24 October 2026
+
+`kiln status` takes 1.9 s over 10 repos:
+- [ ] 0.36 s to import copier, which `status` never uses: it comes through
+  `fleet → adopted → adopted_names → migrations`, which imports it at the top (so does
+  `frozen.py`). Imported inside the functions that render; T-178's note that copier is only
+  imported by the commands that need it is not true for this path.
+- [ ] 0.42 s for `git ls-remote` in `versions.latest_release`, run before the local work: run it
+  alongside.
+- [ ] ~0.5 s of 23 git calls made one repo after the other: a thread per repo.
+- [ ] `kiln update --all` and the other fleet commands get the same import fix for free.
+
+### T-183 · One hook per Bash call instead of two
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-24
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: same measurement as T-180, 24 October 2026
+
+Every Bash call of Claude Code waits for two Python processes in a row: `branch_guard.py`
+(45 ms) then `rtk.py` (100 ms: two `git config`, then `rtk hook claude`), about 150 ms paid
+hundreds of times a session.
+- [ ] One `PreToolUse` hook for Bash doing both: one Python start, the git config read once.
+  Expected gain 30 to 40 ms per call, measured before and after.
+- [ ] The old script names stay as relays: open sessions call the hooks in the main tree
+  (`CLAUDE.md`, "Contrôles"), and `tests/test_plugins.py` checks the relays.
+- [ ] Left as they are, measured that day: the status line (140 ms, 16 commands in sequence,
+  never blocks Claude), `check_file.py` (70 ms), the CLI start (120 ms), `kiln score` (0.4 s),
+  `kiln check` (0.8 s), `charter` (0.6 s).
 
 ### T-77 · Tests in seconds after each edit: only those the change touches
 - **Type**: improvement
