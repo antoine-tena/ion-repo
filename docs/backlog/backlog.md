@@ -908,6 +908,9 @@ A slow check ends up not being run, and the time goes into the tools, not into k
   by symbol (Serena, an LSP) so a file's size matters less.
 - [ ] Business domain, as universal rules with project settings: money in cents, dates stored
   in UTC, personal data out of the logs.
+- [ ] Three new themes, each entering `THEMES` with its first rule: `licensing`,
+  `infrastructure`, `data-science` (`MODEL-TRACED` moves there); decision 3 of 24 October
+  2026 in [backlog-kiln-score.md](backlog-kiln-score.md).
 
 ### T-140 · The grid kept current: its sources watched every week
 - **Type**: improvement
