@@ -162,7 +162,7 @@ build on kiln. From here, strict semver: breaking → major, `feat` → minor.
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: M · **Owner**: Claude · **Due**: before the v0.5.0 candidate (Sun 1 Nov)
+- **Effort**: M · **Owner**: — · **Due**: before the v0.5.0 candidate (Sun 1 Nov)
 - **Origin**: antoine, 24 October 2026: several languages, or English only? Answer: English
   only for kiln itself. The public it wants (stars, Hacker News, outside contributors) reads
   English, as with uv, ruff and Bun; the parity between languages doubles every doc change
