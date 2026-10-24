@@ -4,8 +4,8 @@ Everything left to do on kiln, in a single list ordered by priority. Started on
 **2026-10-15**, rewritten on **2026-10-17** from the vision of that day (the measures of the two
 real repos stay private, see "Repos d'entraînement" in `CLAUDE.md`). Below the tickets: the
 [🧭 Vision](#-vision) that orders them, then the [💡 kiln score ideas](#-kiln-score-the-idea-backlog)
-(1,070 ideas, not tickets). Closed tickets are in [done.md](done.md), what was turned down in
-[rejected.md](rejected.md); how to write a ticket: [README.md](README.md). **Nothing else is
+(1,070 ideas, not tickets). Closed tickets are in [done.md](done.md); how to write a
+ticket: [README.md](README.md). **Nothing else is
 open.**
 
 North star: **kiln v0.5.0, launched publicly on Wednesday 11 November 2026: any Django or Nuxt
@@ -195,7 +195,7 @@ moved into this file, in English, on 24 Oct.
 - [ ] `CLAUDE.md` (map of the repo, "Le README, entièrement à jour", "Contrôles") and the
   `tout-a-jour` memory: one language for kiln's docs.
 - T-164 (French docs translated at the candidate) and T-55 (README in Chinese, Japanese,
-  Spanish, Portuguese) ruled out by antoine on 24 Oct (`rejected.md`); T-30 keeps no French
+  Spanish, Portuguese) ruled out by antoine on 24 Oct; T-30 keeps no French
   summary.
 
 ### T-166 · An adopted repo whose code is not in `backend/` or `frontend/` gets its stack too
@@ -1304,8 +1304,7 @@ university repo; the details stay private, see "Repos d'entraînement" in `CLAUD
 research; moved here and condensed on 24 October 2026. What the vision planned became tickets
 (the grid as data T-123, `kiln score` T-46, `kiln fix` T-126 to T-128, the roadmap T-129, gap
 reports T-38, profiles T-39, the A/B test T-53, the study T-132, tests at the lowest cost T-135
-and T-136, the compressor T-138 and T-139, the benchmark T-145); its ideas in reserve and the
-paths it dropped are in [rejected.md](rejected.md).
+and T-136, the compressor T-138 and T-139, the benchmark T-145).
 
 ### In one sentence
 
@@ -1677,8 +1676,8 @@ with its reason; the ideas below follow them.
 
 1. **Every stack scored; the templates stay frozen.** `kiln adopt` promises to bring any repo up,
    and a Go or Java repo scored on the 14 universal rules and those of its tools gets a hollow
-   number. Generating keeps T-133's line (Django and Nuxt first, the other templates frozen;
-   `rejected.md` now says "templates"); scoring opens stack by stack after the launch, in the
+   number. Generating keeps T-133's line (Django and Nuxt first, the other templates frozen);
+   scoring opens stack by stack after the launch, in the
    order the corpus and T-38's gap reports show, each pack with its facts, rules, examples and
    measured precision.
 2. **Equal weights stay; critical findings cap the score.** The number keeps meaning "the share

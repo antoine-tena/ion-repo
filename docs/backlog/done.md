@@ -79,12 +79,11 @@ The closed tickets of kiln, most recent first, one line each:
   opened 2026-10-16
 - **2026-10-18** · Backlog checked against the vision of 17 October 2026 — three tickets
   (T-143 the name, T-144 faster checks, T-145 the benchmark), details added to T-123, T-125,
-  T-129, T-30, T-135, T-136, T-138 and T-141; two ideas in reserve declined for now
-  ([rejected.md](rejected.md)) (docs/backlog-vision-gaps)
+  T-129, T-30, T-135, T-136, T-138 and T-141; two ideas in reserve declined for now (docs/backlog-vision-gaps)
 - **2026-10-17** · Backlog rewritten from the vision of 17 October 2026 — kiln keeps repos up to
   date with the best practices and easy for Claude to read, Django and Nuxt first; efforts in
   Claude Code session time on the Pro plan; plan dated up to the launch of v0.5.0 on
-  11 November 2026 (T-03); 55 tickets declined for now ([rejected.md](rejected.md)), 20 new
+  11 November 2026 (T-03); 55 tickets declined for now, 20 new
   (T-123 to T-142) (docs/backlog-vision)
 - **2026-10-17** · T-52, T-78, T-92, T-93, T-101, T-102, T-103, T-105 · `AGENTS.md`, context
   budget, front tests, database safety, repo hygiene, licences, release notes, backups — merged
