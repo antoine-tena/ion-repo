@@ -5,11 +5,10 @@ only up-to-date source.**
 
 | File | Content |
 |---|---|
-| [backlog.md](backlog.md) | **Everything open**: the single list ordered by priority, one `T-NN` ticket per thing to do with its type, status and details |
+| [backlog.md](backlog.md) | **Everything open**: the single list ordered by priority, one `T-NN` ticket per thing to do with its type, status and details; then the vision that orders it, then the `kiln score` ideas (not tickets: one becomes a ticket when planned) |
 | [done.md](done.md) | The closed tickets, one line each, most recent first |
 | [rejected.md](rejected.md) | What was turned down, dropped, or ruled out for good |
 | [urgent.md](urgent.md) | What only a human on the team can do (access, payment, decision), one checkbox per action |
-| [backlog-kiln-score.md](backlog-kiln-score.md) | Ideas to make `kiln score` universal, exhaustive, effortless, fast and powerful: not tickets; one becomes a ticket when planned |
 
 An audit writes its dated report next to these files (`audit-<topic>-YYYY-MM-DD.md`) while it
 runs, copies its open findings into [backlog.md](backlog.md) (with a pointer to their lines),
