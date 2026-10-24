@@ -157,6 +157,8 @@ def convert_tickets(text: str, dates: dict[str, str]) -> str:
             continue
         line = line.replace("- **Effort** : ", "- **Effort**: ")
         line = line.replace(" · **Qui** : ", " · **Owner**: ")
+        # An agent is not an owner: its tickets become free.
+        line = line.replace(" · **Owner**: Claude · ", " · **Owner**: — · ")
         line = line.replace(" · **Échéance** : ", " · **Due**: ")
         line = line.replace("- **Origine** : ", "- **Origin**: ")
         if line.startswith("Une ligne par entrée terminée"):
