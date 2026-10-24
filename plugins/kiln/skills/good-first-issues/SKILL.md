@@ -19,7 +19,7 @@ It lives in the "How to use" section of `docs/backlog/backlog.md`, one line:
 - No line: the repo does not do this. Say so and offer to start (`$ARGUMENTS` a number, or the
   user's yes to 3); the line goes in on the work branch with the first issues.
 - `$ARGUMENTS` a number: change the target in the line. `off`: remove the line; the open issues
-  stay, their tickets go back to `**Owner**: Claude` only if the user says so.
+  stay, their tickets go back to `**Owner**: —` only if the user says so.
 - A repo without `docs/backlog/backlog.md`: skill `/kiln:backlog` first.
 
 ## 1. Count what is open
@@ -31,7 +31,7 @@ Match each issue to its ticket in the backlog (`**Owner**: contributor — #NN`)
   crediting the contributor (`… — fixed by @login in #PR`);
 - an open issue with no ticket (opened by hand): fine, it counts;
 - an issue with no activity for three months and no one on it: propose closing it with a
-  kind word and giving the ticket back (`**Owner**: Claude`).
+  kind word and giving the ticket back (`**Owner**: —`).
 
 An issue someone asked for or is assigned to still counts: it is taken, not done.
 

@@ -21,8 +21,8 @@ A ticket: a `### T-NN · Title` heading, then the lines `- **Type**:`, `- **Stat
 then the details (`- [ ]` boxes). Types: `bug`, `improvement`, `idea`, `task`. Statuses:
 `todo`, `in progress — branch <name>, since YYYY-MM-DD`, `blocked — waiting for <who or what>`,
 `to verify — <where>`. **Owner**: `—` (free), `@login` (reserved for that GitHub account), a
-first name (reserved for that person too, login not written yet), `Claude`, or
-`contributor — #NN`. The user's account is `gh api user --jq .login` (otherwise
+first name (reserved for that person too, login not written yet), or `contributor — #NN`; never
+`Claude`: an agent is not an owner. The user's account is `gh api user --jq .login` (otherwise
 `git config user.name`); a ticket owned by **anyone else** is their work: never plan, start or
 code it, even partly, and say who to ask. **Only the user's own login is ever written**: when it
 appears in no **Owner** but first names do, ask once which first name is theirs and replace that

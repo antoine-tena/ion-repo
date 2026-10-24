@@ -191,7 +191,7 @@ French draft.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: issue #59 (antoine, 23 October 2026), what v0.4.6 left
 
 `kiln adopt` lays the common part only when the framework lives elsewhere (a Vite app at the
@@ -204,7 +204,7 @@ root, `manage.py` at the root): the template's stack files assume `backend/` and
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: issue #59 (antoine, 23 October 2026): `kiln dev` ran `npm run dev` and
   `npm run server` while the repo's `compose.yaml` had a `web` and a `server` service
 
@@ -216,7 +216,7 @@ root, `manage.py` at the root): the template's stack files assume `backend/` and
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-21
-- **Effort**: L · **Owner**: Claude · **Due**: —
+- **Effort**: L · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: antoine, 21 October 2026, after T-162: "skills should use one command line at most"
 
 A skill that runs git, gh and file reads step by step pays each step in tokens and leaves every
@@ -234,7 +234,7 @@ here and 36k in the reference repo, and Claude read it nearly 500 times in three
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-21
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: the most-starred token savers, 21 October 2026: ponytail (a skill, about 45 % fewer
   tokens and more risky logic tested, by its maintainer's own benchmark)
 
@@ -251,7 +251,7 @@ keeps it from being written.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-20
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: left from T-126, T-127 and T-128 (2026-10-20)
 
 - [ ] Compose services `read_only`, `cap_drop: [ALL]`, `no-new-privileges`, kept only where the
@@ -271,7 +271,7 @@ keeps it from being written.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: M · **Owner**: — · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
 
 `fix.py` promises "with proof", but `_apply` commits as soon as the converter leaves a diff:
@@ -293,7 +293,7 @@ strangers' repos until each commit is proven.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: S · **Owner**: — · **Due**: —
+- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
 
 `kiln fix` runs `git switch -c kiln/fix-<date>` in the user's tree, against kiln's own rule (one
@@ -310,7 +310,7 @@ existing branch, and a crash leaves the user on a half-done branch.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: S · **Owner**: — · **Due**: —
+- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
 
 `run_checks` answers yes or no: no check found, a tool missing and a repo already red before
@@ -328,7 +328,7 @@ the last box of T-159 (checks found beyond the root).
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: M · **Owner**: — · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: review of `kiln fix` asked by antoine, 24 October 2026; 26 `adopt` rules have a
   detector but no converter
 
@@ -349,7 +349,7 @@ without judgment. Each one with its passing and failing case in `tests/test_fix.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-20
-- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: left from T-46 (2026-10-20)
 
 Branch protection or rulesets on the integration branch, secret scanning and push protection,
@@ -360,7 +360,7 @@ failure for lack of a token).
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-17
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: vision of 17 October 2026 ("bring kiln's Django + Nuxt template to the top of the
   grid"); two of the reference repo's gaps came from kiln itself
 
@@ -377,7 +377,7 @@ pitch hollow.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: growth review, 16 October 2026; rewritten 17 October 2026: a tool that rewrites
   other people's repos must pass its own grid, visibly
 
@@ -392,7 +392,7 @@ pitch hollow.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: L · **Owner**: Claude · **Due**: —
+- **Effort**: L · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: growth review, 16 October 2026 ("Never lets it rot"); rewritten 17 October 2026
   (vision, step 5: continuous)
 
@@ -410,7 +410,7 @@ token, so it runs in CI for free on any public repo.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-17
-- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: vision of 17 October 2026 (the reference repo as training ground: its score
   measured at each kiln release)
 
@@ -423,7 +423,7 @@ token, so it runs in CI for free on any public repo.
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-17
-- **Effort**: M · **Owner**: Claude, antoine for the message to the university team · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: vision of 17 October 2026 (validation plan, step 3; two real repos measured)
 
 - [ ] The reference repo (18 of the 31 reference practices applied on 17 October) and a
@@ -441,7 +441,7 @@ token, so it runs in CI for free on any public repo.
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-17
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: vision of 17 October 2026 (validation steps 1 and 4: the pain on more than two
   repos, then a number to publish); the launch article
 
@@ -460,7 +460,7 @@ token, so it runs in CI for free on any public repo.
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: L · **Owner**: Claude · **Due**: —
+- **Effort**: L · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: T-03 prerequisites; issues #37 and #38; rewritten 17 October 2026 for the vision
 
 - [x] Today's README brought to the level of the best (20 October 2026, branch
@@ -498,7 +498,7 @@ token, so it runs in CI for free on any public repo.
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: S · **Owner**: Claude, antoine for the social preview upload · **Due**: —
+- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: positioning, 16 October 2026; rewritten 17 October 2026 from the vision's
   taglines
 
@@ -535,7 +535,7 @@ previews), the PyPI summary and the launch titles.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-20
-- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: README study, 20 October 2026; after T-46
 
 The image that travels by itself: GitHub's code search finds the Ruff badge in about 7,800
@@ -562,7 +562,7 @@ standards".
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-17
-- **Effort**: M · **Owner**: Claude · **Due**: 2026-11-09
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: 2026-11-09
 - **Origin**: launch planned on 17 October 2026 (T-03)
 
 - [ ] On fresh GitHub-hosted runners (Ubuntu, macOS) and in a clean container: the README's
@@ -641,7 +641,7 @@ East Coast in its morning, the West Coast waking up.
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: growth review, 16 October 2026; rewritten 17 October 2026 (vision, validation
   step 2: the small-files hypothesis is not proven)
 
@@ -661,7 +661,7 @@ layouts directly.
 - **Type**: bug
 - **Status**: todo
 - **Opened**: 2026-10-21
-- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: T-05 probe, 2026-10-21
 
 `plugins/kiln/hooks/branch_guard.py` refused `cd <scratch repo> && git commit` on a branch of
@@ -672,7 +672,7 @@ ignores a leading `cd` (`git -C` got through). It should judge the repo the comm
 - **Type**: bug
 - **Status**: todo
 - **Opened**: 2026-10-21
-- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: T-05 probe, 2026-10-21
 
 After the first push, `ci.yml` was not registered (dispatch answered 404 for minutes); a second
@@ -685,7 +685,7 @@ is GitHub's or kiln's doing.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: M · **Owner**: — · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
 
 The second half of T-173: rules on the code itself, each change proven by the repo's tests.
@@ -700,7 +700,7 @@ The second half of T-173: rules on the code itself, each change proven by the re
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: M · **Owner**: — · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
 
 Today the whole test suite runs after each converter: ten rules, ten runs, which kiln-bot pays
@@ -715,7 +715,7 @@ in CI minutes (T-59).
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: M · **Owner**: — · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
 
 - [ ] `--rule` takes several rules; `--skip RULE` leaves some out.
@@ -730,7 +730,7 @@ in CI minutes (T-59).
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: L · **Owner**: Claude · **Due**: —
+- **Effort**: L · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: antoine, 24 October 2026: "what should `kiln new` ask to fit the user best?"
 
 Ask only what kiln cannot guess and what really changes the repo, worded the way a senior
@@ -766,7 +766,7 @@ empty for Claude.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-20
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: training on the fleet (2026-10-20): a new `none` + Nuxt, Next or Astro project
   misses TESTS-PRESENT, the only gap left on a fresh repo (`test_template.py` exempts it)
 
@@ -780,7 +780,7 @@ drop the exemption.
 - **Type**: bug
 - **Status**: todo
 - **Opened**: 2026-10-20
-- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: the README's recorded demo (20 October 2026) shows `git config statusline.ci locale`
 
 kiln moved to English in 0.4.0, but `apply_statusline_settings` (`src/kiln/statusline.py`) still
@@ -792,7 +792,7 @@ the main tree by open sessions), convert existing repos in `kiln update`.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: antoine, 16 October 2026
 
 Asking at every release annoys; letting users skip releases is worse in 0.x (each patch can
@@ -809,7 +809,7 @@ break, skipped conversions pile up). So space the question, never the updates.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: growth review, second batch, 16 October 2026; the grid changes at every release
 
 A session opened before an update keeps working by the old rules.
@@ -820,7 +820,7 @@ A session opened before an update keeps working by the old rules.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: growth review, second batch, 16 October 2026; accounts ready (T-03)
 
 Every release is a reason to be seen again, from the launch on: nothing before it, so the
@@ -832,7 +832,7 @@ launch lands as one wave.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: growth review, 16 October 2026; rewritten 17 October 2026 for the grid
 
 - [ ] `kiln score --sarif`, uploaded by kiln-bot (T-59) and the charter workflow: findings in
@@ -844,7 +844,7 @@ launch lands as one wave.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: growth review, 16 October 2026; the nightly end-to-end run exists since v0.3.4
 
 The promise "kept up to date for as long as the project lives" rests on `kiln update` from any
@@ -859,7 +859,7 @@ old release.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: growth review, 16 October 2026; complements T-27 (doctrine 11: only recheck what
   changed)
 
@@ -872,7 +872,7 @@ Claude Code learns from fast feedback; a full suite after each edit is too slow 
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-18
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: vision of 17 October 2026, doctrine 11 ("the fastest, at equal precision"; on the
   reference repo: ruff 0.4 s, the charter 1.1 s, mypy 22.6 s, eslint 42.3 s)
 
@@ -890,7 +890,7 @@ A slow check ends up not being run, and the time goes into the tools, not into k
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-17
-- **Effort**: L · **Owner**: Claude · **Due**: —
+- **Effort**: L · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: vision of 17 October 2026 (the 23 themes); T-52, T-78, T-92, T-93, T-101, T-102,
   T-103 and T-105 merged here, as rules
 
@@ -912,7 +912,7 @@ A slow check ends up not being run, and the time goes into the tools, not into k
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-17
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: vision of 17 October 2026 ("keeping this grid up to date for the whole world is
   permanent work: that is where the value is, and what an agent alone does not do")
 
@@ -926,7 +926,7 @@ A slow check ends up not being run, and the time goes into the tools, not into k
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: growth review, 16 October 2026; rewritten 17 October 2026 for the vision
 
 Tutorials keep bringing visitors long after a launch; a series also tests the path for real.
@@ -938,7 +938,7 @@ Tutorials keep bringing visitors long after a launch; a series also tests the pa
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: growth review, 16 October 2026
 
 Contributors and users want to see where kiln goes and to weigh in, without reading a Markdown
@@ -952,7 +952,7 @@ file.
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: L · **Owner**: Claude · **Due**: —
+- **Effort**: L · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: growth review, 16 October 2026; rewritten 17 October 2026 (v0.6.0: Claude closes
   the gaps alone)
 
@@ -966,7 +966,7 @@ file.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: growth review, 16 October 2026; builds on `kiln ci`
 
 - [ ] Reads the failed job (GitHub logs or local replay), runs headless Claude Code on a work
@@ -977,7 +977,7 @@ file.
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-17
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: vision of 17 October 2026 ("the most tests for the fewest tokens"; validation
   step 5)
 
@@ -994,7 +994,7 @@ money module leaves 3 surviving mutants out of 16.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-17
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: vision of 17 October 2026 (generators without a model first)
 
 - [ ] Schemathesis on the Django Ninja API, Hypothesis for the pure computations (prices,
@@ -1006,7 +1006,7 @@ money module leaves 3 surviving mutants out of 16.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-17
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: vision of 17 October 2026 (doctrine 6)
 
 - [ ] From the log of `/kiln:modernize` (T-129): a rule fixed the same way twice, in one repo or
@@ -1017,7 +1017,7 @@ money module leaves 3 surviving mutants out of 16.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: L · **Owner**: Claude · **Due**: —
+- **Effort**: L · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: "the smallest level at creation, and rules that grow with the repo" (antoine,
   16 October 2026); rewritten 17 October 2026 from the vision (doctrine 1: one way per stack
   and per size of structure; risk 4: "the best depends on the context")
@@ -1034,7 +1034,7 @@ money module leaves 3 surviving mutants out of 16.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: growth review, 16 October 2026; rewritten 17 October 2026 (the vision's targets: a
   university whose student teams change every year, an association network)
 
@@ -1046,7 +1046,7 @@ money module leaves 3 surviving mutants out of 16.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: milestones decided by antoine, 16 October 2026 (v0.5.0, v0.6.0, v0.7.0, v1.0.0)
 
 In 0.x, `kiln version --minor` only moves to the next minor (`release.py`): nothing proposes
@@ -1084,7 +1084,7 @@ zsh is the default shell on macOS: most newcomers there get no completion today.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-15
-- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: interface redesign, 15 October 2026
 
 - [ ] `kiln check`: the step title and the `✓` line say the same thing (one command per step).
@@ -1093,7 +1093,7 @@ zsh is the default shell on macOS: most newcomers there get no completion today.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: growth review, second batch, 16 October 2026
 
 - [ ] Each problem `kiln doctor` finds and can fix safely (pre-commit missing, plugin not
@@ -1103,7 +1103,7 @@ zsh is the default shell on macOS: most newcomers there get no completion today.
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-17
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: vision of 17 October 2026, fourth pillar ("slim down", a lead): writing code
   costs almost nothing now, its mass is the problem
 
@@ -1122,7 +1122,7 @@ zsh is the default shell on macOS: most newcomers there get no completion today.
   2026: `kiln fix --rule DEAD-CODE` and `--rule UNUSED-DEPENDENCIES`, proven by the type
   checker and the tests; the behaviour comparison and the dependency replacement remain
 - **Opened**: 2026-10-17
-- **Effort**: L · **Owner**: Claude · **Due**: —
+- **Effort**: L · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: vision of 17 October 2026, fourth pillar
 
 No open tool removes existing code with a proof.
@@ -1137,7 +1137,7 @@ No open tool removes existing code with a proof.
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-18
-- **Effort**: L · **Owner**: Claude · **Due**: —
+- **Effort**: L · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: vision of 17 October 2026, ideas in reserve ("a public benchmark, Claude Code with
   and without kiln, that could serve as proof"); widened on 21 October 2026 at antoine's
   request: the tokens kiln saves, shown each session
@@ -1159,7 +1159,7 @@ estimated, and an estimate is credible only from a published A/B run.
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-16
-- **Effort**: L · **Owner**: Claude · **Due**: —
+- **Effort**: L · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: growth review, 16 October 2026; rewritten 17 October 2026: the community modules
   of v1.0.0 are grid packs
 

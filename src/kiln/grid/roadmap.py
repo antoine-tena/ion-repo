@@ -101,7 +101,7 @@ def _ticket(number: int, found: Finding, day: str) -> str:
         "- **Type**: improvement",
         "- **Status**: todo",
         f"- **Opened**: {day}",
-        "- **Effort**: S · **Owner**: Claude · **Due**: —",
+        "- **Effort**: S · **Owner**: — · **Due**: —",
         f"- **Origin**: kiln score --roadmap, {_marker(found.rule)}",
         "",
         f"{found.why}{confirm} Source: {found.source}. Done when `kiln score --rule {found.rule}` "
