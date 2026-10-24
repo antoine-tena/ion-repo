@@ -258,7 +258,7 @@ keeps it from being written.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: — · **Due**: —
 - **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
 
 `fix.py` promises "with proof", but `_apply` commits as soon as the converter leaves a diff:
@@ -280,7 +280,7 @@ strangers' repos until each commit is proven.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Effort**: S · **Owner**: — · **Due**: —
 - **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
 
 `kiln fix` runs `git switch -c kiln/fix-<date>` in the user's tree, against kiln's own rule (one
@@ -297,7 +297,7 @@ existing branch, and a crash leaves the user on a half-done branch.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: S · **Owner**: Claude · **Due**: —
+- **Effort**: S · **Owner**: — · **Due**: —
 - **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
 
 `run_checks` answers yes or no: no check found, a tool missing and a repo already red before
@@ -315,7 +315,7 @@ the last box of T-159 (checks found beyond the root).
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: — · **Due**: —
 - **Origin**: review of `kiln fix` asked by antoine, 24 October 2026; 26 `adopt` rules have a
   detector but no converter
 
@@ -672,7 +672,7 @@ is GitHub's or kiln's doing.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: — · **Due**: —
 - **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
 
 The second half of T-173: rules on the code itself, each change proven by the repo's tests.
@@ -687,7 +687,7 @@ The second half of T-173: rules on the code itself, each change proven by the re
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: — · **Due**: —
 - **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
 
 Today the whole test suite runs after each converter: ten rules, ten runs, which kiln-bot pays
@@ -702,7 +702,7 @@ in CI minutes (T-59).
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: M · **Owner**: Claude · **Due**: —
+- **Effort**: M · **Owner**: — · **Due**: —
 - **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
 
 - [ ] `--rule` takes several rules; `--skip RULE` leaves some out.
