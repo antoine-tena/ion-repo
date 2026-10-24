@@ -1,4 +1,5 @@
-# The README's demo: `kiln new`, its three questions, then `kiln check` on the new repo.
+# The README's first demo: `kiln new`, its three questions, `kiln check --all --tests` on the
+# new repo, then `kiln score` at 100/100.
 # Replay it from kiln's root before each release candidate (needs vhs, ttyd and ffmpeg):
 #
 #     vhs docs/assets/kiln-new.tape
@@ -47,13 +48,19 @@ Sleep 50s
 Show
 Sleep 6s
 
-Type "cd my-app && kiln check"
+Type "cd my-app && kiln check --all --tests"
 Sleep 900ms
 Enter
 Sleep 7s
 Hide
 Sleep 40s
 Show
+Sleep 6s
+
+# The last screen: a repo kiln has just made meets the whole grid.
+Type "clear && kiln score"
+Sleep 900ms
+Enter
 Sleep 8s
 
 # A cleared screen, so the wait reads it again: the demo folder weighs about 500 MB.

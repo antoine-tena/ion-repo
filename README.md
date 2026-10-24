@@ -16,9 +16,9 @@ Make Claude Code build production-grade repos, bring yours up to that grade, and
 
 [**Reference**](docs/reference.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Français](README.fr.md)
 
-<img src="docs/assets/kiln-new.gif" alt="kiln new my-app asks three questions (what you build, how big, the team's language), creates a Django and Nuxt app with its first commit, then kiln check passes ruff, mypy, pytest, ESLint, the type checks and charter" width="820">
+<img src="docs/assets/kiln-new.gif" alt="kiln new my-app asks three questions (what you build, how big, the team's language), creates a Django and Nuxt app with its first commit, then kiln check passes ruff, mypy, pytest, ESLint, the type checks and charter, and kiln score gives it 100/100" width="820">
 
-<i>A real run, played at 1.5× with the waits cut: <code>kiln new</code>, then <code>kiln check</code> in the new repo.</i>
+<i>A real run, played at 1.5× with the waits cut: <code>kiln new</code>, then <code>kiln check</code> and <code>kiln score</code> in the new repo.</i>
 
 </div>
 

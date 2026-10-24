@@ -16,9 +16,9 @@ kiln donne à Claude Code de quoi construire des repos de qualité production, r
 
 [**Référence**](docs/reference.fr.md) · [Journal des versions](CHANGELOG.md) · [Contribuer](CONTRIBUTING.md) · [English](README.md)
 
-<img src="docs/assets/kiln-new.gif" alt="kiln new my-app pose trois questions (ce que l'on construit, sa taille, la langue de l'équipe), crée une application Django et Nuxt avec son premier commit, puis kiln check passe ruff, mypy, pytest, ESLint, les types et charter" width="820">
+<img src="docs/assets/kiln-new.gif" alt="kiln new my-app pose trois questions (ce que l'on construit, sa taille, la langue de l'équipe), crée une application Django et Nuxt avec son premier commit, puis kiln check passe ruff, mypy, pytest, ESLint, les types et charter, et kiln score lui donne 100/100" width="820">
 
-<i>Une vraie exécution, jouée en 1,5× et coupée pendant les attentes : <code>kiln new</code>, puis <code>kiln check</code> dans le nouveau repo.</i>
+<i>Une vraie exécution, jouée en 1,5× et coupée pendant les attentes : <code>kiln new</code>, puis <code>kiln check</code> et <code>kiln score</code> dans le nouveau repo.</i>
 
 </div>
 
