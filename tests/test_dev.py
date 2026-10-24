@@ -1,5 +1,6 @@
 """`kiln dev`: the Procfile.dev, the background (`-d`, status, logs, stop) and its arguments."""
 
+import os
 import socket
 import subprocess
 import time
@@ -232,3 +233,39 @@ def test_a_server_is_seen_on_either_loopback(family: socket.AddressFamily, host:
     with server:
         server.listen()
         assert background._listens(server.getsockname()[1])
+
+
+def test_a_taken_port_stops_the_start_and_names_who_holds_it(
+    project: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Another process on the server's port would answer its readiness check (#60).
+    with socket.socket() as holder:
+        holder.bind(("127.0.0.1", 0))
+        holder.listen()
+        port = holder.getsockname()[1]
+        monkeypatch.setitem(background.DEV_PORTS, "nuxt", port)
+        (project / "backend/Procfile.dev").write_text("nuxt: sleep 60\n", encoding="utf-8")
+
+        with pytest.raises(KilnError, match=rf"port {port} \(nuxt\) is taken by "):
+            run_dev(project)
+
+    assert background.running(project) == []
+
+
+def test_a_port_held_by_another_worktree_points_to_its_kiln_dev_stop(
+    project: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    other = project / ".git/worktrees/feature"
+    (other / background.STATE_DIR).mkdir(parents=True)
+    (other / "gitdir").write_text("/code/repo-feature/.git\n", encoding="utf-8")
+    with socket.socket() as holder:
+        holder.bind(("127.0.0.1", 0))
+        holder.listen()
+        port = holder.getsockname()[1]
+        record = f'{{"pid": {os.getpid()}, "port": {port}}}'
+        (other / background.STATE_DIR / "nuxt.json").write_text(record, encoding="utf-8")
+        monkeypatch.setitem(background.DEV_PORTS, "nuxt", port)
+        (project / "backend/Procfile.dev").write_text("nuxt: sleep 60\n", encoding="utf-8")
+
+        with pytest.raises(KilnError, match=r"kiln dev of /code/repo-feature: `kiln dev stop`"):
+            run_dev(project)
