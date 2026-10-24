@@ -236,6 +236,11 @@ def _dispatch_score(arguments: argparse.Namespace) -> None:
         print(score.badge(report))
     else:
         score.show(report, every=arguments.all)
+        from kiln.dev.menu import is_interactive
+        from kiln.grid import gap_report
+
+        # Only a person at a terminal says yes: a script or a Claude session is never asked.
+        gap_report.offer(root, report, input if is_interactive() else None)
 
 
 def _add_grid_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
