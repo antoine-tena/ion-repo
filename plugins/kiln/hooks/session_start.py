@@ -236,11 +236,12 @@ def is_repo_late(commit: str, tag: str) -> bool:
 
 def tool_update_command(install: tuple[str, str] | None, tag: str) -> str:
     # The kiln plugin installed for the whole machine: its skills and hooks in every repo, not
-    # only those that declare it.
+    # only those that declare it. `install` is a no-op when the plugin is already there (#58):
+    # `update` then moves it to the marketplace's version.
     plugins = (
         f"(claude plugin marketplace add {KILN_GIT_URL.removeprefix('https://github.com/')} "
         "|| true) && claude plugin marketplace update kiln && claude plugin install kiln@kiln "
-        "--scope user"
+        "--scope user && claude plugin update kiln@kiln --scope user"
     )
     legacy = "uv tool uninstall kiln && " if has_legacy_tool() else ""
     if is_beta():
