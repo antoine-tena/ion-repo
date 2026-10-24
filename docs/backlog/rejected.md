@@ -40,7 +40,7 @@ frameworks build features; kiln keeps the repo they live in at the level of the 
 
 **More templates and project types**: Django and Nuxt first, the other templates frozen (T-133).
 Scoring other stacks is not ruled out: stack packs after the launch (decision 1 of 24 October
-2026, [backlog-kiln-score.md](backlog-kiln-score.md)).
+2026, [the kiln score ideas](backlog.md#-kiln-score-the-idea-backlog)).
 - T-07 · Better support for Java projects
 - T-36 · `kiln new` recommends the stack, the user decides
 - T-79, T-80, T-81 · Project types `mcp`, `agent`, `library`
@@ -94,6 +94,12 @@ small structures' repos up to date; back once the grid holds.
 - Living forks: one's changes kept as intentions with their tests, replayed on each upstream
   release (`kiln update` for any open-source software)
 - A financial guarantee on merged code: trust sold as an insured product
+
+**Paths the vision dropped on the way** (17 October 2026):
+- A "measured harness" (scoring an agent's configuration): a product centred on agents, not
+  kiln's subject, and partly Anthropic's ground
+- "Dependabot for the Claude Code configuration": Claude Code's `/doctor` has done it since
+  July 2026
 
 ## Dropped
 

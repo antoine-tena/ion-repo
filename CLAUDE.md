@@ -49,8 +49,8 @@ un dossier ou un module.
   sur le repo public `antoine-tena/kiln-demo-legacy`, gardé vieux exprès), et l'image de partage
   `social-preview.png` (déposée à la main dans les réglages de GitHub).
 - `docs/backlog/` : suivi du travail, en anglais (skill `/kiln:backlog`), dont la prochaine
-  promotion de version ; `docs/assets/` : images de la vitrine ; `docs/vision/` : l'idée de
-  projet, brouillon en français, un fichier par sujet (`README.md` sert d'index).
+  promotion de version ; `backlog.md` finit par la vision qui ordonne les tickets (`## 🧭 Vision`)
+  et les idées de `kiln score` (`## 💡`, pas des tickets) ; `docs/assets/` : images de la vitrine.
 - `scripts/screenshots.py` : dessine les images du README à partir des vraies sorties de kiln
   (et le logo, l'image de partage) ; `scripts/social_preview.py` : l'image de partage en PNG
   (Playwright) ; `scripts/demo_shell.sh` : le shell des démos enregistrées (kiln de ce dossier,
@@ -122,7 +122,7 @@ et kiln-bot (T-59) rendra la mise à jour gratuite. Les changements cassants res
   travaille seul dans le repo, v0.7.0 kiln pour les équipes et les organisations, v1.0.0 promesse
   de stabilité, juste avant les modules de la communauté (T-69) qui s'appuieront sur l'API de
   kiln ; le plan de `docs/backlog/` les porte. Leur contenu suit la vision du 17 octobre 2026
-  (`docs/vision/`, brouillon en français) : v0.5.0 note n'importe quel
+  (section `🧭 Vision` de `docs/backlog/backlog.md`) : v0.5.0 note n'importe quel
   repo Django ou Nuxt face à la grille et le corrige par script, v0.6.0 Claude comble seul les
   écarts que le script laisse, v0.7.0 profils de structure et flottes de repos (associations,
   universités, PME ; pas encore les grandes entreprises), v1.0.0 format de la grille stable pour
