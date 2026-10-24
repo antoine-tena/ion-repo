@@ -1,9 +1,11 @@
 {%- set base = name | replace('-', '_') -%}
-# Production stack, run on the server in /opt/{{ name }} by podman-compose. Secrets are not here:
+# Production stack, run on the server in /opt/{{ name }} by podman-compose.{% if backend == 'django' %} Secrets are not here:
 # /opt/{{ name }}/.env (POSTGRES_PASSWORD) and /opt/{{ name }}/backend/.env (Django), created by hand
-# once, never versioned ([SECRETS]). The local stack is compose.yaml, at the root of the repo.
+# once, never versioned ([SECRETS]).{% else %} The front alone: no
+# database, nothing to back up.{% endif %} The local stack is compose.yaml, at the root of the repo.
 name: {{ name }}
 
+{% if backend == 'django' -%}
 services:
   db:
     container_name: {{ name }}-db
@@ -69,3 +71,28 @@ services:
       timeout: 10s
       retries: 3
       start_period: 20s
+{%- else -%}
+{%- set port = 8501 if frontend == 'streamlit' else 8050 -%}
+services:
+  frontend:
+    container_name: {{ name }}-frontend
+    # Built and tagged by the switch script (deploy-remote.sh), one image per commit.
+    image: localhost/{{ base }}_frontend:latest
+    restart: always
+    # Host network: the app reached by Caddy on 127.0.0.1:{{ port }}.
+    network_mode: host
+    # [HARDENED-CONTAINERS]: read-only file system, no capability, no privilege escalation.
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as r; r.urlopen('http://127.0.0.1:{{ port }}/{{ '_stcore/health' if frontend == 'streamlit' else '' }}', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+{%- endif %}

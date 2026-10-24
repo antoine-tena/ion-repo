@@ -1,16 +1,30 @@
-# Caddy of the server: automatic TLS (Let's Encrypt) and headers, in front of the API on
-# 127.0.0.1:8000. Installed by the switch (deploy-remote.sh) as /etc/caddy/Caddyfile, reloaded when
+{%- set api = backend == 'django' %}
+{%- set domain = api_domain if api else site_url.split('://')[-1].split('/')[0] %}
+{%- set port = 8000 if api else (8501 if frontend == 'streamlit' else 8050) -%}
+# Caddy of the server: automatic TLS (Let's Encrypt) and headers, in front of the {{ 'API' if api else 'app' }} on
+# 127.0.0.1:{{ port }}. Installed by the switch (deploy-remote.sh) as /etc/caddy/Caddyfile, reloaded when
 # it changed.
 {
-	email admin@{{ api_domain.split('.')[-2:] | join('.') }}
+	email admin@{{ domain.split('.')[-2:] | join('.') }}
 }
 
-{{ api_domain }} {
+{{ domain }} {
 	encode zstd gzip
+{%- if api %}
 
 	# [SECURITY-HEADERS]: Django already sets HSTS, nosniff, referrer and COOP; what gives the
 	# server away goes.
 	header -Server
+{%- else %}
+
+	# [SECURITY-HEADERS]: what the app does not set; what gives the server away goes.
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+{%- endif %}
 
 	log {
 		output file /var/log/caddy/{{ name }}-access.log {
@@ -20,9 +34,10 @@
 		format json
 	}
 
-	reverse_proxy 127.0.0.1:8000 {
+	# Websockets{{ ' (Streamlit)' if frontend == 'streamlit' else '' }} go through as they are.
+	reverse_proxy 127.0.0.1:{{ port }} {
 		header_up X-Forwarded-Proto {scheme}
-		health_uri /api/health
+		health_uri {{ '/api/health' if api else ('/_stcore/health' if frontend == 'streamlit' else '/') }}
 		health_interval 30s
 	}
 }

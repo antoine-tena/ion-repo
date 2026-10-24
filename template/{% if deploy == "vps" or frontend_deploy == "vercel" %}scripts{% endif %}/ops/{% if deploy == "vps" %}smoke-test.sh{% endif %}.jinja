@@ -2,7 +2,7 @@
 # Smoke test after a deployment: the chain as a visitor sees it, from outside.
 #
 # Usage:    scripts/ops/smoke-test.sh [expected_version]
-# Settings: API_URL and SITE_URL override config/vps/project.json. Add here a check per important
+# Settings: {{ 'API_URL and ' if backend == 'django' else '' }}SITE_URL override{{ '' if backend == 'django' else 's' }} config/vps/project.json. Add here a check per important
 #           public read of the project (check, json_true, cors_open, fetch:
 #           scripts/ops/lib/smoke.sh).
 set -euo pipefail
@@ -12,8 +12,11 @@ cd "$(git rev-parse --show-toplevel)"
 . scripts/ops/lib/vps-target.sh
 # shellcheck source=SCRIPTDIR/lib/smoke.sh
 . scripts/ops/lib/smoke.sh
-API="${API_URL:-$(vps_target apiUrl)}"
 SITE="${SITE_URL:-$(vps_target siteUrl)}"
+{%- endraw %}
+{%- if backend == 'django' %}
+{%- raw %}
+API="${API_URL:-$(vps_target apiUrl)}"
 EXPECTED_VERSION="${1:-}"
 
 echo "Smoke test: $API (site: $SITE)"
@@ -22,5 +25,15 @@ check "readiness probe /api/ready (database)" json_true "$API/api/ready" "data['
 if [ -n "$EXPECTED_VERSION" ]; then
   check "deployed version ${EXPECTED_VERSION:0:12}" json_true "$API/api/health" "data['version'] == '$EXPECTED_VERSION'"
 fi
-smoke_summary
 {%- endraw %}
+{%- else %}
+
+# The deployed version is checked by the switch (the image in service); here, the app as a visitor
+# reaches it.
+echo "Smoke test: $SITE"
+check "home page" fetch "$SITE/" -o /dev/null
+{%- if frontend == 'streamlit' %}
+check "liveness probe /_stcore/health" fetch "$SITE/_stcore/health" -o /dev/null
+{%- endif %}
+{%- endif %}
+smoke_summary
