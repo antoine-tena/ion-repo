@@ -1,5 +1,6 @@
 import subprocess
 from pathlib import Path
+from typing import Any
 
 import pytest
 import yaml
@@ -33,8 +34,9 @@ def repo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     return root
 
 
-def answers(root: Path) -> dict[str, object]:
-    return yaml.safe_load((root / ".copier-answers.yml").read_text())
+def answers(root: Path) -> dict[str, Any]:
+    loaded: dict[str, Any] = yaml.safe_load((root / ".copier-answers.yml").read_text())
+    return loaded
 
 
 def test_adoption_lays_what_kiln_new_writes_and_keeps_the_repo_s_files(repo: Path) -> None:
