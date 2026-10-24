@@ -5,7 +5,7 @@
 # and raise, and its own rules can be added here.
 {%- set python_files = (['backend/*.py', 'backend/**/*.py'] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + (['frontend/*.py', 'frontend/**/*.py'] if frontend in ['streamlit', 'dash'] else []) %}
 {%- set java_files = ['backend/src/**/*.java'] if backend == 'java' else [] %}
-{%- set front_files = {'nuxt': ['frontend/app/**'], 'next': ['frontend/app/**', 'frontend/components/**', 'frontend/lib/**'], 'astro': ['frontend/src/**']}.get(frontend, []) %}
+{%- set front_files = {'nuxt': ['frontend/app/**'], 'next': ['frontend/app/**', 'frontend/components/**', 'frontend/lib/**'], 'astro': ['frontend/src/**'], 'vite-react': ['frontend/src/**']}.get(frontend, []) %}
 
 size = "{{ size }}"
 exclude = ["/migrations/", "/notebooks/"]
@@ -135,6 +135,9 @@ files = {{ front_files | tojson }}
 {%- if frontend == 'next' %}
 suffixes = [".ts", ".tsx", ".mjs"]
 test_suffixes = [".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx"]
+{%- elif frontend == 'vite-react' %}
+suffixes = [".ts", ".tsx"]
+test_suffixes = [".test.ts", ".test.tsx"]
 {%- elif frontend == 'astro' %}
 suffixes = [".ts", ".astro", ".mjs"]
 test_suffixes = [".test.ts", ".spec.ts"]

@@ -64,7 +64,7 @@ one module per domain. Run: `kiln dev` (or `uv run uvicorn app.main:app --reload
   in `UPPER_SNAKE_CASE`, and is translated by a central exception handler into
   `{"status": "fail", "code": …, "message": …, "timestamp": …, "meta": {…}}`. The `message`
   speaks to the user, in the project's language; no technical detail leaves in production.
-{%- if frontend in ['nuxt', 'next', 'astro', 'streamlit', 'dash'] %}
+{%- if frontend in ['nuxt', 'next', 'astro', 'vite-react', 'streamlit', 'dash'] %}
 - **[OPENAPI]** The schema (`/api/openapi.json`) is exported and committed at each API change
   when a front derives its types from it ([CONTRACT-DRIFT]: CI fails when one drifts from the
   other).

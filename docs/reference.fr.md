@@ -194,7 +194,7 @@ Le type de projet choisit une stack, que l'on change par `--backend` et `--front
 | Analyse de données (`analysis`) | Données Python | aucun |
 | Outil en ligne de commande (`cli`) | Outil Python (`cli` : argparse, commande installable) | aucun |
 
-Backends : `django`, `fastapi`, `data`, `cli`, `java`, `none`. Frontends : `nuxt`, `next`, `astro`,
+Backends : `django`, `fastapi`, `data`, `cli`, `java`, `none`. Frontends : `nuxt`, `next`, `astro`, `vite-react`,
 `streamlit`, `dash`, `none`. Toutes les combinaisons sont générées et vérifiées par les tests.
 
 **Django et Nuxt : complets. Les autres : figés, entretenus.** Toutes les piles restent générées
@@ -353,7 +353,7 @@ Python, podman pour les conteneurs (bases de test comprises), podman-compose ins
 | `django.yml` | Backend Django : ruff, `charter types`, migrations manquantes, pytest et couverture, contre PostgreSQL et Redis lancés par podman. |
 | `python.yml` | Tout projet uv (FastAPI, données, Streamlit, Dash) : ruff, mypy, pytest avec un plancher de couverture ; PostgreSQL en option. |
 | `maven.yml` | Backend Java : `./mvnw verify` (compilation stricte, JUnit, plancher de couverture JaCoCo) sur un JDK Temurin. |
-| `pnpm.yml` | Front pnpm (Nuxt, Next.js, Astro) : scripts de `package.json` dans l'ordre ; pnpm pris dans `packageManager`. |
+| `pnpm.yml` | Front pnpm (Nuxt, Next.js, Astro, Vite + React) : scripts de `package.json` dans l'ordre ; pnpm pris dans `packageManager`. |
 | `charter.yml` | Règles de `charter.toml`. |
 | `security.yml` | `uv audit`, `pnpm audit` et OSV-Scanner pour un projet Maven. |
 | `secrets.yml` | Secrets commités (gitleaks, version figée et vérifiée). |

@@ -1,0 +1,7 @@
+# Install scripts of dependencies: refused, prebuilt binaries are enough.
+allowBuilds:
+  '@tailwindcss/oxide': false
+  esbuild: false
+
+# Exact versions in package.json, even after `kiln update` ([LOCKED-DEPENDENCIES]).
+saveExact: true

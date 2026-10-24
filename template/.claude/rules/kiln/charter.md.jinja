@@ -1,7 +1,7 @@
 {%- set level = {'spark': 0, 'ember': 1, 'flame': 2, 'blaze': 3}[size] %}
 {%- set back_py = backend in ['django', 'fastapi', 'data', 'cli'] %}
 {%- set front_py = frontend in ['streamlit', 'dash'] %}
-{%- set front_js = frontend in ['nuxt', 'next', 'astro'] %}
+{%- set front_js = frontend in ['nuxt', 'next', 'astro', 'vite-react'] %}
 {%- set java = backend == 'java' %}
 {%- set api = backend in ['django', 'fastapi'] -%}
 <!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten. A
@@ -38,7 +38,7 @@ matching files.
 ## Size and structure
 
 - **[FILE-SIZE]** 300 lines at most per file (ratchet).
-{%- if frontend in ['nuxt', 'next', 'astro'] %} A {{ {'nuxt': 'Vue', 'next': 'React', 'astro': 'Astro'}[frontend] }} component that grows becomes a
+{%- if frontend in ['nuxt', 'next', 'astro', 'vite-react'] %} A {{ {'nuxt': 'Vue', 'next': 'React', 'astro': 'Astro', 'vite-react': 'React'}[frontend] }} component that grows becomes a
   directory (an entry point and sub-components).
 {%- endif %}
 {%- if back_py or front_py %} A Python module that grows becomes a package whose `__init__.py`
@@ -75,7 +75,7 @@ matching files.
 
 - **[NO-MAGIC-VALUES]** No business literal in the code (status, role, threshold, delay, price,
   colour, repeated column name):
-{%- if front_js %} constants in `{{ {'nuxt': 'app/utils/constants.ts', 'next': 'lib/constants.ts', 'astro': 'src/constants.ts'}[frontend] }}` or TypeScript enums for the front;{% endif %}
+{%- if front_js %} constants in `{{ {'nuxt': 'app/utils/constants.ts', 'next': 'lib/constants.ts', 'astro': 'src/constants.ts', 'vite-react': 'src/constants.ts'}[frontend] }}` or TypeScript enums for the front;{% endif %}
 {%- if backend == 'django' %} `TextChoices` / `IntegerChoices` or a named constant at the top of the module for the backend.
 {%- elif java %} an `enum` or a named `static final` constant in Java{% if front_py %}, `enum.StrEnum` or a named constant in Python{% endif %}.
 {%- else %} `enum.StrEnum` or a named constant at the top of the module in Python.{% endif %}
@@ -96,7 +96,7 @@ matching files.
 - **[SECRETS]** No secret in the code nor in the repository: everything goes through the
   environment
 {%- set secrets_back = {'django': '`python-decouple` for the backend', 'fastapi': '`pydantic-settings` for the backend', 'data': '`python-decouple` for the backend', 'cli': '`os.environ` read at the edge for the backend', 'java': '`System.getenv` read at the edge for the backend'}.get(backend) %}
-{%- set secrets_front = {'nuxt': '`runtimeConfig` for the front', 'next': 'server variables for the front (never `NEXT_PUBLIC_` for a secret)', 'astro': '`astro:env` for the front', 'streamlit': '`st.secrets` for the front', 'dash': '`python-decouple` for the front'}.get(frontend) %} ({{ [secrets_back, secrets_front] | select | join(', ') }}).
+{%- set secrets_front = {'nuxt': '`runtimeConfig` for the front', 'next': 'server variables for the front (never `NEXT_PUBLIC_` for a secret)', 'astro': '`astro:env` for the front', 'vite-react': 'never a secret in the front (a `VITE_` variable ends up in the bundle)', 'streamlit': '`st.secrets` for the front', 'dash': '`python-decouple` for the front'}.get(frontend) %} ({{ [secrets_back, secrets_front] | select | join(', ') }}).
   A secret committed by mistake is compromised: it gets changed.
 
 ## Errors, inputs and comments

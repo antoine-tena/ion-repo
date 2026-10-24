@@ -1,0 +1,51 @@
+{%- set level = {'spark': 0, 'ember': 1, 'flame': 2, 'blaze': 3}[size] -%}
+---
+paths:
+  - "frontend/**"
+---
+<!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten. -->
+# Frontend: Vite and React 19
+
+`frontend/src/`: the app (`App.tsx`, entry `main.tsx`), its components, its API client
+(`lib/`), its constants (`constants.ts`); `frontend/index.html` is the page Vite serves. Read
+`frontend/AGENTS.md` first. Run: `kiln dev`; check: `kiln check` (ESLint, `tsc`); tests:
+`pnpm test` (Vitest).
+
+## Code
+
+- **[STRICT-TS]** Strict TypeScript in every `.ts` and `.tsx` (`strict`,
+  `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`).
+- **[NO-ANY]** No `any`: `unknown`, then a type narrowing (ESLint rule).
+- **[ASYNC-AWAIT]** `async/await` with `try/catch` only; `.then().catch()` chains are banned.
+- **[MODERN-REACT]** React 19: function components and hooks, never a class component. The
+  rules of hooks hold (ESLint, `react-hooks`). Asynchronous data is read with `use()` and
+  `Suspense`, or an effect that ignores an answer arriving after the component is gone.
+- **[API-CALLS]** Components never call the API directly: they go through a typed function of
+  `src/lib/` that validates the response before returning it.
+- **[UI-STATES]** Every screen that loads data handles the three states explicitly: loading,
+  error (an understandable message) and empty list.
+- **[ACCESSIBILITY]** Every field has an associated `<label>`, every icon button an `aria-label`,
+  every informative image an `alt`. Everything works with the keyboard and focus stays visible.
+- **[TEST-DENSITY]** The front's test density never drops: its floor in `charter.toml` is raised
+  as it goes up (floor). A component is tested through what it renders (Vitest).
+
+## Styling
+
+- **[STYLE-2]** **Tailwind by default**, right in the markup. Separate CSS only for a multi-step
+  animation, a native browser element or a black-box third-party component.
+- **[STYLE-3]** `src/index.css` is the only CSS file, imported by `main.tsx`: it imports Tailwind
+  and holds the theme tokens (`@theme`). A component writes the class of a token, never an
+  arbitrary value that copies it.
+- **[STYLE-5]** Banned: bursts of arbitrary classes, `@apply` to rebuild a component,
+  `!important` except to override a third-party library that forces it.
+{%- if level >= 2 %}
+
+## Performance and quality
+
+- **[CORE-WEB-VITALS]** Budgets at the 75th percentile, on mobile: **LCP < 2.5 s**,
+  **INP < 200 ms**, **CLS < 0.1**. A regression beyond them blocks the release.
+- **[JS-BUDGET]** A JavaScript budget for the bundle, checked at build time; a route that is
+  not on the first screen is loaded lazily (`lazy()`).
+- **[AUTOMATED-ACCESSIBILITY]** Main pages pass an automated `axe-core` check; target
+  **WCAG 2.2 level AA**.
+{%- endif %}

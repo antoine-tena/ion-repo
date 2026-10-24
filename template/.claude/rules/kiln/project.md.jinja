@@ -2,8 +2,8 @@
 {%- set languages = {'en': 'English', 'fr': 'French'} %}
 {%- set size_text = {'spark': 'a script, a personal tool, a one-off analysis', 'ember': 'a small app or site, one or two people, low stakes', 'flame': 'an app in production, real users, several contributors', 'blaze': 'several teams or services, high stakes'}[size] %}
 {%- set back_text = {'django': 'Django + Django Ninja', 'fastapi': 'FastAPI', 'data': 'Python data: polars or NumPy, marimo, Plotly', 'cli': 'a Python command-line tool', 'java': 'Java 25, Maven, no framework'}.get(backend) %}
-{%- set front_text = {'nuxt': 'Nuxt 4 + Vue 3', 'next': 'Next.js 16 + React 19', 'astro': 'Astro 7', 'streamlit': 'Streamlit', 'dash': 'Dash'}.get(frontend) %}
-{%- set front_url = {'nuxt': 'http://localhost:3000', 'next': 'http://localhost:3000', 'astro': 'http://localhost:4321', 'streamlit': 'http://localhost:8501', 'dash': 'http://localhost:8050'}.get(frontend) %}
+{%- set front_text = {'nuxt': 'Nuxt 4 + Vue 3', 'next': 'Next.js 16 + React 19', 'astro': 'Astro 7', 'vite-react': 'Vite + React 19', 'streamlit': 'Streamlit', 'dash': 'Dash'}.get(frontend) %}
+{%- set front_url = {'nuxt': 'http://localhost:3000', 'next': 'http://localhost:3000', 'astro': 'http://localhost:4321', 'vite-react': 'http://localhost:5173', 'streamlit': 'http://localhost:8501', 'dash': 'http://localhost:8050'}.get(frontend) %}
 {%- set python_dirs = (['backend'] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + (['frontend'] if frontend in ['streamlit', 'dash'] else []) %}
 {%- set uses = [language_comments, language_commits, language_docs, language_tickets, language_ui] -%}
 <!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten.
@@ -41,7 +41,7 @@ The repo is generated and kept current by [kiln](https://github.com/antoine-tena
 {%- endif %}
 - `kiln check`: every check of the stack ({% if python_dirs %}ruff, mypy, pytest{% endif %}
 {%- if backend == 'java' %}{{ ', ' if python_dirs }}Maven{% endif %}
-{%- if frontend in ['nuxt', 'next'] %}, ESLint, type checks{% elif frontend == 'astro' %}, ESLint, `astro check`{% endif %}), then `charter`.
+{%- if frontend in ['nuxt', 'next', 'vite-react'] %}, ESLint, type checks{% elif frontend == 'astro' %}, ESLint, `astro check`{% endif %}), then `charter`.
   Run it before saying a change is done.
 {%- if backend == 'django' and frontend == 'nuxt' %}
 - `kiln contract`: export `openapi.json` from the Django code and regenerate the front's types
@@ -50,7 +50,7 @@ The repo is generated and kept current by [kiln](https://github.com/antoine-tena
 {%- if python_dirs %}
 - A Python dependency: `uv add <package>` in its directory (`--dev` for a tool); never pip.
 {%- endif %}
-{%- if frontend in ['nuxt', 'next', 'astro'] %}
+{%- if frontend in ['nuxt', 'next', 'astro', 'vite-react'] %}
 - A JavaScript dependency: `pnpm add <package>` in `frontend/` (`-D` for a tool); never npm.
 {%- endif %}
 - `kiln update`: kiln's improvements and compatible dependency upgrades, on a branch, checks

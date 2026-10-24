@@ -6,6 +6,7 @@ import yaml
 
 from kiln import adopt, update
 from kiln.shell import KilnError
+from kiln.stack import detect_stack
 
 TEMPLATE_DIR = str(Path(__file__).resolve().parent.parent)
 GIT_IDENTITY = ["-c", "user.name=N", "-c", "user.email=n@example.com", "-c", "commit.gpgsign=false"]
@@ -128,3 +129,14 @@ def test_project_name_of_a_worktree_is_its_main_tree_s(tmp_path: Path) -> None:
     subprocess.run(["git", "-C", str(main), "worktree", "add", "-q", str(worktree)], check=True)
 
     assert adopt.project_name(worktree) == "club"
+
+
+@pytest.mark.parametrize(("dependency", "frontend"), [("react", "vite-react"), ("vue", "none")])
+def test_a_vite_app_is_taken_for_react_only_when_it_depends_on_it(
+    tmp_path: Path, dependency: str, frontend: str
+) -> None:
+    (tmp_path / "frontend").mkdir()
+    (tmp_path / "frontend/vite.config.ts").write_text("export default {}\n")
+    (tmp_path / "frontend/package.json").write_text(f'{{"dependencies": {{"{dependency}": "1"}}}}')
+
+    assert detect_stack(tmp_path).frontend == frontend

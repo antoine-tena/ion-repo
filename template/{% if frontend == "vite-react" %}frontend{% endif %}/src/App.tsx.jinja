@@ -1,0 +1,43 @@
+{%- if backend in ['django', 'fastapi'] -%}
+import { useEffect, useState } from 'react';
+
+import { APP_DESCRIPTION, APP_TITLE, BACKEND_CONNECTING } from './constants';
+import { readHealth } from './lib/api';
+
+export function App() {
+  const [health, setHealth] = useState(BACKEND_CONNECTING);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function showHealth(): Promise<void> {
+      const status = await readHealth();
+      if (isMounted) {
+        setHealth(status);
+      }
+    }
+    void showHealth();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  return (
+    <main className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center gap-4 p-6">
+      <h1 className="text-3xl font-bold text-brand">{APP_TITLE}</h1>
+      <p className="text-gray-600">{APP_DESCRIPTION}</p>
+      <p className="text-gray-500">{health}</p>
+    </main>
+  );
+}
+{%- else -%}
+import { APP_DESCRIPTION, APP_TITLE } from './constants';
+
+export function App() {
+  return (
+    <main className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center gap-4 p-6">
+      <h1 className="text-3xl font-bold text-brand">{APP_TITLE}</h1>
+      <p className="text-gray-600">{APP_DESCRIPTION}</p>
+    </main>
+  );
+}
+{%- endif %}

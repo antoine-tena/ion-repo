@@ -151,6 +151,7 @@ frontend:
     "Nuxt + Vue (web app)": nuxt
     "Next.js + React (web app)": next
     "Astro (content site, static)": astro
+    "Vite + React (single-page app)": vite-react
     "Streamlit (Python dashboard)": streamlit
     "Dash (Python dashboard, interactive)": dash
     "None": none
