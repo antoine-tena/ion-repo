@@ -79,12 +79,15 @@ groupings freely each time, as long as the result follows these rules.
 - **No useless release.** A release that only holds a stray XS ticket or a vague theme is
   merged into a neighbour; a release too big to ship within the cadence the repo's
   `CLAUDE.md` sets (about a week when it says nothing) is split along a real seam. Urgent fixes (a 🔴 bug) may stand alone.
+  Work whose tickets only hold what is known today (one ecosystem after another, rules still to
+  write) is sized from what comparable work took, said in the release line, never from its boxes.
 - **Order**: what blocks first, then 🔴 then 🟠 then the rest; within that, the release that
   makes the north star of the header closest comes first.
 - **Numbers are planned, not promised.** In 0.x each release bumps the patch; a group that
   forms a milestone may be proposed as a minor bump, saying why in the release line: the user
-  decides (until then keep the patch number). Inserting or merging releases renumbers the
-  later ones. A release whose candidate is tagged is frozen: no ticket enters or leaves it.
+  decides (until then keep the patch number). The minor goes to the release that reaches the
+  milestone, never to the one that starts its work: what leads to a v0.8.0 milestone is v0.7.x.
+  Inserting or merging releases renumbers the later ones. A release whose candidate is tagged is frozen: no ticket enters or leaves it.
 - **Breaking changes** (CLI, `copier.yml` questions, generated tree, workflow inputs, skill and
   hook names, charter rule IDs) are flagged `⚠ breaking` on the release: they open its release
   note and need their conversion in `kiln update`.
