@@ -13,78 +13,85 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-185.**
+**Next free: T-186.**
 
 ---
 
 ## 🚀 Releases
 
 A candidate every two days, about 4 of its 7 session-hours planned, the rest margin. v0.4.0 to
-v0.4.4 went out a week ahead of the first plan (v0.4.4 promoted on Wed 21 Oct instead of a
-candidate on Wed 28 Oct): the week won goes to the releases below, and v0.5.0 keeps its date.
-The launch date is fixed (T-03); the version it waits for is v0.5.0.
+v0.4.5 went out a week ahead of the first plan: the week won goes to the releases below, and
+v0.5.0 keeps its date (the launch, T-03). Every open ticket and every one of the 1,070
+[kiln score ideas](#-kiln-score-the-idea-backlog) has its release (antoine, 25 October 2026:
+everything planned, the ideas included): a ticket is listed under its release, an idea ends with
+its release (`→ v0.6.12`) and is listed under it by ID, and becomes a ticket when its release
+comes next. From v0.5.4 on, releases carry no date: at this pace v0.6.0 lands in early December
+2026, v0.7.0 in spring 2027 and v1.0.0 just after, consequences of the plan rather than
+promises. After v1.0.0 the stacks come in the order the corpus measures (idea B01).
 
-### Shipped: v0.4.0 to v0.4.4
+### Shipped: v0.4.0 to v0.4.5
 - v0.4.0 · kiln speaks English: promoted on Mon 19 Oct, the milestone decided by antoine
   (⚠ breaking, all converted by `kiln update`).
 - v0.4.1 · The grid, as data: `kiln grid`, 105 drafts from the reference repo.
 - v0.4.2 · Any repo scored against the best, in seconds: T-125, T-46, T-157.
 - v0.4.3 · What a script can fix, fixed by script: T-126, T-127, T-128.
 - v0.4.4 · The rest handed to Claude: T-129, T-161, and most of T-130 (the template's gaps
-  closed), promoted on Wed 21 Oct. T-130's proof and T-90 slipped to v0.4.5.
-
-### v0.4.5 · kiln and its repos at 100 on their own grid
-Candidate Fri 23 Oct. A tool that grades other repos must score 100 itself, visibly, before
-anyone else runs it; T-160 removes the last gap of a fresh repo.
-- T-130 · Generated repos pass the whole grid: the proof left (S)
-- T-90 · kiln passes its own grid: pinned actions, least privilege, provenance, Scorecard (M)
-- T-160 · A front with no backend ships a smoke test (M)
-- Its notes credit the outside fixes merged on 23 Oct: `kiln dev` sees IPv6 servers (#54),
-  `kiln check` without `backend/.env.example` (#55), no pre-commit hook without its config (#56),
-  each line ending `(#n, thanks @NathanBarrachin)`.
+  closed), promoted on Wed 21 Oct.
+- v0.4.5 · Cheaper sessions, CI only at the release: promoted on Fri 23 Oct, with the outside
+  fixes #54 to #56 (thanks @NathanBarrachin). Its planned theme slipped: T-90's rest moved to
+  v0.4.8, T-130's proof to v0.5.0, T-160 to v0.6.23.
 
 ### v0.4.6 · Every issue closed: adoption at full strength
-Candidate Sat 24 Oct, brought forward: antoine asked for every open issue to be resolved before
-the next release. `kiln adopt` brings a repo to the level of `kiln new` and `kiln update` serves
-it afterwards (#59, his choice of 24 October reversing the one of 19 October); a Vite + React
-front; a Streamlit or Dash front deploys to the VPS (#43, T-155); committed models tied to their
-code (#44, T-156); what the grid does not know, told to kiln with consent (#42, T-38); `kiln dev`
-refuses a taken port (#60) and installs missing Node dependencies; the tool update moves the
-plugin too (#58, thanks @NathanBarrachin).
+Frozen: its candidate is tagged (`v0.4.6-rc.1`). Candidate Sat 24 Oct, brought forward: antoine
+asked for every open issue to be resolved before the next release. `kiln adopt` brings a repo to the
+level of `kiln new` and `kiln update` serves it afterwards (#59, his choice of 24 October reversing
+the one of 19 October); a Vite + React front; a Streamlit or Dash front deploys to the VPS (#43,
+T-155); committed models tied to their code (#44, T-156); what the grid does not know, told to kiln
+with consent (#42, T-38); `kiln dev` refuses a taken port (#60) and installs missing Node
+dependencies; the tool update moves the plugin too (#58, thanks @NathanBarrachin).
 
 ### v0.4.7 · Every gap seen, wherever the code lives
-Candidate Tue 27 Oct. The score and the fixes reach what they miss today: GitHub settings,
-`backend/` and `frontend/` folders, compose services, loose requirements; the reference repo's
-score proves it in each note.
+Candidate Tue 27 Oct. The score and the fixes reach what they miss today: GitHub settings, code at
+the root as well as in `backend/` and `frontend/`, compose services, loose requirements, files read
+as empty.
 - T-159 · What T-126 to T-128 left: compose hardening, pyproject from requirements, `kiln update` (M)
 - T-158 · `kiln score` reads the GitHub settings when `gh` is logged in (S)
-- T-134 · The reference repo's score in every release note (S)
 - T-166 · An adopted repo whose code is not in `backend/` or `frontend/` gets its stack too (M)
+- T-185 · `kiln dev` in an adopted repo with a compose file offers its services (S)
 - T-172 · The checks of `kiln fix` told apart, timed out, their log kept for Claude (S)
 - T-173 · More converters: the CI and the supply chain (M)
+- Ideas (8): A30, A31, M15, M16, M17, M29, N03, S09.
 
-### v0.4.8 · Never lets it rot
-Candidate Thu 29 Oct. Updates go down by themselves, and each fix they bring is proven first.
+### v0.4.8 · Never lets it rot, kiln first
+Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other people's repos: each
+commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before
+anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03).
 - T-170 · `kiln fix` proves each commit: its rule closed, no other rule broken (M)
 - T-171 · `kiln fix` works in a throwaway worktree, never in the user's tree (S)
 - T-59 · kiln-bot: the grid's fixes as a weekly pull request (L)
-- T-167 · `kiln dev` in an adopted repo with a compose file offers its services (S)
+- T-90 · kiln passes its own grid: zizmor, provenance and Scorecard left (M)
+- Ideas (4): K19, P09, P16, S07.
 
 ### v0.5.0 · Public launch: the proof and the page
-Candidate Sun 1 Nov, promoted Tue 3 Nov. Milestone decided by antoine (16 October 2026), its
-content defined on 17 October: the version the launch waits for (T-03).
+Candidate Sun 1 Nov, promoted Tue 3 Nov. Milestone decided by antoine (16 October 2026), its content
+defined on 17 October: the version the launch waits for (T-03). The proof (two real repos, a hundred
+public ones, kiln's own repos at 100) and the page that shows it, the potential line as its demo.
 - T-131 · Proof on two real repos, on local copies (M)
 - T-132 · The study: a hundred public Django and Nuxt repos scored (M)
+- T-130 · Generated repos pass the whole grid: the proof left (S)
 - T-30 · README and English docs for strangers, with the demo (L)
 - T-177 · kiln's own docs in English only (M)
 - T-33 · One promise everywhere: tagline, About, PyPI, social preview (S)
 - T-119 · GitHub Sponsors and `FUNDING.yml` (XS)
-- T-154 · Show your score: a badge other repos display (S)
+- Ideas (7): H01, I07, P01, P18, T07, V04, V07.
 
-### v0.5.1 · Launch week: a stranger's first ten minutes, rehearsed
+### v0.5.1 · Launch week: the rehearsal, and the bugs already known
 Candidate Tue 3 Nov. Fixes only from here to the launch; the week absorbs up to three slipped
 releases.
 - T-142 · Launch rehearsal: a stranger's first ten minutes, replayed (M)
+- T-167 · The branch guard reads the session's folder, not the command's (S)
+- T-168 · A repo from `kiln new` + `gh repo create --push` has no CI workflow on GitHub (S)
+- T-179 · A new Django repo's tests start without warnings (S)
 - T-53 · Readable by Claude, measured: the A/B test (M) — only if the budget allows; its number
   joins the launch article only if it is net
 - T-145 · A public benchmark: Claude Code with and without kiln (L) — same condition, after T-53
@@ -93,80 +100,531 @@ releases.
 Candidate Thu 5 Nov: the fixes of T-142, nothing else.
 
 ### v0.5.3 · Launch day
-Candidate Sat 7 Nov, promoted on Mon 9 Nov by the next candidate: the version strangers
-install. Gate checked on Mon 9 Nov at 20:00; nothing is promoted on launch day.
+Candidate Sat 7 Nov, promoted on Mon 9 Nov by the next candidate: the version strangers install.
+Gate checked on Mon 9 Nov at 20:00; nothing is promoted on launch day.
 - T-03 · Public launch: Wednesday 11 November 2026, 16:00 Paris, every forum at once (M)
 
 ### v0.5.4 · The first week with strangers
-Candidate Mon 9 Nov, promoted after the launch. What the launch brings in (issues, reports)
-comes first; these tickets give way to it.
-- T-45 · Update reminders at the pace you choose (S)
-- T-107 · After an update, Claude is told what changed in its rules (S)
+Candidate Mon 9 Nov, promoted after the launch. What the launch brings in (issues, reports, the
+first gap reports of T-38) comes first; these give way to it. From here each promoted release is
+announced (T-118).
 - T-118 · Each promoted release announced on Bluesky and dev.to (S)
-- T-98 · Tab completion for zsh and fish (S) (good first issue)
-- T-116 · An accessible CLI: `NO_COLOR`, `--plain` (S) (good first issue)
+- T-153 · `statusline.ci locale`: a French value left in generated repos (S)
 - T-10 · Interface polish (S)
 - T-99 · `kiln doctor --fix` (S)
-- T-153 · `statusline.ci locale`: a French value left in generated repos (S)
-- T-176 · `kiln fix` options: several rules, `--skip`, `--json`, `--pr`, `--dry-run --verify` (M)
+- T-98 · Tab completion for zsh and fish (S) (good first issue)
+- T-116 · An accessible CLI: `NO_COLOR`, `--plain` (S) (good first issue)
+- Ideas (6): A29, C20, K01, K10, K11, K20.
 
-### v0.5.5 · Findings where people look, upgrades proven
+### v0.5.5 · A score you can trust: the false alarms of real repos, gone
+Strangers' repos hold fixtures, vendored and generated code, templates, READMEs in other languages:
+each class of false alarm is handled once, in the engine, and stays fixed by a test; the reference
+repo's score in every note says when the grid moved.
+- T-134 · The reference repo's score in every release note (S)
+- Ideas (12): A05, A06, A07, A08, C17, E05, E06, E07, H08, H10, H17, P15.
+
+### v0.5.6 · Show your score
+The image that travels by itself, and anyone's repo scored from its URL: the launch's visitors
+become its messengers.
+- T-154 · Show your score: a badge other repos display (S)
+- Ideas (5): I09, K04, L07, V03, V06.
+
+### v0.5.7 · Claude pays less per session
+Context length is the cost (measured on 22 October): skills that run one kiln command, a ladder
+before writing code, context files kept under a budget, the score shown without Claude asking for
+it.
+- T-163 · Skills call one kiln command, the backlog first (L)
+- T-165 · Write less code, measured: a ladder before writing (M)
+- Ideas (2): AI05, K17.
+
+### v0.5.8 · Findings where people look
+In the pull request, the CI's summary and GitHub's code scanning, written without a flag; repo-local
+rules in the grid's format.
 - T-91 · Findings where people look: SARIF in pull requests and code scanning (M)
-- T-54 · Every candidate proven on real upgrade paths (M)
-- T-77 · Tests in seconds after each edit: only those the change touches (M)
-- T-175 · `kiln fix` runs the checks once, then bisects on red (M)
+- Ideas (9): E23, E24, K08, K18, L02, L05, L10, R01, S03.
 
-### v0.5.6 · kiln never makes you wait
-The same features, sooner: what was measured slow on 24 October (the suite every release waits
-for, the session start, `kiln status`, each Bash call), and the checks kiln runs in other repos.
+### v0.5.9 · kiln never makes you wait
+The same features, sooner: what was measured slow on 24 October (the suite every release waits for,
+the session start, `kiln status`, each Bash call, the install), and the score's own start,
+benchmarked in CI.
 - T-180 · The test suite renders each set of answers once, copier stops asking git per file (M)
 - T-181 · The session start does not wait for GitHub (S)
 - T-182 · `kiln status` in half a second (S)
 - T-183 · One hook per Bash call instead of two (S)
-- T-144 · Checks as fast as they are precise: oxlint, TypeScript 7, ty or pyrefly, measured (M)
+- T-178 · A lighter install: copier's dependencies trimmed, not fetched later (S)
+- Ideas (4): J01, J02, J03, J21.
 
-### v0.5.7 · The grid grows, and stays current
-- T-141 · Grid v2: the themes after the launch (L)
-- T-140 · The grid kept current: its sources watched every week (M)
+### v0.5.10 · Updates you take without reading them
+Asked at your pace, applied in one step, proven on real upgrade paths, the score before and after
+shown, Claude told what changed in its rules.
+- T-45 · Update reminders at the pace you choose (S)
+- T-107 · After an update, Claude is told what changed in its rules (S)
+- T-54 · Every candidate proven on real upgrade paths (M)
+- Ideas (3): I11, K16, P08.
+
+### v0.5.11 · `kiln fix`: more gaps closed, faster, from scripts
+The code's own rules get converters, the checks run once with a bisection on red, the options
+kiln-bot and the skills need; a fresh `kiln new` repo leaves `kiln fix` nothing to do.
 - T-174 · More converters: the code (M)
+- T-175 · `kiln fix` runs the checks once, then bisects on red (M)
+- T-176 · `kiln fix` options: several rules, `--skip`, `--json`, `--pr`, `--dry-run --verify` (M)
+- Ideas (4): F25, G08, K12, P02.
 
-### v0.5.8 · For more people
-- T-57 · A tutorial series: bring a Django repo up to date in an afternoon (M)
-- T-58 · A public roadmap on GitHub Projects (M)
+### v0.5.12 · Rules that test themselves
+Before the grid grows by hundreds of rules: each rule carries its examples, its rung and its message
+per place, and `kiln grid new`, `test`, `try` and `lint` make a rule in minutes.
+- Ideas (12): E01, E22, G01, G02, G07, G17, G18, G19, G21, G25, H05, L20.
 
-### v0.5.9 · `kiln new` fits the person
+### v0.5.13 · The grid grows: the exact rules first, three new themes
+T-141 opens here, its other boxes being the theme releases below: the twelve rules a detector
+decides exactly, the first rule of `licensing`, `infrastructure` and `data-science`, and the
+template held to every new rule by its own test.
+- T-141 · Grid v2: the themes after the launch (L)
+- Ideas (18): AR01, AS02, AS32, CI08, CI10, CO04, CO20, CS18, DM05, DS01, FA05, FA19, GV13, IN02,
+  K13, LI01, P04, P05.
+
+### v0.5.14 · Repos safe to hand to an agent
+What Claude Code users need first (17 October): narrow permissions, pinned MCP servers, no secret an
+agent can read, model calls with limits; plugins and MCP servers scored as a kind of their own.
+- Ideas (16): AI02, AI03, AI04, AI06, AI07, AI08, AI09, AI10, AI11, AI12, AI13, AI14, AI15, AI16,
+  AI18, D15.
+
+### v0.5.15 · The roadmap Claude reads without exploring
+The input of v0.6.0: each gap a context pack with its recipe and its proof, ordered by points per
+token, cut into batches that fit a session.
+- Ideas (9): L18, O01, O02, O03, O04, O06, O07, O09, O10.
+
+### v0.5.16 · Tests at the lowest token cost
+The other half of v0.6.0: generators that cost no tokens in the template, coverage and surviving
+mutants measured by script, Claude on the holes only.
+- T-135 · Tests at the lowest token cost, measured on one module first (M)
+- T-136 · Test generators that cost no tokens, in the template (M)
+- Ideas (6): N06, O08, TE05, TE06, TE07, TE08.
+
+### v0.6.0 · Claude closes the gaps alone
+Milestone decided by antoine (16 October 2026: Claude does the work in the repo), its content
+re-scoped to the vision: the roadmap worked unattended within a budget, each pull request kept to
+its places, the cost of a judgment gap measured, a fix made twice turned into a converter.
+- T-74 · The roadmap worked unattended: one gap, one pull request (L)
+- T-137 · Claude invents, the script repeats: a fix made twice becomes a converter (M)
+- Ideas (3): O11, O12, O17.
+
+### v0.6.1 · Less code to carry
+The vision's fourth pillar, measured before anything is built: the compressor's dry run, removals
+proven by types, tests and behaviour, the slimming rules promoted once precise.
+- T-138 · Less code to carry, measured first: the compressor's dry run (M)
+- T-139 · The compressor: removals proven by types, tests and behaviour (L)
+- Ideas (6): CS09, CS31, F13, M10, SU02, SU17.
+
+### v0.6.2 · Claude in the team's flow
+A red CI made green on the machine, the roadmap as issues and good first issues, a summary a human
+reads in their language, a file other agents can read too.
+- T-76 · `kiln ci --fix`: a red CI made green by Claude Code, locally (M)
+- Ideas (4): O13, O14, O15, O16.
+
+### v0.6.3 · The grid kept current: its sources watched
+Every week the sources are read, the data bundle refreshed, the rules whose sources moved flagged;
+each release note carries the grid's diff.
+- T-140 · The grid kept current: its sources watched every week (M)
+- Ideas (9): B22, G12, Q01, Q02, Q06, Q10, Q11, Q12, SU05.
+
+### v0.6.4 · `kiln new` fits the person
 The quick door and the tailored one share the recap and the machine profile: built together.
 - T-169 · `kiln new` asks about your situation, not about tools (L)
 - T-184 · `kiln new` tailored: it starts from what you know, then what the project needs (L)
 
-### v0.6.0 · Claude closes the gaps alone
-Milestone decided by antoine (16 October 2026: Claude does the work in the repo), its content
-re-scoped to the vision: the roadmap worked unattended within a budget, and only the tests that
-matter written by Claude.
-- T-74 · The roadmap worked unattended: one gap, one pull request (L)
-- T-76 · `kiln ci --fix`: a red CI made green by Claude Code, locally (M)
-- T-135 · Tests at the lowest token cost, measured on one module first (M)
-- T-136 · Test generators that cost no tokens, in the template (M)
-- T-137 · Claude invents, the script repeats: a fix made twice becomes a converter (M)
+### v0.6.5 · For more people
+Tutorials that keep bringing visitors, a public roadmap, a page per rule where searches land, the
+study every quarter, a folder or a zip scored as well as a repo.
+- T-57 · A tutorial series: bring a Django repo up to date in an afternoon (M)
+- T-58 · A public roadmap on GitHub Projects (M)
+- Ideas (4): G15, K07, V01, V02.
 
-### v0.6.1 · Less code to carry
-The vision's fourth pillar, a lead: measured before anything is built.
-- T-138 · Less code to carry, measured first: the compressor's dry run (M)
-- T-139 · The compressor: removals proven by types, tests and behaviour (L)
-- T-178 · A lighter install: copier's dependencies trimmed, not fetched later (S)
+### v0.6.6 · One answer to "what is this repo"
+Score, fix, adopt, dev and check read one model: components with their roles, so a Django rule never
+reads `frontend/` and one helper script doesn't make a repo Python.
+- Ideas (8): A01, A02, A04, A09, A20, A24, A37, P12.
+
+### v0.6.7 · Rules per component: versions, tools, evidence
+Each fact says where it comes from and how sure it is; rules can say `django >= 4.2` or "your
+formatter"; a component is scored alone.
+- Ideas (10): A03, A10, A11, A13, A14, A19, A21, A22, A25, A36.
+
+### v0.6.8 · Rules that say what they mean
+Applicability as an expression, several ways to meet one practice, conditions across files, evidence
+for passes, an honest `unknown`.
+- Ideas (12): A23, E08, E18, E19, E20, E33, E34, E35, G03, G04, G20, G24.
+
+### v0.6.9 · Code, not text: the syntax engine
+Detectors match syntax trees (ast-grep); Django settings, `nuxt.config`, Dockerfiles and tsconfig
+chains are read as they resolve; the false negatives found on 24 October close.
+- Ideas (9): E03, E04, E12, E14, E15, E16, E17, H09, J16.
+
+### v0.6.10 · Mature tools as detectors
+ruff, shellcheck and their kin mapped onto grid rules, pinned and cached, never downloaded without
+asking; the faster checkers measured against the ones they would replace.
+- T-144 · Checks as fast as they are precise: oxlint, TypeScript 7, ty or pyrefly, measured (M)
+- Ideas (10): B15, E02, F01, F02, F03, F05, F21, F22, F23, F24.
+
+### v0.6.11 · Instant the second time
+One listing from git, one matcher for every rule, a cache keyed by blob SHA: a warm run recomputes
+nothing unchanged, in under 50 ms.
+- Ideas (9): A34, G22, J04, J05, J06, J07, J08, J10, J22.
+
+### v0.6.12 · Code standards a linter proves
+With ruff mapped (v0.6.10), the Python standards it already decides become rules at once, its safe
+fixes their converters; shell scripts and encodings come with them.
+- Ideas (18): CS06, CS11, CS13, CS15, CS16, CS17, CS21, CS22, CS23, CS24, CS25, CS26, CS27, CS29,
+  CS40, CS41, CS42, CS43.
+
+### v0.6.13 · Secrets and the settings that leak
+The secrets themselves, checksum-verified, and the production settings read as they resolve
+(v0.6.9): cookies, headers, HTTPS, debug flags, keys in the front.
+- Ideas (18): AS01, AS03, AS04, AS05, AS09, AS20, AS21, AS22, AS23, AS24, AS25, AS35, AS36, AS37,
+  AS38, AS39, AS45, E28.
+
+### v0.6.14 · Precision measured on a thousand repos
+A labelled corpus re-scored at every candidate, precision and recall per rule as a release gate, new
+detectors in shadow first; the radar moves on that evidence only.
+- Ideas (13): A35, B01, G14, G23, H02, H03, H04, H12, H14, H19, H20, Q03, T01.
+
+### v0.6.15 · A number that can't lie
+Severity orders the gaps, critical findings cap the score at 49 once they are 99 % precise (decision
+2), a maybe is never punished, an empty file earns nothing, a report can be verified.
+- Ideas (10): E26, G05, H13, H18, I01, I02, I03, I04, I14, S06.
+
+### v0.6.16 · Locks and installs you can trust
+Every lockfile parsed, one practice checked in every ecosystem, every manifest folder covered by the
+update bot, installs from the lock in CI and in images.
+- Ideas (12): A12, B21, C10, E31, SU06, SU07, SU08, SU09, SU25, SU26, SU31, SU32.
+
+### v0.6.17 · Nothing runs that you didn't pin
+Install scripts off, one index, tools and hooks pinned, downloads checked, no token in a committed
+`.npmrc`, no binary in the tree, an SBOM per release.
+- Ideas (13): SU01, SU10, SU11, SU12, SU18, SU20, SU21, SU22, SU23, SU29, SU34, SU35, SU36.
+
+### v0.6.18 · What is on its way out, and when it breaks
+The calendar of what ends (runtimes, frameworks, runners, model IDs), the `hold` rules that detect
+what is leaving, the converters that move it.
+- Ideas (11): CI13, G13, I10, I22, Q04, Q05, Q13, Q14, SU19, SU27, SU30.
+
+### v0.6.19 · Containers built right
+Dockerfiles read stage by stage (v0.6.9): the final user, multi-stage builds, secrets at build time,
+exec form, images by tag and digest everywhere.
+- Ideas (19): C12, CO01, CO03, CO05, CO06, CO07, CO08, CO09, CO10, CO11, CO12, CO13, CO14, CO15,
+  CO28, CO29, F08, SU04, SU28.
+
+### v0.6.20 · Compose files for a small server
+What a VPS running compose needs: no engine socket, databases on localhost, logs rotated, limits and
+restarts, secrets out of the file, images scanned and signed.
+- Ideas (13): CO02, CO16, CO17, CO18, CO19, CO21, CO22, CO23, CO24, CO25, CO26, CO27, CO30.
+
+### v0.6.21 · One CI model, any workflow
+Jobs, steps, triggers and permissions extracted once; `make test` resolved into what it runs; zizmor
+and actionlint as detectors; the scored CI rules read from that model.
+- Ideas (15): C01, C04, C05, C06, C07, C22, CI01, CI02, CI03, CI04, CI05, D16, F04, F06, TE02.
+
+### v0.6.22 · Fast and safe pipelines
+Concurrency, caches and retention, supported runners, secrets through `env:`, reusable workflows
+pinned, provenance on what ships, the same CI on a laptop.
+- Ideas (14): CI07, CI09, CI11, CI12, CI14, CI15, CI17, CI18, CI19, CI20, CI22, CI23, CI24, CI25.
+
+### v0.6.23 · Tests that prove something
+Tests per component that assert, run shuffled and in parallel, without network or sleep, coverage
+that only rises; a front with no backend gets its smoke test.
+- T-160 · A front with no backend ships a smoke test (M)
+- Ideas (20): TE01, TE03, TE04, TE09, TE11, TE12, TE13, TE14, TE15, TE16, TE17, TE18, TE19, TE20,
+  TE21, TE24, TE25, TE26, TE27, TE28.
+
+### v0.6.24 · Progress, not perfection: no new finding
+The score of a change, a comparison with any ref, gates on new findings only, scores kept in git
+notes and drawn as a curve.
+- Ideas (9): I12, I13, J23, K09, L08, L09, L11, M30, P10.
+
+### v0.6.25 · One funnel for every repo, new or old
+`kiln adopt` as score, lay, fix, roadmap, its result shown before it runs; baselines for the gradual
+path; the template a repo started from recognised; `kiln new` as the same funnel run on an empty
+folder.
+- Ideas (5): A38, E25, P03, P06, P07.
+
+### v0.6.26 · Only what changed, right after each edit
+Tests and score rechecked on the changed files only, on save and in Claude Code's edit hook, in
+milliseconds.
+- T-77 · Tests in seconds after each edit: only those the change touches (M)
+- Ideas (3): J11, J12, J13.
+
+### v0.6.27 · The score explained like a senior engineer would
+The denominator, the weakest themes, the effort to 100 in session hours, a verdict in plain words,
+`--explain` with this repo's numbers.
+- Ideas (11): G06, I05, I06, I08, I16, I17, I18, I19, I20, I21, K15.
+
+### v0.6.28 · A report you can share
+Every format a CI or a tool reads, a one-file HTML report, links to each rule's page and to the line
+on the forge, nothing personal left in it.
+- Ideas (9): L01, L04, L06, L14, L15, L17, L19, L21, S04.
+
+### v0.6.29 · Code that can be attacked
+Injection, unsafe deserialization, weak crypto, open redirects, SSRF and the rest, with taint
+followed inside a function.
+- Ideas (19): AS06, AS07, AS08, AS13, AS14, AS15, AS16, AS17, AS18, AS19, AS29, AS30, AS31, AS33,
+  AS34, AS40, AS46, AS47, E11.
+
+### v0.6.30 · Sizes and names, measured in any language
+A metrics pass for every language feeds the size and complexity ratchets; names, cases and
+misspellings judged from symbol tables.
+- Ideas (13): CS01, CS02, CS03, CS04, CS05, CS08, CS28, CS30, CS33, CS34, CS45, E13, F15.
+
+### v0.6.31 · Code standards from the syntax tree
+What a regex can't tell: modern Vue, explicit imports, floating promises, debug prints, TODOs
+without a ticket, barrel files, with oxlint or Biome where they decide.
+- Ideas (14): CS07, CS10, CS12, CS19, CS20, CS32, CS35, CS36, CS37, CS38, CS39, CS44, F07, ST12.
+
+### v0.6.32 · API, contracts and typing
+The schema committed and checked for breaking changes, front types generated from it, typing read
+through its inheritance and counted as ratchets.
+- Ideas (25): AT01, AT02, AT03, AT04, AT05, AT06, AT07, AT08, AT09, AT10, AT11, AT12, AT13, AT14,
+  AT15, AT16, AT17, AT18, AT19, AT20, AT21, AT22, AT23, AT24, AT29.
+
+### v0.6.33 · Architecture you can see
+An import graph per language: cycles, layers, sealed domains, god modules, files that always change
+together.
+- Ideas (20): AR02, AR03, AR04, AR05, AR06, AR07, AR08, AR09, AR12, AR13, AR14, AR15, AR16, AR17,
+  AR18, E09, E10, M09, ST01, ST13.
+
+### v0.6.34 · Data and migrations
+Migrations reversible, safe on a live table, linted in CI, run on the production engine; dumps out
+of git; invariants held by the database.
+- Ideas (23): B16, DM01, DM02, DM03, DM04, DM06, DM07, DM08, DM09, DM10, DM11, DM12, DM13, DM14,
+  DM15, DM16, DM17, DM18, DM19, DM20, F18, TE22, TE23.
+
+### v0.6.35 · Background tasks and concurrency
+Tasks that retry, time out, take IDs and run outside the request; increments and locks that survive
+two requests at once; Celery's settings made exact.
+- Ideas (23): BG01, BG02, BG03, BG04, BG05, BG06, BG07, BG08, BG09, BG10, BG11, BG12, BG13, CC01,
+  CC02, CC03, CC04, CC05, CC06, CC07, CC08, CC10, FP06.
+
+### v0.6.36 · Fast back ends: caches and queries
+Real cache backends with timeouts and invalidation, N+1 queries and missing indexes found, latency
+budgets kept in the repo.
+- Ideas (14): CA01, CA02, CA03, CA04, CA05, CA06, CA07, PE01, PE05, PE06, PE14, PE16, PE17, PE19.
+
+### v0.6.37 · Errors and logs you can follow
+Structured logs to stdout, no secret in them and no stack trace shown, errors tracked with their
+release, a request ID and traces from the front to the back.
+- Ideas (16): EL01, EL02, EL03, EL04, EL05, EL06, EL07, EL08, EL09, EL10, EL11, OB01, OB02, OB06,
+  OB07, OB09.
+
+### v0.6.38 · An accessible front, in every language
+Labels, alt texts, focus, contrast and motion checked in templates and by axe; the European
+Accessibility Act's profile; every locale complete.
+- Ideas (19): FA01, FA02, FA06, FA07, FA08, FA09, FA10, FA11, FA12, FA13, FA14, FA15, FA16, FA17,
+  FA18, FA27, FA28, FA29, FA30.
+
+### v0.6.39 · A fast, SSR-safe front
+Hydration and SSR safety, keys and loading states handled, bundle and image budgets, scripts and
+fonts that don't block, SEO basics.
+- Ideas (19): FA03, FA04, FA20, FA21, FA22, FA23, FA24, FA25, FA26, FA31, PE02, PE03, PE04, PE09,
+  PE10, PE11, PE12, PE13, PE15.
+
+### v0.6.40 · Deploys you can undo
+Services and hosts read from every deploy config; health probes that exist, config that fails fast,
+OIDC instead of keys, rollbacks, certificates renewed.
+- Ideas (15): A15, A16, C11, OP01, OP04, OP07, OP08, OP09, OP11, OP12, OP14, OP15, OP20, PE07, PE08.
+
+### v0.6.41 · Production watched, backups restored
+A runbook whose commands exist, backups with a restore job, uptime and cron checks, alerts on
+symptoms, metrics kept private.
+- Ideas (19): OB03, OB04, OB05, OB08, OB10, OB11, OB12, OP02, OP03, OP05, OP06, OP13, OP16, OP17,
+  OP18, OP19, OP22, OP23, OP24.
+
+### v0.6.42 · A tree anyone can find their way in
+No build output or artefact committed, a complete `.gitignore`, one config per tool, paths every OS
+accepts, small folders.
+- Ideas (22): B19, C13, E29, E30, GV14, GV15, ST04, ST05, ST06, ST07, ST08, ST09, ST10, ST11, ST14,
+  ST15, ST16, ST17, ST18, ST19, ST20, ST21.
+
+### v0.6.43 · Docs that tell the truth
+Every path, command and link that the README and CLAUDE.md name exists; the map lists every folder;
+docs that name what is gone are found.
+- Ideas (20): AI01, AR10, AR11, B20, CS14, DT01, DT02, DT03, DT04, DT05, DT06, DT07, DT08, DT09,
+  DT10, E27, F16, ST02, ST03, ST22.
+
+### v0.6.44 · Set up in one command
+One bootstrap command, tasks named in one place, fast commit hooks, tool versions pinned as in CI,
+editor settings shared.
+- Ideas (10): C08, C16, DX01, DX02, DX03, DX04, DX05, DX06, DX08, OP21.
+
+### v0.6.45 · Personal data, the GDPR way
+Personal fields found in the models and kept out of logs, URLs, fixtures and model calls; the
+inventory and the subprocessors written by script; retention and deletion.
+- Ideas (15): A17, AI17, AS10, AS11, PD01, PD02, PD03, PD04, PD05, PD06, PD07, PD08, PD09, PD10,
+  PD11.
+
+### v0.6.46 · Money, time, accounts and mail
+Amounts in the smallest unit with their currency, dates in UTC, webhooks verified, cards never on
+the server, passkeys and rate limits, bulk mail that can be unsubscribed from.
+- Ideas (18): AS26, AS27, AS28, BD01, BD02, BD03, BD04, BD05, BD06, BD07, BD08, BD09, BD10, BD11,
+  BD12, BD13, BD14, BD15.
+
+### v0.6.47 · History: what every clone carries
+Secrets once committed, heavy blobs, locks drifting from their manifests, each blob read once and
+cached; hotspots open the roadmap.
+- Ideas (10): A33, GV10, GV11, GV12, J24, M01, M02, M08, M12, O05.
+
+### v0.6.48 · History: how the repo is worked
+Commit sizes and messages, merges and branch names, releases and their notes, fixes that come with a
+test, all read from history.
+- Ideas (18): CM08, GV01, GV02, GV03, GV04, GV05, GV06, GV07, GV08, GV09, GV16, M03, M04, M05, M06,
+  M07, M11, TE10.
+
+### v0.6.49 · The forge's settings, read
+Through the `gh` already logged in: token permissions, secrets' ages, environments, required checks,
+alerts left open, update pull requests ignored.
+- Ideas (15): AS12, CI06, CI16, CI21, GV17, GV18, GV19, GV20, M18, M19, M20, M23, M24, OP10, TE29.
+
+### v0.6.50 · What you depend on, checked at the registry
+Real vulnerabilities in the locked versions, malicious and abandoned packages, typosquats, the
+provenance of what is published, dependencies' licences, a health card for a new one.
+- Ideas (12): F09, J19, LI04, M26, M27, M28, SU03, SU13, SU14, SU15, SU16, SU37.
+
+### v0.6.51 · `--deep`: the repo's own checks, in a sandbox
+Opt-in, in a throwaway copy with the network off: the install from the lock, the tests (flaky,
+order, network, clock), Django's deploy check, type checkers at their strictest, a clean clone.
+- Ideas (11): DX07, F14, N01, N04, N05, N07, N08, N15, N16, N17, S08.
+
+### v0.6.52 · `--deep`: the app built and probed
+Images built and scanned, migrations applied and reversed, the API fuzzed, the front rendered for
+axe and Lighthouse, the app served and probed, a deployed URL on request.
+- Ideas (10): N02, N09, N10, N11, N12, N13, N14, N18, N19, PE18.
+
+### v0.6.53 · What the grid doesn't know, shown
+Every tracked file claimed by a fact or listed, fingerprints as data from Linguist and SchemaStore,
+the gap reports carrying them, corrections counted as signals.
+- Ideas (12): A26, B25, H11, Q07, S05, T02, T03, U01, U02, U03, U04, U05.
+
+### v0.6.54 · Never a crash, whatever the repo
+Static by default, hardened parsers, linear-time regexes, fuzzed trees, symlinks, untracked and
+ignored files handled; zero crashes on the corpus at each candidate.
+- Ideas (10): A27, A28, A32, E21, E32, H06, H07, H15, S01, S02.
+
+### v0.6.55 · Python beyond Django
+FastAPI, Flask, SQLAlchemy and every packaging tool read; a new stack's rules count only once ten
+corpus repos of it were checked.
+- Ideas (8): B02, B03, B24, FP01, FP02, FP03, FP04, FP05.
+
+### v0.6.56 · JavaScript beyond Nuxt
+Next.js, React, Angular, Svelte, Express, NestJS, Electron and every JS package manager, each with
+its pack.
+- Ideas (15): AS43, B04, B05, FP07, FP08, FP09, FP10, FP11, FP12, FP13, FP14, FP15, FP16, FP17,
+  FP18.
+
+### v0.6.57 · Data science repos
+The first outside issues came from data repos: notebooks without outputs or secrets, data out of
+git, seeds and environments locked, models loaded safely.
+- Ideas (15): B18, DS02, DS03, DS04, DS05, DS06, DS07, DS08, DS09, DS10, DS11, DS12, DS13, DS14,
+  FP19.
+
+### v0.6.58 · Open source done right
+A licence that says the same everywhere, notices kept, contributing, conduct and security policies,
+issue forms, sponsors, the OpenSSF badge.
+- Ideas (16): CM01, CM02, CM03, CM04, CM05, CM06, CM07, CM10, F17, LI02, LI03, LI05, LI06, LI07,
+  LI08, M25.
+
+### v0.6.59 · Libraries and CLIs that publish cleanly
+Trusted publishing with attestations, complete metadata, one version source, typed exports, packages
+that hold what they should and nothing else.
+- Ideas (13): PK01, PK02, PK03, PK04, PK05, PK06, PK07, PK08, PK09, PK10, PK11, PK12, PK13.
+
+### v0.6.60 · Infrastructure as code
+Terraform and OpenTofu, Kubernetes and Helm, Ansible: state out of git, versions pinned, buckets
+private, pods restricted.
+- Ideas (19): B17, F11, F12, IN01, IN03, IN04, IN05, IN06, IN07, IN08, IN09, IN10, IN11, IN12, IN13,
+  IN14, IN15, IN16, IN17.
+
+### v0.6.61 · Every kind of repo
+A library, an awesome list, a template, a fork or an archive each held to what it needs; the kind
+and what kiln assumed on the report's first lines, with their evidence.
+- Ideas (12): A39, A40, AS44, D01, D02, D03, D07, D11, D12, D13, D14, K14.
+
+### v0.6.62 · GitLab too
+Universities and companies often run GitLab: its CI read like GitHub's, its settings through `glab`,
+its merge request widget fed.
+- Ideas (6): C02, C09, C21, CI26, L03, M21.
+
+### v0.6.63 · Profiles read from the repo, never asked
+Solo, association, company or university, inferred from signals; criticality raises the bar by
+itself; moving up applies the new rules as ratchets.
+- T-39 · Profiles of structure: the rules that fit an association, a company, a university (L)
+- Ideas (6): A18, D04, D05, D06, D08, G11.
+
+### v0.6.64 · Coursework and research
+A course's repos scored on what a student can act on, a teacher's guide, research artefacts that can
+be reproduced and cited.
+- Ideas (4): CM09, D09, D10, V05.
 
 ### v0.7.0 · A whole organisation's repos
-Milestone decided by antoine (16 October 2026: kiln for teams and organisations), re-scoped to
-the vision's targets: a university, an association network, a 50-person company; large
-companies come later.
-- T-39 · Profiles of structure: the rules that fit an association, a company, a university (L)
+Milestone decided by antoine (16 October 2026: kiln for teams and organisations), re-scoped to the
+vision's targets: a university, an association network, a 50-person company; large companies come
+later. Every repo scored remotely without cloning, gaps ranked by how many repos share them.
 - T-87 · Fleet view: every repo of an organisation scored, without cloning (M)
+- Ideas (5): K05, L16, P13, P17, R03.
+
+### v0.7.1 · Compliance views
+What a company has to show: Scorecard, ASVS, SLSA, CIS, WCAG, the Cyber Resilience Act and the
+Accessibility Act, each control covered or honestly listed as not checkable.
+- Ideas (9): F19, F20, G10, Q08, R06, R07, R08, R09, R10.
+
+### v0.7.2 · Delivery measured, the organisation's settings read
+DORA's four keys from the forge, the bus factor and knowledge islands, two-factor authentication and
+base permissions, for organisation profiles.
+- Ideas (4): I15, M13, M14, M22.
+
+### v0.7.3 · The charter and the grid, one engine
+Decision 4, before the format freezes: shared detectors first, then the charter as the grid's rules
+in strict or ratchet regime, its IDs kept as aliases; rule files checked by a published schema.
+- Ideas (3): G09, G16, P11.
+
+### v0.7.4 · Does the score mean anything? Measured
+Before the stability promise: ten senior engineers' ranking against kiln's, the score against public
+repos' incidents, readability against tokens, each published whatever it says.
+- Ideas (6): H16, Q09, T04, T05, T06, U06.
 
 ### v1.0.0 · The grid others build on
-Milestone decided by antoine (16 October 2026): the public stability promise, before others
-build on kiln. From here, strict semver: breaking → major, `feat` → minor.
+Milestone decided by antoine (16 October 2026): the public stability promise, before others build on
+kiln. From here, strict semver: breaking → major, `feat` → minor.
 - T-69 · Community grid packs from any git repo (L)
 - T-122 · `kiln version` proposes 1.0.0 (S)
+- Ideas (6): B23, L13, R02, R04, R05, S10.
+
+### v1.1.0 · Go and Rust
+Scoring opens stack by stack (decision 1) in the order the corpus measures (B01); until it does,
+this order is a guess.
+- Ideas (19): B06, B07, CC09, CC11, EL12, F10, SP01, SP02, SP03, SP04, SP05, SP06, SP07, SP08, SP09,
+  SP10, SP11, SP12, SU33.
+
+### v1.2.0 · Java, Kotlin and .NET
+kiln's own frozen Java template finally scored, and the .NET lines with it.
+- Ideas (15): AT25, AT27, AT28, B08, B09, SP13, SP14, SP15, SP16, SP17, SP18, SP19, SP20, SP21,
+  SU24.
+
+### v1.3.0 · PHP, Ruby and Elixir
+The web frameworks of the dynamic languages: Laravel, Symfony, WordPress, Rails, Phoenix.
+- Ideas (14): AT26, B10, B11, SP22, SP23, SP24, SP25, SP26, SP27, SP28, SP29, SP40, SP41, SP42.
+
+### v1.4.0 · Mobile, C and C++, and the long tail
+Apps, systems code and the rarer languages, the last as data packs.
+- Ideas (15): AS41, AS42, B12, B13, B14, SP30, SP31, SP32, SP33, SP34, SP35, SP36, SP37, SP38, SP39.
+
+### v1.5.0 · Any CI, any machine
+Every other CI read, a single binary and an npm wrapper, ARM and musl, air-gapped networks; native
+Windows and a language server only if their declined tickets (T-94, T-117) reopen.
+- Ideas (8): C03, C14, C15, C18, K02, K03, K06, L12.
+
+### v1.6.0 · Monorepos and a million files
+Rust and parallelism only where a profile points, sampling with a stated margin, then the speed
+published as uv and ruff publish theirs; monorepo tools' graphs read, T-86 staying declined for
+generating them.
+- Ideas (7): C19, J09, J14, J15, J17, J18, J20.
 
 ## 🔴 Critical
 
@@ -215,7 +673,7 @@ root, `manage.py` at the root): the template's stack files assume `backend/` and
   by the template (CI, rules, charter, dependabot) and by `kiln check` and `kiln dev`.
 - [ ] Tested for each stack at the root, and for the same repo after `kiln update`.
 
-### T-167 · `kiln dev` in an adopted repo with a compose file offers its services
+### T-185 · `kiln dev` in an adopted repo with a compose file offers its services
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
@@ -1402,8 +1860,9 @@ is old and must be checked** against the current code; they are never edited.
   25 session-hours a week, about 7 per release, spread over the week (about 5 a day, all
   projects): spent by Friday, it leaves the Saturday and Monday releases without budget. No
   fleet of subagents, no headless run without a budget said beforehand.
-- **Releases**: the `## 🚀 Releases` section at the top places every open ticket in a planned
-  release (`/kiln:backlog plan`); numbers are planned, not promised, until the candidate is cut.
+- **Releases**: the `## 🚀 Releases` section at the top places every open ticket and every
+  kiln score idea in a planned release (`/kiln:backlog plan`); numbers are planned, not promised,
+  until the candidate is cut.
 - **Closing a ticket**: remove it from its section and add a line at the top of
   [done.md](done.md): `- **YYYY-MM-DD** · T-NN · Title — what was done (branch) · opened YYYY-MM-DD`.
 - **Details in archived audits**: when a ticket quotes lines of `docs/_archive/`, the original
@@ -1670,14 +2129,15 @@ measurements gains 7 points of success and saves 12 % of tokens.
 > absolutely everything, leave the user nothing to do, be ultra fast and ultra powerful. `kiln
 > score` is the base of everything: through it `kiln adopt` knows what to improve in a repo, and
 > `kiln new` aims to meet every rule of `kiln score`. Add and change whatever you want, but code
-> nothing." Nothing here is coded or planned yet.
+> nothing." Nothing here is coded yet; each idea got its release on 25 October 2026.
 
 **1,070 ideas**: 433 on the engine and the product (Part II, sections A to V), and 637 on rules (Part III, 31 themes and packs): 520 new rules, 98 drafts or trials given a detector, 19 scored rules made sharper.
 
 **How to read it.**
-- These are ideas, not tickets. One becomes a ticket of the sections above when it is
-  planned (`/kiln:backlog`), its `Origin` quoting `kiln score ideas <ID>`, and its box here
-  is ticked with the ticket's number.
+- These are ideas, not tickets. Each ends with the release it is planned in (`→ v0.6.12`,
+  listed under that release in [🚀 Releases](#-releases)); it becomes a ticket of the sections
+  above when that release comes next (`/kiln:backlog`), its `Origin` quoting
+  `kiln score ideas <ID>`, and its box here is ticked with the ticket's number.
 - The vision still decides ([the vision](#-vision)): one way per profile, the best
   and not the newest, the script first and Claude next, a rule that flags wrongly is worse than
   none, nothing without proof.
@@ -1836,526 +2296,524 @@ until someone reopens them.
 
 #### Order of battle
 
-Inside the plan of [🚀 Releases](#-releases) as it stands tonight (v0.4.6 is today's candidate;
-about 7 session-hours a release, 4 of them planned; the launch on 11 November waits for v0.5.0,
-and from v0.5.1 to the launch only fixes go in):
+Every idea below ends with the release it is planned in (`→ v0.6.12`), and
+[🚀 Releases](#-releases) lists them by ID under each release (25 October 2026, at antoine's
+request: everything planned, the ideas included). The plan in short:
 
-| Release | From this file | Why then |
+| Releases | From this file | Why then |
 |---|---|---|
-| v0.4.7 "every gap seen, wherever the code lives" | A: components and their roles, folders left out (template, fixtures, vendored, generated, examples), facts per component, the UTF-8 silent pass; with T-166, one answer to "what is this repo" | kiln reads itself as Django + Nuxt: T-132's study would count stacks that aren't there |
-| v0.4.8 "never lets it rot" | P: `kiln update` and kiln-bot never lower the score silently; I: the delta that says whether the repo or the grid moved | kiln-bot's weekly pull request (T-59) needs a delta to show |
-| v0.5.0 "the proof and the page" | H: precision sampled on T-132's corpus, Python rules made code-aware (stdlib `tokenize`), the rules' own examples out of their reach; I: the critical cap and the potential line | the study publishes numbers: they must be right, and "58 now, 74 after `kiln fix`" is the demo |
-| v0.5.4 "the first week with strangers" | K: what strangers hit first (Python 3.14 needed, a crash on an odd repo, a flag to find); U: the first gap reports read | the launch brings repos nobody here has seen |
-| v0.5.5 "findings where people look" | L: SARIF with T-91, annotations, job summary; J: the cache and `--changed` beside T-77 | people run it in CI and on bigger repos |
-| v0.5.7 "the grid grows, and stays current" | Part III with T-141: the exact rules promoted first (`USE-TZ`, `NO-MASS-ASSIGNMENT`, `PORTS-ON-LOCALHOST`, `DOCKERIGNORE`, `CI-TIMEOUTS`, `NO-DEBUGGER`, `NO-CONFLICT-MARKERS`, `VUE-V-FOR-KEY`, `HTML-LANG`, `NO-SIGNALS`, `SESSION-COOKIES`, `NO-PERSISTED-CREDENTIALS`); Q with T-140; C: GitLab CI | the grid grows on what the corpus measured, never the week of the launch |
-| v0.6.0 "Claude closes the gaps alone" | O: context packs, effort and token estimates, ordered gaps | the roadmap becomes the whole input of an unattended run |
-| v0.6.1 "less code to carry" | the slimming rules (`DEPENDENCY-BUDGET`, `DUPLICATION`, `DEAD-CODE`, `UNUSED-DEPENDENCIES`) proven by the compressor | T-138 measures first |
-| v0.7.0 "a whole organisation's repos" | D, P, K: kinds, profiles, remote scoring without cloning | a university or an association network scores every repo |
-| v1.0.0 "the grid others build on" | G frozen (rule format v2), the charter run as the grid's rules (decision 4), R: packs and repo-local rules | the format is the public API |
+| v0.4.7 to v0.5.0, before the launch | what their tickets already do (T-158's GitHub settings, T-159's containers run on a copy, kiln-bot, the study as the first corpus, kiln's repos at 100) and three small ones: the two silent passes (A30, A31) and the potential line (I07) | the launch's releases are full: a new idea there would push the gate |
+| v0.5.4 to v0.5.16 | what strangers meet first (K), the false alarms (A, E, H), the badge and the outputs where people look (L), speed, updates, `kiln fix`, rules that test themselves (G), the exact rules and the AI rules (Part III), the roadmap as context packs (O), tests at the lowest cost | the launch brings repos nobody here has seen, and v0.6.0 needs the roadmap and the tests |
+| v0.6.0 | O: the unattended run's scope guard, its labels and its costs | the milestone |
+| v0.6.1 to v0.6.11 | slimming, the grid's weekly watch, the repo model (A), rule format v2 (E, G), the syntax engine, mature tools (F), the cache (J) | the engine every later rule stands on |
+| v0.6.12 to v0.6.60 | Part III theme by theme, each after the rung it needs; between them the corpus and the critical cap (H, I), locks and registries, history and the forge (M), `--deep` (N), what the grid doesn't know (U), Python and JavaScript beyond Django and Nuxt (B, FP) | a rule enters once its detector's rung exists and the corpus can measure it |
+| v0.6.61 to v0.7.4 | kinds and profiles (D), GitLab (C), coursework, the fleet (K, P), compliance views (R), the charter as the grid's rules (decision 4), the score itself measured (T) | a university or an association network scores every repo; the format freezes next |
+| v1.0.0 | packs (R, T-69), the published JSON schema, every executable thing pinned | the format is the public API |
+| v1.1.0 to v1.6.0 | the other ecosystems (B, SP), every CI and machine (C, K), monorepos and huge trees (J) | the format is stable, and the corpus says which stack comes next |
 
-Ecosystems after the launch, in the order the corpus measures rather than assumes: generic Python
-and JS/TS first, then whichever of Go, Java and Kotlin, C#, PHP, Ruby or Rust the corpus shows.
+Among the ecosystems, generic Python and JS/TS come first (v0.6.55, v0.6.56); the order of the
+others is a guess until the corpus measures it (B01).
 
 ### Part II · The engine and the product
 
 #### A · One model of the repo
 
-- [ ] **A01** One module answers "what is this repo" (`kiln.repo`), replacing `grid/facts.py`, `stack.py:detect_stack` and `grid/fix.py:check_commands`; score, fix, adopt, dev, check and update all read it.
-- [ ] **A02** Components: every folder holding a manifest is one (pyproject.toml, package.json, go.mod, Cargo.toml, pom.xml, build.gradle(.kts), *.csproj, composer.json, Gemfile, mix.exs, pubspec.yaml, Package.swift, CMakeLists.txt, meson.build, DESCRIPTION, Project.toml, deno.json, flake.nix, Chart.yaml, a folder of *.tf), nested under its parent.
-- [ ] **A03** Workspaces group components: uv workspaces, pnpm-workspace.yaml, npm, Yarn and Bun workspaces, Cargo workspaces, go.work, Maven modules, Gradle settings, Nx, Turborepo, Lerna, Rush, Bazel's MODULE.bazel, Pants, Moon.
-- [ ] **A04** A role per component, inferred: backend, frontend, library, CLI, worker, infra, docs, mobile, desktop, extension, data/ML, tests, template, fixture, vendored, generated, example. Each role turns groups of rules on or off.
-- [ ] **A05** Templates recognized and kept out of the repo's own stack: `copier.yml`, `cookiecutter.json`, `{{ }}` in paths, `.jinja`, `.j2`, `.tmpl` suffixes. kiln's `template/` stops making kiln a Django + Nuxt repo.
-- [ ] **A06** Fixtures and test data kept out of code rules (`tests/fixtures/`, `testdata/`, `__snapshots__/`, `cassettes/`, `*.golden`), still read by the secret rules.
-- [ ] **A07** Vendored code recognized (`vendor/`, `third_party/`, `external/`, submodules, `*.min.js` in static folders): scored on its own rules (pinned, known vulnerabilities, licence kept), never as the repo's code.
-- [ ] **A08** Generated code recognized (`@generated`, `DO NOT EDIT`, Go's `Code generated … DO NOT EDIT.`, `*.pb.go`, `*_pb2.py`, `*.gen.ts`, OpenAPI clients, Django migrations for size rules): left out of style and size rules.
-- [ ] **A09** `.gitattributes` honoured: `linguist-vendored`, `linguist-generated`, `linguist-documentation`, `export-ignore`, conventions many repos already set for GitHub.
-- [ ] **A10** Every fact carries its evidence (`django 5.2 · backend/uv.lock:412`) and a confidence (certain from a lock, likely from an import, possible from a file name).
-- [ ] **A11** Versions in facts, from the lock first, the manifest's constraint next: rules can say `django >= 4.2`, `vue < 3`, `node 20`.
-- [ ] **A12** A parser per lockfile (uv.lock, poetry.lock, pdm.lock, Pipfile.lock, pylock.toml, hashed requirements, pnpm-lock.yaml, package-lock.json v1 to v3, yarn.lock classic and Berry, bun.lock, Cargo.lock, go.sum, composer.lock, Gemfile.lock, mix.lock, pubspec.lock, packages.lock.json, gradle.lockfile, Package.resolved, renv.lock, Manifest.toml, flake.lock, .terraform.lock.hcl): exact versions and the whole tree, transitives included.
-- [ ] **A13** Runtime versions gathered from every place that names one (.python-version, requires-python, .tool-versions, mise.toml, runtime.txt, .nvmrc, .node-version, engines, Volta, packageManager, Dockerfile FROM, CI matrices, global.json, rust-toolchain.toml, go.mod's `go` and `toolchain`), and their disagreements reported.
-- [ ] **A14** Tools per component: which linter, formatter, type checker, test runner, bundler and task runner, from config files and dev dependencies; rules then speak of "your formatter", whichever it is.
-- [ ] **A15** Services read from compose, Kubernetes, Procfile, fly.toml, render.yaml, app.json, vercel.json, netlify.toml, wrangler.toml, serverless.yml: databases, caches, queues, search, object storage, with their versions.
-- [ ] **A16** Where it deploys (a VPS by script, Fly, Render, Railway, Heroku, Vercel, Netlify, Cloudflare, Cloud Run, AWS, Azure, Kubernetes, GitHub Pages), which switches the operations rules on.
-- [ ] **A17** Domain facts from code and dependencies: money (Decimal fields named price, Stripe), personal data (user models, e-mail fields), uploads, e-mail sending, payments, LLM calls (the anthropic and openai SDKs). They switch on MONEY, PERSONAL-DATA, AI-FEATURES and their kin without a question.
-- [ ] **A18** Team facts from history: contributors in the last 90 days, commit rhythm, age, last activity, code size by language; inputs of the profile (T-39) and of the kind (D).
-- [ ] **A19** Facts declared as data (`facts/*.toml`: file patterns, dependency names, content signatures), tested like rules: a new ecosystem is a data change, not code.
-- [ ] **A20** A share threshold for languages: one helper script in Python doesn't make a JavaScript repo a Python repo (today one `.py` file turns every Python rule on).
-- [ ] **A21** `kiln score --facts`: the model as a tree (components, roles, versions, tools, services) with its evidence, in JSON too. The first thing to read when a rule misapplies.
-- [ ] **A22** `kiln score --why-applies RULE`: the facts that made a rule apply here.
-- [ ] **A23** Applicability as an expression over the model (`component.role == "backend" and django >= 4.2`) instead of the flat `applies` list.
-- [ ] **A24** Findings per component, paths still relative to the repo: a Django rule never reads `frontend/`.
-- [ ] **A25** The repo's score aggregates its components' (weighted by code size); each component scorable alone (`kiln score backend/`).
-- [ ] **A26** Language by content when the extension lies: shebangs, `.h` (C, C++ or Objective-C), `.m` (Objective-C or MATLAB), `.pl`, `.v`, `.ts` (TypeScript or Qt translations), with Linguist's heuristics as data.
-- [ ] **A27** Outside git, `.gitignore` parsed anyway: `build/`, `target/` and `.venv` stay out (only a fixed list is skipped today).
-- [ ] **A28** Untracked files scored but marked "untracked": a local `.env` that isn't ignored is a real risk, a local experiment isn't the repo.
-- [ ] **A29** Shallow clones, sparse checkouts, partial clones, worktrees, bare repos and submodules handled; what wasn't checked out is said, never guessed.
-- [ ] **A30** Binary files skipped on a NUL byte in their first 8 KB; minified files (lines over 1,000 characters) skipped by code rules but counted.
-- [ ] **A31** A non-UTF-8 source decoded (BOM, then cp1252 or latin-1) and reported; never read as empty, which passes every regex rule today.
-- [ ] **A32** Symlinks never followed out of the repo, loops cut, case-insensitive file systems (macOS, Windows) normalized.
-- [ ] **A33** Git LFS patterns known: a binary tracked by LFS is fine, the same binary outside it is a finding.
-- [ ] **A34** The model cached by the blob SHAs of the manifests: every kiln command reuses it in milliseconds.
-- [ ] **A35** A corpus for the model itself: 500 real trees (paths and manifests) with their expected model; each fact's precision tracked like a rule's.
-- [ ] **A36** A correction exists when detection is wrong (`kiln set components.ignore=…`), is never needed, and each use is a signal for T-38.
-- [ ] **A37** `kiln dev` and `kiln check` read the model: T-159's "checks found beyond the root" falls out of it.
-- [ ] **A38** The template a repo started from, fingerprinted (kiln, cookiecutter-django, create-next-app, `nuxi init`, `rails new`, Spring Initializr, the Laravel installer): what that template changed since can be compared.
-- [ ] **A39** Forks recognized (an `upstream` remote, or the forge says so): the fork's own changes scored apart from upstream's code.
-- [ ] **A40** Archived repos (the forge's flag, an "archived" notice in the README) scored only on what still matters: secrets, licence.
+- [ ] **A01** One module answers "what is this repo" (`kiln.repo`), replacing `grid/facts.py`, `stack.py:detect_stack` and `grid/fix.py:check_commands`; score, fix, adopt, dev, check and update all read it. → v0.6.6
+- [ ] **A02** Components: every folder holding a manifest is one (pyproject.toml, package.json, go.mod, Cargo.toml, pom.xml, build.gradle(.kts), *.csproj, composer.json, Gemfile, mix.exs, pubspec.yaml, Package.swift, CMakeLists.txt, meson.build, DESCRIPTION, Project.toml, deno.json, flake.nix, Chart.yaml, a folder of *.tf), nested under its parent. → v0.6.6
+- [ ] **A03** Workspaces group components: uv workspaces, pnpm-workspace.yaml, npm, Yarn and Bun workspaces, Cargo workspaces, go.work, Maven modules, Gradle settings, Nx, Turborepo, Lerna, Rush, Bazel's MODULE.bazel, Pants, Moon. → v0.6.7
+- [ ] **A04** A role per component, inferred: backend, frontend, library, CLI, worker, infra, docs, mobile, desktop, extension, data/ML, tests, template, fixture, vendored, generated, example. Each role turns groups of rules on or off. → v0.6.6
+- [ ] **A05** Templates recognized and kept out of the repo's own stack: `copier.yml`, `cookiecutter.json`, `{{ }}` in paths, `.jinja`, `.j2`, `.tmpl` suffixes. kiln's `template/` stops making kiln a Django + Nuxt repo. → v0.5.5
+- [ ] **A06** Fixtures and test data kept out of code rules (`tests/fixtures/`, `testdata/`, `__snapshots__/`, `cassettes/`, `*.golden`), still read by the secret rules. → v0.5.5
+- [ ] **A07** Vendored code recognized (`vendor/`, `third_party/`, `external/`, submodules, `*.min.js` in static folders): scored on its own rules (pinned, known vulnerabilities, licence kept), never as the repo's code. → v0.5.5
+- [ ] **A08** Generated code recognized (`@generated`, `DO NOT EDIT`, Go's `Code generated … DO NOT EDIT.`, `*.pb.go`, `*_pb2.py`, `*.gen.ts`, OpenAPI clients, Django migrations for size rules): left out of style and size rules. → v0.5.5
+- [ ] **A09** `.gitattributes` honoured: `linguist-vendored`, `linguist-generated`, `linguist-documentation`, `export-ignore`, conventions many repos already set for GitHub. → v0.6.6
+- [ ] **A10** Every fact carries its evidence (`django 5.2 · backend/uv.lock:412`) and a confidence (certain from a lock, likely from an import, possible from a file name). → v0.6.7
+- [ ] **A11** Versions in facts, from the lock first, the manifest's constraint next: rules can say `django >= 4.2`, `vue < 3`, `node 20`. → v0.6.7
+- [ ] **A12** A parser per lockfile (uv.lock, poetry.lock, pdm.lock, Pipfile.lock, pylock.toml, hashed requirements, pnpm-lock.yaml, package-lock.json v1 to v3, yarn.lock classic and Berry, bun.lock, Cargo.lock, go.sum, composer.lock, Gemfile.lock, mix.lock, pubspec.lock, packages.lock.json, gradle.lockfile, Package.resolved, renv.lock, Manifest.toml, flake.lock, .terraform.lock.hcl): exact versions and the whole tree, transitives included. → v0.6.16
+- [ ] **A13** Runtime versions gathered from every place that names one (.python-version, requires-python, .tool-versions, mise.toml, runtime.txt, .nvmrc, .node-version, engines, Volta, packageManager, Dockerfile FROM, CI matrices, global.json, rust-toolchain.toml, go.mod's `go` and `toolchain`), and their disagreements reported. → v0.6.7
+- [ ] **A14** Tools per component: which linter, formatter, type checker, test runner, bundler and task runner, from config files and dev dependencies; rules then speak of "your formatter", whichever it is. → v0.6.7
+- [ ] **A15** Services read from compose, Kubernetes, Procfile, fly.toml, render.yaml, app.json, vercel.json, netlify.toml, wrangler.toml, serverless.yml: databases, caches, queues, search, object storage, with their versions. → v0.6.40
+- [ ] **A16** Where it deploys (a VPS by script, Fly, Render, Railway, Heroku, Vercel, Netlify, Cloudflare, Cloud Run, AWS, Azure, Kubernetes, GitHub Pages), which switches the operations rules on. → v0.6.40
+- [ ] **A17** Domain facts from code and dependencies: money (Decimal fields named price, Stripe), personal data (user models, e-mail fields), uploads, e-mail sending, payments, LLM calls (the anthropic and openai SDKs). They switch on MONEY, PERSONAL-DATA, AI-FEATURES and their kin without a question. → v0.6.45
+- [ ] **A18** Team facts from history: contributors in the last 90 days, commit rhythm, age, last activity, code size by language; inputs of the profile (T-39) and of the kind (D). → v0.6.63
+- [ ] **A19** Facts declared as data (`facts/*.toml`: file patterns, dependency names, content signatures), tested like rules: a new ecosystem is a data change, not code. → v0.6.7
+- [ ] **A20** A share threshold for languages: one helper script in Python doesn't make a JavaScript repo a Python repo (today one `.py` file turns every Python rule on). → v0.6.6
+- [ ] **A21** `kiln score --facts`: the model as a tree (components, roles, versions, tools, services) with its evidence, in JSON too. The first thing to read when a rule misapplies. → v0.6.7
+- [ ] **A22** `kiln score --why-applies RULE`: the facts that made a rule apply here. → v0.6.7
+- [ ] **A23** Applicability as an expression over the model (`component.role == "backend" and django >= 4.2`) instead of the flat `applies` list. → v0.6.8
+- [ ] **A24** Findings per component, paths still relative to the repo: a Django rule never reads `frontend/`. → v0.6.6
+- [ ] **A25** The repo's score aggregates its components' (weighted by code size); each component scorable alone (`kiln score backend/`). → v0.6.7
+- [ ] **A26** Language by content when the extension lies: shebangs, `.h` (C, C++ or Objective-C), `.m` (Objective-C or MATLAB), `.pl`, `.v`, `.ts` (TypeScript or Qt translations), with Linguist's heuristics as data. → v0.6.53
+- [ ] **A27** Outside git, `.gitignore` parsed anyway: `build/`, `target/` and `.venv` stay out (only a fixed list is skipped today). → v0.6.54
+- [ ] **A28** Untracked files scored but marked "untracked": a local `.env` that isn't ignored is a real risk, a local experiment isn't the repo. → v0.6.54
+- [ ] **A29** Shallow clones, sparse checkouts, partial clones, worktrees, bare repos and submodules handled; what wasn't checked out is said, never guessed. → v0.5.4
+- [ ] **A30** Binary files skipped on a NUL byte in their first 8 KB; minified files (lines over 1,000 characters) skipped by code rules but counted. → v0.4.7
+- [ ] **A31** A non-UTF-8 source decoded (BOM, then cp1252 or latin-1) and reported; never read as empty, which passes every regex rule today. → v0.4.7
+- [ ] **A32** Symlinks never followed out of the repo, loops cut, case-insensitive file systems (macOS, Windows) normalized. → v0.6.54
+- [ ] **A33** Git LFS patterns known: a binary tracked by LFS is fine, the same binary outside it is a finding. → v0.6.47
+- [ ] **A34** The model cached by the blob SHAs of the manifests: every kiln command reuses it in milliseconds. → v0.6.11
+- [ ] **A35** A corpus for the model itself: 500 real trees (paths and manifests) with their expected model; each fact's precision tracked like a rule's. → v0.6.14
+- [ ] **A36** A correction exists when detection is wrong (`kiln set components.ignore=…`), is never needed, and each use is a signal for T-38. → v0.6.7
+- [ ] **A37** `kiln dev` and `kiln check` read the model: T-159's "checks found beyond the root" falls out of it. → v0.6.6
+- [ ] **A38** The template a repo started from, fingerprinted (kiln, cookiecutter-django, create-next-app, `nuxi init`, `rails new`, Spring Initializr, the Laravel installer): what that template changed since can be compared. → v0.6.25
+- [ ] **A39** Forks recognized (an `upstream` remote, or the forge says so): the fork's own changes scored apart from upstream's code. → v0.6.61
+- [ ] **A40** Archived repos (the forge's flag, an "archived" notice in the README) scored only on what still matters: secrets, licence. → v0.6.61
 
 #### B · Every ecosystem
 
-- [ ] **B01** The order of ecosystems set by the corpus (share of repos, share of code), never assumed; Django and Nuxt stay the reference.
-- [ ] **B02** Python beyond Django: Flask, FastAPI, Litestar, Starlette, aiohttp, Pyramid; SQLAlchemy and Alembic; Pydantic 1 to 2; Celery, RQ, Dramatiq, Huey, django-q2; each with a pack of rules (Part III, FP).
-- [ ] **B03** Every Python packaging tool read: uv, Poetry, PDM, Hatch, pip-tools (`requirements.in`), Pipenv, Conda (environment.yml, conda-lock), Rye (`hold`, to uv), setup.py and setup.cfg (`hold`, to PEP 621), PEP 735 dependency groups, PEP 751 `pylock.toml`, PEP 723 inline script metadata.
-- [ ] **B04** JavaScript and TypeScript beyond Nuxt: Next.js, React Router 7, Astro, SvelteKit, SolidStart, Angular, Vite with React or Vue, Express, Fastify, NestJS, Hono, Koa, Electron, Tauri, React Native and Expo.
-- [ ] **B05** Every JS package manager read: npm, Yarn classic and Berry (PnP, `.yarnrc.yml`), pnpm, Bun, Deno (deno.json, deno.lock, JSR), corepack's `packageManager`.
-- [ ] **B06** Go: go.mod and go.sum, the `go` and `toolchain` directives, golangci-lint, gofmt, govulncheck, `go vet`, `-race` in CI, vendoring.
-- [ ] **B07** Rust: Cargo.lock committed, clippy, rustfmt, cargo-deny or cargo-audit, `rust-version`, the edition, `unsafe` justified, cargo-semver-checks for libraries.
-- [ ] **B08** Java and Kotlin: Maven (wrapper and checksum), Gradle (wrapper validation, version catalogs, locking, verification metadata), Spring Boot, Quarkus, Micronaut; Checkstyle, SpotBugs, Error Prone, Spotless, ktlint, detekt; JUnit 5; Java's LTS lines. kiln's own frozen Java template would finally be scored.
-- [ ] **B09** C# and .NET: .csproj, .sln and .slnx, central package management, `packages.lock.json`, `<Nullable>enable`, analyzers, `dotnet format`, `global.json`, supported .NET lines.
-- [ ] **B10** PHP: Composer, Laravel, Symfony, WordPress (themes, plugins, wp-config), PHPStan or Psalm, PHP-CS-Fixer, PHPUnit or Pest, `composer audit`.
-- [ ] **B11** Ruby: Bundler, Rails (credentials, `force_ssl`, Brakeman), RuboCop, Sorbet or RBS, RSpec or Minitest, bundler-audit.
-- [ ] **B12** Elixir (mix, Phoenix, Credo, Dialyzer, Sobelow), Swift (SwiftPM, CocoaPods, SwiftLint), Android (manifest, R8), Dart and Flutter (pubspec, analysis_options).
-- [ ] **B13** C and C++: CMake, Meson, Bazel, Conan and vcpkg manifests, clang-format, clang-tidy, sanitizers and fuzzing in CI, warnings as errors.
-- [ ] **B14** The long tail as data packs: Scala, Haskell, OCaml, Clojure, Erlang, F#, Julia, R (DESCRIPTION, renv, lintr, testthat), Perl, Lua, Zig, Nim, Fortran (fpm), MATLAB.
-- [ ] **B15** Shell and PowerShell as real code: shellcheck, shfmt, `set -euo pipefail`, bats; PSScriptAnalyzer.
-- [ ] **B16** SQL as code: sqlfluff, squawk for Postgres migrations, dbt projects.
-- [ ] **B17** Infrastructure as code: Terraform and OpenTofu, Pulumi, CDK, CloudFormation, Bicep, Ansible, Helm, Kustomize, Nix (Part III, IN).
-- [ ] **B18** Notebooks as code: `.ipynb` parsed (cells, outputs, execution order), Quarto and R Markdown read.
-- [ ] **B19** Every config file kiln recognizes validated against its JSON Schema from the SchemaStore catalogue: typos and deprecated keys found in hundreds of tools' files, for free.
-- [ ] **B20** Markup and assets: Markdown (markdownlint's rules, links), YAML (yamllint), TOML (taplo), CSS (stylelint), HTML, SVG (no script inside), images (weight, format), fonts (subset, self-hosted).
-- [ ] **B21** One practice, many ecosystems, one ID: `LOCKED-DEPENDENCIES`, `FROZEN-INSTALL-IN-CI` or `NO-INSTALL-SCRIPTS` carry a detector per ecosystem, so "universal" rules really are.
-- [ ] **B22** End of life for every product endoflife.date covers (runtimes, frameworks, databases, distributions, Kubernetes, CI runners), bundled at each release, refreshed by `--online`.
-- [ ] **B23** Ecosystem packs written as data and proven by examples, so the community (T-69) adds one without touching kiln's code.
-- [ ] **B24** A new ecosystem's rules count only after ten public repos of that stack in the corpus were scored and their findings checked: precision first.
-- [ ] **B25** A stack the grid doesn't cover yet is scored on the universal rules and told which pack would cover it, and how many corpus repos share it: a reason to write the pack.
+- [ ] **B01** The order of ecosystems set by the corpus (share of repos, share of code), never assumed; Django and Nuxt stay the reference. → v0.6.14
+- [ ] **B02** Python beyond Django: Flask, FastAPI, Litestar, Starlette, aiohttp, Pyramid; SQLAlchemy and Alembic; Pydantic 1 to 2; Celery, RQ, Dramatiq, Huey, django-q2; each with a pack of rules (Part III, FP). → v0.6.55
+- [ ] **B03** Every Python packaging tool read: uv, Poetry, PDM, Hatch, pip-tools (`requirements.in`), Pipenv, Conda (environment.yml, conda-lock), Rye (`hold`, to uv), setup.py and setup.cfg (`hold`, to PEP 621), PEP 735 dependency groups, PEP 751 `pylock.toml`, PEP 723 inline script metadata. → v0.6.55
+- [ ] **B04** JavaScript and TypeScript beyond Nuxt: Next.js, React Router 7, Astro, SvelteKit, SolidStart, Angular, Vite with React or Vue, Express, Fastify, NestJS, Hono, Koa, Electron, Tauri, React Native and Expo. → v0.6.56
+- [ ] **B05** Every JS package manager read: npm, Yarn classic and Berry (PnP, `.yarnrc.yml`), pnpm, Bun, Deno (deno.json, deno.lock, JSR), corepack's `packageManager`. → v0.6.56
+- [ ] **B06** Go: go.mod and go.sum, the `go` and `toolchain` directives, golangci-lint, gofmt, govulncheck, `go vet`, `-race` in CI, vendoring. → v1.1.0
+- [ ] **B07** Rust: Cargo.lock committed, clippy, rustfmt, cargo-deny or cargo-audit, `rust-version`, the edition, `unsafe` justified, cargo-semver-checks for libraries. → v1.1.0
+- [ ] **B08** Java and Kotlin: Maven (wrapper and checksum), Gradle (wrapper validation, version catalogs, locking, verification metadata), Spring Boot, Quarkus, Micronaut; Checkstyle, SpotBugs, Error Prone, Spotless, ktlint, detekt; JUnit 5; Java's LTS lines. kiln's own frozen Java template would finally be scored. → v1.2.0
+- [ ] **B09** C# and .NET: .csproj, .sln and .slnx, central package management, `packages.lock.json`, `<Nullable>enable`, analyzers, `dotnet format`, `global.json`, supported .NET lines. → v1.2.0
+- [ ] **B10** PHP: Composer, Laravel, Symfony, WordPress (themes, plugins, wp-config), PHPStan or Psalm, PHP-CS-Fixer, PHPUnit or Pest, `composer audit`. → v1.3.0
+- [ ] **B11** Ruby: Bundler, Rails (credentials, `force_ssl`, Brakeman), RuboCop, Sorbet or RBS, RSpec or Minitest, bundler-audit. → v1.3.0
+- [ ] **B12** Elixir (mix, Phoenix, Credo, Dialyzer, Sobelow), Swift (SwiftPM, CocoaPods, SwiftLint), Android (manifest, R8), Dart and Flutter (pubspec, analysis_options). → v1.4.0
+- [ ] **B13** C and C++: CMake, Meson, Bazel, Conan and vcpkg manifests, clang-format, clang-tidy, sanitizers and fuzzing in CI, warnings as errors. → v1.4.0
+- [ ] **B14** The long tail as data packs: Scala, Haskell, OCaml, Clojure, Erlang, F#, Julia, R (DESCRIPTION, renv, lintr, testthat), Perl, Lua, Zig, Nim, Fortran (fpm), MATLAB. → v1.4.0
+- [ ] **B15** Shell and PowerShell as real code: shellcheck, shfmt, `set -euo pipefail`, bats; PSScriptAnalyzer. → v0.6.10
+- [ ] **B16** SQL as code: sqlfluff, squawk for Postgres migrations, dbt projects. → v0.6.34
+- [ ] **B17** Infrastructure as code: Terraform and OpenTofu, Pulumi, CDK, CloudFormation, Bicep, Ansible, Helm, Kustomize, Nix (Part III, IN). → v0.6.60
+- [ ] **B18** Notebooks as code: `.ipynb` parsed (cells, outputs, execution order), Quarto and R Markdown read. → v0.6.57
+- [ ] **B19** Every config file kiln recognizes validated against its JSON Schema from the SchemaStore catalogue: typos and deprecated keys found in hundreds of tools' files, for free. → v0.6.42
+- [ ] **B20** Markup and assets: Markdown (markdownlint's rules, links), YAML (yamllint), TOML (taplo), CSS (stylelint), HTML, SVG (no script inside), images (weight, format), fonts (subset, self-hosted). → v0.6.43
+- [ ] **B21** One practice, many ecosystems, one ID: `LOCKED-DEPENDENCIES`, `FROZEN-INSTALL-IN-CI` or `NO-INSTALL-SCRIPTS` carry a detector per ecosystem, so "universal" rules really are. → v0.6.16
+- [ ] **B22** End of life for every product endoflife.date covers (runtimes, frameworks, databases, distributions, Kubernetes, CI runners), bundled at each release, refreshed by `--online`. → v0.6.3
+- [ ] **B23** Ecosystem packs written as data and proven by examples, so the community (T-69) adds one without touching kiln's code. → v1.0.0
+- [ ] **B24** A new ecosystem's rules count only after ten public repos of that stack in the corpus were scored and their findings checked: precision first. → v0.6.55
+- [ ] **B25** A stack the grid doesn't cover yet is scored on the universal rules and told which pack would cover it, and how many corpus repos share it: a reason to write the pack. → v0.6.53
 
 #### C · Every forge, CI, host and machine
 
-- [ ] **C01** A CI model: jobs, steps, commands, triggers, permissions, pinned references, secrets used, images. Extracted from every CI format so one rule speaks of all of them (appendix B).
-- [ ] **C02** GitLab CI: `.gitlab-ci.yml`, `include:` (project, remote, template, component with a version), `rules:`, `needs:`, the job token's scope, protected and masked variables.
-- [ ] **C03** The other CIs read: Bitbucket Pipelines, Azure Pipelines, CircleCI (orbs pinned), Jenkins (Jenkinsfile, shared libraries pinned), Buildkite, Woodpecker and Drone, Forgejo and Gitea Actions, SourceHut, TeamCity, AppVeyor, Travis (`hold`), Google Cloud Build, AWS CodeBuild, Tekton, Argo Workflows, Dagger, Earthly.
-- [ ] **C04** Indirections followed: a step running `make test`, `just check`, `task lint`, `nox`, `tox`, `npm run test`, `./gradlew check` or `kiln check` is resolved into what it runs, so TESTS-IN-CI knows tests really run (a regex on the workflow today).
-- [ ] **C05** PINNED-ACTIONS generalized to every CI's references: GitHub `uses:` by SHA, GitLab `include` refs and component versions, CircleCI orbs, Jenkins `@Library`, Buildkite plugins, images in `container:`, `services:` and `image:` by digest.
-- [ ] **C06** Injection rules for every CI: GitHub's `${{ github.event… }}` in `run:`, GitLab's `$CI_COMMIT_MESSAGE` or `$CI_MERGE_REQUEST_TITLE` in `script:`, Azure's `$(Build.SourceVersionMessage)`, Jenkins' Groovy-interpolated `sh "…${env.CHANGE_TITLE}"`.
-- [ ] **C07** Least privilege for every CI token: GitHub's `permissions:`, GitLab's job token allowlist, their Bitbucket and Azure counterparts.
-- [ ] **C08** Pre-commit frameworks read (pre-commit, lefthook, Husky, lint-staged): checks before a commit, never counted as CI.
-- [ ] **C09** Forges: GitHub, GitLab (cloud and self-managed), Bitbucket, Azure DevOps, Gitea, Forgejo, Codeberg, SourceHut, Gerrit; read from the remote's URL, their folders (`.github/`, `.gitlab/`, `.gitea/`, `.forgejo/`, `.azuredevops/`) and conventions (where CODEOWNERS and templates live) known.
-- [ ] **C10** Every dependency bot recognized and held to the same settings: Dependabot (every ecosystem folder covered, cooldown, groups), Renovate (every config place, `minimumReleaseAge`, presets), GitLab's dependency scanning, Snyk, Mend, Depfu.
-- [ ] **C11** Deploy configs read: Dockerfile, Containerfile, compose, Kubernetes manifests (any YAML with `apiVersion` and `kind`), Helm, Kustomize, Skaffold, Tilt, Nomad, systemd units, Caddyfile, nginx, Traefik, Fly, Render, Railway, Heroku, Vercel, Netlify, Cloudflare, Firebase, App Engine, Serverless, SAM.
-- [ ] **C12** Neutral to container engines (Docker, Podman, Buildah, Kaniko, BuildKit): `# syntax=`, `--mount=type=secret` and `type=cache`, Bake files, devcontainer.json read.
-- [ ] **C13** Rules that know operating systems: CRLF and `.gitattributes`, paths Windows refuses, case collisions that break macOS, a setup documented only as a `.sh` script.
-- [ ] **C14** kiln score runs on Linux, macOS, WSL and native Windows (it is Python and git) ⚠ T-94 declined Windows without WSL for kiln as a whole; the score alone may cost little, tested in CI if taken.
-- [ ] **C15** x86-64 and ARM64 (Apple Silicon, Graviton, Raspberry Pi), glibc and musl (Alpine): every bundled tool shipped as a wheel for each, or its rules say "unknown" there.
-- [ ] **C16** Editor and environment files read: `.editorconfig`, `.vscode/` (recommended extensions, settings with personal paths), `.idea/` (workspace files committed), devcontainers, Gitpod, Codespaces, mise and asdf, direnv's `.envrc` (secrets in it), Nix dev shells, flox.
-- [ ] **C17** Any human language in the repo: a README found as `LISEZMOI.md` or `README.zh-CN.md`; generic-name lists per language (`donnees`, `truc`, `datos`, `daten`); typography that isn't a bug (French non-breaking spaces, the doctrine's ruff example); identifiers in any script.
-- [ ] **C18** Air-gapped and corporate networks: offline by default; `--online` honours `HTTPS_PROXY` and custom certificate authorities (`SSL_CERT_FILE`); the data bundle downloadable as one file (`--data bundle.tar.zst`).
-- [ ] **C19** Monorepo tools' project graphs (Nx, Turborepo, Bazel, Pants, Rush, Moon) read for components and their links ⚠ T-86 (declined) is about generating monorepos; scoring them is another matter.
-- [ ] **C20** The integration branch read from the remote's HEAD (main, master, develop, trunk), never assumed.
-- [ ] **C21** Self-hosted forges on custom domains recognized by their API's signature (GitLab's `/api/v4/version`, Gitea's `/api/v1/version`), with `--online` only.
-- [ ] **C22** Reusable CI pieces (GitHub reusable workflows, GitLab components, CircleCI orbs) followed one level, at their pinned version, with `--online`: a reusable workflow that grants `write-all` is the caller's problem too.
+- [ ] **C01** A CI model: jobs, steps, commands, triggers, permissions, pinned references, secrets used, images. Extracted from every CI format so one rule speaks of all of them (appendix B). → v0.6.21
+- [ ] **C02** GitLab CI: `.gitlab-ci.yml`, `include:` (project, remote, template, component with a version), `rules:`, `needs:`, the job token's scope, protected and masked variables. → v0.6.62
+- [ ] **C03** The other CIs read: Bitbucket Pipelines, Azure Pipelines, CircleCI (orbs pinned), Jenkins (Jenkinsfile, shared libraries pinned), Buildkite, Woodpecker and Drone, Forgejo and Gitea Actions, SourceHut, TeamCity, AppVeyor, Travis (`hold`), Google Cloud Build, AWS CodeBuild, Tekton, Argo Workflows, Dagger, Earthly. → v1.5.0
+- [ ] **C04** Indirections followed: a step running `make test`, `just check`, `task lint`, `nox`, `tox`, `npm run test`, `./gradlew check` or `kiln check` is resolved into what it runs, so TESTS-IN-CI knows tests really run (a regex on the workflow today). → v0.6.21
+- [ ] **C05** PINNED-ACTIONS generalized to every CI's references: GitHub `uses:` by SHA, GitLab `include` refs and component versions, CircleCI orbs, Jenkins `@Library`, Buildkite plugins, images in `container:`, `services:` and `image:` by digest. → v0.6.21
+- [ ] **C06** Injection rules for every CI: GitHub's `${{ github.event… }}` in `run:`, GitLab's `$CI_COMMIT_MESSAGE` or `$CI_MERGE_REQUEST_TITLE` in `script:`, Azure's `$(Build.SourceVersionMessage)`, Jenkins' Groovy-interpolated `sh "…${env.CHANGE_TITLE}"`. → v0.6.21
+- [ ] **C07** Least privilege for every CI token: GitHub's `permissions:`, GitLab's job token allowlist, their Bitbucket and Azure counterparts. → v0.6.21
+- [ ] **C08** Pre-commit frameworks read (pre-commit, lefthook, Husky, lint-staged): checks before a commit, never counted as CI. → v0.6.44
+- [ ] **C09** Forges: GitHub, GitLab (cloud and self-managed), Bitbucket, Azure DevOps, Gitea, Forgejo, Codeberg, SourceHut, Gerrit; read from the remote's URL, their folders (`.github/`, `.gitlab/`, `.gitea/`, `.forgejo/`, `.azuredevops/`) and conventions (where CODEOWNERS and templates live) known. → v0.6.62
+- [ ] **C10** Every dependency bot recognized and held to the same settings: Dependabot (every ecosystem folder covered, cooldown, groups), Renovate (every config place, `minimumReleaseAge`, presets), GitLab's dependency scanning, Snyk, Mend, Depfu. → v0.6.16
+- [ ] **C11** Deploy configs read: Dockerfile, Containerfile, compose, Kubernetes manifests (any YAML with `apiVersion` and `kind`), Helm, Kustomize, Skaffold, Tilt, Nomad, systemd units, Caddyfile, nginx, Traefik, Fly, Render, Railway, Heroku, Vercel, Netlify, Cloudflare, Firebase, App Engine, Serverless, SAM. → v0.6.40
+- [ ] **C12** Neutral to container engines (Docker, Podman, Buildah, Kaniko, BuildKit): `# syntax=`, `--mount=type=secret` and `type=cache`, Bake files, devcontainer.json read. → v0.6.19
+- [ ] **C13** Rules that know operating systems: CRLF and `.gitattributes`, paths Windows refuses, case collisions that break macOS, a setup documented only as a `.sh` script. → v0.6.42
+- [ ] **C14** kiln score runs on Linux, macOS, WSL and native Windows (it is Python and git) ⚠ T-94 declined Windows without WSL for kiln as a whole; the score alone may cost little, tested in CI if taken. → v1.5.0
+- [ ] **C15** x86-64 and ARM64 (Apple Silicon, Graviton, Raspberry Pi), glibc and musl (Alpine): every bundled tool shipped as a wheel for each, or its rules say "unknown" there. → v1.5.0
+- [ ] **C16** Editor and environment files read: `.editorconfig`, `.vscode/` (recommended extensions, settings with personal paths), `.idea/` (workspace files committed), devcontainers, Gitpod, Codespaces, mise and asdf, direnv's `.envrc` (secrets in it), Nix dev shells, flox. → v0.6.44
+- [ ] **C17** Any human language in the repo: a README found as `LISEZMOI.md` or `README.zh-CN.md`; generic-name lists per language (`donnees`, `truc`, `datos`, `daten`); typography that isn't a bug (French non-breaking spaces, the doctrine's ruff example); identifiers in any script. → v0.5.5
+- [ ] **C18** Air-gapped and corporate networks: offline by default; `--online` honours `HTTPS_PROXY` and custom certificate authorities (`SSL_CERT_FILE`); the data bundle downloadable as one file (`--data bundle.tar.zst`). → v1.5.0
+- [ ] **C19** Monorepo tools' project graphs (Nx, Turborepo, Bazel, Pants, Rush, Moon) read for components and their links ⚠ T-86 (declined) is about generating monorepos; scoring them is another matter. → v1.6.0
+- [ ] **C20** The integration branch read from the remote's HEAD (main, master, develop, trunk), never assumed. → v0.5.4
+- [ ] **C21** Self-hosted forges on custom domains recognized by their API's signature (GitLab's `/api/v4/version`, Gitea's `/api/v1/version`), with `--online` only. → v0.6.62
+- [ ] **C22** Reusable CI pieces (GitHub reusable workflows, GitLab components, CircleCI orbs) followed one level, at their pinned version, with `--online`: a reusable workflow that grants `write-all` is the caller's problem too. → v0.6.21
 
 #### D · Every kind of repo, every profile
 
-- [ ] **D01** Kinds recognized: web app (backend, frontend, full stack), API, library (PyPI, npm, crates.io, Maven Central…), CLI, desktop, mobile, browser extension, editor extension, GitHub Action, Claude Code plugin or MCP server, data science, ML training, data pipeline (dbt, Airflow, Dagster), infrastructure, docs site, static site, dotfiles, template, coursework, research artefact, game, firmware, hardware, HPC, WordPress, Shopify theme, serverless functions, bot, smart contracts, awesome list, single script.
-- [ ] **D02** Each kind its rules: a library needs semver, a changelog, typed exports and trusted publishing, not health probes; an awesome list needs link checks, not tests (today TESTS-PRESENT fails every awesome list).
-- [ ] **D03** A repo can be several kinds (a library with a docs site and a CLI): kinds per component.
-- [ ] **D04** The profile (T-39) inferred from signals, never asked: owner (person or organisation), contributors in 90 days, a deployment, personal data handled, licence, stars, a security policy.
-- [ ] **D05** Stages: prototype, growing, production, maintenance, archived. Rules grow with the repo ("the smallest level at creation, and rules that grow with the repo", antoine, 16 October 2026).
-- [ ] **D06** Criticality raises the bar by itself: payments, health or children's data, accounts of other people make the stricter profile's rules apply, and the report says why.
-- [ ] **D07** Thresholds that scale: a 200-line script isn't held to a monorepo's architecture rules; ratchets on a big repo start from its own numbers.
-- [ ] **D08** Team signals: CODEOWNERS and required reviews only past two regular contributors; the bus factor (one person wrote 90 % of the last year) shown to organisation profiles.
-- [ ] **D09** Coursework: a course's repos (many, small, short-lived, one template) scored on what a student can act on; a teacher scores the class (fleet, CSV). The v0.7.0 university target.
-- [ ] **D10** Research artefacts: CITATION.cff, a pinned environment, data availability, a DOI, "how to reproduce the figures"; the artefact badges of ACM and the big conferences as rules.
-- [ ] **D11** Kind and profile on the report's first lines with their evidence; `kiln set kind=library` exists, is never needed, and each use is a T-38 signal.
-- [ ] **D12** The forge's topics and description read with `--online` as hints (`homework`, `tutorial`, `template`, `awesome`).
-- [ ] **D13** Template repos (`is_template`, `copier.yml`) scored on what they generate: rendered with defaults in a sandbox, the result scored. A template's score is its children's.
-- [ ] **D14** Tutorials and example repos recognized, so the study and the fleet don't count them (T-132's exclusions as code).
-- [ ] **D15** Claude Code plugins and MCP servers as a kind: plugin.json valid, skills named as their folder, hooks executable, permissions narrow, versions pinned (kiln's own `test_plugins.py`, offered to all).
-- [ ] **D16** GitHub Actions as a kind: `action.yml` valid, a supported `runs.using`, `dist/` rebuilt and compared in CI, inputs documented, no `${{ inputs.x }}` inside `run:`.
+- [ ] **D01** Kinds recognized: web app (backend, frontend, full stack), API, library (PyPI, npm, crates.io, Maven Central…), CLI, desktop, mobile, browser extension, editor extension, GitHub Action, Claude Code plugin or MCP server, data science, ML training, data pipeline (dbt, Airflow, Dagster), infrastructure, docs site, static site, dotfiles, template, coursework, research artefact, game, firmware, hardware, HPC, WordPress, Shopify theme, serverless functions, bot, smart contracts, awesome list, single script. → v0.6.61
+- [ ] **D02** Each kind its rules: a library needs semver, a changelog, typed exports and trusted publishing, not health probes; an awesome list needs link checks, not tests (today TESTS-PRESENT fails every awesome list). → v0.6.61
+- [ ] **D03** A repo can be several kinds (a library with a docs site and a CLI): kinds per component. → v0.6.61
+- [ ] **D04** The profile (T-39) inferred from signals, never asked: owner (person or organisation), contributors in 90 days, a deployment, personal data handled, licence, stars, a security policy. → v0.6.63
+- [ ] **D05** Stages: prototype, growing, production, maintenance, archived. Rules grow with the repo ("the smallest level at creation, and rules that grow with the repo", antoine, 16 October 2026). → v0.6.63
+- [ ] **D06** Criticality raises the bar by itself: payments, health or children's data, accounts of other people make the stricter profile's rules apply, and the report says why. → v0.6.63
+- [ ] **D07** Thresholds that scale: a 200-line script isn't held to a monorepo's architecture rules; ratchets on a big repo start from its own numbers. → v0.6.61
+- [ ] **D08** Team signals: CODEOWNERS and required reviews only past two regular contributors; the bus factor (one person wrote 90 % of the last year) shown to organisation profiles. → v0.6.63
+- [ ] **D09** Coursework: a course's repos (many, small, short-lived, one template) scored on what a student can act on; a teacher scores the class (fleet, CSV). The v0.7.0 university target. → v0.6.64
+- [ ] **D10** Research artefacts: CITATION.cff, a pinned environment, data availability, a DOI, "how to reproduce the figures"; the artefact badges of ACM and the big conferences as rules. → v0.6.64
+- [ ] **D11** Kind and profile on the report's first lines with their evidence; `kiln set kind=library` exists, is never needed, and each use is a T-38 signal. → v0.6.61
+- [ ] **D12** The forge's topics and description read with `--online` as hints (`homework`, `tutorial`, `template`, `awesome`). → v0.6.61
+- [ ] **D13** Template repos (`is_template`, `copier.yml`) scored on what they generate: rendered with defaults in a sandbox, the result scored. A template's score is its children's. → v0.6.61
+- [ ] **D14** Tutorials and example repos recognized, so the study and the fleet don't count them (T-132's exclusions as code). → v0.6.61
+- [ ] **D15** Claude Code plugins and MCP servers as a kind: plugin.json valid, skills named as their folder, hooks executable, permissions narrow, versions pinned (kiln's own `test_plugins.py`, offered to all). → v0.5.14
+- [ ] **D16** GitHub Actions as a kind: `action.yml` valid, a supported `runs.using`, `dist/` rebuilt and compared in CI, inputs documented, no `${{ inputs.x }}` inside `run:`. → v0.6.21
 
 #### E · The detection engine
 
-- [ ] **E01** The ladder: L0 paths and names (microseconds), L1 structured files (TOML, JSON, YAML, INI, XML, HCL, Dockerfile, ignore files), L2 syntax patterns, L3 cross-file (imports, calls, references), L4 external tools, L5 git history, L6 forge and registry APIs, L7 running the code. Each rule declares its rung, each finding says which one found it.
-- [ ] **E02** The default run is L0 to L3 plus the L4 tools shipped as wheels: offline, nothing of the repo executed. `--online` adds L6, `--history` L5, `--deep` L7 in a sandbox.
-- [ ] **E03** A `syntax` detector kind on ast-grep (Rust, tree-sitter, YAML rules with `pattern`, `inside`, `has`, `not`, `constraints`): declarative like today's regexes, matching code instead of text (doctrine 11, T-144).
-- [ ] **E04** One parse per file, shared by every syntax rule, the tree cached by blob SHA.
-- [ ] **E05** Until the syntax engine lands, `regex` gets `in = "code" | "comments" | "strings" | "any"`, from Python's `tokenize` (stdlib) and a small JS/TS tokenizer: the false positives seen on kiln vanish with no new dependency.
-- [ ] **E06** Path classes instead of hand-written globs: `where = ["code"]`, `["tests"]`, `["config"]`, `["docs"]`, `["ci"]`, `["containers"]`, from the model; generated, vendored, fixtures and templates left out by default.
-- [ ] **E07** A policy per rule for tests: `in_tests = "skip" | "lower" | "same"` (SQL built in a test is noise; a naive datetime in a test can hide a bug).
-- [ ] **E08** Combinators (`all`, `any`, `not`) and conditions ("if a Dockerfile `EXPOSE`s a port, compose or the Dockerfile has a health check").
-- [ ] **E09** Cross-file detectors: every job that tests also lints; every Django app with models registers an admin or says why; every route has a test that calls it (routes extracted, tests searched).
-- [ ] **E10** An import graph per language (Python's `ast`, an ES-module scanner): cycles, layers (SEALED-DOMAIN), dead modules, fan-in and fan-out.
-- [ ] **E11** Taint inside one function: a request value (`request.GET`, `request.data`, route parameters, `req.query`) reaching a sink (`execute`, `os.system`, `open`, `redirect`, `subprocess`, `eval`) without a known sanitizer.
-- [ ] **E12** Symbol tables per language (functions, classes, variables, booleans, constants) from tree-sitter queries: CASE, BOOLEANS, GENERIC-NAMES and ONE-CLASS for every language.
-- [ ] **E13** A metrics pass: lines and logical lines per file and function, cyclomatic and cognitive complexity, nesting, parameters, token duplication, comment density, TODOs, for any language (lizard's approach), feeding the size and complexity ratchets.
-- [ ] **E14** Config resolved rather than grepped: tsconfig `extends` chains (local files and package presets), ruff's `extend`, ESLint flat configs read as syntax (never executed), mypy, pyright, pytest and coverage settings wherever they live.
-- [ ] **E15** Django settings evaluated statically: the module found (`manage.py`, `wsgi.py`, `asgi.py`, `DJANGO_SETTINGS_MODULE`), `from .base import *` followed, plain assignments and `env("X", default=…)` read. `DEBUG = env.bool("DEBUG", default=True)` becomes a finding; it is invisible today.
-- [ ] **E16** `nuxt.config` read as syntax: `runtimeConfig` (secrets under `public`), `routeRules`, the Nitro preset, `devtools`, modules, `ssr`, `sourcemap`.
-- [ ] **E17** Dockerfiles parsed per stage: the final stage's `USER`, `ARG` defaults resolved inside `FROM` (a `$` image is skipped today, a false negative), heredocs, `--mount` options.
-- [ ] **E18** Equivalence lists as data (Python linters: ruff, flake8, pylint; dependency bots: Dependabot, Renovate…): a practice met by any, with "met; kiln recommends ruff" as a gentle `trial` note.
-- [ ] **E19** Evidence for passes too: "met by `renovate.json`", "met: `USER app` in the final stage of `Dockerfile`". `--all` says why each rule passed.
-- [ ] **E20** A third outcome, `unknown`: the detector couldn't decide (a config written as code, a tool missing, a file too big). Listed apart, never a pass, never a fail.
-- [ ] **E21** Linear-time regexes (google-re2, or Rust's `regex` through the syntax engine) and a time budget per rule: one bad pattern can't hang a run.
-- [ ] **E22** `kiln grid` lints every pattern for catastrophic backtracking when the grid loads.
-- [ ] **E23** Locations with line, column and end (SARIF regions), with a snippet, redacted for secrets.
-- [ ] **E24** A fingerprint per finding (rule, path, normalized snippet, like SARIF's `partialFingerprints`): a finding keeps its identity when lines move, so waivers and baselines survive edits.
-- [ ] **E25** Baselines: `kiln score --baseline` records today's findings, and from then on only new ones fail a gate. The progressive path of doctrine 9 for any repo, not only kiln's.
-- [ ] **E26** Approximate detectors return candidates with a confidence: the roadmap sends the uncertain ones to Claude "to confirm" and the certain ones as gaps.
-- [ ] **E27** Docs checked against the tree: every path, command and make target quoted in the README and CLAUDE.md exists (REPO-MAP-FRESH, README-COMMANDS-EXIST). A map that lies costs Claude more than no map.
-- [ ] **E28** A secrets engine: provider patterns (gitleaks' rules as data), checksum-verified tokens (GitHub's `ghp_` and `github_pat_` tokens carry a CRC32, so zero false positives), entropy last; documented sample keys and placeholders (`AKIAIOSFODNN7EXAMPLE`, `changeme`, `<your-token>`) left out.
-- [ ] **E29** Artefacts that should never be committed, by name and content: `.pyc`, `node_modules/`, `dist/`, `.DS_Store`, `*.log`, `*.sqlite3`, `*.tfstate`, `id_rsa`, `*.pem`, `*.p12`, `*.keystore`, `.ipynb_checkpoints`, coverage reports, virtualenvs.
-- [ ] **E30** `.gitignore` compared with github/gitignore's templates for the ecosystems present: what's missing is a scripted fix.
-- [ ] **E31** Freshness of generated files without running anything: the lock against its manifest, the committed OpenAPI schema against the routes it names, an action's `dist/` against its sources (approximate; `--deep` proves).
-- [ ] **E32** Never read `.git/`, virtualenvs or `node_modules` as code, even when they're tracked by mistake (that's its own finding).
-- [ ] **E33** A rule's condition can read the model (`component.frameworks.django.version`), so Django 4.2 and 5.2 can have different detectors.
-- [ ] **E34** Inline justifications in the charter's style (`# kiln: allow NAIVE-DATETIMES, reason`): counted, shown, gone when the code they sit on goes.
-- [ ] **E35** A detector can ask for several files at once (compose, Dockerfile and CI together): the engine hands it the set, each file read once.
+- [ ] **E01** The ladder: L0 paths and names (microseconds), L1 structured files (TOML, JSON, YAML, INI, XML, HCL, Dockerfile, ignore files), L2 syntax patterns, L3 cross-file (imports, calls, references), L4 external tools, L5 git history, L6 forge and registry APIs, L7 running the code. Each rule declares its rung, each finding says which one found it. → v0.5.12
+- [ ] **E02** The default run is L0 to L3 plus the L4 tools shipped as wheels: offline, nothing of the repo executed. `--online` adds L6, `--history` L5, `--deep` L7 in a sandbox. → v0.6.10
+- [ ] **E03** A `syntax` detector kind on ast-grep (Rust, tree-sitter, YAML rules with `pattern`, `inside`, `has`, `not`, `constraints`): declarative like today's regexes, matching code instead of text (doctrine 11, T-144). → v0.6.9
+- [ ] **E04** One parse per file, shared by every syntax rule, the tree cached by blob SHA. → v0.6.9
+- [ ] **E05** Until the syntax engine lands, `regex` gets `in = "code" | "comments" | "strings" | "any"`, from Python's `tokenize` (stdlib) and a small JS/TS tokenizer: the false positives seen on kiln vanish with no new dependency. → v0.5.5
+- [ ] **E06** Path classes instead of hand-written globs: `where = ["code"]`, `["tests"]`, `["config"]`, `["docs"]`, `["ci"]`, `["containers"]`, from the model; generated, vendored, fixtures and templates left out by default. → v0.5.5
+- [ ] **E07** A policy per rule for tests: `in_tests = "skip" | "lower" | "same"` (SQL built in a test is noise; a naive datetime in a test can hide a bug). → v0.5.5
+- [ ] **E08** Combinators (`all`, `any`, `not`) and conditions ("if a Dockerfile `EXPOSE`s a port, compose or the Dockerfile has a health check"). → v0.6.8
+- [ ] **E09** Cross-file detectors: every job that tests also lints; every Django app with models registers an admin or says why; every route has a test that calls it (routes extracted, tests searched). → v0.6.33
+- [ ] **E10** An import graph per language (Python's `ast`, an ES-module scanner): cycles, layers (SEALED-DOMAIN), dead modules, fan-in and fan-out. → v0.6.33
+- [ ] **E11** Taint inside one function: a request value (`request.GET`, `request.data`, route parameters, `req.query`) reaching a sink (`execute`, `os.system`, `open`, `redirect`, `subprocess`, `eval`) without a known sanitizer. → v0.6.29
+- [ ] **E12** Symbol tables per language (functions, classes, variables, booleans, constants) from tree-sitter queries: CASE, BOOLEANS, GENERIC-NAMES and ONE-CLASS for every language. → v0.6.9
+- [ ] **E13** A metrics pass: lines and logical lines per file and function, cyclomatic and cognitive complexity, nesting, parameters, token duplication, comment density, TODOs, for any language (lizard's approach), feeding the size and complexity ratchets. → v0.6.30
+- [ ] **E14** Config resolved rather than grepped: tsconfig `extends` chains (local files and package presets), ruff's `extend`, ESLint flat configs read as syntax (never executed), mypy, pyright, pytest and coverage settings wherever they live. → v0.6.9
+- [ ] **E15** Django settings evaluated statically: the module found (`manage.py`, `wsgi.py`, `asgi.py`, `DJANGO_SETTINGS_MODULE`), `from .base import *` followed, plain assignments and `env("X", default=…)` read. `DEBUG = env.bool("DEBUG", default=True)` becomes a finding; it is invisible today. → v0.6.9
+- [ ] **E16** `nuxt.config` read as syntax: `runtimeConfig` (secrets under `public`), `routeRules`, the Nitro preset, `devtools`, modules, `ssr`, `sourcemap`. → v0.6.9
+- [ ] **E17** Dockerfiles parsed per stage: the final stage's `USER`, `ARG` defaults resolved inside `FROM` (a `$` image is skipped today, a false negative), heredocs, `--mount` options. → v0.6.9
+- [ ] **E18** Equivalence lists as data (Python linters: ruff, flake8, pylint; dependency bots: Dependabot, Renovate…): a practice met by any, with "met; kiln recommends ruff" as a gentle `trial` note. → v0.6.8
+- [ ] **E19** Evidence for passes too: "met by `renovate.json`", "met: `USER app` in the final stage of `Dockerfile`". `--all` says why each rule passed. → v0.6.8
+- [ ] **E20** A third outcome, `unknown`: the detector couldn't decide (a config written as code, a tool missing, a file too big). Listed apart, never a pass, never a fail. → v0.6.8
+- [ ] **E21** Linear-time regexes (google-re2, or Rust's `regex` through the syntax engine) and a time budget per rule: one bad pattern can't hang a run. → v0.6.54
+- [ ] **E22** `kiln grid` lints every pattern for catastrophic backtracking when the grid loads. → v0.5.12
+- [ ] **E23** Locations with line, column and end (SARIF regions), with a snippet, redacted for secrets. → v0.5.8
+- [ ] **E24** A fingerprint per finding (rule, path, normalized snippet, like SARIF's `partialFingerprints`): a finding keeps its identity when lines move, so waivers and baselines survive edits. → v0.5.8
+- [ ] **E25** Baselines: `kiln score --baseline` records today's findings, and from then on only new ones fail a gate. The progressive path of doctrine 9 for any repo, not only kiln's. → v0.6.25
+- [ ] **E26** Approximate detectors return candidates with a confidence: the roadmap sends the uncertain ones to Claude "to confirm" and the certain ones as gaps. → v0.6.15
+- [ ] **E27** Docs checked against the tree: every path, command and make target quoted in the README and CLAUDE.md exists (REPO-MAP-FRESH, README-COMMANDS-EXIST). A map that lies costs Claude more than no map. → v0.6.43
+- [ ] **E28** A secrets engine: provider patterns (gitleaks' rules as data), checksum-verified tokens (GitHub's `ghp_` and `github_pat_` tokens carry a CRC32, so zero false positives), entropy last; documented sample keys and placeholders (`AKIAIOSFODNN7EXAMPLE`, `changeme`, `<your-token>`) left out. → v0.6.13
+- [ ] **E29** Artefacts that should never be committed, by name and content: `.pyc`, `node_modules/`, `dist/`, `.DS_Store`, `*.log`, `*.sqlite3`, `*.tfstate`, `id_rsa`, `*.pem`, `*.p12`, `*.keystore`, `.ipynb_checkpoints`, coverage reports, virtualenvs. → v0.6.42
+- [ ] **E30** `.gitignore` compared with github/gitignore's templates for the ecosystems present: what's missing is a scripted fix. → v0.6.42
+- [ ] **E31** Freshness of generated files without running anything: the lock against its manifest, the committed OpenAPI schema against the routes it names, an action's `dist/` against its sources (approximate; `--deep` proves). → v0.6.16
+- [ ] **E32** Never read `.git/`, virtualenvs or `node_modules` as code, even when they're tracked by mistake (that's its own finding). → v0.6.54
+- [ ] **E33** A rule's condition can read the model (`component.frameworks.django.version`), so Django 4.2 and 5.2 can have different detectors. → v0.6.8
+- [ ] **E34** Inline justifications in the charter's style (`# kiln: allow NAIVE-DATETIMES, reason`): counted, shown, gone when the code they sit on goes. → v0.6.8
+- [ ] **E35** A detector can ask for several files at once (compose, Dockerfile and CI together): the engine hands it the set, each file read once. → v0.6.8
 
 #### F · Mature tools as detectors
 
-- [ ] **F01** A `tool` detector kind: run a tool with machine output (JSON, SARIF), map each result to a rule and a place. The tool comes from the repo's environment, PATH or kiln's bundle; it is never downloaded without `--online`.
-- [ ] **F02** ruff as the Python engine wherever it has the rule: DTZ (naive datetimes), E722 (bare except), PGH003 and PGH004 (blanket ignores), S608 (SQL by strings), S602 to S607 (shell), S301 and S506 (unsafe loads), S113 (no timeout), B006 (mutable defaults), T20 (print), C901, PLR2004 (magic values), UP (modern Python at the `requires-python` target), DJ, ASYNC, PTH, ERA. Exact, string-aware, and its safe fixes become free converters.
-- [ ] **F03** kiln's reference ruff selection run even on repos without a ruff config (isolated, kiln's own config), beside the repo's: "your linter says" and "the grid says" kept apart.
-- [ ] **F04** zizmor for GitHub Actions (template injection, excessive permissions, unpinned uses, persisted credentials, cache poisoning, dangerous triggers, impostor commits, known-vulnerable actions): a Rust wheel, mapped onto WORKFLOW-INJECTION, PULL-REQUEST-TARGET, PINNED-ACTIONS, WORKFLOW-PERMISSIONS and new rules.
-- [ ] **F05** shellcheck (the `shellcheck-py` wheel) on shell scripts and on the `run:` blocks of workflows.
-- [ ] **F06** actionlint for workflow correctness (expressions, contexts, job dependencies).
-- [ ] **F07** oxlint or Biome for JS/TS rules (no-eval, eqeqeq, no-debugger, accessibility) as native binaries (T-144 measures them).
-- [ ] **F08** hadolint's most useful checks rewritten on the parsed Dockerfile (latest tag, root user, pipefail, apt hygiene, `ADD` of a URL, exec form) rather than shipping a Haskell binary.
-- [ ] **F09** osv-scanner, or OSV's batch API, for real vulnerability counts in the locked versions. VULNERABILITY-AUDIT checks today that an audit runs, not what it would find.
-- [ ] **F10** govulncheck for Go (reachable vulnerabilities only), cargo-deny for Rust, `composer audit`, bundler-audit.
-- [ ] **F11** trivy's config mode or checkov for Terraform, Kubernetes, Helm and Dockerfiles, mapped onto the containers and infrastructure rules.
-- [ ] **F12** kube-linter or kubeconform for Kubernetes manifests.
-- [ ] **F13** deptry and knip (unused and missing dependencies) and vulture (dead code), already used by the compressor: their findings feed UNUSED-DEPENDENCIES and DEAD-CODE once their precision is measured.
-- [ ] **F14** Type checkers as ratchet metrics in `--deep` (mypy, pyright, ty or pyrefly once mature, tsc, vue-tsc): the error count at strict settings.
-- [ ] **F15** typos (Rust) for misspellings in identifiers and comments, with very few false positives.
-- [ ] **F16** lychee for links: relative links and anchors offline, external ones with `--online`, cached.
-- [ ] **F17** The REUSE tool and a licence detector in licensee's manner for the licensing theme.
-- [ ] **F18** squawk and django-migration-linter for migrations, sqlfluff for SQL.
-- [ ] **F19** OpenSSF Scorecard's checks redone locally where possible (they need its API otherwise): "kiln score covers Scorecard" is a claim worth making (appendix C).
-- [ ] **F20** Semgrep-compatible rules ⚠ licences first: the Semgrep registry's rules have their own licence, the opengrep engine is LGPL. kiln's own rules stay in ast-grep.
-- [ ] **F21** Every tool pinned by version and hash, its output cached by the hash of its inputs; a tool update is a grid change and its precision is measured again.
-- [ ] **F22** Several tools on one line deduplicated: ruff's S608 and another tool on the same SQL string make one finding with both as evidence.
-- [ ] **F23** A missing tool never fails a rule: "unknown: install kiln's tools extra, or run with `--deep`".
-- [ ] **F24** A `kiln-cli[tools]` extra bringing the tools that ship as wheels in one install.
-- [ ] **F25** The tool that detected becomes the tool that keeps it closed: `kiln fix` adds its config and its CI step when missing (ruff, zizmor, pre-commit).
+- [ ] **F01** A `tool` detector kind: run a tool with machine output (JSON, SARIF), map each result to a rule and a place. The tool comes from the repo's environment, PATH or kiln's bundle; it is never downloaded without `--online`. → v0.6.10
+- [ ] **F02** ruff as the Python engine wherever it has the rule: DTZ (naive datetimes), E722 (bare except), PGH003 and PGH004 (blanket ignores), S608 (SQL by strings), S602 to S607 (shell), S301 and S506 (unsafe loads), S113 (no timeout), B006 (mutable defaults), T20 (print), C901, PLR2004 (magic values), UP (modern Python at the `requires-python` target), DJ, ASYNC, PTH, ERA. Exact, string-aware, and its safe fixes become free converters. → v0.6.10
+- [ ] **F03** kiln's reference ruff selection run even on repos without a ruff config (isolated, kiln's own config), beside the repo's: "your linter says" and "the grid says" kept apart. → v0.6.10
+- [ ] **F04** zizmor for GitHub Actions (template injection, excessive permissions, unpinned uses, persisted credentials, cache poisoning, dangerous triggers, impostor commits, known-vulnerable actions): a Rust wheel, mapped onto WORKFLOW-INJECTION, PULL-REQUEST-TARGET, PINNED-ACTIONS, WORKFLOW-PERMISSIONS and new rules. → v0.6.21
+- [ ] **F05** shellcheck (the `shellcheck-py` wheel) on shell scripts and on the `run:` blocks of workflows. → v0.6.10
+- [ ] **F06** actionlint for workflow correctness (expressions, contexts, job dependencies). → v0.6.21
+- [ ] **F07** oxlint or Biome for JS/TS rules (no-eval, eqeqeq, no-debugger, accessibility) as native binaries (T-144 measures them). → v0.6.31
+- [ ] **F08** hadolint's most useful checks rewritten on the parsed Dockerfile (latest tag, root user, pipefail, apt hygiene, `ADD` of a URL, exec form) rather than shipping a Haskell binary. → v0.6.19
+- [ ] **F09** osv-scanner, or OSV's batch API, for real vulnerability counts in the locked versions. VULNERABILITY-AUDIT checks today that an audit runs, not what it would find. → v0.6.50
+- [ ] **F10** govulncheck for Go (reachable vulnerabilities only), cargo-deny for Rust, `composer audit`, bundler-audit. → v1.1.0
+- [ ] **F11** trivy's config mode or checkov for Terraform, Kubernetes, Helm and Dockerfiles, mapped onto the containers and infrastructure rules. → v0.6.60
+- [ ] **F12** kube-linter or kubeconform for Kubernetes manifests. → v0.6.60
+- [ ] **F13** deptry and knip (unused and missing dependencies) and vulture (dead code), already used by the compressor: their findings feed UNUSED-DEPENDENCIES and DEAD-CODE once their precision is measured. → v0.6.1
+- [ ] **F14** Type checkers as ratchet metrics in `--deep` (mypy, pyright, ty or pyrefly once mature, tsc, vue-tsc): the error count at strict settings. → v0.6.51
+- [ ] **F15** typos (Rust) for misspellings in identifiers and comments, with very few false positives. → v0.6.30
+- [ ] **F16** lychee for links: relative links and anchors offline, external ones with `--online`, cached. → v0.6.43
+- [ ] **F17** The REUSE tool and a licence detector in licensee's manner for the licensing theme. → v0.6.58
+- [ ] **F18** squawk and django-migration-linter for migrations, sqlfluff for SQL. → v0.6.34
+- [ ] **F19** OpenSSF Scorecard's checks redone locally where possible (they need its API otherwise): "kiln score covers Scorecard" is a claim worth making (appendix C). → v0.7.1
+- [ ] **F20** Semgrep-compatible rules ⚠ licences first: the Semgrep registry's rules have their own licence, the opengrep engine is LGPL. kiln's own rules stay in ast-grep. → v0.7.1
+- [ ] **F21** Every tool pinned by version and hash, its output cached by the hash of its inputs; a tool update is a grid change and its precision is measured again. → v0.6.10
+- [ ] **F22** Several tools on one line deduplicated: ruff's S608 and another tool on the same SQL string make one finding with both as evidence. → v0.6.10
+- [ ] **F23** A missing tool never fails a rule: "unknown: install kiln's tools extra, or run with `--deep`". → v0.6.10
+- [ ] **F24** A `kiln-cli[tools]` extra bringing the tools that ship as wheels in one install. → v0.6.10
+- [ ] **F25** The tool that detected becomes the tool that keeps it closed: `kiln fix` adds its config and its CI step when missing (ruff, zizmor, pre-commit). → v0.5.11
 
 #### G · Rule format v2 and authoring
 
-- [ ] **G01** Examples inside the rule file (`[[examples]]` with `expect` and inline files): the grid tests itself, packs ship tested rules, and `tests/test_grid.py` reads them instead of its `CASES`.
-- [ ] **G02** Several examples per rule, edge cases included; every false positive ever reported becomes a `pass` example, so it never comes back.
-- [ ] **G03** `applies` as an expression over the repo model (A).
-- [ ] **G04** `any_of`: the ways one practice can be met, each with its own detector.
-- [ ] **G05** `severity` (critical, high, medium, low, info), apart from `regime` (how it is enforced) and `level` (the radar).
-- [ ] **G06** `effort` per place and per rule, in session minutes, and `impact`: the roadmap's order and the effort-to-100 estimate come from them.
-- [ ] **G07** A `message` per place with placeholders (`{image} is named by tag: pin it as {image}@sha256:…`): the finding says what to do right there.
-- [ ] **G08** A `fix` block: a converter, a ruff code, or a written recipe for Claude; `safety = "safe" | "unsafe"` as ruff marks its fixes.
-- [ ] **G09** `related`, `supersedes` and `aliases`: old IDs answered forever, the stable-ID promise of v1.0.
-- [ ] **G10** A `standards` table: CWE, OWASP Top 10 and ASVS, OpenSSF Scorecard, SLSA, NIST SSDF, CIS benchmarks, WCAG, the EU Cyber Resilience Act, twelve-factor.
-- [ ] **G11** Profiles stay a membership list, never weights (decision 2): a rule outside the repo's profile is not applicable, so `SLO` asks nothing of a solo repo.
-- [ ] **G12** `level_history`: when and why the rule moved on the radar, with the evidence (precision, sources). An auditable radar.
-- [ ] **G13** `switch_when` made checkable (`django supports python 3.15`, from PyPI classifiers or endoflife data): kiln says by itself when it is time.
-- [ ] **G14** `precision` and `prevalence` written by the calibration job (H), shown in `kiln grid ID` and on the rule's page.
-- [ ] **G15** A Markdown page per rule beside its file (why, bad and good code, the fix, references), as ruff documents its rules; `kiln grid ID --doc` shows it, the site publishes it.
-- [ ] **G16** A published JSON Schema for rule files: editors check a rule as it is typed (taplo, VS Code).
-- [ ] **G17** `kiln grid new ID` scaffolds a rule and its examples; `kiln grid test [ID]` runs the examples; `kiln grid try ID --on <repo>` runs one rule with its timing.
-- [ ] **G18** `kiln grid lint`: patterns that can backtrack, unknown facts, missing examples, stale sources, messages too long for a terminal line or for Claude's tokens.
-- [ ] **G19** Rule IDs linted: uppercase, three words at most, naming the practice rather than the violation.
-- [ ] **G20** One practice, several languages, one ID: `[detector.python]`, `[detector.typescript]`, `[detector.java]`.
-- [ ] **G21** A hash per rule (content and engine version) for cache keys and for the report's `grid_version`.
-- [ ] **G22** `inputs` declared per rule (the path classes it reads): the incremental engine knows what to recompute.
-- [ ] **G23** `shadow = true`: a new detector runs and records on the corpus and on beta machines without showing, for one release, before it counts.
-- [ ] **G24** Typed settings with defaults, for project data only (time zone, currency, integration branch): never a knob that weakens a rule (doctrine 1).
-- [ ] **G25** A rule may carry its own small test repo folder (`rules/<theme>/<ID>/`) when inline examples get too big (a whole Django project).
+- [ ] **G01** Examples inside the rule file (`[[examples]]` with `expect` and inline files): the grid tests itself, packs ship tested rules, and `tests/test_grid.py` reads them instead of its `CASES`. → v0.5.12
+- [ ] **G02** Several examples per rule, edge cases included; every false positive ever reported becomes a `pass` example, so it never comes back. → v0.5.12
+- [ ] **G03** `applies` as an expression over the repo model (A). → v0.6.8
+- [ ] **G04** `any_of`: the ways one practice can be met, each with its own detector. → v0.6.8
+- [ ] **G05** `severity` (critical, high, medium, low, info), apart from `regime` (how it is enforced) and `level` (the radar). → v0.6.15
+- [ ] **G06** `effort` per place and per rule, in session minutes, and `impact`: the roadmap's order and the effort-to-100 estimate come from them. → v0.6.27
+- [ ] **G07** A `message` per place with placeholders (`{image} is named by tag: pin it as {image}@sha256:…`): the finding says what to do right there. → v0.5.12
+- [ ] **G08** A `fix` block: a converter, a ruff code, or a written recipe for Claude; `safety = "safe" | "unsafe"` as ruff marks its fixes. → v0.5.11
+- [ ] **G09** `related`, `supersedes` and `aliases`: old IDs answered forever, the stable-ID promise of v1.0. → v0.7.3
+- [ ] **G10** A `standards` table: CWE, OWASP Top 10 and ASVS, OpenSSF Scorecard, SLSA, NIST SSDF, CIS benchmarks, WCAG, the EU Cyber Resilience Act, twelve-factor. → v0.7.1
+- [ ] **G11** Profiles stay a membership list, never weights (decision 2): a rule outside the repo's profile is not applicable, so `SLO` asks nothing of a solo repo. → v0.6.63
+- [ ] **G12** `level_history`: when and why the rule moved on the radar, with the evidence (precision, sources). An auditable radar. → v0.6.3
+- [ ] **G13** `switch_when` made checkable (`django supports python 3.15`, from PyPI classifiers or endoflife data): kiln says by itself when it is time. → v0.6.18
+- [ ] **G14** `precision` and `prevalence` written by the calibration job (H), shown in `kiln grid ID` and on the rule's page. → v0.6.14
+- [ ] **G15** A Markdown page per rule beside its file (why, bad and good code, the fix, references), as ruff documents its rules; `kiln grid ID --doc` shows it, the site publishes it. → v0.6.5
+- [ ] **G16** A published JSON Schema for rule files: editors check a rule as it is typed (taplo, VS Code). → v0.7.3
+- [ ] **G17** `kiln grid new ID` scaffolds a rule and its examples; `kiln grid test [ID]` runs the examples; `kiln grid try ID --on <repo>` runs one rule with its timing. → v0.5.12
+- [ ] **G18** `kiln grid lint`: patterns that can backtrack, unknown facts, missing examples, stale sources, messages too long for a terminal line or for Claude's tokens. → v0.5.12
+- [ ] **G19** Rule IDs linted: uppercase, three words at most, naming the practice rather than the violation. → v0.5.12
+- [ ] **G20** One practice, several languages, one ID: `[detector.python]`, `[detector.typescript]`, `[detector.java]`. → v0.6.8
+- [ ] **G21** A hash per rule (content and engine version) for cache keys and for the report's `grid_version`. → v0.5.12
+- [ ] **G22** `inputs` declared per rule (the path classes it reads): the incremental engine knows what to recompute. → v0.6.11
+- [ ] **G23** `shadow = true`: a new detector runs and records on the corpus and on beta machines without showing, for one release, before it counts. → v0.6.14
+- [ ] **G24** Typed settings with defaults, for project data only (time zone, currency, integration branch): never a knob that weakens a rule (doctrine 1). → v0.6.8
+- [ ] **G25** A rule may carry its own small test repo folder (`rules/<theme>/<ID>/`) when inline examples get too big (a whole Django project). → v0.5.12
 
 #### H · Precision and recall
 
-- [ ] **H01** A labelled corpus: T-132's hundred repos as its first version, then 1,000 and 10,000 public repos sampled by language, size and age, each pinned to a commit, every finding labelled true or false.
-- [ ] **H02** Labels from Claude in batches (20 places per rule, "to confirm"), spot-checked by antoine, stored by fingerprint; only aggregates in public, anything that names a project in `kiln-private`.
-- [ ] **H03** Precision and recall per rule at every candidate; a strict rule under 99 % precision, or any drop, stops the candidate (`kiln version cut`).
-- [ ] **H04** Differential tests against reference tools (zizmor, Scorecard, gitleaks, ruff): each disagreement triaged into a kiln bug or a documented difference.
-- [ ] **H05** Examples mutated: failing variants generated from each `pass` example (the `USER` line removed, a SHA turned into a tag), and the detector must flip.
-- [ ] **H06** Property tests (Hypothesis) on every parser (Dockerfile, workflows, compose, settings): random input never crashes, and the outcome is deterministic.
-- [ ] **H07** A fuzzed tree: deep nesting, Unicode and spaces in paths, symlink loops, empty files, 100 MB files, invalid UTF-8, CRLF, BOM, case collisions.
-- [ ] **H08** Known false-positive classes handled once, in the engine: tests, fixtures, templates, examples, code blocks in docs (a README showing the bad way), `.example` files, vendored and generated code, migrations, documented sample keys, localhost URLs.
-- [ ] **H09** Known false negatives (from reading the code on 24 October) closed one by one: `FROM $IMAGE` skipped; the file's last `USER` read instead of the final stage's; `permissions: write-all` passes WORKFLOW-PERMISSIONS; a tsconfig strict through a local `extends` fails STRICT-TS; a linter config anywhere (even under `template/`) passes PYTHON-LINTER for the whole repo; compose, Kubernetes and CI images escape IMAGES-BY-DIGEST.
-- [ ] **H10** Known false positives closed too: `requires-python = ">=3.9"` read as running 3.9 (a library's floor, not its runtime); an app with an empty `models.py`, or one under `tests/`, asked for migrations; a lone `.go` file in `docs/` announcing "Go: not covered".
-- [ ] **H11** Waivers as signals beyond renewals (reported since v0.4.6): "false positive" in a reason, or one rule waived across many repos of a fleet, flags the rule for review.
-- [ ] **H12** Inline markers and waivers counted per rule across the corpus: the most-waived rules are examined first.
-- [ ] **H13** A confidence per finding (the rule's precision times its context: test file, generated, comment), shown as "certain" or "likely".
-- [ ] **H14** Recall measured with seeded faults: secrets, unpinned images, root containers planted in copies of corpus repos must all be found.
-- [ ] **H15** A crash budget of zero on the whole corpus at every candidate; a rule that crashes is reported with a minimal anonymized tree for `/kiln:report`.
-- [ ] **H16** Seniors' agreement: ten senior engineers rank twenty repos, and kiln's order must agree with theirs (Kendall's tau of 0.7 or more). "Like a senior engineer would", measured.
-- [ ] **H17** A regression suite of real false positives: each one reported gets a minimal repo in `tests/` that must pass forever.
-- [ ] **H18** Precision shown to users ("this rule is 99.4 % precise on 1,000 repos"): trust earned with numbers.
-- [ ] **H19** The corpus's labels versioned with the grid, so a rule's precision history is a plot, not a memory.
-- [ ] **H20** A rule that flags more than half of the corpus is looked at twice: either the practice is rare (say so) or the detector is wrong.
+- [ ] **H01** A labelled corpus: T-132's hundred repos as its first version, then 1,000 and 10,000 public repos sampled by language, size and age, each pinned to a commit, every finding labelled true or false. → v0.5.0
+- [ ] **H02** Labels from Claude in batches (20 places per rule, "to confirm"), spot-checked by antoine, stored by fingerprint; only aggregates in public, anything that names a project in `kiln-private`. → v0.6.14
+- [ ] **H03** Precision and recall per rule at every candidate; a strict rule under 99 % precision, or any drop, stops the candidate (`kiln version cut`). → v0.6.14
+- [ ] **H04** Differential tests against reference tools (zizmor, Scorecard, gitleaks, ruff): each disagreement triaged into a kiln bug or a documented difference. → v0.6.14
+- [ ] **H05** Examples mutated: failing variants generated from each `pass` example (the `USER` line removed, a SHA turned into a tag), and the detector must flip. → v0.5.12
+- [ ] **H06** Property tests (Hypothesis) on every parser (Dockerfile, workflows, compose, settings): random input never crashes, and the outcome is deterministic. → v0.6.54
+- [ ] **H07** A fuzzed tree: deep nesting, Unicode and spaces in paths, symlink loops, empty files, 100 MB files, invalid UTF-8, CRLF, BOM, case collisions. → v0.6.54
+- [ ] **H08** Known false-positive classes handled once, in the engine: tests, fixtures, templates, examples, code blocks in docs (a README showing the bad way), `.example` files, vendored and generated code, migrations, documented sample keys, localhost URLs. → v0.5.5
+- [ ] **H09** Known false negatives (from reading the code on 24 October) closed one by one: `FROM $IMAGE` skipped; the file's last `USER` read instead of the final stage's; `permissions: write-all` passes WORKFLOW-PERMISSIONS; a tsconfig strict through a local `extends` fails STRICT-TS; a linter config anywhere (even under `template/`) passes PYTHON-LINTER for the whole repo; compose, Kubernetes and CI images escape IMAGES-BY-DIGEST. → v0.6.9
+- [ ] **H10** Known false positives closed too: `requires-python = ">=3.9"` read as running 3.9 (a library's floor, not its runtime); an app with an empty `models.py`, or one under `tests/`, asked for migrations; a lone `.go` file in `docs/` announcing "Go: not covered". → v0.5.5
+- [ ] **H11** Waivers as signals beyond renewals (reported since v0.4.6): "false positive" in a reason, or one rule waived across many repos of a fleet, flags the rule for review. → v0.6.53
+- [ ] **H12** Inline markers and waivers counted per rule across the corpus: the most-waived rules are examined first. → v0.6.14
+- [ ] **H13** A confidence per finding (the rule's precision times its context: test file, generated, comment), shown as "certain" or "likely". → v0.6.15
+- [ ] **H14** Recall measured with seeded faults: secrets, unpinned images, root containers planted in copies of corpus repos must all be found. → v0.6.14
+- [ ] **H15** A crash budget of zero on the whole corpus at every candidate; a rule that crashes is reported with a minimal anonymized tree for `/kiln:report`. → v0.6.54
+- [ ] **H16** Seniors' agreement: ten senior engineers rank twenty repos, and kiln's order must agree with theirs (Kendall's tau of 0.7 or more). "Like a senior engineer would", measured. → v0.7.4
+- [ ] **H17** A regression suite of real false positives: each one reported gets a minimal repo in `tests/` that must pass forever. → v0.5.5
+- [ ] **H18** Precision shown to users ("this rule is 99.4 % precise on 1,000 repos"): trust earned with numbers. → v0.6.15
+- [ ] **H19** The corpus's labels versioned with the grid, so a rule's precision history is a plot, not a memory. → v0.6.14
+- [ ] **H20** A rule that flags more than half of the corpus is looked at twice: either the practice is rare (say so) or the detector is wrong. → v0.6.14
 
 #### I · Scoring model v2
 
-- [ ] **I01** A severity on each rule (critical, high, medium, low) that orders the gaps and marks the critical ones; it never weighs the number (decision 2).
-- [ ] **I02** Critical findings cap the score at 49 (decision 2), each critical rule proven at 99 % precision first: a committed secret, `DEBUG = True` in production settings, `pull_request_target` checking out the pull request's code, the engine's socket mounted in a container. A repo that leaks its keys can't show 90.
-- [ ] **I03** Progress shown per place, never as partial credit: "`IMAGES-BY-DIGEST`: 37 of 40 pinned" beside the rule, so every fix shows while the number keeps meaning rules met (decision 2).
-- [ ] **I04** Approximate findings not counted until Claude or the user confirms them: the score never punishes a maybe.
-- [ ] **I05** Scores per component and per theme, under the five pillars; under each pillar, its weakest themes (decision 5).
-- [ ] **I06** The denominator explained: "31 rules apply: Python, Django, Docker, GitHub Actions"; a new Dockerfile says "5 more rules apply now, 2 met".
-- [ ] **I07** The potential on every run: "58 now · 74 after `kiln fix` (no token, about 2 minutes) · 100 after the roadmap (12 items, about 3 hours of Claude Code)".
-- [ ] **I08** Effort to 100 from the rules' effort estimates, in session hours, the backlog's unit.
-- [ ] **I09** A percentile against the study's distribution, bundled: "better than 82 % of public Django repos" (aggregates only, no repo named).
-- [ ] **I10** `grid_version` in every report and badge; `kiln score --grid 0.4.5` re-scores with an older grid (bundled history) to compare like with like.
-- [ ] **I11** New `adopt` rules announced one release ahead ("counts from v0.5.7: you meet it", or "you will lose 2 points: `kiln fix` closes it"): no score drops overnight.
-- [ ] **I12** `kiln score --history`: the score at each tag or merge (cheap with the cache), drawn as a curve; "41 to 78 since adoption".
-- [ ] **I13** The score of a change: "this branch takes the score from 74 to 76; 1 new finding, 3 fixed". The gate is "no new finding", never an absolute number.
-- [ ] **I14** Anti-gaming: presence rules check content (a README with install and usage, a SECURITY.md with a contact, tests that assert, CI that runs on pull requests and pushes). An empty file earns nothing.
-- [ ] **I15** A delivery score apart, for organisation profiles with `--online`: DORA's four keys from the forge (deploy frequency from releases, lead time from merge times, change failure rate from reverts and hotfixes, time to restore from incident issues).
-- [ ] **I16** Remediation time in hours per rule and in total: a debt figure for practices.
-- [ ] **I17** `kiln score --explain`: the formula with this repo's numbers in it.
-- [ ] **I18** One function computes the score everywhere (CLI, badge, bot, fleet, HTML), with golden tests.
-- [ ] **I19** The score model versioned (`score_model` in the JSON); a change re-scores the reference repos and the release note says its effect.
-- [ ] **I20** "Rules met" stays on the first line (24 of 31): plainer than a percentage for a newcomer.
-- [ ] **I21** A verdict in plain words generated from the findings, no model needed: "well tested, but the supply chain is open: unpinned actions and images, no update bot".
-- [ ] **I22** Upcoming deadlines in the score's margin: "Node 22 reaches its end on 30 April 2027, in 188 days" (see `--calendar`, Q).
+- [ ] **I01** A severity on each rule (critical, high, medium, low) that orders the gaps and marks the critical ones; it never weighs the number (decision 2). → v0.6.15
+- [ ] **I02** Critical findings cap the score at 49 (decision 2), each critical rule proven at 99 % precision first: a committed secret, `DEBUG = True` in production settings, `pull_request_target` checking out the pull request's code, the engine's socket mounted in a container. A repo that leaks its keys can't show 90. → v0.6.15
+- [ ] **I03** Progress shown per place, never as partial credit: "`IMAGES-BY-DIGEST`: 37 of 40 pinned" beside the rule, so every fix shows while the number keeps meaning rules met (decision 2). → v0.6.15
+- [ ] **I04** Approximate findings not counted until Claude or the user confirms them: the score never punishes a maybe. → v0.6.15
+- [ ] **I05** Scores per component and per theme, under the five pillars; under each pillar, its weakest themes (decision 5). → v0.6.27
+- [ ] **I06** The denominator explained: "31 rules apply: Python, Django, Docker, GitHub Actions"; a new Dockerfile says "5 more rules apply now, 2 met". → v0.6.27
+- [ ] **I07** The potential on every run: "58 now · 74 after `kiln fix` (no token, about 2 minutes) · 100 after the roadmap (12 items, about 3 hours of Claude Code)". → v0.5.0
+- [ ] **I08** Effort to 100 from the rules' effort estimates, in session hours, the backlog's unit. → v0.6.27
+- [ ] **I09** A percentile against the study's distribution, bundled: "better than 82 % of public Django repos" (aggregates only, no repo named). → v0.5.6
+- [ ] **I10** `grid_version` in every report and badge; `kiln score --grid 0.4.5` re-scores with an older grid (bundled history) to compare like with like. → v0.6.18
+- [ ] **I11** New `adopt` rules announced one release ahead ("counts from v0.5.7: you meet it", or "you will lose 2 points: `kiln fix` closes it"): no score drops overnight. → v0.5.10
+- [ ] **I12** `kiln score --history`: the score at each tag or merge (cheap with the cache), drawn as a curve; "41 to 78 since adoption". → v0.6.24
+- [ ] **I13** The score of a change: "this branch takes the score from 74 to 76; 1 new finding, 3 fixed". The gate is "no new finding", never an absolute number. → v0.6.24
+- [ ] **I14** Anti-gaming: presence rules check content (a README with install and usage, a SECURITY.md with a contact, tests that assert, CI that runs on pull requests and pushes). An empty file earns nothing. → v0.6.15
+- [ ] **I15** A delivery score apart, for organisation profiles with `--online`: DORA's four keys from the forge (deploy frequency from releases, lead time from merge times, change failure rate from reverts and hotfixes, time to restore from incident issues). → v0.7.2
+- [ ] **I16** Remediation time in hours per rule and in total: a debt figure for practices. → v0.6.27
+- [ ] **I17** `kiln score --explain`: the formula with this repo's numbers in it. → v0.6.27
+- [ ] **I18** One function computes the score everywhere (CLI, badge, bot, fleet, HTML), with golden tests. → v0.6.27
+- [ ] **I19** The score model versioned (`score_model` in the JSON); a change re-scores the reference repos and the release note says its effect. → v0.6.27
+- [ ] **I20** "Rules met" stays on the first line (24 of 31): plainer than a percentage for a newcomer. → v0.6.27
+- [ ] **I21** A verdict in plain words generated from the findings, no model needed: "well tested, but the supply chain is open: unpinned actions and images, no update bot". → v0.6.27
+- [ ] **I22** Upcoming deadlines in the score's margin: "Node 22 reaches its end on 30 April 2027, in 188 days" (see `--calendar`, Q). → v0.6.18
 
 #### J · Speed
 
-- [ ] **J01** Measure first: `kiln score --profile` (time per phase: listing, model, each rule, output; the ten slowest rules) and a benchmark suite (an empty repo, kiln, a copy of the reference repo, a 50,000-file monorepo, a synthetic million-file tree) in CI, with thresholds.
-- [ ] **J02** Startup measured (`-X importtime`) and budgeted (80 ms to the first line): `urllib` imported only for `--online` (60 ms today), copier and Jinja never imported by `score`.
-- [ ] **J03** A lean path: the score's dependencies kept minimal, so `uvx kiln-cli score` downloads little on a first run; the template's dependencies only for `new`, `adopt` and `update`.
-- [ ] **J04** One listing (`git ls-files -s` gives each tracked file's blob SHA for free); contents through `git cat-file --batch` when the tree is clean, from disk otherwise.
-- [ ] **J05** A file-to-rules index built once, every rule's globs merged into one matcher: today each rule walks every file with its own patterns.
-- [ ] **J06** Only the files some applicable rule needs are read; sizes from `git cat-file --batch-check` skip the huge ones before reading.
-- [ ] **J07** YAML through libyaml's `CSafeLoader` when present, several times faster than the pure-Python loader.
-- [ ] **J08** All text rules for one file type in a single scan (a combined automaton: a regex set, or Hyperscan where a measurement says so).
-- [ ] **J09** Rules in parallel: threads for I/O-bound rules, processes on big repos; free-threaded Python 3.14 measured.
-- [ ] **J10** A cache keyed by blob SHA, rule hash and engine version in `~/.cache/kiln/score/`: a warm run recomputes nothing unchanged, in under 50 ms.
-- [ ] **J11** `--changed`: only files changed since the merge base, and the repo-level rules whose inputs changed, are checked again.
-- [ ] **J12** `--watch`: re-score on save (watchfiles, Rust), the changed file only.
-- [ ] **J13** The Claude Code edit hook re-scores the edited file in milliseconds and tells Claude only what is new; one engine with the charter's `check_file.py`.
-- [ ] **J14** A resident process only if measurements demand it, as language servers do; never by default.
-- [ ] **J15** Rust only where a profile points: the walker, glob matching and the multi-pattern scan are the candidates (a `kiln-core` wheel through PyO3), or ripgrep's engine through `rg --json` when installed.
-- [ ] **J16** The syntax engine runs all syntax rules of a language in one native pass (`ast-grep scan` over a rules folder), in parallel.
-- [ ] **J17** A time budget (`--budget 2s`): rules by value per cost, and what didn't run is said ("not checked: budget").
-- [ ] **J18** Metrics sampled on huge repos with a stated margin (sizes, complexity); security rules always exhaustive.
-- [ ] **J19** `--online` calls in parallel, cached a day with ETags (endoflife.date, OSV, forge APIs), batched (OSV's `querybatch` takes hundreds of packages at once).
-- [ ] **J20** Speed published as uv and ruff publish theirs: "0.3 s on Django's own repo, 4 s on a million files". Speed is part of the pitch.
-- [ ] **J21** A candidate more than 10 % slower on the suite waits for an explanation.
-- [ ] **J22** The repo and CI models cached across commands (score, fix, dev, check) and across runs.
-- [ ] **J23** `--first` for hooks: stop at the first critical finding.
-- [ ] **J24** History scans incremental: each commit's blobs scanned once, ever (the cache knows them by SHA), so `--history` costs seconds after the first run.
+- [ ] **J01** Measure first: `kiln score --profile` (time per phase: listing, model, each rule, output; the ten slowest rules) and a benchmark suite (an empty repo, kiln, a copy of the reference repo, a 50,000-file monorepo, a synthetic million-file tree) in CI, with thresholds. → v0.5.9
+- [ ] **J02** Startup measured (`-X importtime`) and budgeted (80 ms to the first line): `urllib` imported only for `--online` (60 ms today), copier and Jinja never imported by `score`. → v0.5.9
+- [ ] **J03** A lean path: the score's dependencies kept minimal, so `uvx kiln-cli score` downloads little on a first run; the template's dependencies only for `new`, `adopt` and `update`. → v0.5.9
+- [ ] **J04** One listing (`git ls-files -s` gives each tracked file's blob SHA for free); contents through `git cat-file --batch` when the tree is clean, from disk otherwise. → v0.6.11
+- [ ] **J05** A file-to-rules index built once, every rule's globs merged into one matcher: today each rule walks every file with its own patterns. → v0.6.11
+- [ ] **J06** Only the files some applicable rule needs are read; sizes from `git cat-file --batch-check` skip the huge ones before reading. → v0.6.11
+- [ ] **J07** YAML through libyaml's `CSafeLoader` when present, several times faster than the pure-Python loader. → v0.6.11
+- [ ] **J08** All text rules for one file type in a single scan (a combined automaton: a regex set, or Hyperscan where a measurement says so). → v0.6.11
+- [ ] **J09** Rules in parallel: threads for I/O-bound rules, processes on big repos; free-threaded Python 3.14 measured. → v1.6.0
+- [ ] **J10** A cache keyed by blob SHA, rule hash and engine version in `~/.cache/kiln/score/`: a warm run recomputes nothing unchanged, in under 50 ms. → v0.6.11
+- [ ] **J11** `--changed`: only files changed since the merge base, and the repo-level rules whose inputs changed, are checked again. → v0.6.26
+- [ ] **J12** `--watch`: re-score on save (watchfiles, Rust), the changed file only. → v0.6.26
+- [ ] **J13** The Claude Code edit hook re-scores the edited file in milliseconds and tells Claude only what is new; one engine with the charter's `check_file.py`. → v0.6.26
+- [ ] **J14** A resident process only if measurements demand it, as language servers do; never by default. → v1.6.0
+- [ ] **J15** Rust only where a profile points: the walker, glob matching and the multi-pattern scan are the candidates (a `kiln-core` wheel through PyO3), or ripgrep's engine through `rg --json` when installed. → v1.6.0
+- [ ] **J16** The syntax engine runs all syntax rules of a language in one native pass (`ast-grep scan` over a rules folder), in parallel. → v0.6.9
+- [ ] **J17** A time budget (`--budget 2s`): rules by value per cost, and what didn't run is said ("not checked: budget"). → v1.6.0
+- [ ] **J18** Metrics sampled on huge repos with a stated margin (sizes, complexity); security rules always exhaustive. → v1.6.0
+- [ ] **J19** `--online` calls in parallel, cached a day with ETags (endoflife.date, OSV, forge APIs), batched (OSV's `querybatch` takes hundreds of packages at once). → v0.6.50
+- [ ] **J20** Speed published as uv and ruff publish theirs: "0.3 s on Django's own repo, 4 s on a million files". Speed is part of the pitch. → v1.6.0
+- [ ] **J21** A candidate more than 10 % slower on the suite waits for an explanation. → v0.5.9
+- [ ] **J22** The repo and CI models cached across commands (score, fix, dev, check) and across runs. → v0.6.11
+- [ ] **J23** `--first` for hooks: stop at the first critical finding. → v0.6.24
+- [ ] **J24** History scans incremental: each commit's blobs scanned once, ever (the cache knows them by SHA), so `--history` costs seconds after the first run. → v0.6.47
 
 #### K · Nothing to do
 
-- [ ] **K01** One command, no install: `uvx kiln-cli score`. Documented beside it: `pipx run --python 3.14 kiln-cli score` (an older Python fails on PEP 758 syntax), Homebrew, a container image pinned by digest.
-- [ ] **K02** A single signed binary for machines without Python or uv (PyApp, which bootstraps through uv, or a frozen build), on each GitHub release.
-- [ ] **K03** `npx kiln-cli score` for JavaScript-only machines: a small npm package that runs the binary.
-- [ ] **K04** Any repo by URL: `kiln score github:owner/repo`, `kiln score https://gitlab.com/…`. A shallow clone in the cache, scored, deleted; private repos through `gh` or `glab`'s login.
-- [ ] **K05** Remote scoring without a clone for L0 and L1 rules: the Git Trees API lists every path in one call for most repos, then a few config files are fetched. Seconds, for T-87's fleet view.
-- [ ] **K06** In the browser with Pyodide, on a tarball fetched from the forge's API, no server at all; to verify (CORS on the tarball endpoints).
-- [ ] **K07** No config, no question, no `kiln adopt` needed to score; a plain folder, a zip or a tarball scored too.
-- [ ] **K08** CI detected (`GITHUB_ACTIONS`, `GITLAB_CI`, `CI`): annotations, SARIF and a job summary written without a flag, colours off outside a terminal (T-116).
-- [ ] **K09** Exit code 0 by default, since it is a measure; gates are explicit: `--fail-under 80`, `--fail-on critical`, `--no-new` against a baseline or the integration branch.
-- [ ] **K10** Never a crash: a broken file is a finding, a rule that throws is reported as a kiln bug (with `/kiln:report`'s hint), and the run goes on.
-- [ ] **K11** The next step always printed as one command: "`kiln fix` closes 5 of these 9 gaps, on a branch, no token".
-- [ ] **K12** `kiln score --fix`: score, fix, score again, in one go.
-- [ ] **K13** A repo generated by kiln scoring under 100 says it: kiln's bug, reported with consent ([REPORT-TO-KILN]).
-- [ ] **K14** The integration branch, the main language and the profile detected; the report says what it assumed.
-- [ ] **K15** Explanations a newcomer understands (one sentence, no jargon) and `--explain` for the details: "like a senior engineer would, even if you're not one".
-- [ ] **K16** Offline on a plane: all but `--online` works; the data's date shown, with "12 new rules since your version" when the tool is old (`tool_update.py`).
-- [ ] **K17** Claude Code does the work: the plugin's session start shows the score in one line (cached), the status line shows it, the edit hook keeps it. The user only reads.
-- [ ] **K18** Nothing written in the repo by default (as today); `--output` writes a report when asked.
-- [ ] **K19** kiln-bot (T-59) as the effortless default for any public repo: one copy-paste, a weekly pull request with the score and `kiln fix`'s commits.
-- [ ] **K20** On a machine, `kiln install` (T-161) is the only setup; in a repo, there is none.
+- [ ] **K01** One command, no install: `uvx kiln-cli score`. Documented beside it: `pipx run --python 3.14 kiln-cli score` (an older Python fails on PEP 758 syntax), Homebrew, a container image pinned by digest. → v0.5.4
+- [ ] **K02** A single signed binary for machines without Python or uv (PyApp, which bootstraps through uv, or a frozen build), on each GitHub release. → v1.5.0
+- [ ] **K03** `npx kiln-cli score` for JavaScript-only machines: a small npm package that runs the binary. → v1.5.0
+- [ ] **K04** Any repo by URL: `kiln score github:owner/repo`, `kiln score https://gitlab.com/…`. A shallow clone in the cache, scored, deleted; private repos through `gh` or `glab`'s login. → v0.5.6
+- [ ] **K05** Remote scoring without a clone for L0 and L1 rules: the Git Trees API lists every path in one call for most repos, then a few config files are fetched. Seconds, for T-87's fleet view. → v0.7.0
+- [ ] **K06** In the browser with Pyodide, on a tarball fetched from the forge's API, no server at all; to verify (CORS on the tarball endpoints). → v1.5.0
+- [ ] **K07** No config, no question, no `kiln adopt` needed to score; a plain folder, a zip or a tarball scored too. → v0.6.5
+- [ ] **K08** CI detected (`GITHUB_ACTIONS`, `GITLAB_CI`, `CI`): annotations, SARIF and a job summary written without a flag, colours off outside a terminal (T-116). → v0.5.8
+- [ ] **K09** Exit code 0 by default, since it is a measure; gates are explicit: `--fail-under 80`, `--fail-on critical`, `--no-new` against a baseline or the integration branch. → v0.6.24
+- [ ] **K10** Never a crash: a broken file is a finding, a rule that throws is reported as a kiln bug (with `/kiln:report`'s hint), and the run goes on. → v0.5.4
+- [ ] **K11** The next step always printed as one command: "`kiln fix` closes 5 of these 9 gaps, on a branch, no token". → v0.5.4
+- [ ] **K12** `kiln score --fix`: score, fix, score again, in one go. → v0.5.11
+- [ ] **K13** A repo generated by kiln scoring under 100 says it: kiln's bug, reported with consent ([REPORT-TO-KILN]). → v0.5.13
+- [ ] **K14** The integration branch, the main language and the profile detected; the report says what it assumed. → v0.6.61
+- [ ] **K15** Explanations a newcomer understands (one sentence, no jargon) and `--explain` for the details: "like a senior engineer would, even if you're not one". → v0.6.27
+- [ ] **K16** Offline on a plane: all but `--online` works; the data's date shown, with "12 new rules since your version" when the tool is old (`tool_update.py`). → v0.5.10
+- [ ] **K17** Claude Code does the work: the plugin's session start shows the score in one line (cached), the status line shows it, the edit hook keeps it. The user only reads. → v0.5.7
+- [ ] **K18** Nothing written in the repo by default (as today); `--output` writes a report when asked. → v0.5.8
+- [ ] **K19** kiln-bot (T-59) as the effortless default for any public repo: one copy-paste, a weekly pull request with the score and `kiln fix`'s commits. → v0.4.8
+- [ ] **K20** On a machine, `kiln install` (T-161) is the only setup; in a repo, there is none. → v0.5.4
 
 #### L · Outputs and integrations
 
-- [ ] **L01** `--format`: text, json, sarif, junit, markdown, html, csv, gitlab-codequality, github-annotations, checkstyle.
-- [ ] **L02** Complete SARIF 2.1.0: rules with `helpUri` to their page, regions, `partialFingerprints`, `fixes` for scripted fixes, waivers as `suppressions` with their reason (T-91).
-- [ ] **L03** GitLab: the Code Quality report (merge request widget) and the SAST report format for security rules.
-- [ ] **L04** JUnit XML, each rule a test case, for Jenkins, Azure and any CI's test tab.
-- [ ] **L05** A Markdown summary for pull request comments and `$GITHUB_STEP_SUMMARY`.
-- [ ] **L06** A self-contained HTML report in one file: the score, the pillars with their weakest themes, findings with snippets, filters, the potential bar, the history curve.
-- [ ] **L07** A live badge: kiln-bot publishes a shields.io endpoint JSON (Pages or a gist) instead of a number frozen in the README (T-154).
-- [ ] **L08** `--compare <ref or report.json>`: new, fixed and still-open findings, the delta, the rules that started or stopped applying.
-- [ ] **L09** Pull request comments by the action: the delta, new findings as review comments on the diff's lines, fixed ones thanked.
-- [ ] **L10** GitHub check runs with annotations, sent in batches of 50.
-- [ ] **L11** Scores kept in git notes (`refs/notes/kiln-score`), as `kiln ci` keeps its verdicts: history for free, travelling with the repo when pushed.
-- [ ] **L12** A language server: diagnostics for place rules in any editor, code actions for scripted fixes ⚠ T-117 (a VS Code extension) is declined for now; a language server serves every editor at once, only if adopters ask.
-- [ ] **L13** The `--json` schema published (`schema.json`), versioned with a changelog, stable at v1.0.
-- [ ] **L14** `--quiet` (the number only) and `--porcelain` (stable lines for scripts).
-- [ ] **L15** `kiln grid --json`: the whole catalogue for other tools.
-- [ ] **L16** CSV across many repos (`kiln status --csv`): a teacher grading a class, an association checking its repos.
-- [ ] **L17** `--open`: the HTML report in the browser.
-- [ ] **L18** `--for-claude`: the roadmap's context packs, token-counted, nothing decorative.
-- [ ] **L19** The report's absolute `root` left out by default: it names the user's home when shared.
-- [ ] **L20** Messages in English only (decided on 16 October 2026), each finding short enough for one terminal line.
-- [ ] **L21** A finding links to its rule's page and to the line on the forge when the remote is known (`https://github.com/o/r/blob/<sha>/path#L12`).
+- [ ] **L01** `--format`: text, json, sarif, junit, markdown, html, csv, gitlab-codequality, github-annotations, checkstyle. → v0.6.28
+- [ ] **L02** Complete SARIF 2.1.0: rules with `helpUri` to their page, regions, `partialFingerprints`, `fixes` for scripted fixes, waivers as `suppressions` with their reason (T-91). → v0.5.8
+- [ ] **L03** GitLab: the Code Quality report (merge request widget) and the SAST report format for security rules. → v0.6.62
+- [ ] **L04** JUnit XML, each rule a test case, for Jenkins, Azure and any CI's test tab. → v0.6.28
+- [ ] **L05** A Markdown summary for pull request comments and `$GITHUB_STEP_SUMMARY`. → v0.5.8
+- [ ] **L06** A self-contained HTML report in one file: the score, the pillars with their weakest themes, findings with snippets, filters, the potential bar, the history curve. → v0.6.28
+- [ ] **L07** A live badge: kiln-bot publishes a shields.io endpoint JSON (Pages or a gist) instead of a number frozen in the README (T-154). → v0.5.6
+- [ ] **L08** `--compare <ref or report.json>`: new, fixed and still-open findings, the delta, the rules that started or stopped applying. → v0.6.24
+- [ ] **L09** Pull request comments by the action: the delta, new findings as review comments on the diff's lines, fixed ones thanked. → v0.6.24
+- [ ] **L10** GitHub check runs with annotations, sent in batches of 50. → v0.5.8
+- [ ] **L11** Scores kept in git notes (`refs/notes/kiln-score`), as `kiln ci` keeps its verdicts: history for free, travelling with the repo when pushed. → v0.6.24
+- [ ] **L12** A language server: diagnostics for place rules in any editor, code actions for scripted fixes ⚠ T-117 (a VS Code extension) is declined for now; a language server serves every editor at once, only if adopters ask. → v1.5.0
+- [ ] **L13** The `--json` schema published (`schema.json`), versioned with a changelog, stable at v1.0. → v1.0.0
+- [ ] **L14** `--quiet` (the number only) and `--porcelain` (stable lines for scripts). → v0.6.28
+- [ ] **L15** `kiln grid --json`: the whole catalogue for other tools. → v0.6.28
+- [ ] **L16** CSV across many repos (`kiln status --csv`): a teacher grading a class, an association checking its repos. → v0.7.0
+- [ ] **L17** `--open`: the HTML report in the browser. → v0.6.28
+- [ ] **L18** `--for-claude`: the roadmap's context packs, token-counted, nothing decorative. → v0.5.15
+- [ ] **L19** The report's absolute `root` left out by default: it names the user's home when shared. → v0.6.28
+- [ ] **L20** Messages in English only (decided on 16 October 2026), each finding short enough for one terminal line. → v0.5.12
+- [ ] **L21** A finding links to its rule's page and to the line on the forge when the remote is known (`https://github.com/o/r/blob/<sha>/path#L12`). → v0.6.28
 
 #### M · History, forge and registries
 
-- [ ] **M01** Secrets ever committed, scanned through history (each blob once, cached): a key removed but never rotated is still a key.
-- [ ] **M02** Heavy blobs in history, which every clone carries forever: git-filter-repo or LFS suggested.
-- [ ] **M03** Commit habits over the last 90 days (Conventional Commits share, size distribution): SMALL-COMMITS and a commit-message rule promoted on facts.
-- [ ] **M04** Signed commits and tags (GPG, SSH, gitsign), as a share.
-- [ ] **M05** Direct commits on the integration branch (first-parent commits that aren't merges): NO-COMMIT-ON-INTEGRATION from history.
-- [ ] **M06** Merge style (MERGE-COMMITS) and branch names (BRANCH-NAMES) from history.
-- [ ] **M07** Release rhythm from tags: the last release's age, semver tags, a changelog entry per tag (RELEASE-NOTES).
-- [ ] **M08** Hotspots: churn times complexity per file (Adam Tornhill's method). The roadmap opens hotspots first, since that is where the next bug will be.
-- [ ] **M09** Change coupling: files that always change together across folders show a boundary in the wrong place.
-- [ ] **M10** Code untouched for years and imported by nothing: candidates for the compressor (T-138).
-- [ ] **M11** `fix:` commits that come with a test change (REGRESSION-TEST from history).
-- [ ] **M12** A lock changed without its manifest, or the reverse, in history: drift caught at its source.
-- [ ] **M13** Reverts and hotfixes per month: the change failure rate.
-- [ ] **M14** Bus factor and knowledge islands, for organisation profiles.
-- [ ] **M15** Forge settings read through the CLI already logged in (`gh`, `glab`, `tea`); a token is never asked for (T-158, generalized).
-- [ ] **M16** GitHub: rulesets or branch protection on the integration branch (pull requests required, checks required, no force push, no deletion), signatures required, linear history when the repo merges that way.
-- [ ] **M17** GitHub: secret scanning and push protection, Dependabot alerts and security updates, code scanning, private vulnerability reporting.
-- [ ] **M18** GitHub: the default `GITHUB_TOKEN` read-only, "Actions can create pull requests" off, allowed actions limited, approval for first-time contributors' workflows, environments with reviewers for deploys.
-- [ ] **M19** GitHub: secret names and ages (the API gives `updated_at`): unused secrets, secrets older than a year (SECRET-ROTATION becomes detectable), long-lived cloud keys where OIDC would do.
-- [ ] **M20** GitHub: deploy keys read-only, webhooks with a secret and TLS checking, immutable releases, tag rulesets.
-- [ ] **M21** GitLab: protected branches and tags, merge request approvals, push rules, secret detection, protected and masked variables, the job token's scope.
-- [ ] **M22** Organisations: two-factor authentication required, base permissions, SSO (organisation profiles).
-- [ ] **M23** Open alerts by age: critical Dependabot or code-scanning alerts open for more than 30 days.
-- [ ] **M24** Update pull requests left open (Dependabot, Renovate) for more than a few weeks: the bot is set but ignored, the real gap behind DEPENDENCY-UPDATES.
-- [ ] **M25** Community health from the forge (README, licence, conduct, contributing, templates) and maintainers' responsiveness (median first response), for open-source profiles.
-- [ ] **M26** Registries: trusted publishing and attestations on PyPI (PEP 740) and npm (provenance), checked on the published files.
-- [ ] **M27** Registries: each dependency's health (last release, deprecated flag, yanked versions, archived source, a single maintainer) for ABANDONED-DEPENDENCIES.
-- [ ] **M28** Registries: typosquat suspects (one edit from a popular name, few downloads) and known malicious packages (OSV's `MAL-` advisories).
-- [ ] **M29** All of it cached and rate-limited, with "unknown: log in with gh to check" without access. Never a failure for lack of a token.
-- [ ] **M30** `--at <ref>`: the repo scored as it was at a tag or a commit (a throwaway worktree, cached).
+- [ ] **M01** Secrets ever committed, scanned through history (each blob once, cached): a key removed but never rotated is still a key. → v0.6.47
+- [ ] **M02** Heavy blobs in history, which every clone carries forever: git-filter-repo or LFS suggested. → v0.6.47
+- [ ] **M03** Commit habits over the last 90 days (Conventional Commits share, size distribution): SMALL-COMMITS and a commit-message rule promoted on facts. → v0.6.48
+- [ ] **M04** Signed commits and tags (GPG, SSH, gitsign), as a share. → v0.6.48
+- [ ] **M05** Direct commits on the integration branch (first-parent commits that aren't merges): NO-COMMIT-ON-INTEGRATION from history. → v0.6.48
+- [ ] **M06** Merge style (MERGE-COMMITS) and branch names (BRANCH-NAMES) from history. → v0.6.48
+- [ ] **M07** Release rhythm from tags: the last release's age, semver tags, a changelog entry per tag (RELEASE-NOTES). → v0.6.48
+- [ ] **M08** Hotspots: churn times complexity per file (Adam Tornhill's method). The roadmap opens hotspots first, since that is where the next bug will be. → v0.6.47
+- [ ] **M09** Change coupling: files that always change together across folders show a boundary in the wrong place. → v0.6.33
+- [ ] **M10** Code untouched for years and imported by nothing: candidates for the compressor (T-138). → v0.6.1
+- [ ] **M11** `fix:` commits that come with a test change (REGRESSION-TEST from history). → v0.6.48
+- [ ] **M12** A lock changed without its manifest, or the reverse, in history: drift caught at its source. → v0.6.47
+- [ ] **M13** Reverts and hotfixes per month: the change failure rate. → v0.7.2
+- [ ] **M14** Bus factor and knowledge islands, for organisation profiles. → v0.7.2
+- [ ] **M15** Forge settings read through the CLI already logged in (`gh`, `glab`, `tea`); a token is never asked for (T-158, generalized). → v0.4.7
+- [ ] **M16** GitHub: rulesets or branch protection on the integration branch (pull requests required, checks required, no force push, no deletion), signatures required, linear history when the repo merges that way. → v0.4.7
+- [ ] **M17** GitHub: secret scanning and push protection, Dependabot alerts and security updates, code scanning, private vulnerability reporting. → v0.4.7
+- [ ] **M18** GitHub: the default `GITHUB_TOKEN` read-only, "Actions can create pull requests" off, allowed actions limited, approval for first-time contributors' workflows, environments with reviewers for deploys. → v0.6.49
+- [ ] **M19** GitHub: secret names and ages (the API gives `updated_at`): unused secrets, secrets older than a year (SECRET-ROTATION becomes detectable), long-lived cloud keys where OIDC would do. → v0.6.49
+- [ ] **M20** GitHub: deploy keys read-only, webhooks with a secret and TLS checking, immutable releases, tag rulesets. → v0.6.49
+- [ ] **M21** GitLab: protected branches and tags, merge request approvals, push rules, secret detection, protected and masked variables, the job token's scope. → v0.6.62
+- [ ] **M22** Organisations: two-factor authentication required, base permissions, SSO (organisation profiles). → v0.7.2
+- [ ] **M23** Open alerts by age: critical Dependabot or code-scanning alerts open for more than 30 days. → v0.6.49
+- [ ] **M24** Update pull requests left open (Dependabot, Renovate) for more than a few weeks: the bot is set but ignored, the real gap behind DEPENDENCY-UPDATES. → v0.6.49
+- [ ] **M25** Community health from the forge (README, licence, conduct, contributing, templates) and maintainers' responsiveness (median first response), for open-source profiles. → v0.6.58
+- [ ] **M26** Registries: trusted publishing and attestations on PyPI (PEP 740) and npm (provenance), checked on the published files. → v0.6.50
+- [ ] **M27** Registries: each dependency's health (last release, deprecated flag, yanked versions, archived source, a single maintainer) for ABANDONED-DEPENDENCIES. → v0.6.50
+- [ ] **M28** Registries: typosquat suspects (one edit from a popular name, few downloads) and known malicious packages (OSV's `MAL-` advisories). → v0.6.50
+- [ ] **M29** All of it cached and rate-limited, with "unknown: log in with gh to check" without access. Never a failure for lack of a token. → v0.4.7
+- [ ] **M30** `--at <ref>`: the repo scored as it was at a tag or a commit (a throwaway worktree, cached). → v0.6.24
 
 #### N · Deep checks, opt-in and sandboxed
 
-- [ ] **N01** `--deep` runs in a throwaway copy, in a container when an engine is there, network off unless a step needs it, within a time budget; never in the user's tree.
-- [ ] **N02** Images built: size, final user, a shell or not, packages with known vulnerabilities (trivy or grype on the image), the health check passing.
-- [ ] **N03** Containers started read-only with every capability dropped: a service that still starts gets the hardening from `kiln fix` (what T-159 needs).
-- [ ] **N04** An install from the lock that works (`uv sync --locked`, `pnpm install --frozen-lockfile`): LOCK-IN-SYNC proven.
-- [ ] **N05** Tests run: pass rate, duration, the slowest, the flaky (failures run again), order dependence (random order), network use (sockets blocked: NO-NETWORK proven), clock dependence (a shifted fake clock: CLOCK proven).
-- [ ] **N06** Coverage measured (lines and branches) and mutation testing on a sample (mutmut, Stryker): the tests theme's ratchets fed with real numbers.
-- [ ] **N07** Django's own `manage.py check --deploy` against the production settings: HSTS, SSL redirect, secure cookies, `DEBUG`, `SECRET_KEY`'s strength, `ALLOWED_HOSTS`, X-Frame-Options. Official checks, mapped onto grid rules.
-- [ ] **N08** `manage.py makemigrations --check --dry-run`: models and migrations in sync.
-- [ ] **N09** Migrations applied to a fresh Postgres container, then reversed; their SQL linted by squawk (through `sqlmigrate`).
-- [ ] **N10** The OpenAPI schema generated and compared with the committed one (CONTRACT-DRIFT), then a short Schemathesis run (API-FUZZING).
-- [ ] **N11** The front built: bundle sizes (JS-BUDGET), `nuxi typecheck`, pages rendered by Playwright for axe (ACCESSIBILITY) and for Lighthouse's lab metrics (CORE-WEB-VITALS).
-- [ ] **N12** The app served locally and probed: security headers, cookie flags, CORS, error pages leaking a stack trace, `/admin` exposed, directory listings, server banners.
-- [ ] **N13** A deployed URL scored too (`--url https://…`, opt-in): TLS, headers, `security.txt`, redirects; the production that the repo describes.
-- [ ] **N14** N+1 queries caught while the tests run (nplusone, django-zeal), query counts per view.
-- [ ] **N15** Type checkers and the repo's linters at their strictest: error counts as ratchets.
-- [ ] **N16** The app's start-up time and memory, as ratchets.
-- [ ] **N17** Deep results cached by commit and marked "measured at <commit>"; kiln-bot's weekly run uses `--deep` in CI, where running code is normal.
-- [ ] **N18** The backup script run against a throwaway database and restored (TESTED-BACKUPS proven) for repos whose scripts kiln knows.
-- [ ] **N19** `kiln dev`'s own launch reused as a probe: if the stack starts with `kiln dev`, its servers are probed while they run, with no second setup.
+- [ ] **N01** `--deep` runs in a throwaway copy, in a container when an engine is there, network off unless a step needs it, within a time budget; never in the user's tree. → v0.6.51
+- [ ] **N02** Images built: size, final user, a shell or not, packages with known vulnerabilities (trivy or grype on the image), the health check passing. → v0.6.52
+- [ ] **N03** Containers started read-only with every capability dropped: a service that still starts gets the hardening from `kiln fix` (what T-159 needs). → v0.4.7
+- [ ] **N04** An install from the lock that works (`uv sync --locked`, `pnpm install --frozen-lockfile`): LOCK-IN-SYNC proven. → v0.6.51
+- [ ] **N05** Tests run: pass rate, duration, the slowest, the flaky (failures run again), order dependence (random order), network use (sockets blocked: NO-NETWORK proven), clock dependence (a shifted fake clock: CLOCK proven). → v0.6.51
+- [ ] **N06** Coverage measured (lines and branches) and mutation testing on a sample (mutmut, Stryker): the tests theme's ratchets fed with real numbers. → v0.5.16
+- [ ] **N07** Django's own `manage.py check --deploy` against the production settings: HSTS, SSL redirect, secure cookies, `DEBUG`, `SECRET_KEY`'s strength, `ALLOWED_HOSTS`, X-Frame-Options. Official checks, mapped onto grid rules. → v0.6.51
+- [ ] **N08** `manage.py makemigrations --check --dry-run`: models and migrations in sync. → v0.6.51
+- [ ] **N09** Migrations applied to a fresh Postgres container, then reversed; their SQL linted by squawk (through `sqlmigrate`). → v0.6.52
+- [ ] **N10** The OpenAPI schema generated and compared with the committed one (CONTRACT-DRIFT), then a short Schemathesis run (API-FUZZING). → v0.6.52
+- [ ] **N11** The front built: bundle sizes (JS-BUDGET), `nuxi typecheck`, pages rendered by Playwright for axe (ACCESSIBILITY) and for Lighthouse's lab metrics (CORE-WEB-VITALS). → v0.6.52
+- [ ] **N12** The app served locally and probed: security headers, cookie flags, CORS, error pages leaking a stack trace, `/admin` exposed, directory listings, server banners. → v0.6.52
+- [ ] **N13** A deployed URL scored too (`--url https://…`, opt-in): TLS, headers, `security.txt`, redirects; the production that the repo describes. → v0.6.52
+- [ ] **N14** N+1 queries caught while the tests run (nplusone, django-zeal), query counts per view. → v0.6.52
+- [ ] **N15** Type checkers and the repo's linters at their strictest: error counts as ratchets. → v0.6.51
+- [ ] **N16** The app's start-up time and memory, as ratchets. → v0.6.51
+- [ ] **N17** Deep results cached by commit and marked "measured at <commit>"; kiln-bot's weekly run uses `--deep` in CI, where running code is normal. → v0.6.51
+- [ ] **N18** The backup script run against a throwaway database and restored (TESTED-BACKUPS proven) for repos whose scripts kiln knows. → v0.6.52
+- [ ] **N19** `kiln dev`'s own launch reused as a probe: if the stack starts with `kiln dev`, its servers are probed while they run, with no second setup. → v0.6.52
 
 #### O · The roadmap for Claude
 
-- [ ] **O01** A context pack per gap: the rule (why, recipe, a passing example), the places with five lines around each, the repo's own passing example when one exists ("this repo already does it right in `x.py`"), the proof command. Claude opens nothing else.
-- [ ] **O02** Tokens and effort estimated per item; items ordered by points gained per token.
-- [ ] **O03** Dependencies between items (tests before a refactor, types before the compressor, the lock before the audit) give a topological order.
-- [ ] **O04** Batches: one rule with many places split into chunks of under an hour of session each.
-- [ ] **O05** Hotspots first among equals (M): the places that change most are fixed first.
-- [ ] **O06** Risk tags: config only, pure refactor, behaviour change, product decision (the skill already stops on the last).
-- [ ] **O07** Recipes as data for every judgment rule, so two sessions fix a gap the same way (and T-137 can turn the recipe into a converter).
-- [ ] **O08** Each place's coverage (from `--deep` or a committed report): untested places get "write a characterization test first".
-- [ ] **O09** `--roadmap --budget 2h`: the best set of items for one session (a knapsack on points and effort).
-- [ ] **O10** `--roadmap --json` with the packs inline: `/kiln:modernize` reads one document and explores nothing.
-- [ ] **O11** A scope guard: a modernize commit that touches files beyond its places and their tests is flagged before it merges.
-- [ ] **O12** Confirmations and dismissals of "to confirm" places fed back as labels (H), with consent.
-- [ ] **O13** The roadmap as GitHub or GitLab issues (`--write-issues`, labelled by rule), not only backlog tickets.
-- [ ] **O14** Good first issues from the roadmap on open-source repos: small, well-placed items tagged for `/kiln:good-first-issues`.
-- [ ] **O15** A one-line summary per item for the human, in the user's language when Claude speaks to them.
-- [ ] **O16** A roadmap file other agents can read too (AGENTS.md style); kiln stays Claude-first.
-- [ ] **O17** After a modernize session, the points won, tokens spent and items left logged per rule: the cost of a judgment gap measured, not guessed (input of T-137 and of the effort estimates).
+- [ ] **O01** A context pack per gap: the rule (why, recipe, a passing example), the places with five lines around each, the repo's own passing example when one exists ("this repo already does it right in `x.py`"), the proof command. Claude opens nothing else. → v0.5.15
+- [ ] **O02** Tokens and effort estimated per item; items ordered by points gained per token. → v0.5.15
+- [ ] **O03** Dependencies between items (tests before a refactor, types before the compressor, the lock before the audit) give a topological order. → v0.5.15
+- [ ] **O04** Batches: one rule with many places split into chunks of under an hour of session each. → v0.5.15
+- [ ] **O05** Hotspots first among equals (M): the places that change most are fixed first. → v0.6.47
+- [ ] **O06** Risk tags: config only, pure refactor, behaviour change, product decision (the skill already stops on the last). → v0.5.15
+- [ ] **O07** Recipes as data for every judgment rule, so two sessions fix a gap the same way (and T-137 can turn the recipe into a converter). → v0.5.15
+- [ ] **O08** Each place's coverage (from `--deep` or a committed report): untested places get "write a characterization test first". → v0.5.16
+- [ ] **O09** `--roadmap --budget 2h`: the best set of items for one session (a knapsack on points and effort). → v0.5.15
+- [ ] **O10** `--roadmap --json` with the packs inline: `/kiln:modernize` reads one document and explores nothing. → v0.5.15
+- [ ] **O11** A scope guard: a modernize commit that touches files beyond its places and their tests is flagged before it merges. → v0.6.0
+- [ ] **O12** Confirmations and dismissals of "to confirm" places fed back as labels (H), with consent. → v0.6.0
+- [ ] **O13** The roadmap as GitHub or GitLab issues (`--write-issues`, labelled by rule), not only backlog tickets. → v0.6.2
+- [ ] **O14** Good first issues from the roadmap on open-source repos: small, well-placed items tagged for `/kiln:good-first-issues`. → v0.6.2
+- [ ] **O15** A one-line summary per item for the human, in the user's language when Claude speaks to them. → v0.6.2
+- [ ] **O16** A roadmap file other agents can read too (AGENTS.md style); kiln stays Claude-first. → v0.6.2
+- [ ] **O17** After a modernize session, the points won, tokens spent and items left logged per rule: the cost of a judgment gap measured, not guessed (input of T-137 and of the effort estimates). → v0.6.0
 
 #### P · One measure drives every command
 
-- [ ] **P01** `kiln new` proven at 100: every combination of answers (stack, size, options) generated and scored at each candidate; a template change that lowers any of them fails (T-130's matrix).
-- [ ] **P02** `kiln fix` on a fresh `kiln new` repo changes nothing; when it does, the template is behind the grid.
-- [ ] **P03** The radical form: `kiln new` as an empty folder, then `kiln adopt`, then `kiln fix`. The template and the converters can't drift apart.
-- [ ] **P04** Each `adopt` rule names the template files that meet it (`met_by_template = […]`): `kiln grid` says "kiln new does this for you".
-- [ ] **P05** Grid first: a new rule makes the template's test fail until the template meets it, test-driven development for the template.
-- [ ] **P06** `kiln adopt` as a funnel: score before, lay files, `kiln fix`, score after, roadmap tickets; each step a commit on its branch.
-- [ ] **P07** `kiln adopt --dry-run` shows the score it would reach.
-- [ ] **P08** `kiln update` shows the score before and after, and the grid changes that touch this repo; a lower score stops the update unless the grid explains it.
-- [ ] **P09** `kiln fix` reports the points each commit won.
-- [ ] **P10** `kiln check` includes "no new finding against the integration branch".
-- [ ] **P11** The charter and the grid as one engine (decision 4): shared detectors first, a test that makes a rule and its charter twin agree on the examples; at v1.0.0 a rule written once in the grid, `charter.toml` listing rule IDs with their regime and budget, the charter's IDs kept as aliases.
-- [ ] **P12** `kiln dev`, `kiln doctor` and `kiln check` read the repo model (A).
-- [ ] **P13** `kiln status` shows each local repo's score and the grid version it was scored with.
-- [ ] **P14** kiln's own score at 100 gates its release (done on the branch `chore/modernize-score`, 24 October 2026).
-- [ ] **P15** The reference repo's score and its potential after `kiln fix` in every release note (T-134).
-- [ ] **P16** kiln-bot (T-59) posts the delta on each pull request and opens the weekly fix pull request.
-- [ ] **P17** The fleet (T-87) scores an organisation's repos remotely (K) and ranks gaps by how many repos share them: one fix in kiln helps them all.
-- [ ] **P18** The frozen templates (T-133) scored at each candidate too: frozen doesn't mean rotting, and their score goes in the docs.
+- [ ] **P01** `kiln new` proven at 100: every combination of answers (stack, size, options) generated and scored at each candidate; a template change that lowers any of them fails (T-130's matrix). → v0.5.0
+- [ ] **P02** `kiln fix` on a fresh `kiln new` repo changes nothing; when it does, the template is behind the grid. → v0.5.11
+- [ ] **P03** The radical form: `kiln new` as an empty folder, then `kiln adopt`, then `kiln fix`. The template and the converters can't drift apart. → v0.6.25
+- [ ] **P04** Each `adopt` rule names the template files that meet it (`met_by_template = […]`): `kiln grid` says "kiln new does this for you". → v0.5.13
+- [ ] **P05** Grid first: a new rule makes the template's test fail until the template meets it, test-driven development for the template. → v0.5.13
+- [ ] **P06** `kiln adopt` as a funnel: score before, lay files, `kiln fix`, score after, roadmap tickets; each step a commit on its branch. → v0.6.25
+- [ ] **P07** `kiln adopt --dry-run` shows the score it would reach. → v0.6.25
+- [ ] **P08** `kiln update` shows the score before and after, and the grid changes that touch this repo; a lower score stops the update unless the grid explains it. → v0.5.10
+- [ ] **P09** `kiln fix` reports the points each commit won. → v0.4.8
+- [ ] **P10** `kiln check` includes "no new finding against the integration branch". → v0.6.24
+- [ ] **P11** The charter and the grid as one engine (decision 4): shared detectors first, a test that makes a rule and its charter twin agree on the examples; at v1.0.0 a rule written once in the grid, `charter.toml` listing rule IDs with their regime and budget, the charter's IDs kept as aliases. → v0.7.3
+- [ ] **P12** `kiln dev`, `kiln doctor` and `kiln check` read the repo model (A). → v0.6.6
+- [ ] **P13** `kiln status` shows each local repo's score and the grid version it was scored with. → v0.7.0
+- [x] **P14** kiln's own score at 100 gates its release (done on the branch `chore/modernize-score`, 24 October 2026). (T-90)
+- [ ] **P15** The reference repo's score and its potential after `kiln fix` in every release note (T-134). → v0.5.5
+- [ ] **P16** kiln-bot (T-59) posts the delta on each pull request and opens the weekly fix pull request. → v0.4.8
+- [ ] **P17** The fleet (T-87) scores an organisation's repos remotely (K) and ranks gaps by how many repos share them: one fix in kiln helps them all. → v0.7.0
+- [ ] **P18** The frozen templates (T-133) scored at each candidate too: frozen doesn't mean rotting, and their score goes in the docs. → v0.5.0
 
 #### Q · A grid that stays current
 
-- [ ] **Q01** A data bundle per release, dated and shown by `kiln score --version`: end-of-life dates, deprecated and malicious packages, retired CI runners and commands, retired LLM model IDs, provider secret patterns.
-- [ ] **Q02** The weekly watch (T-140) refreshes the bundle and flags the rules whose sources changed.
-- [ ] **Q03** Radar moves on evidence only: assess to trial needs a detector and examples; trial to adopt needs 99 % precision on the corpus (strict rules) and fresh sources; adopt to hold when the practice is superseded.
-- [ ] **Q04** `hold` rules detect what is on its way out: Travis CI, Pipenv, Rye, `setup.py install`, `pytz`, `nose`, `distutils`, Python 2 idioms, TSLint, create-react-app, Vue 2, Nuxt 2, AngularJS, `node-sass`, `request`, `moment`, compose's `version:`, `docker-compose` v1, `apt-key`, `::set-output`, retired runner images.
-- [ ] **Q05** A converter for each `hold` rule a script can close: `pytz` to `zoneinfo`, `::set-output` to `$GITHUB_OUTPUT`, compose's `version:` removed, `docker-compose` to `docker compose`.
-- [ ] **Q06** A grid diff in each release note: rules added, promoted, demoted, retired.
-- [ ] **Q07** A coverage map, themes by ecosystems with the number of scored rules in each cell, holes visible (`kiln grid --coverage`).
-- [ ] **Q08** Standards coverage: the share of Scorecard, ASVS level 1, CIS Docker, SLSA build level 2 and WCAG AA controls that a grid rule covers.
-- [ ] **Q09** A radar fed by the corpus: tools rising quarter after quarter become `assess` candidates, tools falling become `hold` candidates.
-- [ ] **Q10** A consistency check: no two rules contradict (examples cross-run: a pass example of one never fails another).
-- [ ] **Q11** A `grid-proposal` issue template (a practice with its sources), triaged by the doctrine.
-- [ ] **Q12** The decision behind each rule kept with it (why adopt, why now), like an architecture decision record.
-- [ ] **Q13** `kiln score --calendar`: what will break and when (Node 22 ends on 30 April 2027, 188 days from today; a runner image retired; a framework's support ending), the maintenance load the vision wanted to measure.
-- [ ] **Q14** Rules retire too: a practice everyone now meets by default (a framework made it the default) leaves the score, kept as history.
+- [ ] **Q01** A data bundle per release, dated and shown by `kiln score --version`: end-of-life dates, deprecated and malicious packages, retired CI runners and commands, retired LLM model IDs, provider secret patterns. → v0.6.3
+- [ ] **Q02** The weekly watch (T-140) refreshes the bundle and flags the rules whose sources changed. → v0.6.3
+- [ ] **Q03** Radar moves on evidence only: assess to trial needs a detector and examples; trial to adopt needs 99 % precision on the corpus (strict rules) and fresh sources; adopt to hold when the practice is superseded. → v0.6.14
+- [ ] **Q04** `hold` rules detect what is on its way out: Travis CI, Pipenv, Rye, `setup.py install`, `pytz`, `nose`, `distutils`, Python 2 idioms, TSLint, create-react-app, Vue 2, Nuxt 2, AngularJS, `node-sass`, `request`, `moment`, compose's `version:`, `docker-compose` v1, `apt-key`, `::set-output`, retired runner images. → v0.6.18
+- [ ] **Q05** A converter for each `hold` rule a script can close: `pytz` to `zoneinfo`, `::set-output` to `$GITHUB_OUTPUT`, compose's `version:` removed, `docker-compose` to `docker compose`. → v0.6.18
+- [ ] **Q06** A grid diff in each release note: rules added, promoted, demoted, retired. → v0.6.3
+- [ ] **Q07** A coverage map, themes by ecosystems with the number of scored rules in each cell, holes visible (`kiln grid --coverage`). → v0.6.53
+- [ ] **Q08** Standards coverage: the share of Scorecard, ASVS level 1, CIS Docker, SLSA build level 2 and WCAG AA controls that a grid rule covers. → v0.7.1
+- [ ] **Q09** A radar fed by the corpus: tools rising quarter after quarter become `assess` candidates, tools falling become `hold` candidates. → v0.7.4
+- [ ] **Q10** A consistency check: no two rules contradict (examples cross-run: a pass example of one never fails another). → v0.6.3
+- [ ] **Q11** A `grid-proposal` issue template (a practice with its sources), triaged by the doctrine. → v0.6.3
+- [ ] **Q12** The decision behind each rule kept with it (why adopt, why now), like an architecture decision record. → v0.6.3
+- [ ] **Q13** `kiln score --calendar`: what will break and when (Node 22 ends on 30 April 2027, 188 days from today; a runner image retired; a framework's support ending), the maintenance load the vision wanted to measure. → v0.6.18
+- [ ] **Q14** Rules retire too: a practice everyone now meets by default (a framework made it the default) leaves the score, kept as history. → v0.6.18
 
 #### R · Packs, local rules, standards
 
-- [ ] **R01** Repo-local rules in `.kiln/grid/` (T-91), in the same format, their examples run by `kiln grid test`.
-- [ ] **R02** Packs from any git repo (T-69), pinned by SHA, behind a trust prompt that shows what their detectors run; declarative detectors only unless trusted (a Python check is code execution).
-- [ ] **R03** Organisation packs for the v0.7.0 targets: a university's rules for student repos, an association network's.
-- [ ] **R04** Community packs for stacks kiln won't template: FastAPI, Rails, Laravel, Spring Boot, Go services.
-- [ ] **R05** An index of reviewed packs with their precision on the corpus.
-- [ ] **R06** Compliance views (`kiln score --standard scorecard | asvs-l1 | slsa | cis-docker | owasp-top10 | wcag-aa | cra | gdpr`): what passes, what fails, and what can't be checked statically, honestly listed.
-- [ ] **R07** EU Cyber Resilience Act readiness for companies selling software in Europe (reporting duties from September 2026, the rest from December 2027): SBOM, a vulnerability policy, security updates, a contact.
-- [ ] **R08** European Accessibility Act (applied since June 2025): the front-accessibility rules as a company's evidence.
-- [ ] **R09** The OpenSSF Best Practices badge's questionnaire pre-filled from the findings.
-- [ ] **R10** Each security rule traced to its OWASP cheat sheet, so a reviewer can follow every rule to its source.
+- [ ] **R01** Repo-local rules in `.kiln/grid/` (T-91), in the same format, their examples run by `kiln grid test`. → v0.5.8
+- [ ] **R02** Packs from any git repo (T-69), pinned by SHA, behind a trust prompt that shows what their detectors run; declarative detectors only unless trusted (a Python check is code execution). → v1.0.0
+- [ ] **R03** Organisation packs for the v0.7.0 targets: a university's rules for student repos, an association network's. → v0.7.0
+- [ ] **R04** Community packs for stacks kiln won't template: FastAPI, Rails, Laravel, Spring Boot, Go services. → v1.0.0
+- [ ] **R05** An index of reviewed packs with their precision on the corpus. → v1.0.0
+- [ ] **R06** Compliance views (`kiln score --standard scorecard | asvs-l1 | slsa | cis-docker | owasp-top10 | wcag-aa | cra | gdpr`): what passes, what fails, and what can't be checked statically, honestly listed. → v0.7.1
+- [ ] **R07** EU Cyber Resilience Act readiness for companies selling software in Europe (reporting duties from September 2026, the rest from December 2027): SBOM, a vulnerability policy, security updates, a contact. → v0.7.1
+- [ ] **R08** European Accessibility Act (applied since June 2025): the front-accessibility rules as a company's evidence. → v0.7.1
+- [ ] **R09** The OpenSSF Best Practices badge's questionnaire pre-filled from the findings. → v0.7.1
+- [ ] **R10** Each security rule traced to its OWASP cheat sheet, so a reviewer can follow every rule to its source. → v0.7.1
 
 #### S · Trust, privacy and safety
 
-- [ ] **S01** Static by default: no code of the scored repo ever runs (no setup.py, no `eslint.config.js`, no `conftest.py`). Scoring an untrusted repo is safe, which the study needs at scale.
-- [ ] **S02** Hardened parsers: YAML alias bombs, deep nesting, huge JSON, path traversal through symlinks, linear-time regexes; limits on file size, file count, time and memory.
-- [ ] **S03** Secrets never printed: snippets redacted (`ghp_****abcd`) in every output (terminal, JSON, SARIF, HTML, comments).
-- [ ] **S04** Shareable reports: no absolute paths, user names or e-mail addresses.
-- [ ] **S05** No telemetry, ever: only T-38's report, with consent and the exact lines shown, as v0.4.6 does; every later signal (U) goes through it.
-- [ ] **S06** Reproducible: the report carries kiln's version, the grid's hash, the data's date and the commit; `kiln score --verify report.json` runs again and compares.
-- [ ] **S07** Signed releases and data bundles (Sigstore, PyPI attestations; T-90's provenance).
-- [ ] **S08** Network calls listed before they start, as the fixers' `network` flag does, and only with `--online` or `--deep`.
-- [ ] **S09** Forge tokens borrowed from `gh` or `glab`, never stored, never printed.
-- [ ] **S10** Every executable thing kiln runs pinned and hashed: packs (R) and tools (F).
+- [ ] **S01** Static by default: no code of the scored repo ever runs (no setup.py, no `eslint.config.js`, no `conftest.py`). Scoring an untrusted repo is safe, which the study needs at scale. → v0.6.54
+- [ ] **S02** Hardened parsers: YAML alias bombs, deep nesting, huge JSON, path traversal through symlinks, linear-time regexes; limits on file size, file count, time and memory. → v0.6.54
+- [ ] **S03** Secrets never printed: snippets redacted (`ghp_****abcd`) in every output (terminal, JSON, SARIF, HTML, comments). → v0.5.8
+- [ ] **S04** Shareable reports: no absolute paths, user names or e-mail addresses. → v0.6.28
+- [ ] **S05** No telemetry, ever: only T-38's report, with consent and the exact lines shown, as v0.4.6 does; every later signal (U) goes through it. → v0.6.53
+- [ ] **S06** Reproducible: the report carries kiln's version, the grid's hash, the data's date and the commit; `kiln score --verify report.json` runs again and compares. → v0.6.15
+- [ ] **S07** Signed releases and data bundles (Sigstore, PyPI attestations; T-90's provenance). → v0.4.8
+- [ ] **S08** Network calls listed before they start, as the fixers' `network` flag does, and only with `--online` or `--deep`. → v0.6.51
+- [ ] **S09** Forge tokens borrowed from `gh` or `glab`, never stored, never printed. → v0.4.7
+- [ ] **S10** Every executable thing kiln runs pinned and hashed: packs (R) and tools (F). → v1.0.0
 
 #### T · Measuring kiln score itself
 
-- [ ] **T01** A quality sheet in each release note: scored rules, rules with a detector, median precision, recall on seeded faults, speed on the suite, crashes on the corpus.
-- [ ] **T02** User effort measured: manual corrections needed per 100 corpus repos for a right score (target 0).
-- [ ] **T03** The unclaimed-file rate on the corpus (target under 1 % outside docs and assets).
-- [ ] **T04** Seniors' agreement (H) measured again each quarter.
-- [ ] **T05** Does the score predict anything? Public repos' advisories and incidents against their score at the time: evidence for the launch's claim, or a humbling result to publish anyway.
-- [ ] **T06** Does readability lower Claude's tokens? T-53's A/B test run again with the readability pillar's score as the variable.
-- [ ] **T07** kiln, its generated repos and the reference repo at 100, visibly (T-90, T-130, T-134).
+- [ ] **T01** A quality sheet in each release note: scored rules, rules with a detector, median precision, recall on seeded faults, speed on the suite, crashes on the corpus. → v0.6.14
+- [ ] **T02** User effort measured: manual corrections needed per 100 corpus repos for a right score (target 0). → v0.6.53
+- [ ] **T03** The unclaimed-file rate on the corpus (target under 1 % outside docs and assets). → v0.6.53
+- [ ] **T04** Seniors' agreement (H) measured again each quarter. → v0.7.4
+- [ ] **T05** Does the score predict anything? Public repos' advisories and incidents against their score at the time: evidence for the launch's claim, or a humbling result to publish anyway. → v0.7.4
+- [ ] **T06** Does readability lower Claude's tokens? T-53's A/B test run again with the readability pillar's score as the variable. → v0.7.4
+- [ ] **T07** kiln, its generated repos and the reference repo at 100, visibly (T-90, T-130, T-134). → v0.5.0
 
 #### U · What the grid doesn't know
 
-- [ ] **U01** Every tracked file claimed by a fact (code, a known tool's config, docs, asset, data); the rest listed as "kiln doesn't know these", with counts.
-- [ ] **U02** A fingerprint library as data, seeded from GitHub Linguist (languages, vendored and generated patterns), the SchemaStore catalogue (config names to tools), github/gitignore, endoflife.date's products, Renovate's managers (⚠ AGPL: facts only, no code), Dependabot's and OSV's ecosystems, the pre-commit hooks index (appendix D).
-- [ ] **U03** `NOTABLE_PACKAGES` (28 names in `score.py` today) grown into data: the top packages of each registry with what they are, so the gap report names what matters ("celery: background tasks, 4 drafts, 0 scored") and still never a private name.
-- [ ] **U04** Practices found but unclassified (a `scripts/backup.sh`, a `docs/runbook.md`, a `chaos/` folder), named so the grid can learn them.
-- [ ] **U05** T-38's report (v0.4.6: stacks, notable packages, misfiring rules) also carries the kinds of unclaimed files (a config's name, never a path) and the corrections users made; the most reported become tickets first, counted by `/kiln:backlog`.
-- [ ] **U06** Suggestions from the corpus ("repos like yours, Django with Celery and Nuxt, usually also have X"): association rules mined from the corpus as `assess` candidates, never findings.
+- [ ] **U01** Every tracked file claimed by a fact (code, a known tool's config, docs, asset, data); the rest listed as "kiln doesn't know these", with counts. → v0.6.53
+- [ ] **U02** A fingerprint library as data, seeded from GitHub Linguist (languages, vendored and generated patterns), the SchemaStore catalogue (config names to tools), github/gitignore, endoflife.date's products, Renovate's managers (⚠ AGPL: facts only, no code), Dependabot's and OSV's ecosystems, the pre-commit hooks index (appendix D). → v0.6.53
+- [ ] **U03** `NOTABLE_PACKAGES` (28 names in `score.py` today) grown into data: the top packages of each registry with what they are, so the gap report names what matters ("celery: background tasks, 4 drafts, 0 scored") and still never a private name. → v0.6.53
+- [ ] **U04** Practices found but unclassified (a `scripts/backup.sh`, a `docs/runbook.md`, a `chaos/` folder), named so the grid can learn them. → v0.6.53
+- [ ] **U05** T-38's report (v0.4.6: stacks, notable packages, misfiring rules) also carries the kinds of unclaimed files (a config's name, never a path) and the corrections users made; the most reported become tickets first, counted by `/kiln:backlog`. → v0.6.53
+- [ ] **U06** Suggestions from the corpus ("repos like yours, Django with Celery and Nuxt, usually also have X"): association rules mined from the corpus as `assess` candidates, never findings. → v0.7.4
 
 #### V · Docs, teaching and reach
 
-- [ ] **V01** A web page per rule generated from its file (why, bad and good, the fix, sources, prevalence, precision, standards): the pages people land on when they search "pin GitHub Actions", one way to get known.
-- [ ] **V02** The study (T-132) repeated every quarter: "the state of Django and Nuxt repos".
-- [ ] **V03** A "kiln score" action on the GitHub Marketplace and a GitLab CI component.
-- [ ] **V04** An honest comparison page: kiln score beside OpenSSF Scorecard, SonarQube, Codacy, DeepSource, Snyk, repolinter and the CHAOSS metrics; what each sees and what kiln adds (practices, fixes, Claude).
-- [ ] **V05** A teacher's guide: a class's repos scored each week, a rubric per theme.
-- [ ] **V06** An opt-in showcase of repos at 100, never a ranking of other people's repos by name.
-- [ ] **V07** `kiln score` in the README demo's first ten seconds: the number, the potential, `kiln fix`, the number again.
+- [ ] **V01** A web page per rule generated from its file (why, bad and good, the fix, sources, prevalence, precision, standards): the pages people land on when they search "pin GitHub Actions", one way to get known. → v0.6.5
+- [ ] **V02** The study (T-132) repeated every quarter: "the state of Django and Nuxt repos". → v0.6.5
+- [ ] **V03** A "kiln score" action on the GitHub Marketplace and a GitLab CI component. → v0.5.6
+- [ ] **V04** An honest comparison page: kiln score beside OpenSSF Scorecard, SonarQube, Codacy, DeepSource, Snyk, repolinter and the CHAOSS metrics; what each sees and what kiln adds (practices, fixes, Claude). → v0.5.0
+- [ ] **V05** A teacher's guide: a class's repos scored each week, a rubric per theme. → v0.6.64
+- [ ] **V06** An opt-in showcase of repos at 100, never a ranking of other people's repos by name. → v0.5.6
+- [ ] **V07** `kiln score` in the README demo's first ten seconds: the number, the potential, `kiln fix`, the number again. → v0.5.0
 
 ### Part III · Rules
 
@@ -2365,580 +2823,580 @@ new rules. Rule IDs are proposals; `kiln grid lint` (G) has the last word on the
 
 #### ST · Structure
 
-- [ ] **ST01** `FEATURE-FOLDERS` (draft): layer folders (`models/`, `views/`, `services/`, `controllers/`) that each span several domains, found by clustering the import graph. L3≈ · fix J · trial.
-- [ ] **ST02** `REPO-MAP` (scored, "to confirm" today): judged by REPO-MAP-FRESH below, so it stops being approximate. L1 · fix J.
-- [ ] **ST03** `REPO-MAP-FRESH`: every path the root CLAUDE.md's map names exists, and every top-level folder appears in it. L1 · fix J · adopt.
-- [ ] **ST04** `ROOT-TIDY`: about 25 entries at most at the root; scripts in `scripts/`, docs in `docs/`. L0 · fix J · trial.
-- [ ] **ST05** `SRC-LAYOUT`: a Python library's package under `src/`, as PyPA recommends. L0 · fix J · trial.
-- [ ] **ST06** `ONE-CONFIG-PER-TOOL`: a tool configured in one place (ruff in `pyproject.toml` and in `ruff.toml` is two truths). L1 · fix S · adopt.
-- [ ] **ST07** `CONFIG-IN-PYPROJECT`: Python tools' settings gathered in `pyproject.toml` (setup.cfg, tox.ini, .coveragerc, pytest.ini, mypy.ini merged in). L1 · fix S · trial.
-- [ ] **ST08** `NO-NESTED-REPOS`: no `.git` inside the tree except declared submodules. L0 · fix J · adopt.
-- [ ] **ST09** `SHALLOW-TREE`: code no deeper than about six folders. L0 · ratchet · assess.
-- [ ] **ST10** `SMALL-FOLDERS`: no code folder with more than about 50 files (assets, data, migrations aside). L0 · ratchet · assess.
-- [ ] **ST11** `NO-GRAB-BAG-FILES`: no `utils.py`, `helpers.ts`, `misc.py` or `common.js` past about 200 lines; the name says nothing of what's inside. L0 · fix J · trial.
-- [ ] **ST12** `NO-BARREL-FILES`: no `index.ts` re-exporting a whole folder (slower bundles and tests, one more hop for Claude). L2 · fix J · assess.
-- [ ] **ST13** `NO-IMPORT-CYCLES`: no cycle between modules or packages. L3 · ratchet · trial.
-- [ ] **ST14** `WORKSPACE-DECLARED`: more than two components of one ecosystem are declared in a workspace (uv, pnpm). L1 · fix S · trial.
-- [ ] **ST15** `GENERATED-MARKED`: generated files marked (`linguist-generated` or a header) so tools and Claude skip them. L1 · fix S · adopt.
-- [ ] **ST16** `VENDORED-MARKED`: vendored code marked `linguist-vendored`. L1 · fix S · adopt.
-- [ ] **ST17** `NO-BUILD-OUTPUT`: no `dist/`, `build/`, `.nuxt/`, `.output/`, `.next/`, `target/` or `*.egg-info` committed. L0 · fix S (untracked and ignored) · adopt.
-- [ ] **ST18** `GITIGNORE-COMPLETE`: `.gitignore` covers the ecosystems present (virtualenvs, `node_modules`, caches, `.env`, coverage). L1 · fix S · adopt.
-- [ ] **ST19** `EDITORCONFIG`: an `.editorconfig` consistent with the formatters. L0 · fix S · trial.
-- [ ] **ST20** `LINE-ENDINGS`: `.gitattributes` with `* text=auto eol=lf`. L1 · fix S · trial.
-- [ ] **ST21** `ONE-TEST-LAYOUT`: tests either beside the code or in a mirrored tree, one convention per component. L0≈ · fix J · assess.
-- [ ] **ST22** `ENTRY-POINTS-NAMED`: an app's entry points (`manage.py`, `main.py`, `server/index.ts`) where a reader expects them, and named in the map. L0≈ · fix J · assess.
+- [ ] **ST01** `FEATURE-FOLDERS` (draft): layer folders (`models/`, `views/`, `services/`, `controllers/`) that each span several domains, found by clustering the import graph. L3≈ · fix J · trial. → v0.6.33
+- [ ] **ST02** `REPO-MAP` (scored, "to confirm" today): judged by REPO-MAP-FRESH below, so it stops being approximate. L1 · fix J. → v0.6.43
+- [ ] **ST03** `REPO-MAP-FRESH`: every path the root CLAUDE.md's map names exists, and every top-level folder appears in it. L1 · fix J · adopt. → v0.6.43
+- [ ] **ST04** `ROOT-TIDY`: about 25 entries at most at the root; scripts in `scripts/`, docs in `docs/`. L0 · fix J · trial. → v0.6.42
+- [ ] **ST05** `SRC-LAYOUT`: a Python library's package under `src/`, as PyPA recommends. L0 · fix J · trial. → v0.6.42
+- [ ] **ST06** `ONE-CONFIG-PER-TOOL`: a tool configured in one place (ruff in `pyproject.toml` and in `ruff.toml` is two truths). L1 · fix S · adopt. → v0.6.42
+- [ ] **ST07** `CONFIG-IN-PYPROJECT`: Python tools' settings gathered in `pyproject.toml` (setup.cfg, tox.ini, .coveragerc, pytest.ini, mypy.ini merged in). L1 · fix S · trial. → v0.6.42
+- [ ] **ST08** `NO-NESTED-REPOS`: no `.git` inside the tree except declared submodules. L0 · fix J · adopt. → v0.6.42
+- [ ] **ST09** `SHALLOW-TREE`: code no deeper than about six folders. L0 · ratchet · assess. → v0.6.42
+- [ ] **ST10** `SMALL-FOLDERS`: no code folder with more than about 50 files (assets, data, migrations aside). L0 · ratchet · assess. → v0.6.42
+- [ ] **ST11** `NO-GRAB-BAG-FILES`: no `utils.py`, `helpers.ts`, `misc.py` or `common.js` past about 200 lines; the name says nothing of what's inside. L0 · fix J · trial. → v0.6.42
+- [ ] **ST12** `NO-BARREL-FILES`: no `index.ts` re-exporting a whole folder (slower bundles and tests, one more hop for Claude). L2 · fix J · assess. → v0.6.31
+- [ ] **ST13** `NO-IMPORT-CYCLES`: no cycle between modules or packages. L3 · ratchet · trial. → v0.6.33
+- [ ] **ST14** `WORKSPACE-DECLARED`: more than two components of one ecosystem are declared in a workspace (uv, pnpm). L1 · fix S · trial. → v0.6.42
+- [ ] **ST15** `GENERATED-MARKED`: generated files marked (`linguist-generated` or a header) so tools and Claude skip them. L1 · fix S · adopt. → v0.6.42
+- [ ] **ST16** `VENDORED-MARKED`: vendored code marked `linguist-vendored`. L1 · fix S · adopt. → v0.6.42
+- [ ] **ST17** `NO-BUILD-OUTPUT`: no `dist/`, `build/`, `.nuxt/`, `.output/`, `.next/`, `target/` or `*.egg-info` committed. L0 · fix S (untracked and ignored) · adopt. → v0.6.42
+- [ ] **ST18** `GITIGNORE-COMPLETE`: `.gitignore` covers the ecosystems present (virtualenvs, `node_modules`, caches, `.env`, coverage). L1 · fix S · adopt. → v0.6.42
+- [ ] **ST19** `EDITORCONFIG`: an `.editorconfig` consistent with the formatters. L0 · fix S · trial. → v0.6.42
+- [ ] **ST20** `LINE-ENDINGS`: `.gitattributes` with `* text=auto eol=lf`. L1 · fix S · trial. → v0.6.42
+- [ ] **ST21** `ONE-TEST-LAYOUT`: tests either beside the code or in a mirrored tree, one convention per component. L0≈ · fix J · assess. → v0.6.42
+- [ ] **ST22** `ENTRY-POINTS-NAMED`: an app's entry points (`manage.py`, `main.py`, `server/index.ts`) where a reader expects them, and named in the map. L0≈ · fix J · assess. → v0.6.43
 
 #### CS · Code standards
 
-- [ ] **CS01** `FILE-SIZE` (draft): lines per file from the index, generated code and migrations aside, a ratchet from today's numbers. L0 · ratchet · trial.
-- [ ] **CS02** `FUNCTION-SIZE` (draft): function length from syntax trees in any language (ruff's PLR0915 for Python). L2 · ratchet · trial.
-- [ ] **CS03** `CASE` (draft): symbols cased as their language wants (pep8-naming through ruff's N8, typescript-eslint's naming convention), from symbol tables. L2 · fix J · trial.
-- [ ] **CS04** `BOOLEANS` (draft): names of `bool`-typed values start with is, has, can or should (Python annotations, TS types). L2 · fix J · assess.
-- [ ] **CS05** `GENERIC-NAMES` (draft): identifiers from a deny-list (`data`, `res`, `tmp`, `obj`, `val`, `info`, `item`, `stuff`, `foo`), one list per human language. L2≈ · fix J · trial.
-- [ ] **CS06** `MODERN-PYTHON` (draft): ruff's UP rules at the `requires-python` target; ruff's fixes are the converter. L4 · fix S · adopt.
-- [ ] **CS07** `MODERN-VUE` (draft): `<script setup>`, no Options API in new files, `defineModel`, no `this.$`. L2 · fix J · trial.
-- [ ] **CS08** `ONE-CLASS` (draft): one public class per file in Python and TS. L2 · fix J · assess.
-- [ ] **CS09** `DEAD-CODE` (trial): vulture and knip, promoted once their precision is measured on the corpus. L4≈ · fix S (the compressor) · trial.
-- [ ] **CS10** `EXPLICIT-IMPORTS` (draft, Nuxt): auto-imported composables used without an import, counted. L2 · fix S · assess.
-- [ ] **CS11** `RETURN-VALUES` (draft): functions that return a value on some paths and nothing on others (ruff's RET503). L4 · fix J · trial.
-- [ ] **CS12** `ASYNC-AWAIT` (draft, TS): `.then()` chains where `await` reads better; floating promises with `--deep`, since they need types. L2 · fix J · assess.
-- [ ] **CS13** `NO-MAGIC-VALUES` (draft): ruff's PLR2004 and its JS counterpart. L4 · fix J · trial.
-- [ ] **CS14** `DOMAIN-VOCABULARY` (draft): the glossary's words used (a `docs/glossary.md` checked against identifiers). L2≈ · fix J · assess.
-- [ ] **CS15** `FORMATTER`: a formatter configured for each language, as `PYTHON-LINTER` and `JS-LINTER` ask a linter (ruff format or Black, Prettier or Biome, gofmt, rustfmt, Spotless, `dotnet format`, RuboCop, PHP-CS-Fixer). L1 · fix S · adopt.
-- [ ] **CS16** `FORMATTED`: the code really is formatted (`ruff format --check` and the other formatters shipped as wheels). L4 · fix S · adopt.
-- [ ] **CS17** `LINTER-CLEAN`: the repo's own linter config passes, or its error count only goes down. L4 · ratchet · trial.
-- [ ] **CS18** `NO-DEBUGGER`: no `breakpoint()`, `pdb.set_trace()`, `debugger;`, `binding.pry` or `dd()`. L2 · fix S · adopt.
-- [ ] **CS19** `NO-PRINT-DEBUG`: no `print()` or `console.log` in shipped code (ruff's T20, no-console), command-line tools aside. L2 · fix J · adopt.
-- [ ] **CS20** `TODO-WITH-TICKET`: each TODO or FIXME cites a ticket (`T-12`, `#123`); the backlog is the only list. L2 · ratchet · trial.
-- [ ] **CS21** `NO-COMMENTED-CODE`: no code left commented out (ruff's ERA001). L4 · fix S · trial.
-- [ ] **CS22** `NO-MUTABLE-DEFAULTS` (Python): ruff's B006. L4 · fix S · adopt.
-- [ ] **CS23** `NO-STAR-IMPORTS` (Python): F403, settings modules aside. L4 · fix J · adopt.
-- [ ] **CS24** `NO-SILENT-EXCEPT`: no `except Exception: pass` or empty `catch {}` (S110, BLE001, no-empty), beyond `BARE-EXCEPT`. L4 · fix J · adopt.
-- [ ] **CS25** `EXCEPTION-CHAINING`: `raise … from err` inside `except` (B904). L4 · fix S · adopt.
-- [ ] **CS26** `NO-ASSERT-FOR-CHECKS`: no `assert` doing validation in shipped Python (S101); `-O` removes them. L4 · fix J · trial.
-- [ ] **CS27** `PATHLIB`: `pathlib` rather than `os.path` (ruff's PTH). L4 · fix S · trial.
-- [ ] **CS28** `COMPLEXITY`: cognitive complexity under about 15 per function. L2 · ratchet · trial.
-- [ ] **CS29** `PARAMETER-COUNT`: five parameters at most, keyword-only past that (PLR0913). L4 · fix J · trial.
-- [ ] **CS30** `NESTING-DEPTH`: four levels of nesting at most. L2 · ratchet · trial.
-- [ ] **CS31** `DUPLICATION`: no duplicated block over about 50 tokens across files (the charter's `identical-copies`, generalized). L3 · ratchet · trial.
-- [ ] **CS32** `NO-GLOBAL-MUTATION`: no `global` statements, no module-level state changed by functions. L2 · fix J · trial.
-- [ ] **CS33** `NAMES-WITH-UNITS`: durations, sizes and amounts named with their unit (`timeout_seconds`, `size_bytes`). L2≈ · fix J · assess.
-- [ ] **CS34** `FILE-NAMES-CASE`: file names in the language's convention (snake_case.py, PascalCase.vue components, kebab-case routes). L0 · fix J · trial.
-- [ ] **CS35** `VUE-MULTI-WORD-COMPONENTS`: component names of two words or more (Vue's style guide, essential). L0 · fix J · adopt.
-- [ ] **CS36** `TS-NO-NON-NULL-ASSERTION`: `!` assertions counted. L2 · ratchet · trial.
-- [ ] **CS37** `TS-NO-ENUMS`: `as const` unions rather than `enum` (erasable syntax, which Node's type stripping runs). L2 · fix S · assess.
-- [ ] **CS38** `ESM`: `"type": "module"` and no `require()` in TypeScript. L1 · fix J · trial.
-- [ ] **CS39** `NO-VAR` and `STRICT-EQUALITY` (JS): `let` and `const`, `===`. L2 · fix S · adopt.
-- [ ] **CS40** `SHELL-STRICT-MODE`: shell scripts start with `set -euo pipefail`, or say why not. L1 · fix S · adopt.
-- [ ] **CS41** `SHELLCHECK-CLEAN`: shellcheck passes on every script. L4 · fix J · adopt.
-- [ ] **CS42** `UTF8-SOURCES`: text files in UTF-8 without a BOM. L1 · fix S · adopt.
-- [ ] **CS43** `NO-MIXED-INDENTATION`: tabs and spaces never mixed in one file. L1 · fix S · adopt.
-- [ ] **CS44** `NO-NESTED-TERNARY`. L2 · fix J · trial.
-- [ ] **CS45** `TYPOS`: no common misspelling in identifiers and comments (the typos dictionary). L4 · fix S · trial.
+- [ ] **CS01** `FILE-SIZE` (draft): lines per file from the index, generated code and migrations aside, a ratchet from today's numbers. L0 · ratchet · trial. → v0.6.30
+- [ ] **CS02** `FUNCTION-SIZE` (draft): function length from syntax trees in any language (ruff's PLR0915 for Python). L2 · ratchet · trial. → v0.6.30
+- [ ] **CS03** `CASE` (draft): symbols cased as their language wants (pep8-naming through ruff's N8, typescript-eslint's naming convention), from symbol tables. L2 · fix J · trial. → v0.6.30
+- [ ] **CS04** `BOOLEANS` (draft): names of `bool`-typed values start with is, has, can or should (Python annotations, TS types). L2 · fix J · assess. → v0.6.30
+- [ ] **CS05** `GENERIC-NAMES` (draft): identifiers from a deny-list (`data`, `res`, `tmp`, `obj`, `val`, `info`, `item`, `stuff`, `foo`), one list per human language. L2≈ · fix J · trial. → v0.6.30
+- [ ] **CS06** `MODERN-PYTHON` (draft): ruff's UP rules at the `requires-python` target; ruff's fixes are the converter. L4 · fix S · adopt. → v0.6.12
+- [ ] **CS07** `MODERN-VUE` (draft): `<script setup>`, no Options API in new files, `defineModel`, no `this.$`. L2 · fix J · trial. → v0.6.31
+- [ ] **CS08** `ONE-CLASS` (draft): one public class per file in Python and TS. L2 · fix J · assess. → v0.6.30
+- [ ] **CS09** `DEAD-CODE` (trial): vulture and knip, promoted once their precision is measured on the corpus. L4≈ · fix S (the compressor) · trial. → v0.6.1
+- [ ] **CS10** `EXPLICIT-IMPORTS` (draft, Nuxt): auto-imported composables used without an import, counted. L2 · fix S · assess. → v0.6.31
+- [ ] **CS11** `RETURN-VALUES` (draft): functions that return a value on some paths and nothing on others (ruff's RET503). L4 · fix J · trial. → v0.6.12
+- [ ] **CS12** `ASYNC-AWAIT` (draft, TS): `.then()` chains where `await` reads better; floating promises with `--deep`, since they need types. L2 · fix J · assess. → v0.6.31
+- [ ] **CS13** `NO-MAGIC-VALUES` (draft): ruff's PLR2004 and its JS counterpart. L4 · fix J · trial. → v0.6.12
+- [ ] **CS14** `DOMAIN-VOCABULARY` (draft): the glossary's words used (a `docs/glossary.md` checked against identifiers). L2≈ · fix J · assess. → v0.6.43
+- [ ] **CS15** `FORMATTER`: a formatter configured for each language, as `PYTHON-LINTER` and `JS-LINTER` ask a linter (ruff format or Black, Prettier or Biome, gofmt, rustfmt, Spotless, `dotnet format`, RuboCop, PHP-CS-Fixer). L1 · fix S · adopt. → v0.6.12
+- [ ] **CS16** `FORMATTED`: the code really is formatted (`ruff format --check` and the other formatters shipped as wheels). L4 · fix S · adopt. → v0.6.12
+- [ ] **CS17** `LINTER-CLEAN`: the repo's own linter config passes, or its error count only goes down. L4 · ratchet · trial. → v0.6.12
+- [ ] **CS18** `NO-DEBUGGER`: no `breakpoint()`, `pdb.set_trace()`, `debugger;`, `binding.pry` or `dd()`. L2 · fix S · adopt. → v0.5.13
+- [ ] **CS19** `NO-PRINT-DEBUG`: no `print()` or `console.log` in shipped code (ruff's T20, no-console), command-line tools aside. L2 · fix J · adopt. → v0.6.31
+- [ ] **CS20** `TODO-WITH-TICKET`: each TODO or FIXME cites a ticket (`T-12`, `#123`); the backlog is the only list. L2 · ratchet · trial. → v0.6.31
+- [ ] **CS21** `NO-COMMENTED-CODE`: no code left commented out (ruff's ERA001). L4 · fix S · trial. → v0.6.12
+- [ ] **CS22** `NO-MUTABLE-DEFAULTS` (Python): ruff's B006. L4 · fix S · adopt. → v0.6.12
+- [ ] **CS23** `NO-STAR-IMPORTS` (Python): F403, settings modules aside. L4 · fix J · adopt. → v0.6.12
+- [ ] **CS24** `NO-SILENT-EXCEPT`: no `except Exception: pass` or empty `catch {}` (S110, BLE001, no-empty), beyond `BARE-EXCEPT`. L4 · fix J · adopt. → v0.6.12
+- [ ] **CS25** `EXCEPTION-CHAINING`: `raise … from err` inside `except` (B904). L4 · fix S · adopt. → v0.6.12
+- [ ] **CS26** `NO-ASSERT-FOR-CHECKS`: no `assert` doing validation in shipped Python (S101); `-O` removes them. L4 · fix J · trial. → v0.6.12
+- [ ] **CS27** `PATHLIB`: `pathlib` rather than `os.path` (ruff's PTH). L4 · fix S · trial. → v0.6.12
+- [ ] **CS28** `COMPLEXITY`: cognitive complexity under about 15 per function. L2 · ratchet · trial. → v0.6.30
+- [ ] **CS29** `PARAMETER-COUNT`: five parameters at most, keyword-only past that (PLR0913). L4 · fix J · trial. → v0.6.12
+- [ ] **CS30** `NESTING-DEPTH`: four levels of nesting at most. L2 · ratchet · trial. → v0.6.30
+- [ ] **CS31** `DUPLICATION`: no duplicated block over about 50 tokens across files (the charter's `identical-copies`, generalized). L3 · ratchet · trial. → v0.6.1
+- [ ] **CS32** `NO-GLOBAL-MUTATION`: no `global` statements, no module-level state changed by functions. L2 · fix J · trial. → v0.6.31
+- [ ] **CS33** `NAMES-WITH-UNITS`: durations, sizes and amounts named with their unit (`timeout_seconds`, `size_bytes`). L2≈ · fix J · assess. → v0.6.30
+- [ ] **CS34** `FILE-NAMES-CASE`: file names in the language's convention (snake_case.py, PascalCase.vue components, kebab-case routes). L0 · fix J · trial. → v0.6.30
+- [ ] **CS35** `VUE-MULTI-WORD-COMPONENTS`: component names of two words or more (Vue's style guide, essential). L0 · fix J · adopt. → v0.6.31
+- [ ] **CS36** `TS-NO-NON-NULL-ASSERTION`: `!` assertions counted. L2 · ratchet · trial. → v0.6.31
+- [ ] **CS37** `TS-NO-ENUMS`: `as const` unions rather than `enum` (erasable syntax, which Node's type stripping runs). L2 · fix S · assess. → v0.6.31
+- [ ] **CS38** `ESM`: `"type": "module"` and no `require()` in TypeScript. L1 · fix J · trial. → v0.6.31
+- [ ] **CS39** `NO-VAR` and `STRICT-EQUALITY` (JS): `let` and `const`, `===`. L2 · fix S · adopt. → v0.6.31
+- [ ] **CS40** `SHELL-STRICT-MODE`: shell scripts start with `set -euo pipefail`, or say why not. L1 · fix S · adopt. → v0.6.12
+- [ ] **CS41** `SHELLCHECK-CLEAN`: shellcheck passes on every script. L4 · fix J · adopt. → v0.6.12
+- [ ] **CS42** `UTF8-SOURCES`: text files in UTF-8 without a BOM. L1 · fix S · adopt. → v0.6.12
+- [ ] **CS43** `NO-MIXED-INDENTATION`: tabs and spaces never mixed in one file. L1 · fix S · adopt. → v0.6.12
+- [ ] **CS44** `NO-NESTED-TERNARY`. L2 · fix J · trial. → v0.6.31
+- [ ] **CS45** `TYPOS`: no common misspelling in identifiers and comments (the typos dictionary). L4 · fix S · trial. → v0.6.30
 
 #### AT · API, contracts and typing
 
-- [ ] **AT01** `OPENAPI-IN-REPO` (draft): the API's schema committed (`openapi.json` or `.yaml`) when an API framework is present (Django Ninja, DRF, FastAPI, NestJS). L0 · fix J · trial.
-- [ ] **AT02** `FROZEN-CONTRACT` (draft): CI compares the schema with the integration branch's (oasdiff's breaking-change check). L1 · fix S (the CI step) · trial.
-- [ ] **AT03** `CONTRACT-DRIFT` (draft): front types generated from the committed schema (openapi-typescript or the like) with a script to regenerate them; `--deep` proves there's no drift. L1 · fix J · trial.
-- [ ] **AT04** `TYPED-API` (draft, Ninja): every route has typed input and output schemas. L2 · fix J · trial.
-- [ ] **AT05** `PAGINATION` (draft): list endpoints paginated (`@paginate`, DRF's `DEFAULT_PAGINATION_CLASS`). L2 · fix J · trial.
-- [ ] **AT06** `DEPRECATION-HEADERS` (draft): deprecated routes send `Deprecation` (RFC 9745) and `Sunset` (RFC 8594). L2≈ · fix J · assess.
-- [ ] **AT07** `IDEMPOTENCY` (draft): payment and creation endpoints accept an `Idempotency-Key`. L2≈ · fix J · assess.
-- [ ] **AT08** `STRICT-TYPING` and `STRICT-TS` (scored): config read with its inheritance (`extends` chains, `[tool.mypy]` anywhere), not by one regex.
-- [ ] **AT09** `TYPE-CHECK-IN-CI`: a type checker runs in CI (mypy, pyright, ty or pyrefly; tsc, vue-tsc or `nuxi typecheck`). L1 · fix S · adopt.
-- [ ] **AT10** `PY-TYPED`: a typed Python library ships `py.typed`. L0 · fix S · adopt.
-- [ ] **AT11** `ANNOTATIONS-COVERAGE`: the share of fully annotated functions, a ratchet (ruff's ANN counts). L4 · ratchet · trial.
-- [ ] **AT12** `NO-EXPLICIT-ANY` (Python): `Any` counted (ANN401), as NO-ANY does for TS. L4 · ratchet · trial.
-- [ ] **AT13** `TS-UNCHECKED-INDEX`: `noUncheckedIndexedAccess` on. L1 · fix S · trial.
-- [ ] **AT14** `TS-EXACT-OPTIONAL`: `exactOptionalPropertyTypes` on. L1 · fix J · assess.
-- [ ] **AT15** `TS-VERBATIM-MODULES`: `verbatimModuleSyntax` on. L1 · fix S · assess.
-- [ ] **AT16** `DJANGO-STUBS`: django-stubs and its mypy plugin whenever mypy checks Django code. L1 · fix S · adopt.
-- [ ] **AT17** `PROBLEM-DETAILS`: API errors as RFC 9457 problem details. L2≈ · fix J · assess.
-- [ ] **AT18** `API-VERSIONED`: public APIs carry a version, in the path or a header. L2≈ · fix J · assess.
-- [ ] **AT19** `OPENAPI-LINT`: the committed schema passes Spectral or Redocly's lint. L4 · fix J · trial.
-- [ ] **AT20** `GENERATED-CLIENT`: the front reaches the API through generated types, never hand-copied ones. L2≈ · fix J · trial.
-- [ ] **AT21** `TYPED-PROPS`: `defineProps<…>()` and `defineEmits<…>()` typed. L2 · fix J · adopt.
-- [ ] **AT22** `RUNTIME-SCHEMAS`: outside data parsed by a schema library (Pydantic, Zod, Valibot) at the edge. L2≈ · fix J · trial.
-- [ ] **AT23** `GRAPHQL-SCHEMA`: the GraphQL schema committed and checked for breaking changes. L1 · fix J · trial.
-- [ ] **AT24** `PROTO-LINT`: `buf lint` and `buf breaking` for Protobuf APIs. L1 · fix S · trial.
-- [ ] **AT25** `CSHARP-NULLABLE`: `<Nullable>enable</Nullable>` in every project. L1 · fix S · adopt.
-- [ ] **AT26** `PHPSTAN-LEVEL`: PHPStan at level 6 or higher, or Psalm's equivalent. L1 · ratchet · trial.
-- [ ] **AT27** `KOTLIN-EXPLICIT-API`: explicit API mode for Kotlin libraries. L1 · fix S · trial.
-- [ ] **AT28** `JAVA-NULLNESS`: JSpecify annotations checked by NullAway. L1 · fix J · assess.
-- [ ] **AT29** `SETTINGS-TYPED`: application settings parsed into a typed object (pydantic-settings, a schema-checked runtime config). L2≈ · fix J · trial.
+- [ ] **AT01** `OPENAPI-IN-REPO` (draft): the API's schema committed (`openapi.json` or `.yaml`) when an API framework is present (Django Ninja, DRF, FastAPI, NestJS). L0 · fix J · trial. → v0.6.32
+- [ ] **AT02** `FROZEN-CONTRACT` (draft): CI compares the schema with the integration branch's (oasdiff's breaking-change check). L1 · fix S (the CI step) · trial. → v0.6.32
+- [ ] **AT03** `CONTRACT-DRIFT` (draft): front types generated from the committed schema (openapi-typescript or the like) with a script to regenerate them; `--deep` proves there's no drift. L1 · fix J · trial. → v0.6.32
+- [ ] **AT04** `TYPED-API` (draft, Ninja): every route has typed input and output schemas. L2 · fix J · trial. → v0.6.32
+- [ ] **AT05** `PAGINATION` (draft): list endpoints paginated (`@paginate`, DRF's `DEFAULT_PAGINATION_CLASS`). L2 · fix J · trial. → v0.6.32
+- [ ] **AT06** `DEPRECATION-HEADERS` (draft): deprecated routes send `Deprecation` (RFC 9745) and `Sunset` (RFC 8594). L2≈ · fix J · assess. → v0.6.32
+- [ ] **AT07** `IDEMPOTENCY` (draft): payment and creation endpoints accept an `Idempotency-Key`. L2≈ · fix J · assess. → v0.6.32
+- [ ] **AT08** `STRICT-TYPING` and `STRICT-TS` (scored): config read with its inheritance (`extends` chains, `[tool.mypy]` anywhere), not by one regex. → v0.6.32
+- [ ] **AT09** `TYPE-CHECK-IN-CI`: a type checker runs in CI (mypy, pyright, ty or pyrefly; tsc, vue-tsc or `nuxi typecheck`). L1 · fix S · adopt. → v0.6.32
+- [ ] **AT10** `PY-TYPED`: a typed Python library ships `py.typed`. L0 · fix S · adopt. → v0.6.32
+- [ ] **AT11** `ANNOTATIONS-COVERAGE`: the share of fully annotated functions, a ratchet (ruff's ANN counts). L4 · ratchet · trial. → v0.6.32
+- [ ] **AT12** `NO-EXPLICIT-ANY` (Python): `Any` counted (ANN401), as NO-ANY does for TS. L4 · ratchet · trial. → v0.6.32
+- [ ] **AT13** `TS-UNCHECKED-INDEX`: `noUncheckedIndexedAccess` on. L1 · fix S · trial. → v0.6.32
+- [ ] **AT14** `TS-EXACT-OPTIONAL`: `exactOptionalPropertyTypes` on. L1 · fix J · assess. → v0.6.32
+- [ ] **AT15** `TS-VERBATIM-MODULES`: `verbatimModuleSyntax` on. L1 · fix S · assess. → v0.6.32
+- [ ] **AT16** `DJANGO-STUBS`: django-stubs and its mypy plugin whenever mypy checks Django code. L1 · fix S · adopt. → v0.6.32
+- [ ] **AT17** `PROBLEM-DETAILS`: API errors as RFC 9457 problem details. L2≈ · fix J · assess. → v0.6.32
+- [ ] **AT18** `API-VERSIONED`: public APIs carry a version, in the path or a header. L2≈ · fix J · assess. → v0.6.32
+- [ ] **AT19** `OPENAPI-LINT`: the committed schema passes Spectral or Redocly's lint. L4 · fix J · trial. → v0.6.32
+- [ ] **AT20** `GENERATED-CLIENT`: the front reaches the API through generated types, never hand-copied ones. L2≈ · fix J · trial. → v0.6.32
+- [ ] **AT21** `TYPED-PROPS`: `defineProps<…>()` and `defineEmits<…>()` typed. L2 · fix J · adopt. → v0.6.32
+- [ ] **AT22** `RUNTIME-SCHEMAS`: outside data parsed by a schema library (Pydantic, Zod, Valibot) at the edge. L2≈ · fix J · trial. → v0.6.32
+- [ ] **AT23** `GRAPHQL-SCHEMA`: the GraphQL schema committed and checked for breaking changes. L1 · fix J · trial. → v0.6.32
+- [ ] **AT24** `PROTO-LINT`: `buf lint` and `buf breaking` for Protobuf APIs. L1 · fix S · trial. → v0.6.32
+- [ ] **AT25** `CSHARP-NULLABLE`: `<Nullable>enable</Nullable>` in every project. L1 · fix S · adopt. → v1.2.0
+- [ ] **AT26** `PHPSTAN-LEVEL`: PHPStan at level 6 or higher, or Psalm's equivalent. L1 · ratchet · trial. → v1.3.0
+- [ ] **AT27** `KOTLIN-EXPLICIT-API`: explicit API mode for Kotlin libraries. L1 · fix S · trial. → v1.2.0
+- [ ] **AT28** `JAVA-NULLNESS`: JSpecify annotations checked by NullAway. L1 · fix J · assess. → v1.2.0
+- [ ] **AT29** `SETTINGS-TYPED`: application settings parsed into a typed object (pydantic-settings, a schema-checked runtime config). L2≈ · fix J · trial. → v0.6.32
 
 #### AR · Architecture
 
-- [ ] **AR01** `NO-SIGNALS` (draft, Django): `@receiver` and model signals' `.connect(`; the charter already bans them. L2 · fix J · adopt.
-- [ ] **AR02** `API-CALLS` (draft, Vue): no `$fetch` or `useFetch` in components outside a composable or a service layer. L2 · fix J · trial.
-- [ ] **AR03** `THIN-VIEWS` (draft, Django): views under a few dozen lines, without ORM writes. L2≈ · fix J · trial.
-- [ ] **AR04** `THIN-MODEL` (draft, Django): model methods past a few dozen lines flagged. L2≈ · fix J · assess.
-- [ ] **AR05** `SERVICE-LAYER` (draft): an app whose views write data has a services module. L2≈ · fix J · assess.
-- [ ] **AR06** `LAYERED-ARCHITECTURE` (draft): import contracts declared (import-linter, dependency-cruiser, eslint-plugin-boundaries) and run in CI. L1 · fix J · trial.
-- [ ] **AR07** `SEALED-DOMAIN` (draft): domain packages import no web framework, HTTP client or ORM session. L3 · fix J · trial.
-- [ ] **AR08** `TWELVE-FACTOR-CONFIG`: config from the environment, one settings tree, no per-environment file holding secrets. L2 · fix J · adopt.
-- [ ] **AR09** `NO-GOD-MODULES`: no module both large and imported by most of the code. L3 · ratchet · assess.
-- [ ] **AR10** `ADR`: decisions recorded (`docs/adr/` or `docs/decisions/`), for company profiles. L0 · fix S (folder and template) · assess.
-- [ ] **AR11** `ARCHITECTURE-DIAGRAM`: a diagram as code (Mermaid, Structurizr) for repos with several services. L1 · fix J · assess.
-- [ ] **AR12** `STATE-IN-STORES` (Vue): shared state in Pinia stores, not module-level `reactive()` singletons. L2 · fix J · trial.
-- [ ] **AR13** `NUXT-SERVER-THIN`: `server/api` handlers delegate to services. L2≈ · fix J · assess.
-- [ ] **AR14** `ONE-DB-PER-SERVICE`: two services don't share one database's tables (compose and settings read together). L1≈ · fix J · assess.
-- [ ] **AR15** `ASYNC-BOUNDARY` (Django): async views never call the sync ORM without `sync_to_async`. L2 · fix J · adopt.
-- [ ] **AR16** `DEPENDENCY-DIRECTION`: stable packages don't depend on volatile ones (fan-in and fan-out). L3 · ratchet · assess.
-- [ ] **AR17** `NO-CIRCULAR-APPS` (Django): no import cycle between apps. L3 · fix J · trial.
-- [ ] **AR18** `FLAGS-IN-ONE-PLACE`: feature flags read through one module or library, not scattered `if settings.X`. L2≈ · fix J · assess.
+- [ ] **AR01** `NO-SIGNALS` (draft, Django): `@receiver` and model signals' `.connect(`; the charter already bans them. L2 · fix J · adopt. → v0.5.13
+- [ ] **AR02** `API-CALLS` (draft, Vue): no `$fetch` or `useFetch` in components outside a composable or a service layer. L2 · fix J · trial. → v0.6.33
+- [ ] **AR03** `THIN-VIEWS` (draft, Django): views under a few dozen lines, without ORM writes. L2≈ · fix J · trial. → v0.6.33
+- [ ] **AR04** `THIN-MODEL` (draft, Django): model methods past a few dozen lines flagged. L2≈ · fix J · assess. → v0.6.33
+- [ ] **AR05** `SERVICE-LAYER` (draft): an app whose views write data has a services module. L2≈ · fix J · assess. → v0.6.33
+- [ ] **AR06** `LAYERED-ARCHITECTURE` (draft): import contracts declared (import-linter, dependency-cruiser, eslint-plugin-boundaries) and run in CI. L1 · fix J · trial. → v0.6.33
+- [ ] **AR07** `SEALED-DOMAIN` (draft): domain packages import no web framework, HTTP client or ORM session. L3 · fix J · trial. → v0.6.33
+- [ ] **AR08** `TWELVE-FACTOR-CONFIG`: config from the environment, one settings tree, no per-environment file holding secrets. L2 · fix J · adopt. → v0.6.33
+- [ ] **AR09** `NO-GOD-MODULES`: no module both large and imported by most of the code. L3 · ratchet · assess. → v0.6.33
+- [ ] **AR10** `ADR`: decisions recorded (`docs/adr/` or `docs/decisions/`), for company profiles. L0 · fix S (folder and template) · assess. → v0.6.43
+- [ ] **AR11** `ARCHITECTURE-DIAGRAM`: a diagram as code (Mermaid, Structurizr) for repos with several services. L1 · fix J · assess. → v0.6.43
+- [ ] **AR12** `STATE-IN-STORES` (Vue): shared state in Pinia stores, not module-level `reactive()` singletons. L2 · fix J · trial. → v0.6.33
+- [ ] **AR13** `NUXT-SERVER-THIN`: `server/api` handlers delegate to services. L2≈ · fix J · assess. → v0.6.33
+- [ ] **AR14** `ONE-DB-PER-SERVICE`: two services don't share one database's tables (compose and settings read together). L1≈ · fix J · assess. → v0.6.33
+- [ ] **AR15** `ASYNC-BOUNDARY` (Django): async views never call the sync ORM without `sync_to_async`. L2 · fix J · adopt. → v0.6.33
+- [ ] **AR16** `DEPENDENCY-DIRECTION`: stable packages don't depend on volatile ones (fan-in and fan-out). L3 · ratchet · assess. → v0.6.33
+- [ ] **AR17** `NO-CIRCULAR-APPS` (Django): no import cycle between apps. L3 · fix J · trial. → v0.6.33
+- [ ] **AR18** `FLAGS-IN-ONE-PLACE`: feature flags read through one module or library, not scattered `if settings.X`. L2≈ · fix J · assess. → v0.6.33
 
 #### DM · Data and migrations
 
-- [ ] **DM01** `MIGRATIONS` (scored): apps with an empty `models.py`, and apps under `tests/`, no longer asked for migrations.
-- [ ] **DM02** `COMMON-FIELDS` (draft, Django): models inherit a base carrying `created_at` and `updated_at`. L2 · fix J · trial.
-- [ ] **DM03** `INDEXES` (draft, Postgres): fields filtered or ordered on in querysets have an index. L3≈ · fix J · assess.
-- [ ] **DM04** `TRANSACTIONS` (draft): views writing several rows do it in `transaction.atomic` (or `ATOMIC_REQUESTS`). L2≈ · fix J · trial.
-- [ ] **DM05** `USE-TZ` (Django): `USE_TZ = True`. L2 · fix S · adopt.
-- [ ] **DM06** `REVERSIBLE-MIGRATIONS`: `RunPython` with `reverse_code`, `RunSQL` with `reverse_sql`. L2 · fix J · adopt.
-- [ ] **DM07** `SAFE-MIGRATIONS`: no NOT NULL column added without a default to an existing table; indexes built concurrently on Postgres (`AddIndexConcurrently`, `atomic = False`). L2≈ · fix J · trial.
-- [ ] **DM08** `SCHEMA-AND-DATA-APART`: data migrations (`RunPython`) in their own files. L2 · fix J · trial.
-- [ ] **DM09** `MIGRATION-LINT-IN-CI`: django-migration-linter or squawk in CI. L1 · fix S · trial.
-- [ ] **DM10** `MIGRATION-NAMES`: no `00xx_auto_<date>`: a migration's name says what it changes. L0 · fix J · trial.
-- [ ] **DM11** `SQUASH-WHEN-LONG`: an app past about 100 migrations gets them squashed. L0 · fix J · assess.
-- [ ] **DM12** `ALEMBIC-ONE-HEAD`: a single head in Alembic's history. L2 · fix J · adopt.
-- [ ] **DM13** `NO-DUMPS`: no `.sql`, `.dump` or `.sqlite3` holding real data committed. L0 · fix S (untracked) · adopt.
-- [ ] **DM14** `DB-CONSTRAINTS`: invariants enforced by the database (`UniqueConstraint`, `CheckConstraint`), not only in code. L2≈ · fix J · trial.
-- [ ] **DM15** `PUBLIC-IDS`: public identifiers that aren't sequential integers (UUIDv7, ULID), so nobody can enumerate them. L2≈ · fix J · assess.
-- [ ] **DM16** `CONN-REUSE` (Django): `CONN_MAX_AGE` and `CONN_HEALTH_CHECKS` set, or a pooler. L2 · fix S · trial.
-- [ ] **DM17** `SUPPORTED-DATABASES`: Postgres, MySQL, Redis and MongoDB versions in compose and manifests still supported. L1 · fix S · adopt.
-- [ ] **DM18** `ORM-MIGRATIONS-COMMITTED` (JS, Ruby): Prisma, Drizzle, Knex, TypeORM and Rails migrations (and `schema.rb`) committed. L0 · fix J · adopt.
-- [ ] **DM19** `SEED-DATA`: a seed command or fixtures with fake data for local development. L0≈ · fix J · trial.
-- [ ] **DM20** `QUERIES-OUT-OF-VIEWS`: raw SQL lives in a query module, not in views. L2 · fix J · assess.
+- [ ] **DM01** `MIGRATIONS` (scored): apps with an empty `models.py`, and apps under `tests/`, no longer asked for migrations. → v0.6.34
+- [ ] **DM02** `COMMON-FIELDS` (draft, Django): models inherit a base carrying `created_at` and `updated_at`. L2 · fix J · trial. → v0.6.34
+- [ ] **DM03** `INDEXES` (draft, Postgres): fields filtered or ordered on in querysets have an index. L3≈ · fix J · assess. → v0.6.34
+- [ ] **DM04** `TRANSACTIONS` (draft): views writing several rows do it in `transaction.atomic` (or `ATOMIC_REQUESTS`). L2≈ · fix J · trial. → v0.6.34
+- [ ] **DM05** `USE-TZ` (Django): `USE_TZ = True`. L2 · fix S · adopt. → v0.5.13
+- [ ] **DM06** `REVERSIBLE-MIGRATIONS`: `RunPython` with `reverse_code`, `RunSQL` with `reverse_sql`. L2 · fix J · adopt. → v0.6.34
+- [ ] **DM07** `SAFE-MIGRATIONS`: no NOT NULL column added without a default to an existing table; indexes built concurrently on Postgres (`AddIndexConcurrently`, `atomic = False`). L2≈ · fix J · trial. → v0.6.34
+- [ ] **DM08** `SCHEMA-AND-DATA-APART`: data migrations (`RunPython`) in their own files. L2 · fix J · trial. → v0.6.34
+- [ ] **DM09** `MIGRATION-LINT-IN-CI`: django-migration-linter or squawk in CI. L1 · fix S · trial. → v0.6.34
+- [ ] **DM10** `MIGRATION-NAMES`: no `00xx_auto_<date>`: a migration's name says what it changes. L0 · fix J · trial. → v0.6.34
+- [ ] **DM11** `SQUASH-WHEN-LONG`: an app past about 100 migrations gets them squashed. L0 · fix J · assess. → v0.6.34
+- [ ] **DM12** `ALEMBIC-ONE-HEAD`: a single head in Alembic's history. L2 · fix J · adopt. → v0.6.34
+- [ ] **DM13** `NO-DUMPS`: no `.sql`, `.dump` or `.sqlite3` holding real data committed. L0 · fix S (untracked) · adopt. → v0.6.34
+- [ ] **DM14** `DB-CONSTRAINTS`: invariants enforced by the database (`UniqueConstraint`, `CheckConstraint`), not only in code. L2≈ · fix J · trial. → v0.6.34
+- [ ] **DM15** `PUBLIC-IDS`: public identifiers that aren't sequential integers (UUIDv7, ULID), so nobody can enumerate them. L2≈ · fix J · assess. → v0.6.34
+- [ ] **DM16** `CONN-REUSE` (Django): `CONN_MAX_AGE` and `CONN_HEALTH_CHECKS` set, or a pooler. L2 · fix S · trial. → v0.6.34
+- [ ] **DM17** `SUPPORTED-DATABASES`: Postgres, MySQL, Redis and MongoDB versions in compose and manifests still supported. L1 · fix S · adopt. → v0.6.34
+- [ ] **DM18** `ORM-MIGRATIONS-COMMITTED` (JS, Ruby): Prisma, Drizzle, Knex, TypeORM and Rails migrations (and `schema.rb`) committed. L0 · fix J · adopt. → v0.6.34
+- [ ] **DM19** `SEED-DATA`: a seed command or fixtures with fake data for local development. L0≈ · fix J · trial. → v0.6.34
+- [ ] **DM20** `QUERIES-OUT-OF-VIEWS`: raw SQL lives in a query module, not in views. L2 · fix J · assess. → v0.6.34
 
 #### BG · Background tasks
 
-- [ ] **BG01** `RETRIES` (draft): Celery tasks set `autoretry_for`, `retry_backoff` and `max_retries` (or the same in RQ, Dramatiq, Django 6's tasks). L2 · fix J · trial.
-- [ ] **BG02** `OUT-OF-REQUEST` (draft): e-mails, webhooks and slow HTTP calls never sent inside a view. L2≈ · fix J · trial.
-- [ ] **BG03** `TRANSACTIONAL-OUTBOX` (draft): tasks queued through `transaction.on_commit`, not inside an open transaction. L2≈ · fix J · trial.
-- [ ] **BG04** `IDEMPOTENT-HANDLER` (draft): tasks guarded by a key or a state check. L2≈ · fix J · assess.
-- [ ] **BG05** `TASK-TIME-LIMITS`: hard and soft time limits set. L2 · fix S · adopt.
-- [ ] **BG06** `ACKS-LATE`: `task_acks_late` with `task_reject_on_worker_lost` for idempotent tasks. L2 · fix S · trial.
-- [ ] **BG07** `SAFE-SERIALIZER`: tasks serialized as JSON, never pickle. L2 · fix S · adopt.
-- [ ] **BG08** `ONE-SCHEDULER`: the beat or scheduler service runs as a single replica. L1 · fix J · adopt.
-- [ ] **BG09** `TASKS-TAKE-IDS`: tasks receive identifiers, not model instances. L2≈ · fix J · trial.
-- [ ] **BG10** `SCHEDULES-IN-CODE`: periodic jobs declared in code (beat schedule, django-q2), not in a host's crontab. L1≈ · fix J · trial.
-- [ ] **BG11** `WORKER-HEALTH`: worker services have a health check and a stop grace period. L1 · fix S · trial.
-- [ ] **BG12** `VISIBILITY-TIMEOUT`: with a Redis broker, the visibility timeout exceeds the longest task. L2 · fix J · trial.
-- [ ] **BG13** `DEAD-LETTERS`: failed tasks land where a human sees them. L2≈ · fix J · assess.
+- [ ] **BG01** `RETRIES` (draft): Celery tasks set `autoretry_for`, `retry_backoff` and `max_retries` (or the same in RQ, Dramatiq, Django 6's tasks). L2 · fix J · trial. → v0.6.35
+- [ ] **BG02** `OUT-OF-REQUEST` (draft): e-mails, webhooks and slow HTTP calls never sent inside a view. L2≈ · fix J · trial. → v0.6.35
+- [ ] **BG03** `TRANSACTIONAL-OUTBOX` (draft): tasks queued through `transaction.on_commit`, not inside an open transaction. L2≈ · fix J · trial. → v0.6.35
+- [ ] **BG04** `IDEMPOTENT-HANDLER` (draft): tasks guarded by a key or a state check. L2≈ · fix J · assess. → v0.6.35
+- [ ] **BG05** `TASK-TIME-LIMITS`: hard and soft time limits set. L2 · fix S · adopt. → v0.6.35
+- [ ] **BG06** `ACKS-LATE`: `task_acks_late` with `task_reject_on_worker_lost` for idempotent tasks. L2 · fix S · trial. → v0.6.35
+- [ ] **BG07** `SAFE-SERIALIZER`: tasks serialized as JSON, never pickle. L2 · fix S · adopt. → v0.6.35
+- [ ] **BG08** `ONE-SCHEDULER`: the beat or scheduler service runs as a single replica. L1 · fix J · adopt. → v0.6.35
+- [ ] **BG09** `TASKS-TAKE-IDS`: tasks receive identifiers, not model instances. L2≈ · fix J · trial. → v0.6.35
+- [ ] **BG10** `SCHEDULES-IN-CODE`: periodic jobs declared in code (beat schedule, django-q2), not in a host's crontab. L1≈ · fix J · trial. → v0.6.35
+- [ ] **BG11** `WORKER-HEALTH`: worker services have a health check and a stop grace period. L1 · fix S · trial. → v0.6.35
+- [ ] **BG12** `VISIBILITY-TIMEOUT`: with a Redis broker, the visibility timeout exceeds the longest task. L2 · fix J · trial. → v0.6.35
+- [ ] **BG13** `DEAD-LETTERS`: failed tasks land where a human sees them. L2≈ · fix J · assess. → v0.6.35
 
 #### CC · Concurrency
 
-- [ ] **CC01** `ATOMIC-INCREMENTS` (draft, Django): `x.n += 1` then `x.save()` becomes `F("n") + 1`. L2≈ · fix S · trial.
-- [ ] **CC02** `LOCKS` (draft): a read-modify-write inside a transaction uses `select_for_update()`. L2≈ · fix J · trial.
-- [ ] **CC03** `NO-BLOCKING-IN-ASYNC`: no `time.sleep`, `requests`, sync file or ORM call inside `async def` (ruff's ASYNC). L4 · fix J · adopt.
-- [ ] **CC04** `TIMEOUTS`: every outgoing HTTP call has a timeout (ruff's S113; fetch with a signal, axios with `timeout`). L2 · fix S · adopt.
-- [ ] **CC05** `DB-STATEMENT-TIMEOUT`: the database connection sets a statement timeout. L2 · fix S · trial.
-- [ ] **CC06** `CHECK-THEN-ACT`: `if not exists(): create()` becomes `get_or_create` over a unique constraint. L2≈ · fix J · trial.
-- [ ] **CC07** `ASGI-SERVER`: an async app served by an ASGI server (Uvicorn, Granian, Hypercorn, Daphne). L1 · fix J · adopt.
-- [ ] **CC08** `WORKERS-SIZED`: the web server's worker count comes from the environment or the CPU count. L1 · fix S · trial.
-- [ ] **CC09** `GO-RACE`: `go test -race` in CI. L1 · fix S · adopt.
-- [ ] **CC10** `NO-THREADS-IN-REQUESTS`: no thread started inside a request handler. L2≈ · fix J · trial.
-- [ ] **CC11** `RUST-NO-STATIC-MUT`: no `static mut`. L2 · fix J · adopt.
+- [ ] **CC01** `ATOMIC-INCREMENTS` (draft, Django): `x.n += 1` then `x.save()` becomes `F("n") + 1`. L2≈ · fix S · trial. → v0.6.35
+- [ ] **CC02** `LOCKS` (draft): a read-modify-write inside a transaction uses `select_for_update()`. L2≈ · fix J · trial. → v0.6.35
+- [ ] **CC03** `NO-BLOCKING-IN-ASYNC`: no `time.sleep`, `requests`, sync file or ORM call inside `async def` (ruff's ASYNC). L4 · fix J · adopt. → v0.6.35
+- [ ] **CC04** `TIMEOUTS`: every outgoing HTTP call has a timeout (ruff's S113; fetch with a signal, axios with `timeout`). L2 · fix S · adopt. → v0.6.35
+- [ ] **CC05** `DB-STATEMENT-TIMEOUT`: the database connection sets a statement timeout. L2 · fix S · trial. → v0.6.35
+- [ ] **CC06** `CHECK-THEN-ACT`: `if not exists(): create()` becomes `get_or_create` over a unique constraint. L2≈ · fix J · trial. → v0.6.35
+- [ ] **CC07** `ASGI-SERVER`: an async app served by an ASGI server (Uvicorn, Granian, Hypercorn, Daphne). L1 · fix J · adopt. → v0.6.35
+- [ ] **CC08** `WORKERS-SIZED`: the web server's worker count comes from the environment or the CPU count. L1 · fix S · trial. → v0.6.35
+- [ ] **CC09** `GO-RACE`: `go test -race` in CI. L1 · fix S · adopt. → v1.1.0
+- [ ] **CC10** `NO-THREADS-IN-REQUESTS`: no thread started inside a request handler. L2≈ · fix J · trial. → v0.6.35
+- [ ] **CC11** `RUST-NO-STATIC-MUT`: no `static mut`. L2 · fix J · adopt. → v1.1.0
 
 #### CA · Cache
 
-- [ ] **CA01** `CACHE-TAGS` (draft): invalidation by tags or versioned keys, never by guessing. L2≈ · fix J · assess.
-- [ ] **CA02** `CACHE-STAMPEDE` (draft): expensive recomputations protected (a lock, early refresh, jitter). L2≈ · fix J · assess.
-- [ ] **CA03** `PROD-CACHE-BACKEND`: the production cache isn't `LocMemCache` or a dummy backend. L2 · fix J · adopt.
-- [ ] **CA04** `EXPLICIT-TIMEOUTS`: every `cache.set` gives a timeout. L2 · fix J · trial.
-- [ ] **CA05** `IMMUTABLE-ASSETS`: hashed static assets served with `immutable` and a long max-age (Caddy, nginx, Nuxt's `routeRules`). L1 · fix S · trial.
-- [ ] **CA06** `PRIVATE-RESPONSES`: authenticated responses are `private` or `no-store`; shared caches vary on authentication. L2≈ · fix J · trial.
-- [ ] **CA07** `REDIS-EVICTION`: Redis runs with `maxmemory` and the eviction policy its use needs (a cache evicts, a broker never does). L1 · fix S · trial.
+- [ ] **CA01** `CACHE-TAGS` (draft): invalidation by tags or versioned keys, never by guessing. L2≈ · fix J · assess. → v0.6.36
+- [ ] **CA02** `CACHE-STAMPEDE` (draft): expensive recomputations protected (a lock, early refresh, jitter). L2≈ · fix J · assess. → v0.6.36
+- [ ] **CA03** `PROD-CACHE-BACKEND`: the production cache isn't `LocMemCache` or a dummy backend. L2 · fix J · adopt. → v0.6.36
+- [ ] **CA04** `EXPLICIT-TIMEOUTS`: every `cache.set` gives a timeout. L2 · fix J · trial. → v0.6.36
+- [ ] **CA05** `IMMUTABLE-ASSETS`: hashed static assets served with `immutable` and a long max-age (Caddy, nginx, Nuxt's `routeRules`). L1 · fix S · trial. → v0.6.36
+- [ ] **CA06** `PRIVATE-RESPONSES`: authenticated responses are `private` or `no-store`; shared caches vary on authentication. L2≈ · fix J · trial. → v0.6.36
+- [ ] **CA07** `REDIS-EVICTION`: Redis runs with `maxmemory` and the eviction policy its use needs (a cache evicts, a broker never does). L1 · fix S · trial. → v0.6.36
 
 #### EL · Errors and logs
 
-- [ ] **EL01** `STRUCTURED-LOGGING` (draft): structlog or a JSON formatter configured; the charter's `logging` ban promoted. L1 · fix J · trial.
-- [ ] **EL02** `DOMAIN-ERRORS` (draft): an exception hierarchy per domain, mapped to HTTP in one place. L2≈ · fix J · assess.
-- [ ] **EL03** `ERROR-TRACKING`: Sentry, GlitchTip, Rollbar or Honeybadger configured, for production profiles. L1 · fix J · trial.
-- [ ] **EL04** `NO-PII-TO-TRACKER`: `send_default_pii=False` and scrubbing configured. L2 · fix S · adopt.
-- [ ] **EL05** `LOGS-TO-STDOUT`: in containers, logs go to stdout, no file handler. L2 · fix J · adopt.
-- [ ] **EL06** `LOG-LEVEL-FROM-ENV`. L2 · fix S · trial.
-- [ ] **EL07** `LOG-EXCEPTIONS-WITH-TRACE`: `logger.exception` in handlers rather than `logger.error(str(e))` (TRY400). L4 · fix S · adopt.
-- [ ] **EL08** `LAZY-LOG-FORMAT`: no f-strings in log calls (G004); key-value pairs with structlog. L4 · fix S · trial.
-- [ ] **EL09** `NO-SECRETS-IN-LOGS`: no `password`, `token`, `secret` or `authorization` values passed to a log call. L2 · fix J · adopt.
-- [ ] **EL10** `NO-STACK-TRACES-SHOWN`: production error pages hide internals (Django's `DEBUG`, Express's `NODE_ENV`, Nuxt's error page, Spring's `include-stacktrace`). L2 · fix J · adopt.
-- [ ] **EL11** `UNHANDLED-REJECTIONS` (Node): a process-level handler that logs and exits. L2 · fix J · trial.
-- [ ] **EL12** `GO-ERROR-WRAPPING`: `fmt.Errorf("…: %w", err)`. L2 · fix J · trial.
+- [ ] **EL01** `STRUCTURED-LOGGING` (draft): structlog or a JSON formatter configured; the charter's `logging` ban promoted. L1 · fix J · trial. → v0.6.37
+- [ ] **EL02** `DOMAIN-ERRORS` (draft): an exception hierarchy per domain, mapped to HTTP in one place. L2≈ · fix J · assess. → v0.6.37
+- [ ] **EL03** `ERROR-TRACKING`: Sentry, GlitchTip, Rollbar or Honeybadger configured, for production profiles. L1 · fix J · trial. → v0.6.37
+- [ ] **EL04** `NO-PII-TO-TRACKER`: `send_default_pii=False` and scrubbing configured. L2 · fix S · adopt. → v0.6.37
+- [ ] **EL05** `LOGS-TO-STDOUT`: in containers, logs go to stdout, no file handler. L2 · fix J · adopt. → v0.6.37
+- [ ] **EL06** `LOG-LEVEL-FROM-ENV`. L2 · fix S · trial. → v0.6.37
+- [ ] **EL07** `LOG-EXCEPTIONS-WITH-TRACE`: `logger.exception` in handlers rather than `logger.error(str(e))` (TRY400). L4 · fix S · adopt. → v0.6.37
+- [ ] **EL08** `LAZY-LOG-FORMAT`: no f-strings in log calls (G004); key-value pairs with structlog. L4 · fix S · trial. → v0.6.37
+- [ ] **EL09** `NO-SECRETS-IN-LOGS`: no `password`, `token`, `secret` or `authorization` values passed to a log call. L2 · fix J · adopt. → v0.6.37
+- [ ] **EL10** `NO-STACK-TRACES-SHOWN`: production error pages hide internals (Django's `DEBUG`, Express's `NODE_ENV`, Nuxt's error page, Spring's `include-stacktrace`). L2 · fix J · adopt. → v0.6.37
+- [ ] **EL11** `UNHANDLED-REJECTIONS` (Node): a process-level handler that logs and exits. L2 · fix J · trial. → v0.6.37
+- [ ] **EL12** `GO-ERROR-WRAPPING`: `fmt.Errorf("…: %w", err)`. L2 · fix J · trial. → v1.1.0
 
 #### AS · Application security
 
-- [ ] **AS01** `SECRETS` (draft): the secrets themselves in tracked files (provider patterns, checksum-verified tokens, entropy last), where `SECRET-SCAN` checks that a scan runs and `NO-TRACKED-ENV` that no `.env` is tracked; critical: it caps the score at 49. L2 · fix J (rotate, then remove) · adopt.
-- [ ] **AS02** `SESSION-COOKIES` (draft, Django): `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE`, `SESSION_COOKIE_HTTPONLY` and `SAMESITE` in the production settings, evaluated statically. L2 · fix S · adopt.
-- [ ] **AS03** `SECURITY-HEADERS` (draft): HSTS of a year or more, `nosniff`, frames denied, a referrer policy; in Django's settings, the reverse proxy (Caddy, nginx) or Nuxt (nuxt-security). L2 · fix S · adopt.
-- [ ] **AS04** `CSP-NONCE` (draft): a Content Security Policy with nonces (Django 6.0's built-in CSP, django-csp, nuxt-security), no `unsafe-inline` for scripts. L2 · fix J · trial.
-- [ ] **AS05** `CONSTANT-TIME` (draft): secrets compared with `hmac.compare_digest` or `crypto.timingSafeEqual`, never `==` on names like token, signature or digest; the charter's ban promoted. L2 · fix S · adopt.
-- [ ] **AS06** `EXPLICIT-PERMISSIONS` (draft): every route states its authentication (Ninja's `auth=`, DRF's `permission_classes`), and the default isn't `AllowAny`. L2 · fix J · adopt.
-- [ ] **AS07** `PUBLIC-ROUTES` (draft): public routes listed in one place, everything else authenticated by default. L2≈ · fix J · trial.
-- [ ] **AS08** `UPLOADS` (draft): uploads validated (size limits, type by content, storage outside the web root, random names). L2≈ · fix J · trial.
-- [ ] **AS09** `SUBRESOURCE-INTEGRITY` (draft): `<script>` and `<link>` from another origin carry `integrity`. L2 · fix S (hash computed online) · adopt.
-- [ ] **AS10** `ENCRYPTION` (draft): sensitive fields encrypted at rest. L2≈ · fix J · assess.
-- [ ] **AS11** `ROW-LEVEL-SECURITY` (draft, Postgres): RLS policies in migrations for multi-tenant tables. L2≈ · fix J · assess.
-- [ ] **AS12** `SECRET-ROTATION` (draft): forge secrets older than a year (M). L6 · fix J · trial.
-- [ ] **AS13** `VALIDATE-AT-BOUNDARIES` (draft): request data parsed by a schema before use. L2≈ · fix J · trial.
-- [ ] **AS14** `NO-EVAL`: no `eval`, `exec`, `new Function` or string `setTimeout`. L2 · fix J · adopt.
-- [ ] **AS15** `NO-SHELL-INJECTION`: no `shell=True` or `os.system` on non-literal input, no `child_process.exec` with template strings (S602 to S605). L2 · fix J · adopt.
-- [ ] **AS16** `NO-UNSAFE-DESERIALIZATION`: no pickle, marshal, `yaml.load`, `ObjectInputStream` or `unserialize` on outside data (S301, S506). L2 · fix S (`yaml.safe_load`) · adopt.
-- [ ] **AS17** `NO-XXE`: XML parsed with defusedxml or safe defaults (S313 to S320). L4 · fix S · adopt.
-- [ ] **AS18** `NO-WEAK-CRYPTO`: no MD5 or SHA-1 for security, no DES, RC4 or ECB (S324, S303 to S305). L4 · fix J · adopt.
-- [ ] **AS19** `SECURE-RANDOM`: tokens from `secrets` or `crypto.randomUUID`, never `random` or `Math.random` (S311). L2 · fix S · adopt.
-- [ ] **AS20** `NO-HARDCODED-PASSWORDS`: S105 to S107 and their JS counterparts. L4 · fix J · adopt.
-- [ ] **AS21** `TLS-VERIFIED`: no `verify=False`, `rejectUnauthorized: false`, `NODE_TLS_REJECT_UNAUTHORIZED=0` or `InsecureSkipVerify: true`. L2 · fix S · adopt.
-- [ ] **AS22** `CSRF-ON`: CSRF middleware on; `@csrf_exempt` only with a justification marker. L2 · fix J · adopt.
-- [ ] **AS23** `CORS-STRICT`: no allow-all origins with credentials (`CORS_ALLOW_ALL_ORIGINS`, `Access-Control-Allow-Origin: *`). L2 · fix J · adopt.
-- [ ] **AS24** `PASSWORD-HASHING`: Argon2 or the framework's default first, never MD5, SHA-1 or unsalted hashers. L2 · fix S · adopt.
-- [ ] **AS25** `PASSWORD-VALIDATORS`: `AUTH_PASSWORD_VALIDATORS` set, or a passkey-first login. L2 · fix S · adopt.
-- [ ] **AS26** `PASSKEYS`: WebAuthn offered for accounts (allauth's MFA, SimpleWebAuthn). L2≈ · fix J · assess.
-- [ ] **AS27** `ADMIN-MFA`: the admin asks for a second factor. L2≈ · fix J · trial.
-- [ ] **AS28** `RATE-LIMITS`: login, password reset and the API rate-limited, in the app or the proxy. L2≈ · fix J · trial.
-- [ ] **AS29** `NO-OPEN-REDIRECT`: redirects to a request value checked (`url_has_allowed_host_and_scheme`). L2 · fix J · adopt.
-- [ ] **AS30** `NO-SSRF`: outgoing requests to user-given URLs pass an allowlist. L2≈ · fix J · trial.
-- [ ] **AS31** `NO-PATH-TRAVERSAL`: files opened from request values resolved and confined. L2≈ · fix J · trial.
-- [ ] **AS32** `NO-MASS-ASSIGNMENT`: no `fields = "__all__"` in ModelForms or serializers. L2 · fix J · adopt.
-- [ ] **AS33** `AUTOESCAPE`: no `|safe`, `mark_safe`, `{% autoescape off %}`, `v-html` or `dangerouslySetInnerHTML` on variables (with NO-V-HTML). L2 · fix J · adopt.
-- [ ] **AS34** `JWT-SAFE`: algorithms pinned (never `none`), signature and expiry checked. L2 · fix J · adopt.
-- [ ] **AS35** `HTTPS-ONLY`: `SECURE_SSL_REDIRECT`, Caddy's automatic HTTPS, `force_ssl`. L2 · fix S · adopt.
-- [ ] **AS36** `NO-SECRETS-IN-FRONT`: no secret-looking key under Nuxt's `runtimeConfig.public`, `NUXT_PUBLIC_*`, `VITE_*` or `NEXT_PUBLIC_*`. L2 · fix J · adopt.
-- [ ] **AS37** `PRIVATE-SOURCEMAPS`: production source maps not served publicly. L2 · fix S · trial.
-- [ ] **AS38** `DEV-TOOLS-DEV-ONLY`: debug toolbars and devtools only in development settings and dependency groups. L2 · fix S · adopt.
-- [ ] **AS39** `SECURITY-TXT`: production web apps serve `/.well-known/security.txt` (RFC 9116). L0 · fix S · trial.
-- [ ] **AS40** `SAST-IN-CI`: CodeQL, semgrep or the language's security linter in CI. L1 · fix S · adopt.
-- [ ] **AS41** `ANDROID-MANIFEST`: not debuggable, no cleartext traffic, backups off, every component's `exported` explicit. L1 · fix S · adopt.
-- [ ] **AS42** `IOS-ATS`: App Transport Security left on. L1 · fix J · adopt.
-- [ ] **AS43** `ELECTRON-SAFE`: `contextIsolation` on, `nodeIntegration` off, `sandbox` on. L2 · fix S · adopt.
-- [ ] **AS44** `EXTENSION-PERMISSIONS`: browser extensions ask for the fewest permissions and hosts. L1 · fix J · trial.
-- [ ] **AS45** `FRAMEWORK-DEBUG-OFF`: `DJANGO-DEBUG-OFF` for the other frameworks: Laravel's `APP_DEBUG`, Rails' `consider_all_requests_local`, Flask's `debug=True`, Spring's Actuator exposing more than health and info. L2 · fix S · adopt.
-- [ ] **AS46** `GRAPHQL-LIMITS`: depth and cost limits, introspection off in production. L2≈ · fix J · trial.
-- [ ] **AS47** `EXPRESS-HARDENED`: Helmet or equivalent headers, `x-powered-by` off. L2 · fix S · trial.
+- [ ] **AS01** `SECRETS` (draft): the secrets themselves in tracked files (provider patterns, checksum-verified tokens, entropy last), where `SECRET-SCAN` checks that a scan runs and `NO-TRACKED-ENV` that no `.env` is tracked; critical: it caps the score at 49. L2 · fix J (rotate, then remove) · adopt. → v0.6.13
+- [ ] **AS02** `SESSION-COOKIES` (draft, Django): `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE`, `SESSION_COOKIE_HTTPONLY` and `SAMESITE` in the production settings, evaluated statically. L2 · fix S · adopt. → v0.5.13
+- [ ] **AS03** `SECURITY-HEADERS` (draft): HSTS of a year or more, `nosniff`, frames denied, a referrer policy; in Django's settings, the reverse proxy (Caddy, nginx) or Nuxt (nuxt-security). L2 · fix S · adopt. → v0.6.13
+- [ ] **AS04** `CSP-NONCE` (draft): a Content Security Policy with nonces (Django 6.0's built-in CSP, django-csp, nuxt-security), no `unsafe-inline` for scripts. L2 · fix J · trial. → v0.6.13
+- [ ] **AS05** `CONSTANT-TIME` (draft): secrets compared with `hmac.compare_digest` or `crypto.timingSafeEqual`, never `==` on names like token, signature or digest; the charter's ban promoted. L2 · fix S · adopt. → v0.6.13
+- [ ] **AS06** `EXPLICIT-PERMISSIONS` (draft): every route states its authentication (Ninja's `auth=`, DRF's `permission_classes`), and the default isn't `AllowAny`. L2 · fix J · adopt. → v0.6.29
+- [ ] **AS07** `PUBLIC-ROUTES` (draft): public routes listed in one place, everything else authenticated by default. L2≈ · fix J · trial. → v0.6.29
+- [ ] **AS08** `UPLOADS` (draft): uploads validated (size limits, type by content, storage outside the web root, random names). L2≈ · fix J · trial. → v0.6.29
+- [ ] **AS09** `SUBRESOURCE-INTEGRITY` (draft): `<script>` and `<link>` from another origin carry `integrity`. L2 · fix S (hash computed online) · adopt. → v0.6.13
+- [ ] **AS10** `ENCRYPTION` (draft): sensitive fields encrypted at rest. L2≈ · fix J · assess. → v0.6.45
+- [ ] **AS11** `ROW-LEVEL-SECURITY` (draft, Postgres): RLS policies in migrations for multi-tenant tables. L2≈ · fix J · assess. → v0.6.45
+- [ ] **AS12** `SECRET-ROTATION` (draft): forge secrets older than a year (M). L6 · fix J · trial. → v0.6.49
+- [ ] **AS13** `VALIDATE-AT-BOUNDARIES` (draft): request data parsed by a schema before use. L2≈ · fix J · trial. → v0.6.29
+- [ ] **AS14** `NO-EVAL`: no `eval`, `exec`, `new Function` or string `setTimeout`. L2 · fix J · adopt. → v0.6.29
+- [ ] **AS15** `NO-SHELL-INJECTION`: no `shell=True` or `os.system` on non-literal input, no `child_process.exec` with template strings (S602 to S605). L2 · fix J · adopt. → v0.6.29
+- [ ] **AS16** `NO-UNSAFE-DESERIALIZATION`: no pickle, marshal, `yaml.load`, `ObjectInputStream` or `unserialize` on outside data (S301, S506). L2 · fix S (`yaml.safe_load`) · adopt. → v0.6.29
+- [ ] **AS17** `NO-XXE`: XML parsed with defusedxml or safe defaults (S313 to S320). L4 · fix S · adopt. → v0.6.29
+- [ ] **AS18** `NO-WEAK-CRYPTO`: no MD5 or SHA-1 for security, no DES, RC4 or ECB (S324, S303 to S305). L4 · fix J · adopt. → v0.6.29
+- [ ] **AS19** `SECURE-RANDOM`: tokens from `secrets` or `crypto.randomUUID`, never `random` or `Math.random` (S311). L2 · fix S · adopt. → v0.6.29
+- [ ] **AS20** `NO-HARDCODED-PASSWORDS`: S105 to S107 and their JS counterparts. L4 · fix J · adopt. → v0.6.13
+- [ ] **AS21** `TLS-VERIFIED`: no `verify=False`, `rejectUnauthorized: false`, `NODE_TLS_REJECT_UNAUTHORIZED=0` or `InsecureSkipVerify: true`. L2 · fix S · adopt. → v0.6.13
+- [ ] **AS22** `CSRF-ON`: CSRF middleware on; `@csrf_exempt` only with a justification marker. L2 · fix J · adopt. → v0.6.13
+- [ ] **AS23** `CORS-STRICT`: no allow-all origins with credentials (`CORS_ALLOW_ALL_ORIGINS`, `Access-Control-Allow-Origin: *`). L2 · fix J · adopt. → v0.6.13
+- [ ] **AS24** `PASSWORD-HASHING`: Argon2 or the framework's default first, never MD5, SHA-1 or unsalted hashers. L2 · fix S · adopt. → v0.6.13
+- [ ] **AS25** `PASSWORD-VALIDATORS`: `AUTH_PASSWORD_VALIDATORS` set, or a passkey-first login. L2 · fix S · adopt. → v0.6.13
+- [ ] **AS26** `PASSKEYS`: WebAuthn offered for accounts (allauth's MFA, SimpleWebAuthn). L2≈ · fix J · assess. → v0.6.46
+- [ ] **AS27** `ADMIN-MFA`: the admin asks for a second factor. L2≈ · fix J · trial. → v0.6.46
+- [ ] **AS28** `RATE-LIMITS`: login, password reset and the API rate-limited, in the app or the proxy. L2≈ · fix J · trial. → v0.6.46
+- [ ] **AS29** `NO-OPEN-REDIRECT`: redirects to a request value checked (`url_has_allowed_host_and_scheme`). L2 · fix J · adopt. → v0.6.29
+- [ ] **AS30** `NO-SSRF`: outgoing requests to user-given URLs pass an allowlist. L2≈ · fix J · trial. → v0.6.29
+- [ ] **AS31** `NO-PATH-TRAVERSAL`: files opened from request values resolved and confined. L2≈ · fix J · trial. → v0.6.29
+- [ ] **AS32** `NO-MASS-ASSIGNMENT`: no `fields = "__all__"` in ModelForms or serializers. L2 · fix J · adopt. → v0.5.13
+- [ ] **AS33** `AUTOESCAPE`: no `|safe`, `mark_safe`, `{% autoescape off %}`, `v-html` or `dangerouslySetInnerHTML` on variables (with NO-V-HTML). L2 · fix J · adopt. → v0.6.29
+- [ ] **AS34** `JWT-SAFE`: algorithms pinned (never `none`), signature and expiry checked. L2 · fix J · adopt. → v0.6.29
+- [ ] **AS35** `HTTPS-ONLY`: `SECURE_SSL_REDIRECT`, Caddy's automatic HTTPS, `force_ssl`. L2 · fix S · adopt. → v0.6.13
+- [ ] **AS36** `NO-SECRETS-IN-FRONT`: no secret-looking key under Nuxt's `runtimeConfig.public`, `NUXT_PUBLIC_*`, `VITE_*` or `NEXT_PUBLIC_*`. L2 · fix J · adopt. → v0.6.13
+- [ ] **AS37** `PRIVATE-SOURCEMAPS`: production source maps not served publicly. L2 · fix S · trial. → v0.6.13
+- [ ] **AS38** `DEV-TOOLS-DEV-ONLY`: debug toolbars and devtools only in development settings and dependency groups. L2 · fix S · adopt. → v0.6.13
+- [ ] **AS39** `SECURITY-TXT`: production web apps serve `/.well-known/security.txt` (RFC 9116). L0 · fix S · trial. → v0.6.13
+- [ ] **AS40** `SAST-IN-CI`: CodeQL, semgrep or the language's security linter in CI. L1 · fix S · adopt. → v0.6.29
+- [ ] **AS41** `ANDROID-MANIFEST`: not debuggable, no cleartext traffic, backups off, every component's `exported` explicit. L1 · fix S · adopt. → v1.4.0
+- [ ] **AS42** `IOS-ATS`: App Transport Security left on. L1 · fix J · adopt. → v1.4.0
+- [ ] **AS43** `ELECTRON-SAFE`: `contextIsolation` on, `nodeIntegration` off, `sandbox` on. L2 · fix S · adopt. → v0.6.56
+- [ ] **AS44** `EXTENSION-PERMISSIONS`: browser extensions ask for the fewest permissions and hosts. L1 · fix J · trial. → v0.6.61
+- [ ] **AS45** `FRAMEWORK-DEBUG-OFF`: `DJANGO-DEBUG-OFF` for the other frameworks: Laravel's `APP_DEBUG`, Rails' `consider_all_requests_local`, Flask's `debug=True`, Spring's Actuator exposing more than health and info. L2 · fix S · adopt. → v0.6.13
+- [ ] **AS46** `GRAPHQL-LIMITS`: depth and cost limits, introspection off in production. L2≈ · fix J · trial. → v0.6.29
+- [ ] **AS47** `EXPRESS-HARDENED`: Helmet or equivalent headers, `x-powered-by` off. L2 · fix S · trial. → v0.6.29
 
 #### PD · Personal data
 
-- [ ] **PD01** `PERSONAL-DATA` (draft): fields holding personal data (e-mail, phone, address, birth date, IBAN, IP) marked as the charter marks them; unmarked ones listed. L2 · fix J · trial.
-- [ ] **PD02** `PII-INVENTORY`: an inventory of personal-data fields written from the models (`docs/personal-data.md`) and kept current by a script. L2 · fix S · trial.
-- [ ] **PD03** `NO-REAL-PII-IN-FIXTURES`: fixtures and seeds hold fake data (real-looking e-mails on real domains, phone numbers flagged). L2 · fix J · adopt.
-- [ ] **PD04** `NO-PII-IN-URLS`: no e-mail or name in query strings. L2≈ · fix J · trial.
-- [ ] **PD05** `NO-PII-IN-LOGS`: personal fields passed to log calls (the charter's ban, promoted). L2 · fix J · adopt.
-- [ ] **PD06** `RETENTION`: a job deletes or anonymizes data past its retention period. L2≈ · fix J · assess.
-- [ ] **PD07** `DATA-EXPORT` and `ACCOUNT-DELETION`: users can get and delete their data (GDPR articles 15, 17 and 20), for profiles holding accounts in the EU. L2≈ · fix J · assess.
-- [ ] **PD08** `CONSENT-BEFORE-TRACKING`: analytics and trackers load after consent, or are cookieless (Plausible, Matomo set so). L2 · fix J · trial.
-- [ ] **PD09** `SELF-HOSTED-FONTS`: no fonts from Google's CDN (a German court awarded damages over it under the GDPR in 2022); `@nuxt/fonts` or local files. L2 · fix S · adopt (EU).
-- [ ] **PD10** `SUBPROCESSORS-LISTED`: the third parties receiving data (Sentry, Stripe, a mail provider) listed from dependencies and settings, ready for the privacy policy. L1 · fix S · assess.
-- [ ] **PD11** `MINIMIZATION`: personal fields read nowhere flagged for removal. L3≈ · fix J · assess.
+- [ ] **PD01** `PERSONAL-DATA` (draft): fields holding personal data (e-mail, phone, address, birth date, IBAN, IP) marked as the charter marks them; unmarked ones listed. L2 · fix J · trial. → v0.6.45
+- [ ] **PD02** `PII-INVENTORY`: an inventory of personal-data fields written from the models (`docs/personal-data.md`) and kept current by a script. L2 · fix S · trial. → v0.6.45
+- [ ] **PD03** `NO-REAL-PII-IN-FIXTURES`: fixtures and seeds hold fake data (real-looking e-mails on real domains, phone numbers flagged). L2 · fix J · adopt. → v0.6.45
+- [ ] **PD04** `NO-PII-IN-URLS`: no e-mail or name in query strings. L2≈ · fix J · trial. → v0.6.45
+- [ ] **PD05** `NO-PII-IN-LOGS`: personal fields passed to log calls (the charter's ban, promoted). L2 · fix J · adopt. → v0.6.45
+- [ ] **PD06** `RETENTION`: a job deletes or anonymizes data past its retention period. L2≈ · fix J · assess. → v0.6.45
+- [ ] **PD07** `DATA-EXPORT` and `ACCOUNT-DELETION`: users can get and delete their data (GDPR articles 15, 17 and 20), for profiles holding accounts in the EU. L2≈ · fix J · assess. → v0.6.45
+- [ ] **PD08** `CONSENT-BEFORE-TRACKING`: analytics and trackers load after consent, or are cookieless (Plausible, Matomo set so). L2 · fix J · trial. → v0.6.45
+- [ ] **PD09** `SELF-HOSTED-FONTS`: no fonts from Google's CDN (a German court awarded damages over it under the GDPR in 2022); `@nuxt/fonts` or local files. L2 · fix S · adopt (EU). → v0.6.45
+- [ ] **PD10** `SUBPROCESSORS-LISTED`: the third parties receiving data (Sentry, Stripe, a mail provider) listed from dependencies and settings, ready for the privacy policy. L1 · fix S · assess. → v0.6.45
+- [ ] **PD11** `MINIMIZATION`: personal fields read nowhere flagged for removal. L3≈ · fix J · assess. → v0.6.45
 
 #### SU · Supply chain
 
-- [ ] **SU01** `SBOM` (draft): an SBOM (CycloneDX or SPDX) made in the release workflow (syft, cdxgen, the package manager). L1 · fix S · trial.
-- [ ] **SU02** `UNUSED-DEPENDENCIES` (trial): deptry and knip, promoted once precise. L4≈ · fix S · trial.
-- [ ] **SU03** `NEW-DEPENDENCY` (draft): a dependency added on a branch gets a health card in the pull request (maintainers, age, downloads, licence, install scripts). L6 · fix J · trial.
-- [ ] **SU04** `IMAGES-BY-DIGEST` (scored): extended to compose, Kubernetes, Helm values and CI images, with `ARG` defaults resolved.
-- [ ] **SU05** `SUPPORTED-RUNTIMES` (scored): every runtime endoflife.date knows; an app judged on what it runs, a library's support floor shown as information.
-- [ ] **SU06** `DEPENDENCY-UPDATES` (scored): every manifest folder covered by the bot's config, not merely "a config exists".
-- [ ] **SU07** `LOCK-IN-SYNC`: every dependency of the manifest is in the lock's root with a matching constraint. L1 · fix S · adopt.
-- [ ] **SU08** `FROZEN-INSTALL-IN-CI`: CI installs from the lock (`uv sync --locked`, `npm ci`, `pnpm install --frozen-lockfile`, `cargo build --locked`, `bundle install` frozen). L1 · fix S · adopt.
-- [ ] **SU09** `FROZEN-INSTALL-IN-IMAGES`: Dockerfiles install from the lock too. L1 · fix S · adopt.
-- [ ] **SU10** `NO-INSTALL-SCRIPTS`: npm lifecycle scripts off by default (`ignore-scripts`, pnpm's `onlyBuiltDependencies` allowlist, Bun's trusted dependencies); the 2025 npm worms spread through install scripts. L1 · fix S · adopt.
-- [ ] **SU11** `ONE-INDEX`: Python packages from one index, no `--extra-index-url` (dependency confusion); uv's pinned indexes for private packages. L1 · fix S · adopt.
-- [ ] **SU12** `GIT-DEPS-PINNED`: dependencies fetched from git pinned to a commit, never a branch. L1 · fix S (online) · adopt.
-- [ ] **SU13** `MALICIOUS-PACKAGES`: no dependency known to be malicious (OSV's `MAL-`). L1 with data · fix J · adopt, critical.
-- [ ] **SU14** `KNOWN-VULNERABILITIES`: no known critical or high vulnerability in the locked versions (OSV's batch query, or a cached database offline). L6 · fix S (bump within range) · adopt.
-- [ ] **SU15** `ABANDONED-DEPENDENCIES`: no dependency deprecated, yanked, archived, or three years without a release with open security issues. L6 · fix J · trial.
-- [ ] **SU16** `TYPOSQUAT-SUSPECTS`: dependencies one edit from a popular name, with few downloads. L6 · fix J · trial.
-- [ ] **SU17** `DEPENDENCY-BUDGET`: the count of transitive dependencies tracked as a ratchet (the slimming pillar). L1 · ratchet · trial.
-- [ ] **SU18** `NO-DUPLICATE-MAJORS`: one package in several major versions in a JS lock. L1 · fix S (dedupe) · trial.
-- [ ] **SU19** `NO-DEPRECATED-PACKAGES`: a bundled list (`request`, `node-sass`, `tslint`, `moment`, `pytz`, `nose`, `six`, backports past their Python), joined with NO-OBSOLETE-BACKPORTS. L1 · fix S where a converter exists · adopt.
-- [ ] **SU20** `PINNED-PRE-COMMIT`: pre-commit hooks pinned by commit (`autoupdate --freeze`). L1 · fix S · adopt.
-- [ ] **SU21** `PINNED-TOOLS`: tools run through `npx`, `uvx`, `pipx run` or `go run` in CI and scripts carry a version. L1 · fix S · adopt.
-- [ ] **SU22** `NO-CURL-PIPE-SHELL`: no `curl … | sh` in Dockerfiles, CI or setup scripts: download, verify, then run. L1 · fix J · adopt (review in READMEs).
-- [ ] **SU23** `CHECKSUMS-FOR-DOWNLOADS`: binaries fetched in Dockerfiles and CI checked against a SHA-256. L1≈ · fix S (online) · trial.
-- [ ] **SU24** `GRADLE-WRAPPER-VERIFIED`: `distributionSha256Sum` set and the wrapper validated in CI. L1 · fix S · adopt.
-- [ ] **SU25** `RUNTIME-PINNED`: one runtime version named consistently in `.python-version` or `.nvmrc`, in CI and in images. L1 · fix S · adopt.
-- [ ] **SU26** `PACKAGE-MANAGER-PINNED`: `packageManager` in package.json (corepack), uv's `required-version`. L1 · fix S · adopt.
-- [ ] **SU27** `SUPPORTED-FRAMEWORKS`: Django, Vue, Nuxt, Angular, Rails, Laravel, Spring Boot and the rest on a supported line (Vue 2 and Nuxt 2 are past their end). L1 with data · fix J · adopt.
-- [ ] **SU28** `SUPPORTED-BASE-IMAGES`: Alpine, Debian, Ubuntu and language images on supported versions (CURRENT-DEBIAN generalized). L1 · fix S · adopt.
-- [ ] **SU29** `VENDORED-JS-VULNERABILITIES`: front-end libraries copied into static folders matched against retire.js's signatures. L1 · fix J · adopt.
-- [ ] **SU30** `RUNTIME-NOT-LAGGING`: the runtime within its two newest supported lines, beyond "not past its end". L1 · fix S · trial.
-- [ ] **SU31** `COOLDOWN-EVERYWHERE`: `UPDATE-COOLDOWN` also met where the package manager has one (pnpm's `minimumReleaseAge`, uv's `exclude-newer`), not only in the bot. L1 · fix S · trial.
-- [ ] **SU32** `DEPENDABOT-GROUPED`: updates grouped to keep the noise down. L1 · fix S · trial.
-- [ ] **SU33** `LOCKS-COMMITTED` (Go, Rust): `go.sum` and `Cargo.lock` committed. L0 · fix J · adopt.
-- [ ] **SU34** `NO-HTTP-INDEXES`: package indexes and registries over HTTPS only (`.npmrc`, `pip.conf`, `uv.toml`, Maven's `settings.xml`). L1 · fix S · adopt.
-- [ ] **SU35** `NO-TOKENS-IN-NPMRC`: no auth token in a committed `.npmrc` or `.pypirc`. L1 · fix J · adopt, critical.
-- [ ] **SU36** `NO-BINARY-ARTIFACTS`: no executable, `.jar`, `.class`, `.dll` or wheel committed outside declared fixtures (Scorecard's Binary-Artifacts). L0 · fix J · adopt.
-- [ ] **SU37** `REPRODUCIBLE-LOCK`: the lock still resolves today (no yanked version, no dead URL), with `--online`. L6 · fix S · trial.
+- [ ] **SU01** `SBOM` (draft): an SBOM (CycloneDX or SPDX) made in the release workflow (syft, cdxgen, the package manager). L1 · fix S · trial. → v0.6.17
+- [ ] **SU02** `UNUSED-DEPENDENCIES` (trial): deptry and knip, promoted once precise. L4≈ · fix S · trial. → v0.6.1
+- [ ] **SU03** `NEW-DEPENDENCY` (draft): a dependency added on a branch gets a health card in the pull request (maintainers, age, downloads, licence, install scripts). L6 · fix J · trial. → v0.6.50
+- [ ] **SU04** `IMAGES-BY-DIGEST` (scored): extended to compose, Kubernetes, Helm values and CI images, with `ARG` defaults resolved. → v0.6.19
+- [ ] **SU05** `SUPPORTED-RUNTIMES` (scored): every runtime endoflife.date knows; an app judged on what it runs, a library's support floor shown as information. → v0.6.3
+- [ ] **SU06** `DEPENDENCY-UPDATES` (scored): every manifest folder covered by the bot's config, not merely "a config exists". → v0.6.16
+- [ ] **SU07** `LOCK-IN-SYNC`: every dependency of the manifest is in the lock's root with a matching constraint. L1 · fix S · adopt. → v0.6.16
+- [ ] **SU08** `FROZEN-INSTALL-IN-CI`: CI installs from the lock (`uv sync --locked`, `npm ci`, `pnpm install --frozen-lockfile`, `cargo build --locked`, `bundle install` frozen). L1 · fix S · adopt. → v0.6.16
+- [ ] **SU09** `FROZEN-INSTALL-IN-IMAGES`: Dockerfiles install from the lock too. L1 · fix S · adopt. → v0.6.16
+- [ ] **SU10** `NO-INSTALL-SCRIPTS`: npm lifecycle scripts off by default (`ignore-scripts`, pnpm's `onlyBuiltDependencies` allowlist, Bun's trusted dependencies); the 2025 npm worms spread through install scripts. L1 · fix S · adopt. → v0.6.17
+- [ ] **SU11** `ONE-INDEX`: Python packages from one index, no `--extra-index-url` (dependency confusion); uv's pinned indexes for private packages. L1 · fix S · adopt. → v0.6.17
+- [ ] **SU12** `GIT-DEPS-PINNED`: dependencies fetched from git pinned to a commit, never a branch. L1 · fix S (online) · adopt. → v0.6.17
+- [ ] **SU13** `MALICIOUS-PACKAGES`: no dependency known to be malicious (OSV's `MAL-`). L1 with data · fix J · adopt, critical. → v0.6.50
+- [ ] **SU14** `KNOWN-VULNERABILITIES`: no known critical or high vulnerability in the locked versions (OSV's batch query, or a cached database offline). L6 · fix S (bump within range) · adopt. → v0.6.50
+- [ ] **SU15** `ABANDONED-DEPENDENCIES`: no dependency deprecated, yanked, archived, or three years without a release with open security issues. L6 · fix J · trial. → v0.6.50
+- [ ] **SU16** `TYPOSQUAT-SUSPECTS`: dependencies one edit from a popular name, with few downloads. L6 · fix J · trial. → v0.6.50
+- [ ] **SU17** `DEPENDENCY-BUDGET`: the count of transitive dependencies tracked as a ratchet (the slimming pillar). L1 · ratchet · trial. → v0.6.1
+- [ ] **SU18** `NO-DUPLICATE-MAJORS`: one package in several major versions in a JS lock. L1 · fix S (dedupe) · trial. → v0.6.17
+- [ ] **SU19** `NO-DEPRECATED-PACKAGES`: a bundled list (`request`, `node-sass`, `tslint`, `moment`, `pytz`, `nose`, `six`, backports past their Python), joined with NO-OBSOLETE-BACKPORTS. L1 · fix S where a converter exists · adopt. → v0.6.18
+- [ ] **SU20** `PINNED-PRE-COMMIT`: pre-commit hooks pinned by commit (`autoupdate --freeze`). L1 · fix S · adopt. → v0.6.17
+- [ ] **SU21** `PINNED-TOOLS`: tools run through `npx`, `uvx`, `pipx run` or `go run` in CI and scripts carry a version. L1 · fix S · adopt. → v0.6.17
+- [ ] **SU22** `NO-CURL-PIPE-SHELL`: no `curl … | sh` in Dockerfiles, CI or setup scripts: download, verify, then run. L1 · fix J · adopt (review in READMEs). → v0.6.17
+- [ ] **SU23** `CHECKSUMS-FOR-DOWNLOADS`: binaries fetched in Dockerfiles and CI checked against a SHA-256. L1≈ · fix S (online) · trial. → v0.6.17
+- [ ] **SU24** `GRADLE-WRAPPER-VERIFIED`: `distributionSha256Sum` set and the wrapper validated in CI. L1 · fix S · adopt. → v1.2.0
+- [ ] **SU25** `RUNTIME-PINNED`: one runtime version named consistently in `.python-version` or `.nvmrc`, in CI and in images. L1 · fix S · adopt. → v0.6.16
+- [ ] **SU26** `PACKAGE-MANAGER-PINNED`: `packageManager` in package.json (corepack), uv's `required-version`. L1 · fix S · adopt. → v0.6.16
+- [ ] **SU27** `SUPPORTED-FRAMEWORKS`: Django, Vue, Nuxt, Angular, Rails, Laravel, Spring Boot and the rest on a supported line (Vue 2 and Nuxt 2 are past their end). L1 with data · fix J · adopt. → v0.6.18
+- [ ] **SU28** `SUPPORTED-BASE-IMAGES`: Alpine, Debian, Ubuntu and language images on supported versions (CURRENT-DEBIAN generalized). L1 · fix S · adopt. → v0.6.19
+- [ ] **SU29** `VENDORED-JS-VULNERABILITIES`: front-end libraries copied into static folders matched against retire.js's signatures. L1 · fix J · adopt. → v0.6.17
+- [ ] **SU30** `RUNTIME-NOT-LAGGING`: the runtime within its two newest supported lines, beyond "not past its end". L1 · fix S · trial. → v0.6.18
+- [ ] **SU31** `COOLDOWN-EVERYWHERE`: `UPDATE-COOLDOWN` also met where the package manager has one (pnpm's `minimumReleaseAge`, uv's `exclude-newer`), not only in the bot. L1 · fix S · trial. → v0.6.16
+- [ ] **SU32** `DEPENDABOT-GROUPED`: updates grouped to keep the noise down. L1 · fix S · trial. → v0.6.16
+- [ ] **SU33** `LOCKS-COMMITTED` (Go, Rust): `go.sum` and `Cargo.lock` committed. L0 · fix J · adopt. → v1.1.0
+- [ ] **SU34** `NO-HTTP-INDEXES`: package indexes and registries over HTTPS only (`.npmrc`, `pip.conf`, `uv.toml`, Maven's `settings.xml`). L1 · fix S · adopt. → v0.6.17
+- [ ] **SU35** `NO-TOKENS-IN-NPMRC`: no auth token in a committed `.npmrc` or `.pypirc`. L1 · fix J · adopt, critical. → v0.6.17
+- [ ] **SU36** `NO-BINARY-ARTIFACTS`: no executable, `.jar`, `.class`, `.dll` or wheel committed outside declared fixtures (Scorecard's Binary-Artifacts). L0 · fix J · adopt. → v0.6.17
+- [ ] **SU37** `REPRODUCIBLE-LOCK`: the lock still resolves today (no yanked version, no dead URL), with `--online`. L6 · fix S · trial. → v0.6.50
 
 #### TE · Tests
 
-- [ ] **TE01** `TESTS-PRESENT` (scored): per component, and a test file that collects nothing doesn't count (pytest's `--collect-only` with `--deep`).
-- [ ] **TE02** `TESTS-IN-CI` (scored): read from the CI's commands for each component (pytest, Vitest, `go test`, `cargo test`, `mvn verify`), on any CI (C), through `make`, `just` and package scripts, not a regex for `pytest`.
-- [ ] **TE03** `CLOCK` (draft): tests calling `now()`, `date.today()` or `Date.now()` with no time-machine, freezegun or `vi.useFakeTimers` in reach. L3≈ · fix J · trial.
-- [ ] **TE04** `NO-NETWORK` (draft): sockets blocked in tests (pytest-socket's `--disable-socket`, msw with `onUnhandledRequest: "error"`, nock's `disableNetConnect`). L1 · fix S · trial.
-- [ ] **TE05** `PROPERTY-TESTS` (draft): Hypothesis or fast-check where parsers, serializers or money code live, found by paths and names. L1≈ · fix J · assess.
-- [ ] **TE06** `MUTATION-TESTS` (draft): mutmut, cosmic-ray or Stryker configured and scheduled. L1 · fix J · assess.
-- [ ] **TE07** `API-FUZZING` (draft): Schemathesis run against the committed OpenAPI schema. L1 · fix S · trial.
-- [ ] **TE08** `E2E-JOURNEYS` (draft): Playwright present, its specs naming the journeys the docs list. L1≈ · fix J · trial.
-- [ ] **TE09** `PERMISSION-TESTS` (draft): each protected route (from the URL conf or Ninja's routers) has a test that calls it anonymously. L3≈ · fix J · trial.
-- [ ] **TE10** `REGRESSION-TEST` (draft): `fix:` commits of the last hundred that touch no test, with `--history`. L5 · ratchet · trial.
-- [ ] **TE11** `COVERAGE-MEASURED`: coverage with branches (`[tool.coverage.run] branch = true`, Vitest's coverage provider). L1 · fix S · adopt.
-- [ ] **TE12** `COVERAGE-FLOOR`: a floor that only rises (`fail_under`, Vitest's thresholds with `autoUpdate`). L1 · ratchet · trial.
-- [ ] **TE13** `DIFF-COVERAGE`: changed lines covered in pull requests (diff-cover). L1 · fix S · assess.
-- [ ] **TE14** `PYTEST-STRICT`: `--strict-markers`, `--strict-config`, `xfail_strict = true`, warnings as errors with a named allow-list. L1 · fix S · adopt.
-- [ ] **TE15** `NO-FOCUSED-TESTS`: no `.only`, `fit` or `fdescribe` committed. L2 · fix S · adopt.
-- [ ] **TE16** `NO-SKIPPED-TESTS`: every `skip` and `xfail` gives a reason, and their count only goes down. L2 · ratchet · trial.
-- [ ] **TE17** `NO-SLEEP-IN-TESTS`: no `time.sleep` or `setTimeout` waits; a frozen clock or polling instead. L2 · fix J · trial.
-- [ ] **TE18** `RANDOM-ORDER`: tests run shuffled (pytest-randomly, Vitest's `sequence.shuffle`) so hidden coupling shows. L1 · fix S · trial.
-- [ ] **TE19** `PARALLEL-TESTS`: pytest-xdist or the runner's workers, for suites over a minute. L1 · fix S · trial.
-- [ ] **TE20** `ASSERTIONS-PRESENT`: no test without an assertion (`expect-expect` for Vitest and Jest, a syntax check for pytest). L2 · fix J · trial.
-- [ ] **TE21** `FACTORIES`: factory_boy, model-bakery or fishery rather than big JSON fixtures. L1≈ · fix J · assess.
-- [ ] **TE22** `PROD-ENGINE-IN-TESTS`: tests run on the production database engine (a Postgres service in CI, Testcontainers), not SQLite. L1 · fix J · trial.
-- [ ] **TE23** `MIGRATIONS-CHECKED`: `makemigrations --check --dry-run` in CI, and a migration from an empty database. L1 · fix S · adopt.
-- [ ] **TE24** `TESTS-TYPE-CHECKED`: tests not excluded from the type checker. L1 · fix S · trial.
-- [ ] **TE25** `TEST-NAMES`: names that state the behaviour (`test_refuses_expired_token`), never `test_1` or `test_view`. L2≈ · fix J · assess.
-- [ ] **TE26** `SNAPSHOTS-IN-CHECK`: obsolete snapshots fail in CI (`--ci`), snapshot files stay small. L1 · fix S · assess.
-- [ ] **TE27** `CONTRACT-TESTS`: consumer-driven contracts (Pact) between the services of one organisation. L1 · fix J · assess.
-- [ ] **TE28** `LOAD-SCENARIO`: a k6 or Locust scenario kept in the repo of an app with an SLO. L0 · fix J · assess.
-- [ ] **TE29** `TEST-DURATION`: suite time and slowest tests read from the CI's JUnit reports with `--online`, as a ratchet. L6 · ratchet · assess.
+- [ ] **TE01** `TESTS-PRESENT` (scored): per component, and a test file that collects nothing doesn't count (pytest's `--collect-only` with `--deep`). → v0.6.23
+- [ ] **TE02** `TESTS-IN-CI` (scored): read from the CI's commands for each component (pytest, Vitest, `go test`, `cargo test`, `mvn verify`), on any CI (C), through `make`, `just` and package scripts, not a regex for `pytest`. → v0.6.21
+- [ ] **TE03** `CLOCK` (draft): tests calling `now()`, `date.today()` or `Date.now()` with no time-machine, freezegun or `vi.useFakeTimers` in reach. L3≈ · fix J · trial. → v0.6.23
+- [ ] **TE04** `NO-NETWORK` (draft): sockets blocked in tests (pytest-socket's `--disable-socket`, msw with `onUnhandledRequest: "error"`, nock's `disableNetConnect`). L1 · fix S · trial. → v0.6.23
+- [ ] **TE05** `PROPERTY-TESTS` (draft): Hypothesis or fast-check where parsers, serializers or money code live, found by paths and names. L1≈ · fix J · assess. → v0.5.16
+- [ ] **TE06** `MUTATION-TESTS` (draft): mutmut, cosmic-ray or Stryker configured and scheduled. L1 · fix J · assess. → v0.5.16
+- [ ] **TE07** `API-FUZZING` (draft): Schemathesis run against the committed OpenAPI schema. L1 · fix S · trial. → v0.5.16
+- [ ] **TE08** `E2E-JOURNEYS` (draft): Playwright present, its specs naming the journeys the docs list. L1≈ · fix J · trial. → v0.5.16
+- [ ] **TE09** `PERMISSION-TESTS` (draft): each protected route (from the URL conf or Ninja's routers) has a test that calls it anonymously. L3≈ · fix J · trial. → v0.6.23
+- [ ] **TE10** `REGRESSION-TEST` (draft): `fix:` commits of the last hundred that touch no test, with `--history`. L5 · ratchet · trial. → v0.6.48
+- [ ] **TE11** `COVERAGE-MEASURED`: coverage with branches (`[tool.coverage.run] branch = true`, Vitest's coverage provider). L1 · fix S · adopt. → v0.6.23
+- [ ] **TE12** `COVERAGE-FLOOR`: a floor that only rises (`fail_under`, Vitest's thresholds with `autoUpdate`). L1 · ratchet · trial. → v0.6.23
+- [ ] **TE13** `DIFF-COVERAGE`: changed lines covered in pull requests (diff-cover). L1 · fix S · assess. → v0.6.23
+- [ ] **TE14** `PYTEST-STRICT`: `--strict-markers`, `--strict-config`, `xfail_strict = true`, warnings as errors with a named allow-list. L1 · fix S · adopt. → v0.6.23
+- [ ] **TE15** `NO-FOCUSED-TESTS`: no `.only`, `fit` or `fdescribe` committed. L2 · fix S · adopt. → v0.6.23
+- [ ] **TE16** `NO-SKIPPED-TESTS`: every `skip` and `xfail` gives a reason, and their count only goes down. L2 · ratchet · trial. → v0.6.23
+- [ ] **TE17** `NO-SLEEP-IN-TESTS`: no `time.sleep` or `setTimeout` waits; a frozen clock or polling instead. L2 · fix J · trial. → v0.6.23
+- [ ] **TE18** `RANDOM-ORDER`: tests run shuffled (pytest-randomly, Vitest's `sequence.shuffle`) so hidden coupling shows. L1 · fix S · trial. → v0.6.23
+- [ ] **TE19** `PARALLEL-TESTS`: pytest-xdist or the runner's workers, for suites over a minute. L1 · fix S · trial. → v0.6.23
+- [ ] **TE20** `ASSERTIONS-PRESENT`: no test without an assertion (`expect-expect` for Vitest and Jest, a syntax check for pytest). L2 · fix J · trial. → v0.6.23
+- [ ] **TE21** `FACTORIES`: factory_boy, model-bakery or fishery rather than big JSON fixtures. L1≈ · fix J · assess. → v0.6.23
+- [ ] **TE22** `PROD-ENGINE-IN-TESTS`: tests run on the production database engine (a Postgres service in CI, Testcontainers), not SQLite. L1 · fix J · trial. → v0.6.34
+- [ ] **TE23** `MIGRATIONS-CHECKED`: `makemigrations --check --dry-run` in CI, and a migration from an empty database. L1 · fix S · adopt. → v0.6.34
+- [ ] **TE24** `TESTS-TYPE-CHECKED`: tests not excluded from the type checker. L1 · fix S · trial. → v0.6.23
+- [ ] **TE25** `TEST-NAMES`: names that state the behaviour (`test_refuses_expired_token`), never `test_1` or `test_view`. L2≈ · fix J · assess. → v0.6.23
+- [ ] **TE26** `SNAPSHOTS-IN-CHECK`: obsolete snapshots fail in CI (`--ci`), snapshot files stay small. L1 · fix S · assess. → v0.6.23
+- [ ] **TE27** `CONTRACT-TESTS`: consumer-driven contracts (Pact) between the services of one organisation. L1 · fix J · assess. → v0.6.23
+- [ ] **TE28** `LOAD-SCENARIO`: a k6 or Locust scenario kept in the repo of an app with an SLO. L0 · fix J · assess. → v0.6.23
+- [ ] **TE29** `TEST-DURATION`: suite time and slowest tests read from the CI's JUnit reports with `--online`, as a ratchet. L6 · ratchet · assess. → v0.6.49
 
 #### PE · Performance
 
-- [ ] **PE01** `API-LATENCY` (draft): p95 budgets as k6 thresholds in the repo, or an APM's numbers with `--online`. L1≈ · fix J · assess.
-- [ ] **PE02** `CORE-WEB-VITALS` (draft): Lighthouse CI with assertions (`lighthouserc`); field data from the Chrome UX Report's API with `--online`. L1 · fix S · trial.
-- [ ] **PE03** `JS-BUDGET` (draft): size-limit or bundle budgets checked at build. L1 · fix S · trial.
-- [ ] **PE04** `MODERN-IMAGES` (draft): committed JPEG and PNG over about 200 KB listed with their savings; `@nuxt/image` or `<picture>` present; `width`, `height` and `loading="lazy"` set below the fold. L2 · fix S (conversion) · trial.
-- [ ] **PE05** `NO-N-PLUS-ONE`: querysets iterated with related access and no `select_related` or `prefetch_related` (L3≈), proven by nplusone in tests (L7). L3≈ · fix J · trial.
-- [ ] **PE06** `QUERY-COUNT-TESTS`: list views tested with `django_assert_num_queries` or `assertNumQueries`. L2 · fix J · assess.
-- [ ] **PE07** `COMPRESSION`: responses compressed (Caddy's `encode zstd gzip`, nginx's `gzip on`, the platform's). L1 · fix S · adopt.
-- [ ] **PE08** `STATIC-BY-PROXY`: static files hashed and served by the proxy, WhiteNoise or a CDN (`ManifestStaticFilesStorage`), never by the framework's dev server. L2 · fix S · adopt.
-- [ ] **PE09** `NO-SYNC-SCRIPTS`: third-party scripts `async` or `defer`, or loaded through Nuxt Scripts. L2 · fix S · adopt.
-- [ ] **PE10** `FONT-LOADING`: `font-display` set, fonts subset and preloaded (`@nuxt/fonts` does all three). L2 · fix S · trial.
-- [ ] **PE11** `TREE-SHAKEN-IMPORTS`: no whole-library imports (`import _ from "lodash"`, `import * as icons`). L2 · fix S · adopt.
-- [ ] **PE12** `HEAVY-DEPENDENCIES`: moment, full lodash or `core-js` for modern targets, listed with lighter options (with `NO-DEPRECATED-PACKAGES`). L1 · fix J · trial.
-- [ ] **PE13** `LAZY-COMPONENTS`: heavy components and routes loaded on demand (`defineAsyncComponent`, Nuxt's `Lazy` prefix, `React.lazy`). L2≈ · fix J · assess.
-- [ ] **PE14** `FK-INDEXES`: foreign keys indexed where neither the ORM nor the database does it (Prisma's relations on Postgres, raw SQL migrations); Django already does. L2 · fix S · trial.
-- [ ] **PE15** `CACHEABLE-PUBLIC-PAGES`: anonymous pages cacheable (Nuxt's `routeRules` with `swr` or `isr`, `Cache-Control` on public views). L2≈ · fix J · trial.
-- [ ] **PE16** `BENCHMARKS`: libraries with hot paths keep benchmarks (pytest-benchmark, Vitest's `bench`, `cargo bench`) and a ratchet on them. L1 · fix J · assess.
-- [ ] **PE17** `PROFILER-IN-DEV`: a profiler wired in development only (django-silk, pyinstrument's middleware). L1 · fix S · assess.
-- [ ] **PE18** `IMAGE-SIZE-BUDGET`: the final container image's size tracked; `--deep` builds it. L7 · ratchet · assess.
-- [ ] **PE19** `COLD-START`: serverless functions' bundle size tracked. L1 · ratchet · assess.
+- [ ] **PE01** `API-LATENCY` (draft): p95 budgets as k6 thresholds in the repo, or an APM's numbers with `--online`. L1≈ · fix J · assess. → v0.6.36
+- [ ] **PE02** `CORE-WEB-VITALS` (draft): Lighthouse CI with assertions (`lighthouserc`); field data from the Chrome UX Report's API with `--online`. L1 · fix S · trial. → v0.6.39
+- [ ] **PE03** `JS-BUDGET` (draft): size-limit or bundle budgets checked at build. L1 · fix S · trial. → v0.6.39
+- [ ] **PE04** `MODERN-IMAGES` (draft): committed JPEG and PNG over about 200 KB listed with their savings; `@nuxt/image` or `<picture>` present; `width`, `height` and `loading="lazy"` set below the fold. L2 · fix S (conversion) · trial. → v0.6.39
+- [ ] **PE05** `NO-N-PLUS-ONE`: querysets iterated with related access and no `select_related` or `prefetch_related` (L3≈), proven by nplusone in tests (L7). L3≈ · fix J · trial. → v0.6.36
+- [ ] **PE06** `QUERY-COUNT-TESTS`: list views tested with `django_assert_num_queries` or `assertNumQueries`. L2 · fix J · assess. → v0.6.36
+- [ ] **PE07** `COMPRESSION`: responses compressed (Caddy's `encode zstd gzip`, nginx's `gzip on`, the platform's). L1 · fix S · adopt. → v0.6.40
+- [ ] **PE08** `STATIC-BY-PROXY`: static files hashed and served by the proxy, WhiteNoise or a CDN (`ManifestStaticFilesStorage`), never by the framework's dev server. L2 · fix S · adopt. → v0.6.40
+- [ ] **PE09** `NO-SYNC-SCRIPTS`: third-party scripts `async` or `defer`, or loaded through Nuxt Scripts. L2 · fix S · adopt. → v0.6.39
+- [ ] **PE10** `FONT-LOADING`: `font-display` set, fonts subset and preloaded (`@nuxt/fonts` does all three). L2 · fix S · trial. → v0.6.39
+- [ ] **PE11** `TREE-SHAKEN-IMPORTS`: no whole-library imports (`import _ from "lodash"`, `import * as icons`). L2 · fix S · adopt. → v0.6.39
+- [ ] **PE12** `HEAVY-DEPENDENCIES`: moment, full lodash or `core-js` for modern targets, listed with lighter options (with `NO-DEPRECATED-PACKAGES`). L1 · fix J · trial. → v0.6.39
+- [ ] **PE13** `LAZY-COMPONENTS`: heavy components and routes loaded on demand (`defineAsyncComponent`, Nuxt's `Lazy` prefix, `React.lazy`). L2≈ · fix J · assess. → v0.6.39
+- [ ] **PE14** `FK-INDEXES`: foreign keys indexed where neither the ORM nor the database does it (Prisma's relations on Postgres, raw SQL migrations); Django already does. L2 · fix S · trial. → v0.6.36
+- [ ] **PE15** `CACHEABLE-PUBLIC-PAGES`: anonymous pages cacheable (Nuxt's `routeRules` with `swr` or `isr`, `Cache-Control` on public views). L2≈ · fix J · trial. → v0.6.39
+- [ ] **PE16** `BENCHMARKS`: libraries with hot paths keep benchmarks (pytest-benchmark, Vitest's `bench`, `cargo bench`) and a ratchet on them. L1 · fix J · assess. → v0.6.36
+- [ ] **PE17** `PROFILER-IN-DEV`: a profiler wired in development only (django-silk, pyinstrument's middleware). L1 · fix S · assess. → v0.6.36
+- [ ] **PE18** `IMAGE-SIZE-BUDGET`: the final container image's size tracked; `--deep` builds it. L7 · ratchet · assess. → v0.6.52
+- [ ] **PE19** `COLD-START`: serverless functions' bundle size tracked. L1 · ratchet · assess. → v0.6.36
 
 #### FA · Front, accessibility and i18n
 
-- [ ] **FA01** `ACCESSIBILITY` (draft): labels and accessible names checked in templates by eslint-plugin-vuejs-accessibility or jsx-a11y, run as mapped tools (F). L2 · fix J · adopt.
-- [ ] **FA02** `AUTOMATED-ACCESSIBILITY` (draft): axe in Playwright tests (`@axe-core/playwright`) or pa11y-ci on the main pages. L1 · fix S · trial.
-- [ ] **FA03** `UI-STATES` (draft): results of `useFetch` and `useAsyncData` whose `status` and `error` the template never reads. L2 · fix J · trial.
-- [ ] **FA04** `UTILITY-CSS-FIRST` (draft): Tailwind or UnoCSS configured; `<style scoped>` blocks counted as a ratchet. L1 · ratchet · trial.
-- [ ] **FA05** `HTML-LANG`: `lang` on `<html>` (Nuxt's `app.head.htmlAttrs`, `index.html`, the base template). L2 · fix S · adopt.
-- [ ] **FA06** `IMG-ALT`: every image has `alt`, empty for decoration. L2 · fix J · adopt.
-- [ ] **FA07** `CLICKABLE-ELEMENTS`: no click handler on a `div` or `span` without a role and a keyboard handler: a button or a link instead. L2 · fix J · adopt.
-- [ ] **FA08** `FOCUS-VISIBLE`: no `outline: none` or `outline-0` without a `:focus-visible` style. L2 · fix J · adopt.
-- [ ] **FA09** `REDUCED-MOTION`: animations respect `prefers-reduced-motion` (Tailwind's `motion-safe:`). L2 · fix S · trial.
-- [ ] **FA10** `VIEWPORT-META`: `width=device-width`, never `user-scalable=no` or `maximum-scale=1`. L2 · fix S · adopt.
-- [ ] **FA11** `NO-AUTOPLAY`: no media that plays sound by itself. L2 · fix S · adopt.
-- [ ] **FA12** `SKIP-LINK`: a skip-to-content link in layouts. L2≈ · fix S · trial.
-- [ ] **FA13** `ARIA-VALID`: ARIA roles and attributes valid and not redundant. L2 · fix J · adopt.
-- [ ] **FA14** `HEADINGS-ORDER`: one `h1` per page, no skipped level. L3≈ · fix J · trial.
-- [ ] **FA15** `FORM-AUTOCOMPLETE`: `autocomplete` on identity and address fields (WCAG 2.2, 1.3.5). L2 · fix S · trial.
-- [ ] **FA16** `TOUCH-TARGETS`: targets of 24 by 24 CSS pixels at least (WCAG 2.2, 2.5.8), read from utility classes. L3≈ · fix J · assess.
-- [ ] **FA17** `COLOR-CONTRAST`: the theme's text and background pairs computed from its tokens; axe for the rendered rest. L3≈ · fix J · trial.
-- [ ] **FA18** `EU-ACCESSIBILITY-ACT`: for businesses selling to consumers in the EU, the European Accessibility Act applies since 28 June 2025: in that profile the accessibility rules move to `adopt`, and an accessibility statement exists. L0 · fix J · adopt (profile).
-- [ ] **FA19** `VUE-V-FOR-KEY`: `:key` on every `v-for`. L2 · fix J · adopt.
-- [ ] **FA20** `VUE-NO-V-IF-WITH-V-FOR`. L2 · fix J · adopt.
-- [ ] **FA21** `SSR-SAFE`: no `window`, `document` or `localStorage` at setup outside `onMounted`, `import.meta.client` or `<ClientOnly>`. L2 · fix J · adopt.
-- [ ] **FA22** `HYDRATION-SAFE`: no `Math.random()`, `Date.now()` or locale formatting rendered on both sides without a stable value (`useState`, `useId`). L2≈ · fix J · trial.
-- [ ] **FA23** `SEO-BASICS`: title, description, canonical URL, `robots.txt` and a sitemap on public sites (`useSeoMeta`, `@nuxtjs/sitemap`). L2 · fix S · trial.
-- [ ] **FA24** `SOCIAL-CARDS`: Open Graph title and image on the pages people share. L2 · fix S · assess.
-- [ ] **FA25** `CSS-LINT`: Stylelint where CSS is written by hand. L1 · fix S · trial.
-- [ ] **FA26** `ERROR-PAGES`: designed 404 and 500 pages (Nuxt's `error.vue`, Django's `404.html` and `500.html`). L0 · fix S · trial.
-- [ ] **FA27** `I18N-KEYS-COMPLETE`: every locale has every key and no key is unused (vue-i18n-extract, `makemessages` compared). L3 · fix S · adopt.
-- [ ] **FA28** `I18N-NO-BARE-TEXT`: user-facing text in templates goes through the i18n layer once one is configured (`@intlify/vue-i18n/no-raw-text`). L2 · ratchet · trial.
-- [ ] **FA29** `LOCALE-FORMATTING`: dates, numbers and currencies through `Intl` or the framework's filters, never concatenated by hand. L2≈ · fix J · assess.
-- [ ] **FA30** `RTL-READY`: logical CSS properties once a right-to-left locale is configured. L2 · fix S · assess.
-- [ ] **FA31** `WEB-MANIFEST`: icons and a web manifest for installable apps. L0 · fix S · assess.
+- [ ] **FA01** `ACCESSIBILITY` (draft): labels and accessible names checked in templates by eslint-plugin-vuejs-accessibility or jsx-a11y, run as mapped tools (F). L2 · fix J · adopt. → v0.6.38
+- [ ] **FA02** `AUTOMATED-ACCESSIBILITY` (draft): axe in Playwright tests (`@axe-core/playwright`) or pa11y-ci on the main pages. L1 · fix S · trial. → v0.6.38
+- [ ] **FA03** `UI-STATES` (draft): results of `useFetch` and `useAsyncData` whose `status` and `error` the template never reads. L2 · fix J · trial. → v0.6.39
+- [ ] **FA04** `UTILITY-CSS-FIRST` (draft): Tailwind or UnoCSS configured; `<style scoped>` blocks counted as a ratchet. L1 · ratchet · trial. → v0.6.39
+- [ ] **FA05** `HTML-LANG`: `lang` on `<html>` (Nuxt's `app.head.htmlAttrs`, `index.html`, the base template). L2 · fix S · adopt. → v0.5.13
+- [ ] **FA06** `IMG-ALT`: every image has `alt`, empty for decoration. L2 · fix J · adopt. → v0.6.38
+- [ ] **FA07** `CLICKABLE-ELEMENTS`: no click handler on a `div` or `span` without a role and a keyboard handler: a button or a link instead. L2 · fix J · adopt. → v0.6.38
+- [ ] **FA08** `FOCUS-VISIBLE`: no `outline: none` or `outline-0` without a `:focus-visible` style. L2 · fix J · adopt. → v0.6.38
+- [ ] **FA09** `REDUCED-MOTION`: animations respect `prefers-reduced-motion` (Tailwind's `motion-safe:`). L2 · fix S · trial. → v0.6.38
+- [ ] **FA10** `VIEWPORT-META`: `width=device-width`, never `user-scalable=no` or `maximum-scale=1`. L2 · fix S · adopt. → v0.6.38
+- [ ] **FA11** `NO-AUTOPLAY`: no media that plays sound by itself. L2 · fix S · adopt. → v0.6.38
+- [ ] **FA12** `SKIP-LINK`: a skip-to-content link in layouts. L2≈ · fix S · trial. → v0.6.38
+- [ ] **FA13** `ARIA-VALID`: ARIA roles and attributes valid and not redundant. L2 · fix J · adopt. → v0.6.38
+- [ ] **FA14** `HEADINGS-ORDER`: one `h1` per page, no skipped level. L3≈ · fix J · trial. → v0.6.38
+- [ ] **FA15** `FORM-AUTOCOMPLETE`: `autocomplete` on identity and address fields (WCAG 2.2, 1.3.5). L2 · fix S · trial. → v0.6.38
+- [ ] **FA16** `TOUCH-TARGETS`: targets of 24 by 24 CSS pixels at least (WCAG 2.2, 2.5.8), read from utility classes. L3≈ · fix J · assess. → v0.6.38
+- [ ] **FA17** `COLOR-CONTRAST`: the theme's text and background pairs computed from its tokens; axe for the rendered rest. L3≈ · fix J · trial. → v0.6.38
+- [ ] **FA18** `EU-ACCESSIBILITY-ACT`: for businesses selling to consumers in the EU, the European Accessibility Act applies since 28 June 2025: in that profile the accessibility rules move to `adopt`, and an accessibility statement exists. L0 · fix J · adopt (profile). → v0.6.38
+- [ ] **FA19** `VUE-V-FOR-KEY`: `:key` on every `v-for`. L2 · fix J · adopt. → v0.5.13
+- [ ] **FA20** `VUE-NO-V-IF-WITH-V-FOR`. L2 · fix J · adopt. → v0.6.39
+- [ ] **FA21** `SSR-SAFE`: no `window`, `document` or `localStorage` at setup outside `onMounted`, `import.meta.client` or `<ClientOnly>`. L2 · fix J · adopt. → v0.6.39
+- [ ] **FA22** `HYDRATION-SAFE`: no `Math.random()`, `Date.now()` or locale formatting rendered on both sides without a stable value (`useState`, `useId`). L2≈ · fix J · trial. → v0.6.39
+- [ ] **FA23** `SEO-BASICS`: title, description, canonical URL, `robots.txt` and a sitemap on public sites (`useSeoMeta`, `@nuxtjs/sitemap`). L2 · fix S · trial. → v0.6.39
+- [ ] **FA24** `SOCIAL-CARDS`: Open Graph title and image on the pages people share. L2 · fix S · assess. → v0.6.39
+- [ ] **FA25** `CSS-LINT`: Stylelint where CSS is written by hand. L1 · fix S · trial. → v0.6.39
+- [ ] **FA26** `ERROR-PAGES`: designed 404 and 500 pages (Nuxt's `error.vue`, Django's `404.html` and `500.html`). L0 · fix S · trial. → v0.6.39
+- [ ] **FA27** `I18N-KEYS-COMPLETE`: every locale has every key and no key is unused (vue-i18n-extract, `makemessages` compared). L3 · fix S · adopt. → v0.6.38
+- [ ] **FA28** `I18N-NO-BARE-TEXT`: user-facing text in templates goes through the i18n layer once one is configured (`@intlify/vue-i18n/no-raw-text`). L2 · ratchet · trial. → v0.6.38
+- [ ] **FA29** `LOCALE-FORMATTING`: dates, numbers and currencies through `Intl` or the framework's filters, never concatenated by hand. L2≈ · fix J · assess. → v0.6.38
+- [ ] **FA30** `RTL-READY`: logical CSS properties once a right-to-left locale is configured. L2 · fix S · assess. → v0.6.38
+- [ ] **FA31** `WEB-MANIFEST`: icons and a web manifest for installable apps. L0 · fix S · assess. → v0.6.39
 
 #### CO · Containers
 
-- [ ] **CO01** `NON-ROOT-CONTAINERS` (scored): the final stage's `USER`, not the file's last one; a numeric UID so Kubernetes' `runAsNonRoot` can check it; compose's `user:` counted.
-- [ ] **CO02** `HARDENED-CONTAINERS` (scored): also read in Kubernetes manifests and Helm values (`securityContext`, see IN).
-- [ ] **CO03** `CURRENT-DEBIAN` (scored): folded into `SUPPORTED-BASE-IMAGES` (SU), the Debian line read from the tag or the digest, Alpine and Ubuntu too.
-- [ ] **CO04** `DOCKERIGNORE`: beside each build context, excluding `.git`, `.env*`, `node_modules` and caches. L1 · fix S · adopt.
-- [ ] **CO05** `MULTI-STAGE`: compilers and dev dependencies left in a builder stage. L2 · fix J · trial.
-- [ ] **CO06** `MINIMAL-FINAL-STAGE`: a slim or distroless final image, no shell where none is needed. L2 · fix J · trial.
-- [ ] **CO07** `TAG-AND-DIGEST`: `image:tag@sha256:…`, the tag kept for humans and update bots. L2 · fix S · adopt.
-- [ ] **CO08** `COPY-NOT-ADD`: `COPY` rather than `ADD`, never `ADD` of a URL (hadolint's DL3020). L2 · fix S · adopt.
-- [ ] **CO09** `APT-HYGIENE`: `--no-install-recommends`, lists removed or a cache mount (DL3015, DL3009). L2 · fix S · adopt.
-- [ ] **CO10** `CACHE-MOUNTS`: `RUN --mount=type=cache` for uv, pnpm, pip and apt. L2 · fix S · trial.
-- [ ] **CO11** `BUILD-SECRETS`: secrets through `--mount=type=secret`, never `ARG` or `ENV` (BuildKit's `SecretsUsedInArgOrEnv` check). L2 · fix J · adopt.
-- [ ] **CO12** `EXEC-FORM`: `CMD` and `ENTRYPOINT` in JSON form so signals reach the process (BuildKit's `JSONArgsRecommended`). L2 · fix S · adopt.
-- [ ] **CO13** `PIPEFAIL`: `SHELL [..., "-o", "pipefail", "-c"]` before a `RUN` with a pipe (DL4006). L2 · fix S · adopt.
-- [ ] **CO14** `INIT-PROCESS`: `init: true` or tini where the main process doesn't reap its children. L2≈ · fix S · assess.
-- [ ] **CO15** `OCI-LABELS`: `org.opencontainers.image.source`, `revision` and `licenses` on published images. L2 · fix S · trial.
-- [ ] **CO16** `COMPOSE-NO-VERSION`: no top-level `version:`, obsolete in the Compose Specification. L1 · fix S · adopt.
-- [ ] **CO17** `COMPOSE-HEALTHY-DEPENDS`: `depends_on` with `condition: service_healthy` on databases. L1 · fix S · adopt.
-- [ ] **CO18** `NO-DOCKER-SOCKET`: no `/var/run/docker.sock` mounted, except read-only into a declared proxy with its reason; critical. L1 · fix J · adopt.
-- [ ] **CO19** `NO-PRIVILEGED`: no `privileged`, `network_mode: host`, `pid: host` or added `SYS_ADMIN`, beside `HARDENED-CONTAINERS`. L1 · fix J · adopt.
-- [ ] **CO20** `PORTS-ON-LOCALHOST`: databases and internal services published on `127.0.0.1` only (Docker's published ports bypass ufw's rules). L1 · fix S · adopt.
-- [ ] **CO21** `LOG-ROTATION`: `max-size` and `max-file` on the logging driver (json-file grows without end by default). L1 · fix S · adopt.
-- [ ] **CO22** `RESOURCE-LIMITS`: memory and CPU limits per service. L1 · fix S · trial.
-- [ ] **CO23** `RESTART-POLICY`: `restart: unless-stopped` or `always` on long-running services. L1 · fix S · adopt.
-- [ ] **CO24** `NAMED-VOLUMES`: database data in named volumes, never bind-mounted inside the repo. L1 · fix S · trial.
-- [ ] **CO25** `NO-SECRETS-IN-COMPOSE`: no literal password under `environment:`; `env_file` or `secrets:` instead. L1 · fix J · adopt.
-- [ ] **CO26** `IMAGES-SCANNED`: built images scanned (Trivy, Grype) in the release workflow. L1 · fix S · trial.
-- [ ] **CO27** `IMAGES-SIGNED`: published images signed (cosign) or attested (`actions/attest-build-provenance`). L1 · fix S · assess.
-- [ ] **CO28** `HADOLINT-CLEAN`: hadolint passes, as a mapped tool (F). L4 · fix J · trial.
-- [ ] **CO29** `ONE-PROCESS`: no supervisord or `&` chain running several services in one container. L2 · fix J · trial.
-- [ ] **CO30** `ROOTLESS-FRIENDLY`: compose files that run under rootless Podman as under Docker (`kiln dev` runs Podman). L1 · fix J · assess.
+- [ ] **CO01** `NON-ROOT-CONTAINERS` (scored): the final stage's `USER`, not the file's last one; a numeric UID so Kubernetes' `runAsNonRoot` can check it; compose's `user:` counted. → v0.6.19
+- [ ] **CO02** `HARDENED-CONTAINERS` (scored): also read in Kubernetes manifests and Helm values (`securityContext`, see IN). → v0.6.20
+- [ ] **CO03** `CURRENT-DEBIAN` (scored): folded into `SUPPORTED-BASE-IMAGES` (SU), the Debian line read from the tag or the digest, Alpine and Ubuntu too. → v0.6.19
+- [ ] **CO04** `DOCKERIGNORE`: beside each build context, excluding `.git`, `.env*`, `node_modules` and caches. L1 · fix S · adopt. → v0.5.13
+- [ ] **CO05** `MULTI-STAGE`: compilers and dev dependencies left in a builder stage. L2 · fix J · trial. → v0.6.19
+- [ ] **CO06** `MINIMAL-FINAL-STAGE`: a slim or distroless final image, no shell where none is needed. L2 · fix J · trial. → v0.6.19
+- [ ] **CO07** `TAG-AND-DIGEST`: `image:tag@sha256:…`, the tag kept for humans and update bots. L2 · fix S · adopt. → v0.6.19
+- [ ] **CO08** `COPY-NOT-ADD`: `COPY` rather than `ADD`, never `ADD` of a URL (hadolint's DL3020). L2 · fix S · adopt. → v0.6.19
+- [ ] **CO09** `APT-HYGIENE`: `--no-install-recommends`, lists removed or a cache mount (DL3015, DL3009). L2 · fix S · adopt. → v0.6.19
+- [ ] **CO10** `CACHE-MOUNTS`: `RUN --mount=type=cache` for uv, pnpm, pip and apt. L2 · fix S · trial. → v0.6.19
+- [ ] **CO11** `BUILD-SECRETS`: secrets through `--mount=type=secret`, never `ARG` or `ENV` (BuildKit's `SecretsUsedInArgOrEnv` check). L2 · fix J · adopt. → v0.6.19
+- [ ] **CO12** `EXEC-FORM`: `CMD` and `ENTRYPOINT` in JSON form so signals reach the process (BuildKit's `JSONArgsRecommended`). L2 · fix S · adopt. → v0.6.19
+- [ ] **CO13** `PIPEFAIL`: `SHELL [..., "-o", "pipefail", "-c"]` before a `RUN` with a pipe (DL4006). L2 · fix S · adopt. → v0.6.19
+- [ ] **CO14** `INIT-PROCESS`: `init: true` or tini where the main process doesn't reap its children. L2≈ · fix S · assess. → v0.6.19
+- [ ] **CO15** `OCI-LABELS`: `org.opencontainers.image.source`, `revision` and `licenses` on published images. L2 · fix S · trial. → v0.6.19
+- [ ] **CO16** `COMPOSE-NO-VERSION`: no top-level `version:`, obsolete in the Compose Specification. L1 · fix S · adopt. → v0.6.20
+- [ ] **CO17** `COMPOSE-HEALTHY-DEPENDS`: `depends_on` with `condition: service_healthy` on databases. L1 · fix S · adopt. → v0.6.20
+- [ ] **CO18** `NO-DOCKER-SOCKET`: no `/var/run/docker.sock` mounted, except read-only into a declared proxy with its reason; critical. L1 · fix J · adopt. → v0.6.20
+- [ ] **CO19** `NO-PRIVILEGED`: no `privileged`, `network_mode: host`, `pid: host` or added `SYS_ADMIN`, beside `HARDENED-CONTAINERS`. L1 · fix J · adopt. → v0.6.20
+- [ ] **CO20** `PORTS-ON-LOCALHOST`: databases and internal services published on `127.0.0.1` only (Docker's published ports bypass ufw's rules). L1 · fix S · adopt. → v0.5.13
+- [ ] **CO21** `LOG-ROTATION`: `max-size` and `max-file` on the logging driver (json-file grows without end by default). L1 · fix S · adopt. → v0.6.20
+- [ ] **CO22** `RESOURCE-LIMITS`: memory and CPU limits per service. L1 · fix S · trial. → v0.6.20
+- [ ] **CO23** `RESTART-POLICY`: `restart: unless-stopped` or `always` on long-running services. L1 · fix S · adopt. → v0.6.20
+- [ ] **CO24** `NAMED-VOLUMES`: database data in named volumes, never bind-mounted inside the repo. L1 · fix S · trial. → v0.6.20
+- [ ] **CO25** `NO-SECRETS-IN-COMPOSE`: no literal password under `environment:`; `env_file` or `secrets:` instead. L1 · fix J · adopt. → v0.6.20
+- [ ] **CO26** `IMAGES-SCANNED`: built images scanned (Trivy, Grype) in the release workflow. L1 · fix S · trial. → v0.6.20
+- [ ] **CO27** `IMAGES-SIGNED`: published images signed (cosign) or attested (`actions/attest-build-provenance`). L1 · fix S · assess. → v0.6.20
+- [ ] **CO28** `HADOLINT-CLEAN`: hadolint passes, as a mapped tool (F). L4 · fix J · trial. → v0.6.19
+- [ ] **CO29** `ONE-PROCESS`: no supervisord or `&` chain running several services in one container. L2 · fix J · trial. → v0.6.19
+- [ ] **CO30** `ROOTLESS-FRIENDLY`: compose files that run under rootless Podman as under Docker (`kiln dev` runs Podman). L1 · fix J · assess. → v0.6.20
 
 #### OP · Operations
 
-- [ ] **OP01** `HEALTH-PROBES` (scored): beyond a `HEALTHCHECK` line: the endpoint exists in the code, liveness and readiness told apart, compose and Kubernetes probes read.
-- [ ] **OP02** `ASYNC-HEALTH` (draft): workers and the scheduler report health (a Celery ping, a heartbeat file probed by compose). L2≈ · fix J · trial.
-- [ ] **OP03** `TESTED-BACKUPS` (draft): a backup job in code (pg_dump, restic, borg) with a scheduled restore job beside it. L1≈ · fix J · trial.
-- [ ] **OP04** `REVERSIBLE-DEPLOYMENT` (draft): images deployed by immutable tag or digest, a rollback script or workflow present. L1≈ · fix J · trial.
-- [ ] **OP05** `FEATURE-FLAGS` (draft): a flags library or module present where risky changes ship. L1≈ · fix J · assess.
-- [ ] **OP06** `TESTED-SELF-HEALING` (draft): restart policies plus a script that exercises a known failure. L1≈ · fix J · assess.
-- [ ] **OP07** `ENV-EXAMPLE-COMPLETE`: every variable the code reads (`os.environ`, `env()`, `process.env`, `useRuntimeConfig`) is in `.env.example`, and none there is stale. L3 · fix S · adopt.
-- [ ] **OP08** `FAIL-FAST-CONFIG`: a missing required setting stops the start (no silent default for `SECRET_KEY` or `DATABASE_URL`): what `DJANGO-SECRET-KEY` and `DJANGO-ALLOWED-HOSTS` ask of Django, for every stack. L2 · fix J · adopt.
-- [ ] **OP09** `DEPLOY-FROM-CI`: production deployed by a workflow from a commit, not from a laptop. L1 · fix J · trial.
-- [ ] **OP10** `PROTECTED-ENVIRONMENTS`: production jobs run in a forge environment with reviewers or branch rules (L6, T-158). L6 · fix J · trial.
-- [ ] **OP11** `OIDC-TO-CLOUD`: cloud credentials through OIDC federation (`id-token: write`), no long-lived keys in secrets. L1 · fix J · adopt.
-- [ ] **OP12** `ENCRYPTED-SECRETS`: secrets committed only encrypted (sops with age, git-crypt, Ansible Vault). L1 · fix J · trial.
-- [ ] **OP13** `RUNBOOK`: deploy, rollback, restore and rotate written down (`docs/runbook.md`), with commands that exist. L1 · fix J · trial.
-- [ ] **OP14** `GRACEFUL-SHUTDOWN`: SIGTERM handled, a stop grace period longer than the longest request or task. L2 · fix S · trial.
-- [ ] **OP15** `UTC-SERVERS`: containers and servers run in UTC, no `TZ` set to a local zone (with `TIME-ZONE`). L1 · fix S · trial.
-- [ ] **OP16** `UPTIME-CHECKS`: an outside check declared (Uptime Kuma, Gatus, a cron monitor) for production profiles. L1≈ · fix J · assess.
-- [ ] **OP17** `CRON-MONITORED`: scheduled jobs ping a dead man's switch. L2≈ · fix J · assess.
-- [ ] **OP18** `RECOVERY-TARGETS`: RPO and RTO stated in the runbook, the backup schedule matching them. L1≈ · fix J · assess.
-- [ ] **OP19** `HOSTS-AS-CODE`: servers configured by code (Ansible, cloud-init, NixOS), not by hand. L0 · fix J · trial.
-- [ ] **OP20** `AUTOMATIC-TLS`: certificates renewed by themselves (Caddy, cert-manager, the platform's). L1 · fix S · adopt.
-- [ ] **OP21** `ONE-COMMAND-LOCAL`: the whole stack runs locally with one command (`kiln dev`, compose, `Procfile.dev`). L0 · fix S · adopt.
-- [ ] **OP22** `STAGING-LIKE-PROD`: staging differs from production by values only. L1≈ · fix J · assess.
-- [ ] **OP23** `COST-GUARDS`: budgets and alerts declared with the cloud resources. L1 · fix J · assess.
-- [ ] **OP24** `DATA-RESIDENCY`: regions in the IaC and settings inside the EU for profiles that promise it. L1 · fix J · assess.
+- [ ] **OP01** `HEALTH-PROBES` (scored): beyond a `HEALTHCHECK` line: the endpoint exists in the code, liveness and readiness told apart, compose and Kubernetes probes read. → v0.6.40
+- [ ] **OP02** `ASYNC-HEALTH` (draft): workers and the scheduler report health (a Celery ping, a heartbeat file probed by compose). L2≈ · fix J · trial. → v0.6.41
+- [ ] **OP03** `TESTED-BACKUPS` (draft): a backup job in code (pg_dump, restic, borg) with a scheduled restore job beside it. L1≈ · fix J · trial. → v0.6.41
+- [ ] **OP04** `REVERSIBLE-DEPLOYMENT` (draft): images deployed by immutable tag or digest, a rollback script or workflow present. L1≈ · fix J · trial. → v0.6.40
+- [ ] **OP05** `FEATURE-FLAGS` (draft): a flags library or module present where risky changes ship. L1≈ · fix J · assess. → v0.6.41
+- [ ] **OP06** `TESTED-SELF-HEALING` (draft): restart policies plus a script that exercises a known failure. L1≈ · fix J · assess. → v0.6.41
+- [ ] **OP07** `ENV-EXAMPLE-COMPLETE`: every variable the code reads (`os.environ`, `env()`, `process.env`, `useRuntimeConfig`) is in `.env.example`, and none there is stale. L3 · fix S · adopt. → v0.6.40
+- [ ] **OP08** `FAIL-FAST-CONFIG`: a missing required setting stops the start (no silent default for `SECRET_KEY` or `DATABASE_URL`): what `DJANGO-SECRET-KEY` and `DJANGO-ALLOWED-HOSTS` ask of Django, for every stack. L2 · fix J · adopt. → v0.6.40
+- [ ] **OP09** `DEPLOY-FROM-CI`: production deployed by a workflow from a commit, not from a laptop. L1 · fix J · trial. → v0.6.40
+- [ ] **OP10** `PROTECTED-ENVIRONMENTS`: production jobs run in a forge environment with reviewers or branch rules (L6, T-158). L6 · fix J · trial. → v0.6.49
+- [ ] **OP11** `OIDC-TO-CLOUD`: cloud credentials through OIDC federation (`id-token: write`), no long-lived keys in secrets. L1 · fix J · adopt. → v0.6.40
+- [ ] **OP12** `ENCRYPTED-SECRETS`: secrets committed only encrypted (sops with age, git-crypt, Ansible Vault). L1 · fix J · trial. → v0.6.40
+- [ ] **OP13** `RUNBOOK`: deploy, rollback, restore and rotate written down (`docs/runbook.md`), with commands that exist. L1 · fix J · trial. → v0.6.41
+- [ ] **OP14** `GRACEFUL-SHUTDOWN`: SIGTERM handled, a stop grace period longer than the longest request or task. L2 · fix S · trial. → v0.6.40
+- [ ] **OP15** `UTC-SERVERS`: containers and servers run in UTC, no `TZ` set to a local zone (with `TIME-ZONE`). L1 · fix S · trial. → v0.6.40
+- [ ] **OP16** `UPTIME-CHECKS`: an outside check declared (Uptime Kuma, Gatus, a cron monitor) for production profiles. L1≈ · fix J · assess. → v0.6.41
+- [ ] **OP17** `CRON-MONITORED`: scheduled jobs ping a dead man's switch. L2≈ · fix J · assess. → v0.6.41
+- [ ] **OP18** `RECOVERY-TARGETS`: RPO and RTO stated in the runbook, the backup schedule matching them. L1≈ · fix J · assess. → v0.6.41
+- [ ] **OP19** `HOSTS-AS-CODE`: servers configured by code (Ansible, cloud-init, NixOS), not by hand. L0 · fix J · trial. → v0.6.41
+- [ ] **OP20** `AUTOMATIC-TLS`: certificates renewed by themselves (Caddy, cert-manager, the platform's). L1 · fix S · adopt. → v0.6.40
+- [ ] **OP21** `ONE-COMMAND-LOCAL`: the whole stack runs locally with one command (`kiln dev`, compose, `Procfile.dev`). L0 · fix S · adopt. → v0.6.44
+- [ ] **OP22** `STAGING-LIKE-PROD`: staging differs from production by values only. L1≈ · fix J · assess. → v0.6.41
+- [ ] **OP23** `COST-GUARDS`: budgets and alerts declared with the cloud resources. L1 · fix J · assess. → v0.6.41
+- [ ] **OP24** `DATA-RESIDENCY`: regions in the IaC and settings inside the EU for profiles that promise it. L1 · fix J · assess. → v0.6.41
 
 #### OB · Observability
 
-- [ ] **OB01** `REQUEST-ID` (draft): a request-ID middleware (django-guid, asgi-correlation-id) with the ID in the log format and the response headers. L2 · fix S · trial.
-- [ ] **OB02** `OPENTELEMETRY` (draft): the OpenTelemetry SDK configured from `OTEL_*` variables, the framework and HTTP clients instrumented, `traceparent` forwarded from the front. L2 · fix S · trial.
-- [ ] **OB03** `SLO` (draft): objectives as code (OpenSLO, Sloth, Pyrra). L1 · fix J · assess.
-- [ ] **OB04** `ALERT-ON-SYMPTOMS` (draft): alert rules on error rates and latency rather than CPU, read from Prometheus rule files. L2≈ · fix J · assess.
-- [ ] **OB05** `METRICS-PRIVATE`: a `/metrics` endpoint behind authentication or on an internal port. L2 · fix J · trial.
-- [ ] **OB06** `FRONT-ERRORS-CAPTURED`: browser errors reported (Sentry for Vue and Nuxt), source maps uploaded privately. L1 · fix S · trial.
-- [ ] **OB07** `RELEASE-IN-EVENTS`: errors and traces carry the release (the commit SHA), so a regression points to a deploy. L2 · fix S · trial.
-- [ ] **OB08** `DASHBOARDS-AS-CODE`: dashboards committed (Grafana JSON, Grafonnet, Perses). L0 · fix J · assess.
-- [ ] **OB09** `AUDIT-TRAIL`: security-relevant actions (login, role change, export, deletion) written to an append-only log. L2≈ · fix J · trial.
-- [ ] **OB10** `QUIET-HEALTH-LOGS`: health checks left out of access logs. L2 · fix S · assess.
-- [ ] **OB11** `TRACE-SAMPLING`: a sampling ratio set from the environment. L2 · fix S · assess.
-- [ ] **OB12** `LOG-RETENTION`: retention set in the log stack, with `RETENTION` (PD). L1 · fix S · assess.
+- [ ] **OB01** `REQUEST-ID` (draft): a request-ID middleware (django-guid, asgi-correlation-id) with the ID in the log format and the response headers. L2 · fix S · trial. → v0.6.37
+- [ ] **OB02** `OPENTELEMETRY` (draft): the OpenTelemetry SDK configured from `OTEL_*` variables, the framework and HTTP clients instrumented, `traceparent` forwarded from the front. L2 · fix S · trial. → v0.6.37
+- [ ] **OB03** `SLO` (draft): objectives as code (OpenSLO, Sloth, Pyrra). L1 · fix J · assess. → v0.6.41
+- [ ] **OB04** `ALERT-ON-SYMPTOMS` (draft): alert rules on error rates and latency rather than CPU, read from Prometheus rule files. L2≈ · fix J · assess. → v0.6.41
+- [ ] **OB05** `METRICS-PRIVATE`: a `/metrics` endpoint behind authentication or on an internal port. L2 · fix J · trial. → v0.6.41
+- [ ] **OB06** `FRONT-ERRORS-CAPTURED`: browser errors reported (Sentry for Vue and Nuxt), source maps uploaded privately. L1 · fix S · trial. → v0.6.37
+- [ ] **OB07** `RELEASE-IN-EVENTS`: errors and traces carry the release (the commit SHA), so a regression points to a deploy. L2 · fix S · trial. → v0.6.37
+- [ ] **OB08** `DASHBOARDS-AS-CODE`: dashboards committed (Grafana JSON, Grafonnet, Perses). L0 · fix J · assess. → v0.6.41
+- [ ] **OB09** `AUDIT-TRAIL`: security-relevant actions (login, role change, export, deletion) written to an append-only log. L2≈ · fix J · trial. → v0.6.37
+- [ ] **OB10** `QUIET-HEALTH-LOGS`: health checks left out of access logs. L2 · fix S · assess. → v0.6.41
+- [ ] **OB11** `TRACE-SAMPLING`: a sampling ratio set from the environment. L2 · fix S · assess. → v0.6.41
+- [ ] **OB12** `LOG-RETENTION`: retention set in the log stack, with `RETENTION` (PD). L1 · fix S · assess. → v0.6.41
 
 #### CI · CI/CD
 
-- [ ] **CI01** `CI-PRESENT` (scored): "every change is checked before it ships" (decision 6): fast checks at each commit and the whole CI before each release, on the forge or on the machine with its verdict kept (`kiln ci`), or a CI on every pull request; read from any CI (C) with its triggers. With profiles (T-39), company and enterprise ask for CI on every pull request.
-- [ ] **CI02** `LINT-IN-CI` (scored): lint commands read per component from any CI, as for `TESTS-IN-CI` (TE), through `make`, `just`, `task`, `nox`, `tox` and package scripts.
-- [ ] **CI03** `WORKFLOW-INJECTION` (scored): zizmor's template-injection audit (F) instead of one regex; an expression passed through `env:` passes.
-- [ ] **CI04** `WORKFLOW-PERMISSIONS` (scored): `write-all`, and a job's `contents: write` with no step that writes, flagged.
-- [ ] **CI05** `PULL-REQUEST-TARGET` (scored): flagged when the workflow checks out or runs the pull request's head; `workflow_run` with downloaded artifacts too (zizmor's dangerous-triggers).
-- [ ] **CI06** `FAST-CI` (draft): median duration and runs that passed on retry read from the forge (L6); caches and concurrency as the static part. L6 · fix J · trial.
-- [ ] **CI07** `CI-CONCURRENCY`: `concurrency:` with `cancel-in-progress` on pull-request runs. L1 · fix S · adopt.
-- [ ] **CI08** `CI-TIMEOUTS`: `timeout-minutes` on every job (the default is 360). L1 · fix S · adopt.
-- [ ] **CI09** `CI-CACHES`: dependency caches on (setup-uv's `enable-cache`, setup-node's `cache`). L1 · fix S · adopt.
-- [ ] **CI10** `NO-PERSISTED-CREDENTIALS`: `actions/checkout` with `persist-credentials: false` (zizmor's artipacked). L1 · fix S · adopt.
-- [ ] **CI11** `ARTIFACT-RETENTION`: `retention-days` on uploaded artifacts. L1 · fix S · trial.
-- [ ] **CI12** `SUPPORTED-RUNNERS`: no runner image GitHub has retired (`ubuntu-20.04` in 2025, older macOS ones), a calendar like the runtimes'. L1 · fix S · adopt.
-- [ ] **CI13** `NO-DEPRECATED-COMMANDS`: no `::set-output` or `::save-state`; `$GITHUB_OUTPUT` and `$GITHUB_STATE`. L2 · fix S · adopt.
-- [ ] **CI14** `ACTIONLINT`: actionlint passes (expressions, types, the shellcheck it embeds). L4 · fix J · adopt.
-- [ ] **CI15** `ZIZMOR-CLEAN`: zizmor's audits pass, run by kiln or in CI. L4 · fix J · trial.
-- [ ] **CI16** `NO-SELF-HOSTED-ON-PUBLIC`: no self-hosted runner reachable from a public repo's pull requests; critical. L1 + L6 · fix J · adopt.
-- [ ] **CI17** `CACHE-POISONING`: release workflows restore no cache that pull requests can write (zizmor's cache-poisoning). L4 · fix J · trial.
-- [ ] **CI18** `SECRETS-THROUGH-ENV`: `${{ secrets.X }}` passed through `env:`, never inlined in `run:`. L2 · fix S · adopt.
-- [ ] **CI19** `REUSABLE-WORKFLOWS-PINNED`: `uses: org/repo/.github/workflows/x.yml@<sha>` (`PINNED-ACTIONS` extended); kiln's own workflows, cited by tag and moved by `kiln update`, stay one accepted way. L1 · fix S · adopt.
-- [ ] **CI20** `ACTIONS-UPDATED`: the `github-actions` ecosystem in the update bot's config (`DEPENDENCY-UPDATES` per ecosystem). L1 · fix S · adopt.
-- [ ] **CI21** `REQUIRED-CHECKS`: the integration branch requires the CI's checks (L6, T-158). L6 · fix J · trial.
-- [ ] **CI22** `MATRIX-COVERS-SUPPORT`: a library's CI matrix covers the versions it claims (`requires-python`, `engines`). L1 · fix S · trial.
-- [ ] **CI23** `PROVENANCE`: release artifacts attested (`actions/attest-build-provenance`, PyPI's attestations); T-90 asks it of kiln. L1 · fix S · trial.
-- [ ] **CI24** `BUILD-ONCE`: the artifact deployed is the one tested (an image promoted by digest), never rebuilt per environment. L2≈ · fix J · assess.
-- [ ] **CI25** `CI-REPLAYABLE`: the CI's commands run on a laptop too (`kiln ci`, `make ci`, `just ci`). L1≈ · fix J · trial.
-- [ ] **CI26** `GITLAB-PIPELINE-HYGIENE`: `interruptible`, `timeout`, `rules:` rather than `only` and `except`, includes pinned to a commit, protected variables. L1 · fix S · adopt (GitLab).
+- [ ] **CI01** `CI-PRESENT` (scored): "every change is checked before it ships" (decision 6): fast checks at each commit and the whole CI before each release, on the forge or on the machine with its verdict kept (`kiln ci`), or a CI on every pull request; read from any CI (C) with its triggers. With profiles (T-39), company and enterprise ask for CI on every pull request. → v0.6.21
+- [ ] **CI02** `LINT-IN-CI` (scored): lint commands read per component from any CI, as for `TESTS-IN-CI` (TE), through `make`, `just`, `task`, `nox`, `tox` and package scripts. → v0.6.21
+- [ ] **CI03** `WORKFLOW-INJECTION` (scored): zizmor's template-injection audit (F) instead of one regex; an expression passed through `env:` passes. → v0.6.21
+- [ ] **CI04** `WORKFLOW-PERMISSIONS` (scored): `write-all`, and a job's `contents: write` with no step that writes, flagged. → v0.6.21
+- [ ] **CI05** `PULL-REQUEST-TARGET` (scored): flagged when the workflow checks out or runs the pull request's head; `workflow_run` with downloaded artifacts too (zizmor's dangerous-triggers). → v0.6.21
+- [ ] **CI06** `FAST-CI` (draft): median duration and runs that passed on retry read from the forge (L6); caches and concurrency as the static part. L6 · fix J · trial. → v0.6.49
+- [ ] **CI07** `CI-CONCURRENCY`: `concurrency:` with `cancel-in-progress` on pull-request runs. L1 · fix S · adopt. → v0.6.22
+- [ ] **CI08** `CI-TIMEOUTS`: `timeout-minutes` on every job (the default is 360). L1 · fix S · adopt. → v0.5.13
+- [ ] **CI09** `CI-CACHES`: dependency caches on (setup-uv's `enable-cache`, setup-node's `cache`). L1 · fix S · adopt. → v0.6.22
+- [ ] **CI10** `NO-PERSISTED-CREDENTIALS`: `actions/checkout` with `persist-credentials: false` (zizmor's artipacked). L1 · fix S · adopt. → v0.5.13
+- [ ] **CI11** `ARTIFACT-RETENTION`: `retention-days` on uploaded artifacts. L1 · fix S · trial. → v0.6.22
+- [ ] **CI12** `SUPPORTED-RUNNERS`: no runner image GitHub has retired (`ubuntu-20.04` in 2025, older macOS ones), a calendar like the runtimes'. L1 · fix S · adopt. → v0.6.22
+- [ ] **CI13** `NO-DEPRECATED-COMMANDS`: no `::set-output` or `::save-state`; `$GITHUB_OUTPUT` and `$GITHUB_STATE`. L2 · fix S · adopt. → v0.6.18
+- [ ] **CI14** `ACTIONLINT`: actionlint passes (expressions, types, the shellcheck it embeds). L4 · fix J · adopt. → v0.6.22
+- [ ] **CI15** `ZIZMOR-CLEAN`: zizmor's audits pass, run by kiln or in CI. L4 · fix J · trial. → v0.6.22
+- [ ] **CI16** `NO-SELF-HOSTED-ON-PUBLIC`: no self-hosted runner reachable from a public repo's pull requests; critical. L1 + L6 · fix J · adopt. → v0.6.49
+- [ ] **CI17** `CACHE-POISONING`: release workflows restore no cache that pull requests can write (zizmor's cache-poisoning). L4 · fix J · trial. → v0.6.22
+- [ ] **CI18** `SECRETS-THROUGH-ENV`: `${{ secrets.X }}` passed through `env:`, never inlined in `run:`. L2 · fix S · adopt. → v0.6.22
+- [ ] **CI19** `REUSABLE-WORKFLOWS-PINNED`: `uses: org/repo/.github/workflows/x.yml@<sha>` (`PINNED-ACTIONS` extended); kiln's own workflows, cited by tag and moved by `kiln update`, stay one accepted way. L1 · fix S · adopt. → v0.6.22
+- [ ] **CI20** `ACTIONS-UPDATED`: the `github-actions` ecosystem in the update bot's config (`DEPENDENCY-UPDATES` per ecosystem). L1 · fix S · adopt. → v0.6.22
+- [ ] **CI21** `REQUIRED-CHECKS`: the integration branch requires the CI's checks (L6, T-158). L6 · fix J · trial. → v0.6.49
+- [ ] **CI22** `MATRIX-COVERS-SUPPORT`: a library's CI matrix covers the versions it claims (`requires-python`, `engines`). L1 · fix S · trial. → v0.6.22
+- [ ] **CI23** `PROVENANCE`: release artifacts attested (`actions/attest-build-provenance`, PyPI's attestations); T-90 asks it of kiln. L1 · fix S · trial. → v0.6.22
+- [ ] **CI24** `BUILD-ONCE`: the artifact deployed is the one tested (an image promoted by digest), never rebuilt per environment. L2≈ · fix J · assess. → v0.6.22
+- [ ] **CI25** `CI-REPLAYABLE`: the CI's commands run on a laptop too (`kiln ci`, `make ci`, `just ci`). L1≈ · fix J · trial. → v0.6.22
+- [ ] **CI26** `GITLAB-PIPELINE-HYGIENE`: `interruptible`, `timeout`, `rules:` rather than `only` and `except`, includes pinned to a commit, protected variables. L1 · fix S · adopt (GitLab). → v0.6.62
 
 #### GV · Git and versions
 
 The six drafts are questions about history: `--history` (M) gives them detectors.
 
-- [ ] **GV01** `SMALL-COMMITS` (draft): median size of the last hundred non-merge commits, and the share of subjects in the Conventional Commits form. L5 · ratchet · trial.
-- [ ] **GV02** `BRANCH-NAMES` (draft): merged branches' names, from merge subjects or the forge, carry a type prefix. L5 · fix J · trial.
-- [ ] **GV03** `MERGE-COMMITS` (draft): merges kept on the integration branch, visible in history, where the profile asks for them. L5 · fix J · assess.
-- [ ] **GV04** `NO-COMMIT-ON-INTEGRATION` (draft): non-merge commits made straight on the integration branch, bots aside; branch protection with `--online`. L5 · ratchet · trial.
-- [ ] **GV05** `RELEASE-NOTES` (draft): each release tag has its CHANGELOG entry or forge release, breaking changes first. L5 · fix J · trial.
-- [ ] **GV06** `RELEASES-FROM-MAIN` (draft): release tags reachable from main, deploy workflows triggered by tags. L5 · fix J · trial.
-- [ ] **GV07** `CHANGELOG`: a `CHANGELOG.md` in the Keep a Changelog shape, or generated (release-please, git-cliff). L0 · fix S · trial.
-- [ ] **GV08** `SEMVER-TAGS`: release tags parse as versions and only go up. L5 · fix J · trial.
-- [ ] **GV09** `SIGNED-TAGS`: release tags signed (SSH or GPG), verified with `--online`. L5 · fix J · assess.
-- [ ] **GV10** `NO-SECRETS-IN-HISTORY`: secret patterns searched in every reachable blob, not only the tree; critical. The fix rotates first; history is rewritten only on the user's decision. L5 · fix J · adopt.
-- [ ] **GV11** `NO-LARGE-BLOBS`: no blob over about 5 MB in history outside LFS. L5 · fix J · adopt.
-- [ ] **GV12** `LFS-FOR-BINARIES`: large binary assets tracked by LFS or stored elsewhere. L0 · fix J · trial.
-- [ ] **GV13** `NO-CONFLICT-MARKERS`: no `<<<<<<<`, `=======` or `>>>>>>>` line in tracked text, docs that teach git aside. L2 · fix J · adopt.
-- [ ] **GV14** `NO-CASE-COLLISIONS`: no two paths that differ only by case (they break checkouts on macOS and Windows). L0 · fix J · adopt.
-- [ ] **GV15** `PORTABLE-PATHS`: no name Windows refuses (`CON`, `aux.py`, a trailing dot or space, `:*?"<>|`). L0 · fix J · adopt.
-- [ ] **GV16** `BLAME-IGNORE-REVS`: mass-reformatting commits listed in `.git-blame-ignore-revs`. L5 · fix S · trial.
-- [ ] **GV17** `SUBMODULES-SANE`: submodules over HTTPS, pinned to commits their remote still has. L1 + L6 · fix J · trial.
-- [ ] **GV18** `CODEOWNERS-VALID`: paths that exist and owners that exist (L6), for team profiles. L1 · fix J · trial.
-- [ ] **GV19** `NO-FORCE-PUSH-ON-MAIN`: force pushes and deletions blocked on the release and integration branches (L6, T-158). L6 · fix J · adopt.
-- [ ] **GV20** `STALE-BRANCHES`: branches merged long ago and still on the remote (`/kiln:cleanup`, for the forge). L6 · fix S · assess.
+- [ ] **GV01** `SMALL-COMMITS` (draft): median size of the last hundred non-merge commits, and the share of subjects in the Conventional Commits form. L5 · ratchet · trial. → v0.6.48
+- [ ] **GV02** `BRANCH-NAMES` (draft): merged branches' names, from merge subjects or the forge, carry a type prefix. L5 · fix J · trial. → v0.6.48
+- [ ] **GV03** `MERGE-COMMITS` (draft): merges kept on the integration branch, visible in history, where the profile asks for them. L5 · fix J · assess. → v0.6.48
+- [ ] **GV04** `NO-COMMIT-ON-INTEGRATION` (draft): non-merge commits made straight on the integration branch, bots aside; branch protection with `--online`. L5 · ratchet · trial. → v0.6.48
+- [ ] **GV05** `RELEASE-NOTES` (draft): each release tag has its CHANGELOG entry or forge release, breaking changes first. L5 · fix J · trial. → v0.6.48
+- [ ] **GV06** `RELEASES-FROM-MAIN` (draft): release tags reachable from main, deploy workflows triggered by tags. L5 · fix J · trial. → v0.6.48
+- [ ] **GV07** `CHANGELOG`: a `CHANGELOG.md` in the Keep a Changelog shape, or generated (release-please, git-cliff). L0 · fix S · trial. → v0.6.48
+- [ ] **GV08** `SEMVER-TAGS`: release tags parse as versions and only go up. L5 · fix J · trial. → v0.6.48
+- [ ] **GV09** `SIGNED-TAGS`: release tags signed (SSH or GPG), verified with `--online`. L5 · fix J · assess. → v0.6.48
+- [ ] **GV10** `NO-SECRETS-IN-HISTORY`: secret patterns searched in every reachable blob, not only the tree; critical. The fix rotates first; history is rewritten only on the user's decision. L5 · fix J · adopt. → v0.6.47
+- [ ] **GV11** `NO-LARGE-BLOBS`: no blob over about 5 MB in history outside LFS. L5 · fix J · adopt. → v0.6.47
+- [ ] **GV12** `LFS-FOR-BINARIES`: large binary assets tracked by LFS or stored elsewhere. L0 · fix J · trial. → v0.6.47
+- [ ] **GV13** `NO-CONFLICT-MARKERS`: no `<<<<<<<`, `=======` or `>>>>>>>` line in tracked text, docs that teach git aside. L2 · fix J · adopt. → v0.5.13
+- [ ] **GV14** `NO-CASE-COLLISIONS`: no two paths that differ only by case (they break checkouts on macOS and Windows). L0 · fix J · adopt. → v0.6.42
+- [ ] **GV15** `PORTABLE-PATHS`: no name Windows refuses (`CON`, `aux.py`, a trailing dot or space, `:*?"<>|`). L0 · fix J · adopt. → v0.6.42
+- [ ] **GV16** `BLAME-IGNORE-REVS`: mass-reformatting commits listed in `.git-blame-ignore-revs`. L5 · fix S · trial. → v0.6.48
+- [ ] **GV17** `SUBMODULES-SANE`: submodules over HTTPS, pinned to commits their remote still has. L1 + L6 · fix J · trial. → v0.6.49
+- [ ] **GV18** `CODEOWNERS-VALID`: paths that exist and owners that exist (L6), for team profiles. L1 · fix J · trial. → v0.6.49
+- [ ] **GV19** `NO-FORCE-PUSH-ON-MAIN`: force pushes and deletions blocked on the release and integration branches (L6, T-158). L6 · fix J · adopt. → v0.6.49
+- [ ] **GV20** `STALE-BRANCHES`: branches merged long ago and still on the remote (`/kiln:cleanup`, for the forge). L6 · fix S · assess. → v0.6.49
 
 #### DT · Docs and tracking
 
-- [ ] **DT01** `README` (scored): sections that say what it is and how to install, run, test and deploy, commands that exist (L3); the bare file isn't enough.
-- [ ] **DT02** `WORK-TRACKING` (draft): one backlog file, ordered, with a done log, or the forge's issues in use (L6). L0 · fix S · trial.
-- [ ] **DT03** `README-COMMANDS`: commands in the README's code blocks exist (scripts, Makefile targets, package scripts, `manage.py` commands); `--deep` runs the install ones in a sandbox. L3 · fix J · trial.
-- [ ] **DT04** `LINKS-ALIVE`: links and anchors between Markdown files resolve; outside links with `--online` (lychee). L3 · fix S · trial.
-- [ ] **DT05** `DOCS-BUILD-STRICT`: a docs site builds strictly in CI (`mkdocs build --strict`, Sphinx's `-W`). L1 · fix S · trial.
-- [ ] **DT06** `DOCSTRINGS-PUBLIC`: public functions of libraries documented (ruff's D1, one convention). L4 · ratchet · trial.
-- [ ] **DT07** `DOCS-NOT-STALE`: docs naming a function, option, command or file that no longer exists. L3 · fix J · trial.
-- [ ] **DT08** `API-DOCS-SERVED`: an API with a schema serves its docs in development (Swagger UI, Scalar, Ninja's `/docs`). L2 · fix S · trial.
-- [ ] **DT09** `MARKDOWN-LINT`: markdownlint or rumdl configured where docs are many. L1 · fix S · assess.
-- [ ] **DT10** `GLOSSARY`: a glossary of the domain's words, read by `DOMAIN-VOCABULARY`. L0 · fix J · assess.
+- [ ] **DT01** `README` (scored): sections that say what it is and how to install, run, test and deploy, commands that exist (L3); the bare file isn't enough. → v0.6.43
+- [ ] **DT02** `WORK-TRACKING` (draft): one backlog file, ordered, with a done log, or the forge's issues in use (L6). L0 · fix S · trial. → v0.6.43
+- [ ] **DT03** `README-COMMANDS`: commands in the README's code blocks exist (scripts, Makefile targets, package scripts, `manage.py` commands); `--deep` runs the install ones in a sandbox. L3 · fix J · trial. → v0.6.43
+- [ ] **DT04** `LINKS-ALIVE`: links and anchors between Markdown files resolve; outside links with `--online` (lychee). L3 · fix S · trial. → v0.6.43
+- [ ] **DT05** `DOCS-BUILD-STRICT`: a docs site builds strictly in CI (`mkdocs build --strict`, Sphinx's `-W`). L1 · fix S · trial. → v0.6.43
+- [ ] **DT06** `DOCSTRINGS-PUBLIC`: public functions of libraries documented (ruff's D1, one convention). L4 · ratchet · trial. → v0.6.43
+- [ ] **DT07** `DOCS-NOT-STALE`: docs naming a function, option, command or file that no longer exists. L3 · fix J · trial. → v0.6.43
+- [ ] **DT08** `API-DOCS-SERVED`: an API with a schema serves its docs in development (Swagger UI, Scalar, Ninja's `/docs`). L2 · fix S · trial. → v0.6.43
+- [ ] **DT09** `MARKDOWN-LINT`: markdownlint or rumdl configured where docs are many. L1 · fix S · assess. → v0.6.43
+- [ ] **DT10** `GLOSSARY`: a glossary of the domain's words, read by `DOMAIN-VOCABULARY`. L0 · fix J · assess. → v0.6.43
 
 #### AI · AI-assisted development
 
-- [ ] **AI01** `AI-CONTEXT` (scored): from "a file exists" to its quality: under a size budget, its map's paths existing, its commands running, nothing contradicting the settings. L3.
-- [ ] **AI02** `AI-CONFIDENTIALITY` (draft): Claude Code's `permissions.deny` covers `.env*`, keys and dumps; no real personal data in the fixtures an agent reads (PD). L1 · fix S · trial.
-- [ ] **AI03** `AI-ACCOUNTABILITY` (draft): agent-written changes pass the same checks and review: hooks or CI enforce the rules, nothing lets an agent merge alone. L1≈ · fix J · assess.
-- [ ] **AI04** `AI-FEATURES` (draft): calls to a model's API carry `max_tokens`, a timeout and a fallback; evaluations sit in the repo and run in CI (promptfoo, a pytest suite). L2 · fix J · trial.
-- [ ] **AI05** `CONTEXT-BUDGET`: CLAUDE.md, the rules it loads and the skills' descriptions under a token budget (context length is the cost, measured on 22 October 2026). L1 · ratchet · trial.
-- [ ] **AI06** `NARROW-PERMISSIONS`: no `Bash(*)`, no `bypassPermissions` default mode, no wildcard web access in committed settings. L1 · fix J · adopt.
-- [ ] **AI07** `MCP-PINNED`: MCP servers in `.mcp.json` pinned (`npx pkg@x.y.z`, `uvx pkg==x.y.z`, an image digest). L1 · fix S · adopt.
-- [ ] **AI08** `MCP-NO-LITERAL-SECRETS`: `.mcp.json` passes `${VAR}` references, never tokens; critical. L1 · fix J · adopt.
-- [ ] **AI09** `PLUGINS-VALID`: skills, agents and commands well formed (name matching the folder, a description, the files they cite present), as `test_plugins.py` checks for kiln. L1 · fix J · adopt.
-- [ ] **AI10** `HOOKS-SAFE`: hooks in committed settings exist at their paths and download nothing. L1 · fix J · adopt.
-- [ ] **AI11** `AGENTS-MD-POINTER`: where a team uses other agents, `AGENTS.md` points to CLAUDE.md rather than holding a second truth. L0 · fix S · assess.
-- [ ] **AI12** `LLM-KEYS-SERVER-SIDE`: no model provider's key reachable from front code or a public env prefix; critical. L2 · fix J · adopt.
-- [ ] **AI13** `LLM-MODELS-CURRENT`: model IDs not retired, from a bundled calendar like the runtimes'. L2 · fix S · trial.
-- [ ] **AI14** `LLM-OUTPUT-VALIDATED`: structured outputs parsed by a schema (tool use, JSON schema) before use. L2≈ · fix J · trial.
-- [ ] **AI15** `PROMPTS-AS-FILES`: prompts versioned as files, reviewable, not scattered strings. L2≈ · fix J · assess.
-- [ ] **AI16** `TOOLS-LEAST-PRIVILEGE`: an agent fed untrusted content gets read-only tools, its input delimited. L2≈ · fix J · assess.
-- [ ] **AI17** `PII-TO-LLM`: personal fields sent to a model's API flagged (PD). L3≈ · fix J · trial.
-- [ ] **AI18** `PROMPT-CACHING`: long static system prompts marked for caching (`cache_control` on Anthropic's API). L2 · fix S · assess.
+- [ ] **AI01** `AI-CONTEXT` (scored): from "a file exists" to its quality: under a size budget, its map's paths existing, its commands running, nothing contradicting the settings. L3. → v0.6.43
+- [ ] **AI02** `AI-CONFIDENTIALITY` (draft): Claude Code's `permissions.deny` covers `.env*`, keys and dumps; no real personal data in the fixtures an agent reads (PD). L1 · fix S · trial. → v0.5.14
+- [ ] **AI03** `AI-ACCOUNTABILITY` (draft): agent-written changes pass the same checks and review: hooks or CI enforce the rules, nothing lets an agent merge alone. L1≈ · fix J · assess. → v0.5.14
+- [ ] **AI04** `AI-FEATURES` (draft): calls to a model's API carry `max_tokens`, a timeout and a fallback; evaluations sit in the repo and run in CI (promptfoo, a pytest suite). L2 · fix J · trial. → v0.5.14
+- [ ] **AI05** `CONTEXT-BUDGET`: CLAUDE.md, the rules it loads and the skills' descriptions under a token budget (context length is the cost, measured on 22 October 2026). L1 · ratchet · trial. → v0.5.7
+- [ ] **AI06** `NARROW-PERMISSIONS`: no `Bash(*)`, no `bypassPermissions` default mode, no wildcard web access in committed settings. L1 · fix J · adopt. → v0.5.14
+- [ ] **AI07** `MCP-PINNED`: MCP servers in `.mcp.json` pinned (`npx pkg@x.y.z`, `uvx pkg==x.y.z`, an image digest). L1 · fix S · adopt. → v0.5.14
+- [ ] **AI08** `MCP-NO-LITERAL-SECRETS`: `.mcp.json` passes `${VAR}` references, never tokens; critical. L1 · fix J · adopt. → v0.5.14
+- [ ] **AI09** `PLUGINS-VALID`: skills, agents and commands well formed (name matching the folder, a description, the files they cite present), as `test_plugins.py` checks for kiln. L1 · fix J · adopt. → v0.5.14
+- [ ] **AI10** `HOOKS-SAFE`: hooks in committed settings exist at their paths and download nothing. L1 · fix J · adopt. → v0.5.14
+- [ ] **AI11** `AGENTS-MD-POINTER`: where a team uses other agents, `AGENTS.md` points to CLAUDE.md rather than holding a second truth. L0 · fix S · assess. → v0.5.14
+- [ ] **AI12** `LLM-KEYS-SERVER-SIDE`: no model provider's key reachable from front code or a public env prefix; critical. L2 · fix J · adopt. → v0.5.14
+- [ ] **AI13** `LLM-MODELS-CURRENT`: model IDs not retired, from a bundled calendar like the runtimes'. L2 · fix S · trial. → v0.5.14
+- [ ] **AI14** `LLM-OUTPUT-VALIDATED`: structured outputs parsed by a schema (tool use, JSON schema) before use. L2≈ · fix J · trial. → v0.5.14
+- [ ] **AI15** `PROMPTS-AS-FILES`: prompts versioned as files, reviewable, not scattered strings. L2≈ · fix J · assess. → v0.5.14
+- [ ] **AI16** `TOOLS-LEAST-PRIVILEGE`: an agent fed untrusted content gets read-only tools, its input delimited. L2≈ · fix J · assess. → v0.5.14
+- [ ] **AI17** `PII-TO-LLM`: personal fields sent to a model's API flagged (PD). L3≈ · fix J · trial. → v0.6.45
+- [ ] **AI18** `PROMPT-CACHING`: long static system prompts marked for caching (`cache_control` on Anthropic's API). L2 · fix S · assess. → v0.5.14
 
 #### BD · Business domain
 
-- [ ] **BD01** `MONEY` (draft): `FloatField`, `float` or JS `number` arithmetic on names like price, amount, total, fee or balance; integers of the smallest unit stay the grid's way. L2≈ · fix J · trial.
-- [ ] **BD02** `TIME-ZONE` (draft): naive datetimes, `TIME_ZONE` set, calendar computations through `zoneinfo` (with `NAIVE-DATETIMES` and `USE-TZ`). L2 · fix J · trial.
-- [ ] **BD03** `WEBHOOKS-VERIFIED`: incoming webhooks check their signature (Stripe's `construct_event`, GitHub's `X-Hub-Signature-256` compared in constant time). L2 · fix J · adopt.
-- [ ] **BD04** `WEBHOOKS-DEDUPLICATED`: events stored by ID before they're handled. L2≈ · fix J · trial.
-- [ ] **BD05** `PAYMENTS-BY-PROVIDER`: card numbers never reach the server (Checkout or Elements), no `card_number` field anywhere; critical. L2 · fix J · adopt.
-- [ ] **BD06** `CURRENCY-WITH-AMOUNT`: every amount carries its ISO 4217 currency. L2≈ · fix J · assess.
-- [ ] **BD07** `EXPLICIT-ROUNDING`: the rounding mode stated wherever amounts are divided (taxes, splits). L2≈ · fix J · trial.
-- [ ] **BD08** `EMAILS-CASE-INSENSITIVE`: e-mail uniqueness ignores case (a `Lower()` unique constraint, `citext`). L2 · fix J · trial.
-- [ ] **BD09** `PHONES-E164`: phone numbers stored in E.164 (phonenumbers, libphonenumber). L2≈ · fix J · assess.
-- [ ] **BD10** `NAMES-AS-GIVEN`: no forced first and last name split, no ASCII-only or short-capped names. L2≈ · fix J · assess.
-- [ ] **BD11** `DATES-NOT-DATETIMES`: birthdays and due dates stored as dates. L2≈ · fix J · assess.
-- [ ] **BD12** `INVOICE-NUMBERING`: invoice numbers in one continuous chronological sequence where the law asks for it (France among others), taken inside a transaction. L2≈ · fix J · assess.
-- [ ] **BD13** `TAX-RATES-AS-DATA`: VAT rates and thresholds held as dated data, not in code. L2≈ · fix J · assess.
-- [ ] **BD14** `ONE-CLICK-UNSUBSCRIBE`: bulk mail with `List-Unsubscribe` and one-click unsubscribe (RFC 8058, required by Gmail and Yahoo for bulk senders since 2024). L2≈ · fix J · trial.
-- [ ] **BD15** `MAIL-AUTHENTICATED`: SPF, DKIM and DMARC for the sending domain, checked in DNS with `--online`. L6 · fix J · trial.
+- [ ] **BD01** `MONEY` (draft): `FloatField`, `float` or JS `number` arithmetic on names like price, amount, total, fee or balance; integers of the smallest unit stay the grid's way. L2≈ · fix J · trial. → v0.6.46
+- [ ] **BD02** `TIME-ZONE` (draft): naive datetimes, `TIME_ZONE` set, calendar computations through `zoneinfo` (with `NAIVE-DATETIMES` and `USE-TZ`). L2 · fix J · trial. → v0.6.46
+- [ ] **BD03** `WEBHOOKS-VERIFIED`: incoming webhooks check their signature (Stripe's `construct_event`, GitHub's `X-Hub-Signature-256` compared in constant time). L2 · fix J · adopt. → v0.6.46
+- [ ] **BD04** `WEBHOOKS-DEDUPLICATED`: events stored by ID before they're handled. L2≈ · fix J · trial. → v0.6.46
+- [ ] **BD05** `PAYMENTS-BY-PROVIDER`: card numbers never reach the server (Checkout or Elements), no `card_number` field anywhere; critical. L2 · fix J · adopt. → v0.6.46
+- [ ] **BD06** `CURRENCY-WITH-AMOUNT`: every amount carries its ISO 4217 currency. L2≈ · fix J · assess. → v0.6.46
+- [ ] **BD07** `EXPLICIT-ROUNDING`: the rounding mode stated wherever amounts are divided (taxes, splits). L2≈ · fix J · trial. → v0.6.46
+- [ ] **BD08** `EMAILS-CASE-INSENSITIVE`: e-mail uniqueness ignores case (a `Lower()` unique constraint, `citext`). L2 · fix J · trial. → v0.6.46
+- [ ] **BD09** `PHONES-E164`: phone numbers stored in E.164 (phonenumbers, libphonenumber). L2≈ · fix J · assess. → v0.6.46
+- [ ] **BD10** `NAMES-AS-GIVEN`: no forced first and last name split, no ASCII-only or short-capped names. L2≈ · fix J · assess. → v0.6.46
+- [ ] **BD11** `DATES-NOT-DATETIMES`: birthdays and due dates stored as dates. L2≈ · fix J · assess. → v0.6.46
+- [ ] **BD12** `INVOICE-NUMBERING`: invoice numbers in one continuous chronological sequence where the law asks for it (France among others), taken inside a transaction. L2≈ · fix J · assess. → v0.6.46
+- [ ] **BD13** `TAX-RATES-AS-DATA`: VAT rates and thresholds held as dated data, not in code. L2≈ · fix J · assess. → v0.6.46
+- [ ] **BD14** `ONE-CLICK-UNSUBSCRIBE`: bulk mail with `List-Unsubscribe` and one-click unsubscribe (RFC 8058, required by Gmail and Yahoo for bulk senders since 2024). L2≈ · fix J · trial. → v0.6.46
+- [ ] **BD15** `MAIL-AUTHENTICATED`: SPF, DKIM and DMARC for the sending domain, checked in DNS with `--online`. L6 · fix J · trial. → v0.6.46
 
 #### New themes
 
@@ -2948,97 +3406,97 @@ themes; their sections stay here so their IDs hold.
 
 #### LI · Licensing (`licensing`)
 
-- [ ] **LI01** `LICENSE-FILE`: a licence file whose text matches an SPDX licence (matched as licensee does), or "all rights reserved" stated for private work. L1 · fix J · adopt (open source).
-- [ ] **LI02** `LICENSE-DECLARED`: the manifest's licence as an SPDX expression (`license = "MIT"` with PEP 639, package.json's `license`). L1 · fix S · adopt.
-- [ ] **LI03** `LICENSE-CONSISTENT`: the file, the manifests and the README say the same licence. L1 · fix J · adopt.
-- [ ] **LI04** `DEPENDENCY-LICENSES`: licences of the locked dependencies compatible with the project's and its profile (no AGPL in a closed service without a decision), from the registries (L6) or a bundled cache. L6 · fix J · trial.
-- [ ] **LI05** `THIRD-PARTY-NOTICES`: vendored code keeps its licence and notice. L1 · fix J · adopt.
-- [ ] **LI06** `ASSETS-LICENSED`: fonts, images and icons committed with their licence or source (a font's OFL file). L0≈ · fix J · trial.
-- [ ] **LI07** `SPDX-HEADERS`: REUSE-compliant headers or a `REUSE.toml`, for projects that want them. L1 · fix S · assess.
-- [ ] **LI08** `SIGN-OFF`: contributions under a DCO sign-off or a CLA, for profiles that need one. L5 · fix J · assess.
+- [ ] **LI01** `LICENSE-FILE`: a licence file whose text matches an SPDX licence (matched as licensee does), or "all rights reserved" stated for private work. L1 · fix J · adopt (open source). → v0.5.13
+- [ ] **LI02** `LICENSE-DECLARED`: the manifest's licence as an SPDX expression (`license = "MIT"` with PEP 639, package.json's `license`). L1 · fix S · adopt. → v0.6.58
+- [ ] **LI03** `LICENSE-CONSISTENT`: the file, the manifests and the README say the same licence. L1 · fix J · adopt. → v0.6.58
+- [ ] **LI04** `DEPENDENCY-LICENSES`: licences of the locked dependencies compatible with the project's and its profile (no AGPL in a closed service without a decision), from the registries (L6) or a bundled cache. L6 · fix J · trial. → v0.6.50
+- [ ] **LI05** `THIRD-PARTY-NOTICES`: vendored code keeps its licence and notice. L1 · fix J · adopt. → v0.6.58
+- [ ] **LI06** `ASSETS-LICENSED`: fonts, images and icons committed with their licence or source (a font's OFL file). L0≈ · fix J · trial. → v0.6.58
+- [ ] **LI07** `SPDX-HEADERS`: REUSE-compliant headers or a `REUSE.toml`, for projects that want them. L1 · fix S · assess. → v0.6.58
+- [ ] **LI08** `SIGN-OFF`: contributions under a DCO sign-off or a CLA, for profiles that need one. L5 · fix J · assess. → v0.6.58
 
 #### IN · Infrastructure as code (`infrastructure`)
 
-- [ ] **IN01** `TF-LOCK`: `.terraform.lock.hcl` committed. L0 · fix S · adopt.
-- [ ] **IN02** `TF-REMOTE-STATE`: no `*.tfstate` committed (state holds secrets), a remote backend declared; critical when state is tracked. L0 · fix J · adopt.
-- [ ] **IN03** `TF-VERSIONS-PINNED`: `required_version` and provider constraints set; registry modules pinned to versions, git modules to commits. L1 · fix S · adopt.
-- [ ] **IN04** `TF-CHECKED`: `fmt -check`, `validate` and tflint in CI (Terraform or OpenTofu). L1 · fix S · trial.
-- [ ] **IN05** `IAC-SCANNED`: checkov, Trivy's config scan or KICS in CI. L1 · fix S · trial.
-- [ ] **IN06** `NO-PUBLIC-BUCKETS`: storage buckets private unless declared public with a reason; public access blocked by default. L1 · fix J · adopt.
-- [ ] **IN07** `ENCRYPTED-AT-REST`: databases, volumes and buckets encrypted in the IaC. L1 · fix S · trial.
-- [ ] **IN08** `K8S-SECURITY-CONTEXT`: `runAsNonRoot`, `readOnlyRootFilesystem`, `allowPrivilegeEscalation: false`, capabilities dropped (the restricted Pod Security Standard). L1 · fix S · adopt.
-- [ ] **IN09** `K8S-RESOURCES`: memory requests and limits, CPU requests. L1 · fix S · adopt.
-- [ ] **IN10** `K8S-PROBES`: readiness and liveness probes on different endpoints. L1 · fix S · adopt.
-- [ ] **IN11** `K8S-NO-LATEST`: no `:latest` or untagged image (`IMAGES-BY-DIGEST` reads manifests too). L1 · fix S · adopt.
-- [ ] **IN12** `K8S-NETWORK-POLICIES`: a default-deny NetworkPolicy per namespace. L1 · fix J · trial.
-- [ ] **IN13** `K8S-SECRETS-EXTERNAL`: no Secret manifest holding real data; External Secrets, Sealed Secrets or sops instead. L1 · fix J · adopt.
-- [ ] **IN14** `K8S-SUPPORTED-APIS`: no API version Kubernetes has removed (`extensions/v1beta1`, `policy/v1beta1`), from pluto's data. L1 · fix S · adopt.
-- [ ] **IN15** `HELM-CHARTS`: `values.schema.json` present, `Chart.lock` committed. L0 · fix J · trial.
-- [ ] **IN16** `ANSIBLE-LINT`: ansible-lint clean, secrets in Vault rather than plain variables. L4 · fix J · trial.
-- [ ] **IN17** `IAC-TAGS`: resources tagged with an owner and a cost centre, for company profiles. L1 · fix S · assess.
+- [ ] **IN01** `TF-LOCK`: `.terraform.lock.hcl` committed. L0 · fix S · adopt. → v0.6.60
+- [ ] **IN02** `TF-REMOTE-STATE`: no `*.tfstate` committed (state holds secrets), a remote backend declared; critical when state is tracked. L0 · fix J · adopt. → v0.5.13
+- [ ] **IN03** `TF-VERSIONS-PINNED`: `required_version` and provider constraints set; registry modules pinned to versions, git modules to commits. L1 · fix S · adopt. → v0.6.60
+- [ ] **IN04** `TF-CHECKED`: `fmt -check`, `validate` and tflint in CI (Terraform or OpenTofu). L1 · fix S · trial. → v0.6.60
+- [ ] **IN05** `IAC-SCANNED`: checkov, Trivy's config scan or KICS in CI. L1 · fix S · trial. → v0.6.60
+- [ ] **IN06** `NO-PUBLIC-BUCKETS`: storage buckets private unless declared public with a reason; public access blocked by default. L1 · fix J · adopt. → v0.6.60
+- [ ] **IN07** `ENCRYPTED-AT-REST`: databases, volumes and buckets encrypted in the IaC. L1 · fix S · trial. → v0.6.60
+- [ ] **IN08** `K8S-SECURITY-CONTEXT`: `runAsNonRoot`, `readOnlyRootFilesystem`, `allowPrivilegeEscalation: false`, capabilities dropped (the restricted Pod Security Standard). L1 · fix S · adopt. → v0.6.60
+- [ ] **IN09** `K8S-RESOURCES`: memory requests and limits, CPU requests. L1 · fix S · adopt. → v0.6.60
+- [ ] **IN10** `K8S-PROBES`: readiness and liveness probes on different endpoints. L1 · fix S · adopt. → v0.6.60
+- [ ] **IN11** `K8S-NO-LATEST`: no `:latest` or untagged image (`IMAGES-BY-DIGEST` reads manifests too). L1 · fix S · adopt. → v0.6.60
+- [ ] **IN12** `K8S-NETWORK-POLICIES`: a default-deny NetworkPolicy per namespace. L1 · fix J · trial. → v0.6.60
+- [ ] **IN13** `K8S-SECRETS-EXTERNAL`: no Secret manifest holding real data; External Secrets, Sealed Secrets or sops instead. L1 · fix J · adopt. → v0.6.60
+- [ ] **IN14** `K8S-SUPPORTED-APIS`: no API version Kubernetes has removed (`extensions/v1beta1`, `policy/v1beta1`), from pluto's data. L1 · fix S · adopt. → v0.6.60
+- [ ] **IN15** `HELM-CHARTS`: `values.schema.json` present, `Chart.lock` committed. L0 · fix J · trial. → v0.6.60
+- [ ] **IN16** `ANSIBLE-LINT`: ansible-lint clean, secrets in Vault rather than plain variables. L4 · fix J · trial. → v0.6.60
+- [ ] **IN17** `IAC-TAGS`: resources tagged with an owner and a cost centre, for company profiles. L1 · fix S · assess. → v0.6.60
 
 #### DS · Data science (`data-science`)
 
 The first data repos came through issues (#43, #44): v0.4.6 deploys a Streamlit or Dash front
 (T-155) and adds `MODEL-TRACED` (T-156). This theme gathers what such repos need.
 
-- [ ] **DS01** `MODEL-TRACED` (trial, v0.4.6): moves here from data-migrations; promoted once its precision is measured on data repos.
-- [ ] **DS02** `NOTEBOOK-OUTPUTS-CLEAN`: notebooks committed without outputs or execution counts (nbstripout, or Jupytext pairs). L1 · fix S · adopt.
-- [ ] **DS03** `NOTEBOOKS-PAIRED`: notebooks paired with a `.py` file (Jupytext's percent format) so diffs and reviews work. L1 · fix S · trial.
-- [ ] **DS04** `NOTEBOOK-SECRETS`: no token in a cell or an output; `SECRETS` reads a `.ipynb` as cells, not as one JSON string. L2 · fix J · adopt.
-- [ ] **DS05** `NO-ABSOLUTE-PATHS`: no `/home/…`, `C:\Users\…` or `/content/drive` path in code or notebooks. L2 · fix J · adopt.
-- [ ] **DS06** `DATA-OUT-OF-GIT`: datasets over a few MB kept out of git (DVC, LFS, a bucket), described by a pointer. L0 · fix J · adopt.
-- [ ] **DS07** `SEEDS-SET`: random seeds fixed where results are reported (`numpy.random.default_rng(seed)`, `torch.manual_seed`). L2≈ · fix J · trial.
-- [ ] **DS08** `ENVIRONMENT-LOCKED`: the analysis environment locked (uv, conda-lock, pixi, renv). L1 · fix S · adopt.
-- [ ] **DS09** `PIPELINE-DECLARED`: steps declared (DVC stages, Snakemake, a Makefile), not notebooks run by hand in order. L0 · fix J · trial.
-- [ ] **DS10** `STREAMLIT-SECRETS-IGNORED`: `.streamlit/secrets.toml` ignored and untracked; critical when tracked. L0 · fix S · adopt.
-- [ ] **DS11** `NOTEBOOKS-RUN-IN-CI`: notebooks that are part of the deliverable executed in CI (nbmake, papermill). L1 · fix S · trial.
-- [ ] **DS12** `SAFE-MODEL-LOADING`: no `pickle.load` or `torch.load(..., weights_only=False)` on downloaded files; safetensors or ONNX for models from outside. L2 · fix S · adopt.
-- [ ] **DS13** `EXPERIMENTS-TRACKED`: runs logged with their commit (MLflow, a results file). L1≈ · fix J · assess.
-- [ ] **DS14** `DATA-SCHEMA`: input tables validated by a schema (pandera, Great Expectations, Pydantic). L2≈ · fix J · assess.
+- [ ] **DS01** `MODEL-TRACED` (trial, v0.4.6): moves here from data-migrations; promoted once its precision is measured on data repos. → v0.5.13
+- [ ] **DS02** `NOTEBOOK-OUTPUTS-CLEAN`: notebooks committed without outputs or execution counts (nbstripout, or Jupytext pairs). L1 · fix S · adopt. → v0.6.57
+- [ ] **DS03** `NOTEBOOKS-PAIRED`: notebooks paired with a `.py` file (Jupytext's percent format) so diffs and reviews work. L1 · fix S · trial. → v0.6.57
+- [ ] **DS04** `NOTEBOOK-SECRETS`: no token in a cell or an output; `SECRETS` reads a `.ipynb` as cells, not as one JSON string. L2 · fix J · adopt. → v0.6.57
+- [ ] **DS05** `NO-ABSOLUTE-PATHS`: no `/home/…`, `C:\Users\…` or `/content/drive` path in code or notebooks. L2 · fix J · adopt. → v0.6.57
+- [ ] **DS06** `DATA-OUT-OF-GIT`: datasets over a few MB kept out of git (DVC, LFS, a bucket), described by a pointer. L0 · fix J · adopt. → v0.6.57
+- [ ] **DS07** `SEEDS-SET`: random seeds fixed where results are reported (`numpy.random.default_rng(seed)`, `torch.manual_seed`). L2≈ · fix J · trial. → v0.6.57
+- [ ] **DS08** `ENVIRONMENT-LOCKED`: the analysis environment locked (uv, conda-lock, pixi, renv). L1 · fix S · adopt. → v0.6.57
+- [ ] **DS09** `PIPELINE-DECLARED`: steps declared (DVC stages, Snakemake, a Makefile), not notebooks run by hand in order. L0 · fix J · trial. → v0.6.57
+- [ ] **DS10** `STREAMLIT-SECRETS-IGNORED`: `.streamlit/secrets.toml` ignored and untracked; critical when tracked. L0 · fix S · adopt. → v0.6.57
+- [ ] **DS11** `NOTEBOOKS-RUN-IN-CI`: notebooks that are part of the deliverable executed in CI (nbmake, papermill). L1 · fix S · trial. → v0.6.57
+- [ ] **DS12** `SAFE-MODEL-LOADING`: no `pickle.load` or `torch.load(..., weights_only=False)` on downloaded files; safetensors or ONNX for models from outside. L2 · fix S · adopt. → v0.6.57
+- [ ] **DS13** `EXPERIMENTS-TRACKED`: runs logged with their commit (MLflow, a results file). L1≈ · fix J · assess. → v0.6.57
+- [ ] **DS14** `DATA-SCHEMA`: input tables validated by a schema (pandera, Great Expectations, Pydantic). L2≈ · fix J · assess. → v0.6.57
 
 #### DX · Developer experience (into `structure` and `docs-tracking`)
 
-- [ ] **DX01** `ONE-COMMAND-SETUP`: one documented bootstrap command (`make setup`, `just setup`, `uv sync` with `pnpm install`). L1 · fix S · adopt.
-- [ ] **DX02** `TASK-RUNNER`: common tasks named in one place (Makefile, justfile, package scripts, poe), and the README cites them. L1 · fix S · trial.
-- [ ] **DX03** `PRE-COMMIT-FAST`: commit hooks run in seconds (ruff at commit, type checks and tests elsewhere). L1≈ · fix J · trial.
-- [ ] **DX04** `TOOL-VERSIONS-PINNED`: tool versions in `mise.toml` or `.tool-versions`, the same as in CI. L1 · fix S · trial.
-- [ ] **DX05** `NO-GLOBAL-INSTALLS`: tools run from the project (`uvx`, `pnpm dlx`, versioned `npx`), never `sudo pip install` or `npm -g` in the docs. L2 · fix J · trial.
-- [ ] **DX06** `EDITOR-SETTINGS-SHARED`: recommended extensions and format-on-save shared, personal settings ignored. L0 · fix S · assess.
-- [ ] **DX07** `CLEAN-CLONE-WORKS`: a fresh clone installs and passes its checks with the documented commands (`--deep`, in a sandbox). L7 · fix J · trial.
-- [ ] **DX08** `DEVCONTAINER` ⚠ T-48 (declined): a dev container for teams that want one, at `hold` while T-48 stands. L0 · hold.
+- [ ] **DX01** `ONE-COMMAND-SETUP`: one documented bootstrap command (`make setup`, `just setup`, `uv sync` with `pnpm install`). L1 · fix S · adopt. → v0.6.44
+- [ ] **DX02** `TASK-RUNNER`: common tasks named in one place (Makefile, justfile, package scripts, poe), and the README cites them. L1 · fix S · trial. → v0.6.44
+- [ ] **DX03** `PRE-COMMIT-FAST`: commit hooks run in seconds (ruff at commit, type checks and tests elsewhere). L1≈ · fix J · trial. → v0.6.44
+- [ ] **DX04** `TOOL-VERSIONS-PINNED`: tool versions in `mise.toml` or `.tool-versions`, the same as in CI. L1 · fix S · trial. → v0.6.44
+- [ ] **DX05** `NO-GLOBAL-INSTALLS`: tools run from the project (`uvx`, `pnpm dlx`, versioned `npx`), never `sudo pip install` or `npm -g` in the docs. L2 · fix J · trial. → v0.6.44
+- [ ] **DX06** `EDITOR-SETTINGS-SHARED`: recommended extensions and format-on-save shared, personal settings ignored. L0 · fix S · assess. → v0.6.44
+- [ ] **DX07** `CLEAN-CLONE-WORKS`: a fresh clone installs and passes its checks with the documented commands (`--deep`, in a sandbox). L7 · fix J · trial. → v0.6.51
+- [ ] **DX08** `DEVCONTAINER` ⚠ T-48 (declined): a dev container for teams that want one, at `hold` while T-48 stands. L0 · hold. → v0.6.44
 
 #### PK · Packaging and publishing (into `supply-chain` and `ci-cd`)
 
-- [ ] **PK01** `TRUSTED-PUBLISHING`: PyPI and npm publish through OIDC trusted publishing, no long-lived token. L1 · fix S · adopt.
-- [ ] **PK02** `ATTESTATIONS`: PyPI attestations (PEP 740) and npm provenance on published packages. L1 · fix S · trial.
-- [ ] **PK03** `RELEASE-WORKFLOW`: publishing only from CI, on a tag, in a protected environment. L1 · fix S · adopt.
-- [ ] **PK04** `NPM-FILES-ALLOWLIST`: `files` in package.json so nothing private ships (`npm pack --dry-run` with `--deep`). L1 · fix S · adopt.
-- [ ] **PK05** `PYPROJECT-METADATA`: `[project]` with name, version source, `requires-python`, licence expression, readme and URLs. L1 · fix S · adopt.
-- [ ] **PK06** `NO-SETUP-PY`: a PEP 517 backend declared in `pyproject.toml`; `setup.py` kept only for C extensions. L1 · fix J · trial.
-- [ ] **PK07** `PACKAGE-CONTENTS`: the sdist holds the tests and the licence, the wheel holds neither tests nor secrets (`--deep` builds both). L7 · fix J · trial.
-- [ ] **PK08** `TYPED-EXPORTS`: package.json `exports` with `types` conditions; publint and arethetypeswrong clean. L4 · fix J · trial.
-- [ ] **PK09** `ENGINES-DECLARED`: `engines.node` and `requires-python` set and matching the CI matrix. L1 · fix S · adopt.
-- [ ] **PK10** `VERSION-SINGLE-SOURCE`: the version in one place, the manifest or the tag (hatch-vcs, setuptools-scm). L1 · fix J · trial.
-- [ ] **PK11** `CLI-ENTRY-POINTS`: command-line tools declared in `[project.scripts]` or `bin`, with `--version` and `--help` that work (L7). L1 · fix S · trial.
-- [ ] **PK12** `DEPRECATION-POLICY`: a deprecation warns for at least one release before the removal (`DeprecationWarning`), and the docs say so. L2≈ · fix J · assess.
-- [ ] **PK13** `REPRODUCIBLE-BUILD`: `SOURCE_DATE_EPOCH` honoured; two builds give the same hash (`--deep`). L7 · fix J · assess.
+- [ ] **PK01** `TRUSTED-PUBLISHING`: PyPI and npm publish through OIDC trusted publishing, no long-lived token. L1 · fix S · adopt. → v0.6.59
+- [ ] **PK02** `ATTESTATIONS`: PyPI attestations (PEP 740) and npm provenance on published packages. L1 · fix S · trial. → v0.6.59
+- [ ] **PK03** `RELEASE-WORKFLOW`: publishing only from CI, on a tag, in a protected environment. L1 · fix S · adopt. → v0.6.59
+- [ ] **PK04** `NPM-FILES-ALLOWLIST`: `files` in package.json so nothing private ships (`npm pack --dry-run` with `--deep`). L1 · fix S · adopt. → v0.6.59
+- [ ] **PK05** `PYPROJECT-METADATA`: `[project]` with name, version source, `requires-python`, licence expression, readme and URLs. L1 · fix S · adopt. → v0.6.59
+- [ ] **PK06** `NO-SETUP-PY`: a PEP 517 backend declared in `pyproject.toml`; `setup.py` kept only for C extensions. L1 · fix J · trial. → v0.6.59
+- [ ] **PK07** `PACKAGE-CONTENTS`: the sdist holds the tests and the licence, the wheel holds neither tests nor secrets (`--deep` builds both). L7 · fix J · trial. → v0.6.59
+- [ ] **PK08** `TYPED-EXPORTS`: package.json `exports` with `types` conditions; publint and arethetypeswrong clean. L4 · fix J · trial. → v0.6.59
+- [ ] **PK09** `ENGINES-DECLARED`: `engines.node` and `requires-python` set and matching the CI matrix. L1 · fix S · adopt. → v0.6.59
+- [ ] **PK10** `VERSION-SINGLE-SOURCE`: the version in one place, the manifest or the tag (hatch-vcs, setuptools-scm). L1 · fix J · trial. → v0.6.59
+- [ ] **PK11** `CLI-ENTRY-POINTS`: command-line tools declared in `[project.scripts]` or `bin`, with `--version` and `--help` that work (L7). L1 · fix S · trial. → v0.6.59
+- [ ] **PK12** `DEPRECATION-POLICY`: a deprecation warns for at least one release before the removal (`DeprecationWarning`), and the docs say so. L2≈ · fix J · assess. → v0.6.59
+- [ ] **PK13** `REPRODUCIBLE-BUILD`: `SOURCE_DATE_EPOCH` honoured; two builds give the same hash (`--deep`). L7 · fix J · assess. → v0.6.59
 
 #### CM · Community (into `docs-tracking`)
 
 For the open-source profile; kiln's own vitrine (CONTRIBUTING, Code of Conduct, SECURITY,
 templates, FUNDING with T-119) is the reference example.
 
-- [ ] **CM01** `CONTRIBUTING`: setup, tests and the pull-request flow written down. L0 · fix S · adopt (open source).
-- [ ] **CM02** `CODE-OF-CONDUCT`: the Contributor Covenant or an equivalent, with a contact. L0 · fix S · adopt (open source).
-- [ ] **CM03** `SECURITY-POLICY`: `SECURITY.md` with a private reporting channel; private vulnerability reporting on (L6). L0 · fix S · adopt.
-- [ ] **CM04** `ISSUE-FORMS`: issue forms for bugs and requests, a pull-request template. L0 · fix S · trial.
-- [ ] **CM05** `FUNDING`: `FUNDING.yml` when the maintainers accept sponsors. L0 · fix S · assess.
-- [ ] **CM06** `GOOD-FIRST-ISSUES`: a few labelled issues open (L6, `/kiln:good-first-issues`). L6 · fix J · assess.
-- [ ] **CM07** `RESPONSE-TIME`: median time to a first answer on issues and pull requests (L6). L6 · ratchet · assess.
-- [ ] **CM08** `MAINTAINED`: commits or releases in the last 90 days, or the README says the project is finished or archived (Scorecard's Maintained). L5 · fix J · trial.
-- [ ] **CM09** `CITATION`: `CITATION.cff` for research software (the university profile). L0 · fix S · trial.
-- [ ] **CM10** `OPENSSF-BADGE`: the OpenSSF Best Practices badge, read with `--online`. L6 · fix J · assess.
+- [ ] **CM01** `CONTRIBUTING`: setup, tests and the pull-request flow written down. L0 · fix S · adopt (open source). → v0.6.58
+- [ ] **CM02** `CODE-OF-CONDUCT`: the Contributor Covenant or an equivalent, with a contact. L0 · fix S · adopt (open source). → v0.6.58
+- [ ] **CM03** `SECURITY-POLICY`: `SECURITY.md` with a private reporting channel; private vulnerability reporting on (L6). L0 · fix S · adopt. → v0.6.58
+- [ ] **CM04** `ISSUE-FORMS`: issue forms for bugs and requests, a pull-request template. L0 · fix S · trial. → v0.6.58
+- [ ] **CM05** `FUNDING`: `FUNDING.yml` when the maintainers accept sponsors. L0 · fix S · assess. → v0.6.58
+- [ ] **CM06** `GOOD-FIRST-ISSUES`: a few labelled issues open (L6, `/kiln:good-first-issues`). L6 · fix J · assess. → v0.6.58
+- [ ] **CM07** `RESPONSE-TIME`: median time to a first answer on issues and pull requests (L6). L6 · ratchet · assess. → v0.6.58
+- [ ] **CM08** `MAINTAINED`: commits or releases in the last 90 days, or the README says the project is finished or archived (Scorecard's Maintained). L5 · fix J · trial. → v0.6.48
+- [ ] **CM09** `CITATION`: `CITATION.cff` for research software (the university profile). L0 · fix S · trial. → v0.6.64
+- [ ] **CM10** `OPENSSF-BADGE`: the OpenSSF Best Practices badge, read with `--online`. L6 · fix J · assess. → v0.6.58
 
 #### SP · Stack packs
 
@@ -3046,73 +3504,73 @@ One pack per ecosystem, each with its facts, rules and examples; they enter in t
 corpus measures (Part I). Rules already listed in a theme (`GO-RACE`, `LOCKS-COMMITTED`,
 `GRADLE-WRAPPER-VERIFIED`, `CSHARP-NULLABLE`, `PHPSTAN-LEVEL`…) aren't repeated.
 
-- [ ] **SP01** Go · `GO-MOD-TIDY`: `go mod tidy` would change nothing. L4 · fix S · adopt.
-- [ ] **SP02** Go · `GO-LINT`: `go vet` and golangci-lint (its v2 config) in CI. L1 · fix S · adopt.
-- [ ] **SP03** Go · `GOVULNCHECK`: govulncheck in CI, which reports only the vulnerable code a program reaches. L1 · fix S · adopt.
-- [ ] **SP04** Go · `GO-TOOLCHAIN-SUPPORTED`: the `go` directive and `toolchain` on one of the two supported releases. L1 · fix S · adopt.
-- [ ] **SP05** Go · `GO-CONTEXT-FIRST`: `context.Context` as first parameter, never stored in a struct. L2 · fix J · trial.
-- [ ] **SP06** Go · `GO-NO-PANIC-IN-LIBS`: no `panic` on a library's ordinary paths. L2 · fix J · trial.
-- [ ] **SP07** Rust · `CLIPPY-CLEAN`: clippy with warnings as errors in CI, a `[lints]` table in `Cargo.toml`. L1 · fix S · adopt.
-- [ ] **SP08** Rust · `CARGO-DENY`: cargo-deny (advisories, licences, bans, sources) or cargo-audit in CI. L1 · fix S · adopt.
-- [ ] **SP09** Rust · `RUST-EDITION-CURRENT`: edition 2024 (stable since Rust 1.85, February 2025). L1 · fix J · trial.
-- [ ] **SP10** Rust · `RUST-MSRV`: `rust-version` declared and tested. L1 · fix S · trial.
-- [ ] **SP11** Rust · `UNSAFE-JUSTIFIED`: every `unsafe` block with a `// SAFETY:` comment (clippy's `undocumented_unsafe_blocks`). L2 · fix J · adopt.
-- [ ] **SP12** Rust · `NO-UNWRAP-IN-LIBS`: `unwrap` and `expect` counted in library code (clippy's `unwrap_used`). L2 · ratchet · trial.
-- [ ] **SP13** Java and Kotlin · `JAVA-LTS`: a supported LTS (17, 21, 25) in the toolchain's config. L1 · fix S · adopt.
-- [ ] **SP14** Java and Kotlin · `WRAPPER-COMMITTED`: Gradle or Maven wrapper committed with its checksum. L1 · fix S · adopt.
-- [ ] **SP15** Java and Kotlin · `DEPENDENCY-LOCKING`: Gradle's dependency locking, or Maven plugins and versions pinned and checked by the enforcer. L1 · fix S · trial.
-- [ ] **SP16** Java and Kotlin · `BUG-FINDER`: Error Prone or SpotBugs in the build; detekt and ktlint for Kotlin. L1 · fix S · trial.
-- [ ] **SP17** C# · `CENTRAL-PACKAGES`: `Directory.Packages.props` and lock files (`RestorePackagesWithLockFile`). L1 · fix S · trial.
-- [ ] **SP18** C# · `NUGET-AUDIT`: NuGetAudit on, transitive packages included, high findings as errors. L1 · fix S · adopt.
-- [ ] **SP19** C# · `WARNINGS-AS-ERRORS`: `TreatWarningsAsErrors` and a current `AnalysisLevel` in `Directory.Build.props`. L1 · fix S · trial.
-- [ ] **SP20** C# · `DOTNET-SUPPORTED`: the target framework on a supported .NET release. L1 · fix S · adopt.
-- [ ] **SP21** C# · `GLOBAL-JSON`: the SDK pinned in `global.json` with a `rollForward` policy. L1 · fix S · trial.
-- [ ] **SP22** PHP · `COMPOSER-AUDIT`: `composer audit` in CI, `composer.lock` committed for applications. L1 · fix S · adopt.
-- [ ] **SP23** PHP · `STRICT-TYPES`: `declare(strict_types=1);` in every file. L2 · fix S · adopt.
-- [ ] **SP24** PHP · `PHP-SUPPORTED`: `require.php` on a supported PHP line. L1 · fix S · adopt.
-- [ ] **SP25** PHP · `NO-PHPINFO`: no `phpinfo()` reachable. L2 · fix S · adopt.
-- [ ] **SP26** Ruby · `BUNDLER-AUDIT` and `BRAKEMAN`: both in CI for Rails apps, `Gemfile.lock` committed. L1 · fix S · adopt.
-- [ ] **SP27** Ruby · `RUBOCOP`: RuboCop or Standard configured. L1 · fix S · adopt.
-- [ ] **SP28** Ruby · `RUBY-SUPPORTED`: `.ruby-version` on a supported line. L1 · fix S · adopt.
-- [ ] **SP29** Ruby · `RAILS-STRONG-PARAMS`: no `permit!`. L2 · fix J · adopt.
-- [ ] **SP30** Mobile · `IOS-PRIVACY-MANIFEST`: `PrivacyInfo.xcprivacy` declaring the required-reason APIs (required by Apple since May 2024). L1 · fix J · adopt.
-- [ ] **SP31** Mobile · `ANDROID-TARGET-SDK`: `targetSdkVersion` meets Google Play's current requirement, from a dated calendar. L1 · fix S · adopt.
-- [ ] **SP32** Mobile · `NO-SERVER-SECRETS-IN-APP`: nothing secret in an app bundle (everything in it is public); client keys restricted instead. L2 · fix J · adopt.
-- [ ] **SP33** Mobile · `SIGNING-OUT-OF-GIT`: no keystore, `.p12` or provisioning profile committed. L0 · fix J · adopt.
-- [ ] **SP34** Mobile · `FLUTTER-STRICT`: `analysis_options.yaml` with the strict modes. L1 · fix S · trial.
-- [ ] **SP35** C and C++ · `COMPILER-WARNINGS`: `-Wall -Wextra -Werror` (or `/W4 /WX`) in the build. L1 · fix S · trial.
-- [ ] **SP36** C and C++ · `SANITIZERS-IN-CI`: AddressSanitizer and UndefinedBehaviorSanitizer builds in CI. L1 · fix S · trial.
-- [ ] **SP37** C and C++ · `CLANG-TIDY`: configured and run. L1 · fix S · trial.
-- [ ] **SP38** C and C++ · `FUZZING`: libFuzzer harnesses or OSS-Fuzz for parsers (Scorecard's Fuzzing). L1 · fix J · assess.
-- [ ] **SP39** C and C++ · `MANAGED-DEPENDENCIES`: vcpkg or Conan manifests rather than copied sources. L1 · fix J · trial.
-- [ ] **SP40** Elixir · `MIX-AUDIT`: mix_audit or `mix hex.audit` in CI, `mix.lock` committed. L1 · fix S · adopt.
-- [ ] **SP41** Elixir · `CREDO-AND-DIALYZER`: both configured. L1 · fix S · trial.
-- [ ] **SP42** Elixir · `SOBELOW`: Sobelow for Phoenix apps. L1 · fix S · adopt.
+- [ ] **SP01** Go · `GO-MOD-TIDY`: `go mod tidy` would change nothing. L4 · fix S · adopt. → v1.1.0
+- [ ] **SP02** Go · `GO-LINT`: `go vet` and golangci-lint (its v2 config) in CI. L1 · fix S · adopt. → v1.1.0
+- [ ] **SP03** Go · `GOVULNCHECK`: govulncheck in CI, which reports only the vulnerable code a program reaches. L1 · fix S · adopt. → v1.1.0
+- [ ] **SP04** Go · `GO-TOOLCHAIN-SUPPORTED`: the `go` directive and `toolchain` on one of the two supported releases. L1 · fix S · adopt. → v1.1.0
+- [ ] **SP05** Go · `GO-CONTEXT-FIRST`: `context.Context` as first parameter, never stored in a struct. L2 · fix J · trial. → v1.1.0
+- [ ] **SP06** Go · `GO-NO-PANIC-IN-LIBS`: no `panic` on a library's ordinary paths. L2 · fix J · trial. → v1.1.0
+- [ ] **SP07** Rust · `CLIPPY-CLEAN`: clippy with warnings as errors in CI, a `[lints]` table in `Cargo.toml`. L1 · fix S · adopt. → v1.1.0
+- [ ] **SP08** Rust · `CARGO-DENY`: cargo-deny (advisories, licences, bans, sources) or cargo-audit in CI. L1 · fix S · adopt. → v1.1.0
+- [ ] **SP09** Rust · `RUST-EDITION-CURRENT`: edition 2024 (stable since Rust 1.85, February 2025). L1 · fix J · trial. → v1.1.0
+- [ ] **SP10** Rust · `RUST-MSRV`: `rust-version` declared and tested. L1 · fix S · trial. → v1.1.0
+- [ ] **SP11** Rust · `UNSAFE-JUSTIFIED`: every `unsafe` block with a `// SAFETY:` comment (clippy's `undocumented_unsafe_blocks`). L2 · fix J · adopt. → v1.1.0
+- [ ] **SP12** Rust · `NO-UNWRAP-IN-LIBS`: `unwrap` and `expect` counted in library code (clippy's `unwrap_used`). L2 · ratchet · trial. → v1.1.0
+- [ ] **SP13** Java and Kotlin · `JAVA-LTS`: a supported LTS (17, 21, 25) in the toolchain's config. L1 · fix S · adopt. → v1.2.0
+- [ ] **SP14** Java and Kotlin · `WRAPPER-COMMITTED`: Gradle or Maven wrapper committed with its checksum. L1 · fix S · adopt. → v1.2.0
+- [ ] **SP15** Java and Kotlin · `DEPENDENCY-LOCKING`: Gradle's dependency locking, or Maven plugins and versions pinned and checked by the enforcer. L1 · fix S · trial. → v1.2.0
+- [ ] **SP16** Java and Kotlin · `BUG-FINDER`: Error Prone or SpotBugs in the build; detekt and ktlint for Kotlin. L1 · fix S · trial. → v1.2.0
+- [ ] **SP17** C# · `CENTRAL-PACKAGES`: `Directory.Packages.props` and lock files (`RestorePackagesWithLockFile`). L1 · fix S · trial. → v1.2.0
+- [ ] **SP18** C# · `NUGET-AUDIT`: NuGetAudit on, transitive packages included, high findings as errors. L1 · fix S · adopt. → v1.2.0
+- [ ] **SP19** C# · `WARNINGS-AS-ERRORS`: `TreatWarningsAsErrors` and a current `AnalysisLevel` in `Directory.Build.props`. L1 · fix S · trial. → v1.2.0
+- [ ] **SP20** C# · `DOTNET-SUPPORTED`: the target framework on a supported .NET release. L1 · fix S · adopt. → v1.2.0
+- [ ] **SP21** C# · `GLOBAL-JSON`: the SDK pinned in `global.json` with a `rollForward` policy. L1 · fix S · trial. → v1.2.0
+- [ ] **SP22** PHP · `COMPOSER-AUDIT`: `composer audit` in CI, `composer.lock` committed for applications. L1 · fix S · adopt. → v1.3.0
+- [ ] **SP23** PHP · `STRICT-TYPES`: `declare(strict_types=1);` in every file. L2 · fix S · adopt. → v1.3.0
+- [ ] **SP24** PHP · `PHP-SUPPORTED`: `require.php` on a supported PHP line. L1 · fix S · adopt. → v1.3.0
+- [ ] **SP25** PHP · `NO-PHPINFO`: no `phpinfo()` reachable. L2 · fix S · adopt. → v1.3.0
+- [ ] **SP26** Ruby · `BUNDLER-AUDIT` and `BRAKEMAN`: both in CI for Rails apps, `Gemfile.lock` committed. L1 · fix S · adopt. → v1.3.0
+- [ ] **SP27** Ruby · `RUBOCOP`: RuboCop or Standard configured. L1 · fix S · adopt. → v1.3.0
+- [ ] **SP28** Ruby · `RUBY-SUPPORTED`: `.ruby-version` on a supported line. L1 · fix S · adopt. → v1.3.0
+- [ ] **SP29** Ruby · `RAILS-STRONG-PARAMS`: no `permit!`. L2 · fix J · adopt. → v1.3.0
+- [ ] **SP30** Mobile · `IOS-PRIVACY-MANIFEST`: `PrivacyInfo.xcprivacy` declaring the required-reason APIs (required by Apple since May 2024). L1 · fix J · adopt. → v1.4.0
+- [ ] **SP31** Mobile · `ANDROID-TARGET-SDK`: `targetSdkVersion` meets Google Play's current requirement, from a dated calendar. L1 · fix S · adopt. → v1.4.0
+- [ ] **SP32** Mobile · `NO-SERVER-SECRETS-IN-APP`: nothing secret in an app bundle (everything in it is public); client keys restricted instead. L2 · fix J · adopt. → v1.4.0
+- [ ] **SP33** Mobile · `SIGNING-OUT-OF-GIT`: no keystore, `.p12` or provisioning profile committed. L0 · fix J · adopt. → v1.4.0
+- [ ] **SP34** Mobile · `FLUTTER-STRICT`: `analysis_options.yaml` with the strict modes. L1 · fix S · trial. → v1.4.0
+- [ ] **SP35** C and C++ · `COMPILER-WARNINGS`: `-Wall -Wextra -Werror` (or `/W4 /WX`) in the build. L1 · fix S · trial. → v1.4.0
+- [ ] **SP36** C and C++ · `SANITIZERS-IN-CI`: AddressSanitizer and UndefinedBehaviorSanitizer builds in CI. L1 · fix S · trial. → v1.4.0
+- [ ] **SP37** C and C++ · `CLANG-TIDY`: configured and run. L1 · fix S · trial. → v1.4.0
+- [ ] **SP38** C and C++ · `FUZZING`: libFuzzer harnesses or OSS-Fuzz for parsers (Scorecard's Fuzzing). L1 · fix J · assess. → v1.4.0
+- [ ] **SP39** C and C++ · `MANAGED-DEPENDENCIES`: vcpkg or Conan manifests rather than copied sources. L1 · fix J · trial. → v1.4.0
+- [ ] **SP40** Elixir · `MIX-AUDIT`: mix_audit or `mix hex.audit` in CI, `mix.lock` committed. L1 · fix S · adopt. → v1.3.0
+- [ ] **SP41** Elixir · `CREDO-AND-DIALYZER`: both configured. L1 · fix S · trial. → v1.3.0
+- [ ] **SP42** Elixir · `SOBELOW`: Sobelow for Phoenix apps. L1 · fix S · adopt. → v1.3.0
 
 #### FP · Framework packs
 
 The `NOTABLE_PACKAGES` of `score.py` already name what the gap report sees; a pack turns one of
 them into rules.
 
-- [ ] **FP01** FastAPI · `FASTAPI-RESPONSE-MODELS`: every route declares its response model. L2 · fix J · adopt.
-- [ ] **FP02** FastAPI · `FASTAPI-LIFESPAN`: `lifespan` rather than the deprecated `on_event`. L2 · fix S · adopt.
-- [ ] **FP03** FastAPI · `FASTAPI-AUTH-DEPENDENCIES`: protected routes through security dependencies, set on the router rather than route by route. L2 · fix J · trial.
-- [ ] **FP04** FastAPI · `FASTAPI-DOCS-IN-PROD`: `/docs` and `/openapi.json` off or protected in production for private APIs. L2 · fix J · trial.
-- [ ] **FP05** Flask · `FLASK-APP-FACTORY`: a `create_app` factory, the secret key from the environment, CSRF protection on forms (Flask-WTF). L2 · fix J · trial.
-- [ ] **FP06** Celery · the BG theme's rules, made exact for Celery's settings (`task_acks_late`, `task_time_limit`, the serializer, the beat replica). L1 · fix S · adopt.
-- [ ] **FP07** Next.js · `NEXT-SERVER-ONLY`: secrets and database access in `server-only` modules, never imported by a `"use client"` file. L2 · fix J · adopt.
-- [ ] **FP08** Next.js · `NEXT-AUTH-IN-DATA-LAYER`: authorization checked where data is read, not only in middleware (CVE-2025-29927 let a header skip middleware). L2≈ · fix J · adopt.
-- [ ] **FP09** React · `REACT-HOOKS-RULES`: eslint-plugin-react-hooks on (`rules-of-hooks`, `exhaustive-deps`). L1 · fix S · adopt.
-- [ ] **FP10** React · `REACT-KEYS`: keys on list items (`jsx-key`). L2 · fix J · adopt.
-- [ ] **FP11** Angular · `ANGULAR-STRICT`: `strict` and `strictTemplates` on. L1 · fix S · adopt.
-- [ ] **FP12** Angular · `ANGULAR-NO-SANITIZER-BYPASS`: `bypassSecurityTrust*` counted, each with its reason. L2 · fix J · adopt.
-- [ ] **FP13** Angular · `MODERN-ANGULAR`: standalone components, signals and the built-in control flow; Angular's own schematics migrate. L2 · fix S · trial.
-- [ ] **FP14** Svelte · `SVELTE-RUNES`: Svelte 5 runes in new files (`npx sv migrate svelte-5` for the rest). L2 · fix S · trial.
-- [ ] **FP15** SvelteKit · `SVELTEKIT-CSRF`: `csrf.checkOrigin` never turned off. L1 · fix S · adopt.
-- [ ] **FP16** Express · `EXPRESS-5`: Express 5, whose router passes rejected promises to the error handler. L1 · fix J · trial.
-- [ ] **FP17** NestJS · `NEST-VALIDATION-PIPE`: a global `ValidationPipe` with `whitelist` and `forbidNonWhitelisted`. L2 · fix S · adopt.
-- [ ] **FP18** NestJS · `NEST-GUARD-BY-DEFAULT`: a global authentication guard, public routes marked one by one. L2 · fix J · trial.
-- [ ] **FP19** Streamlit and Dash · the DS theme's rules plus `STREAMLIT-SECRETS-IGNORED`, and the deploy of v0.4.6 checked (a health route, a non-root image). L1 · fix S · trial.
+- [ ] **FP01** FastAPI · `FASTAPI-RESPONSE-MODELS`: every route declares its response model. L2 · fix J · adopt. → v0.6.55
+- [ ] **FP02** FastAPI · `FASTAPI-LIFESPAN`: `lifespan` rather than the deprecated `on_event`. L2 · fix S · adopt. → v0.6.55
+- [ ] **FP03** FastAPI · `FASTAPI-AUTH-DEPENDENCIES`: protected routes through security dependencies, set on the router rather than route by route. L2 · fix J · trial. → v0.6.55
+- [ ] **FP04** FastAPI · `FASTAPI-DOCS-IN-PROD`: `/docs` and `/openapi.json` off or protected in production for private APIs. L2 · fix J · trial. → v0.6.55
+- [ ] **FP05** Flask · `FLASK-APP-FACTORY`: a `create_app` factory, the secret key from the environment, CSRF protection on forms (Flask-WTF). L2 · fix J · trial. → v0.6.55
+- [ ] **FP06** Celery · the BG theme's rules, made exact for Celery's settings (`task_acks_late`, `task_time_limit`, the serializer, the beat replica). L1 · fix S · adopt. → v0.6.35
+- [ ] **FP07** Next.js · `NEXT-SERVER-ONLY`: secrets and database access in `server-only` modules, never imported by a `"use client"` file. L2 · fix J · adopt. → v0.6.56
+- [ ] **FP08** Next.js · `NEXT-AUTH-IN-DATA-LAYER`: authorization checked where data is read, not only in middleware (CVE-2025-29927 let a header skip middleware). L2≈ · fix J · adopt. → v0.6.56
+- [ ] **FP09** React · `REACT-HOOKS-RULES`: eslint-plugin-react-hooks on (`rules-of-hooks`, `exhaustive-deps`). L1 · fix S · adopt. → v0.6.56
+- [ ] **FP10** React · `REACT-KEYS`: keys on list items (`jsx-key`). L2 · fix J · adopt. → v0.6.56
+- [ ] **FP11** Angular · `ANGULAR-STRICT`: `strict` and `strictTemplates` on. L1 · fix S · adopt. → v0.6.56
+- [ ] **FP12** Angular · `ANGULAR-NO-SANITIZER-BYPASS`: `bypassSecurityTrust*` counted, each with its reason. L2 · fix J · adopt. → v0.6.56
+- [ ] **FP13** Angular · `MODERN-ANGULAR`: standalone components, signals and the built-in control flow; Angular's own schematics migrate. L2 · fix S · trial. → v0.6.56
+- [ ] **FP14** Svelte · `SVELTE-RUNES`: Svelte 5 runes in new files (`npx sv migrate svelte-5` for the rest). L2 · fix S · trial. → v0.6.56
+- [ ] **FP15** SvelteKit · `SVELTEKIT-CSRF`: `csrf.checkOrigin` never turned off. L1 · fix S · adopt. → v0.6.56
+- [ ] **FP16** Express · `EXPRESS-5`: Express 5, whose router passes rejected promises to the error handler. L1 · fix J · trial. → v0.6.56
+- [ ] **FP17** NestJS · `NEST-VALIDATION-PIPE`: a global `ValidationPipe` with `whitelist` and `forbidNonWhitelisted`. L2 · fix S · adopt. → v0.6.56
+- [ ] **FP18** NestJS · `NEST-GUARD-BY-DEFAULT`: a global authentication guard, public routes marked one by one. L2 · fix J · trial. → v0.6.56
+- [ ] **FP19** Streamlit and Dash · the DS theme's rules plus `STREAMLIT-SECRETS-IGNORED`, and the deploy of v0.4.6 checked (a health route, a non-root image). L1 · fix S · trial. → v0.6.57
 
 ### Appendices
 
