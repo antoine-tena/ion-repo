@@ -22,8 +22,8 @@ OPEN = 2
 RELEASE = re.compile(r"^### (v(\d+)\.(\d+)\.\d+) · (.+)$")
 
 
-def releases() -> list[tuple[str, str, str, str, int, int]]:
-    """Each planned release: version, milestone, title, why, tickets, ideas."""
+def releases() -> list[tuple[str, str, str, str, int]]:
+    """Each planned release: version, milestone, title, why, tickets."""
     text = BACKLOG.read_text(encoding="utf-8")
     section = text[text.index("## 🚀 Releases") : text.index("## 🔴 Critical")]
     found = []
@@ -35,9 +35,7 @@ def releases() -> list[tuple[str, str, str, str, int, int]]:
         version, major, minor, title = release.groups()
         why = " ".join(line for line in lines if not line.startswith(("- ", "  ")))
         tickets = sum(1 for line in lines if line.startswith("- T-"))
-        ideas = re.search(r"^- Ideas \((\d+)\)", "\n".join(lines), re.M)
-        count = int(ideas[1]) if ideas else 0
-        found.append((version, f"v{major}.{minor}", title, why, tickets, count))
+        found.append((version, f"v{major}.{minor}", title, why, tickets))
     return found
 
 
@@ -45,11 +43,10 @@ def several(count: int, word: str) -> str:
     return f"{count} {word}{'s' * (count > 1)}"
 
 
-def work(why: str, tickets: int, ideas: int) -> str:
+def work(why: str, tickets: int) -> str:
     if why.startswith("Frozen:"):
         return "in its candidate"
-    parts = [several(tickets, "ticket") if tickets else "", several(ideas, "idea") if ideas else ""]
-    return ", ".join(part for part in parts if part) or "fixes as they come"
+    return several(tickets, "ticket") if tickets else "fixes as they come"
 
 
 def cell(text: str) -> str:
@@ -64,8 +61,8 @@ def draw() -> str:
         rows = [release for release in plan if release[1] == milestone]
         table = ["| Release | What it brings | Why together | Planned work |", "|---|---|---|---|"]
         table += [
-            f"| {version} | {cell(title)} | {cell(why)} | {work(why, tickets, ideas)} |"
-            for version, _, title, why, tickets, ideas in rows
+            f"| {version} | {cell(title)} | {cell(why)} | {work(why, tickets)} |"
+            for version, _, title, why, tickets in rows
         ]
         count = several(len(rows), "release")
         if rank < OPEN:
