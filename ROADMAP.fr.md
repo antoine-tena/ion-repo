@@ -15,10 +15,12 @@ arrêtée dès que sa candidate est taguée. Ce qui est déjà sorti est dans le
   24 heures quand elle apporte du neuf, 2 heures quand elle ne fait que corriger, aucune attente
   pour une faille de sécurité.
 - En `0.x`, chaque version monte le correctif, changements cassants compris : ils ouvrent la note
-  de version, et `kiln update` les convertit dans votre repo. La mineure ne monte qu'à une étape.
-  Le semver strict commence à la 1.0.
+  de version, et `kiln update` les convertit dans votre repo. La mineure ne monte qu'à une étape,
+  dans la version qui l'atteint : le travail qui y mène sort sous la mineure d'avant, si bien que
+  les stacks de la v0.8.0 arrivent en v0.7.x. Le semver strict commence à la 1.0.
 - Un seul mainteneur écrit kiln avec Claude Code, environ 25 heures de session par semaine. Les
-  dates ci-dessous découlent du plan à ce rythme : des estimations, pas des échéances.
+  dates ci-dessous découlent du plan à ce rythme : des estimations, pas des échéances, et chaque
+  version que le plan ne prévoit pas les repousse de deux jours.
 
 ## Étapes
 
@@ -27,9 +29,9 @@ arrêtée dès que sa candidate est taguée. Ce qui est déjà sorti est dans le
 | v0.5.0 | N'importe quel repo Django ou Nuxt, créé par kiln ou non, noté face à la grille en quelques secondes, puis mis à niveau par script partout où un script le peut. Lancement public le mercredi 11 novembre 2026, si la v0.5.0 tient sa barre ; sinon une semaine plus tard. | novembre 2026 |
 | v0.6.0 | Claude Code comble seul les écarts qu'un script laisse, chacun prouvé par la note. | décembre 2026 |
 | v0.7.0 | Tous les repos d'une organisation (une université, un réseau d'associations, une entreprise de 50 personnes) notés sans les cloner, leurs écarts classés d'un repo à l'autre. | printemps 2027 |
-| v0.8.0 | Chaque stack courante notée et corrigée par script : Go, Rust, Java, Kotlin, .NET, PHP, Ruby, Elixir, applications mobiles, C et C++. | 2027 |
-| v0.9.0 | N'importe quelle CI, n'importe quelle machine, n'importe quelle taille : les autres systèmes de CI, ARM, les réseaux coupés d'internet, les monorepos et le million de fichiers. | 2027 |
-| v1.0.0 | La promesse de stabilité. Le format des règles se fige une fois qu'il a tenu sur les stacks qui font environ 95 % des repos, et chacun peut publier des paquets de règles pour le reste. Semver strict ensuite. | fin 2027 |
+| v0.8.0 | Chaque stack courante notée et corrigée par script : Go, Rust, Java, Kotlin, .NET, PHP, Ruby, Elixir, applications mobiles, C et C++. | printemps 2027 |
+| v0.9.0 | N'importe quelle CI, n'importe quelle machine, n'importe quelle taille : les autres systèmes de CI, ARM, les réseaux coupés d'internet, les monorepos et le million de fichiers. | mi-2027 |
+| v1.0.0 | La promesse de stabilité. Le format des règles se fige une fois qu'il a tenu sur les stacks qui font environ 95 % des repos, et chacun peut publier des paquets de règles pour le reste. Semver strict ensuite. | mi-2027 |
 
 Toutes les stacks viennent avant la 1.0, exprès : un format éprouvé sur deux frameworks casserait
 à la première stack qui diffère, et la 1.0 promet qu'il ne cassera pas.
@@ -145,7 +147,7 @@ anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 
 </details>
 
-<details><summary><b>v0.7.x</b> · 4 releases</summary>
+<details><summary><b>v0.7.x</b> · 21 releases</summary>
 
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
@@ -153,27 +155,46 @@ anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 | v0.7.1 | Compliance views | What a company has to show: Scorecard, ASVS, SLSA, CIS, WCAG, the Cyber Resilience Act and the Accessibility Act, each control covered or honestly listed as not checkable. | 1 ticket |
 | v0.7.2 | Delivery measured, the organisation's settings read | DORA's four keys from the forge, the bus factor and knowledge islands, two-factor authentication and base permissions, for organisation profiles. | 1 ticket |
 | v0.7.3 | The charter and the grid, one engine | Decision 4, before the format freezes: shared detectors first, then the charter as the grid's rules in strict or ratchet regime, its IDs kept as aliases; rule files checked by a published schema. ⚠ breaking: `charter.toml` lists grid rule IDs with their regime, converted by `kiln update`. | 1 ticket |
+| v0.7.4 | Go repos, read | The road to v0.8.0: every common stack scored and fixed by script as Django is at v0.5.0, stack by stack (decision 1) in the order the corpus measures (B01; until it does, this order is a guess). Two releases a stack, about what Django and Nuxt each took once the engine is set aside: first what its repos are made of, read, so that the rules spanning stacks see it; then its pack, counted once ten corpus repos of it were checked (B24). Each stack's rules are written from the corpus when its turn comes. | 1 ticket |
+| v0.7.5 | The Go pack | Go's own rules with their examples and converters, from a tidy `go.mod` to no `panic` in a library, counted once ten corpus repos of Go were checked (B24). | 1 ticket |
+| v0.7.6 | Rust repos, read | Cargo, clippy, the edition and `unsafe` read, `Cargo.lock` held to the rules that span stacks. | 1 ticket |
+| v0.7.7 | The Rust pack | Rust's own rules, from clippy with warnings as errors to a declared MSRV, counted once ten corpus repos of Rust were checked (B24). | 1 ticket |
+| v0.7.8 | Java and Kotlin repos, read | Maven and Gradle read with their wrappers, Spring Boot, Quarkus and Micronaut recognised: kiln's own frozen Java template held to its stack's rules at last. | 1 ticket |
+| v0.7.9 | The Java and Kotlin pack | A supported LTS, a verified wrapper, locked dependencies and a bug finder in the build, counted once ten corpus repos of Java and Kotlin were checked (B24). | 1 ticket |
+| v0.7.10 | C# and .NET repos, read | Projects, solutions and central package management read, with nullable references and the supported .NET lines. | 1 ticket |
+| v0.7.11 | The C# pack | NuGetAudit, lock files, warnings as errors and a pinned SDK, counted once ten corpus repos of C# were checked (B24). | 1 ticket |
+| v0.7.12 | PHP repos, read | Composer, Laravel, Symfony and WordPress read, with their analysers, formatters, tests and auditor. | 1 ticket |
+| v0.7.13 | The PHP pack | Strict types, `composer audit` in CI, a supported PHP and no `phpinfo()` left, counted once ten corpus repos of PHP were checked (B24). | 1 ticket |
+| v0.7.14 | Ruby repos, read | Bundler and Rails read, with RuboCop, Sorbet or RBS, RSpec or Minitest and bundler-audit. | 1 ticket |
+| v0.7.15 | The Ruby pack | Brakeman and bundler-audit in CI, RuboCop configured, a supported Ruby and no `permit!`, counted once ten corpus repos of Ruby were checked (B24). | 1 ticket |
+| v0.7.16 | Elixir repos, read and packed | A smaller ecosystem, read and packed in one release: mix and Phoenix, with Credo, Dialyzer, Sobelow and mix_audit as its rules. | 1 ticket |
+| v0.7.17 | iOS, Android and Flutter repos, read | SwiftPM, CocoaPods, the Android manifest and Flutter's pubspec read; App Transport Security and exported components checked. | 1 ticket |
+| v0.7.18 | The mobile pack | What the stores require and what an app bundle gives away: the privacy manifest, the target SDK, no server secret in the app, signing keys out of git, counted once ten corpus repos of apps were checked (B24). | 1 ticket |
+| v0.7.19 | C and C++ repos, read | CMake, Meson, Bazel, Conan and vcpkg read, with clang-format, clang-tidy, sanitizers and fuzzing. | 1 ticket |
+| v0.7.20 | The C and C++ pack | Warnings as errors, sanitizers in CI, clang-tidy, fuzzing for parsers and managed dependencies, counted once ten corpus repos of C and C++ were checked (B24). | 1 ticket |
 
 </details>
 
-<details><summary><b>v0.8.x</b> · 4 releases</summary>
+<details><summary><b>v0.8.x</b> · 7 releases</summary>
 
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
-| v0.8.0 | Every stack scored: Go and Rust first | Milestone decided by antoine (25 October 2026): every common stack scored and fixed by script before the format freezes, stack by stack (decision 1) in the order the corpus measures (B01); until it does, this order is a guess, and each stack's rules are written from the corpus when its release comes next, so these releases will grow. | 2 tickets |
-| v0.8.1 | Java, Kotlin and .NET | kiln's own frozen Java template finally scored, and the .NET lines with it. | 2 tickets |
-| v0.8.2 | PHP, Ruby and Elixir | The web frameworks of the dynamic languages: Laravel, Symfony, WordPress, Rails, Phoenix. | 2 tickets |
-| v0.8.3 | Mobile, C and C++, and the long tail | Apps, systems code and the rarer languages, the last as data packs that the community packs of v1.0.0 will extend. | 2 tickets |
+| v0.8.0 | Every common stack scored | Milestone decided by antoine (25 October 2026), reached here: every common stack scored and fixed by script before the format freezes. The rarer languages come as data packs that the community packs of v1.0.0 will extend; then the gate, the corpus re-scored and each stack among those that make 95 % of its repos shown at the level of Django at v0.5.0. | 2 tickets |
+| v0.8.1 | The CIs used most after GitHub's and GitLab's | The road to v0.9.0: any CI, any machine, any size, the last before the format freezes. First the CIs used most after GitHub's and GitLab's (v0.6.62), read into the CI model of v0.6.21 with their pinning and their untrusted text (appendix B). | 1 ticket |
+| v0.8.2 | Every other CI | Jenkins, Buildkite, Woodpecker, the clouds' own CIs, Tekton and the rest, read the same way. | 1 ticket |
+| v0.8.3 | Every machine, every network | macOS and WSL tested beside Linux, ARM64 and musl, air-gapped and corporate networks; native Windows only if T-94 reopens. | 1 ticket |
+| v0.8.4 | No Python needed | A single signed binary, `npx kiln-cli score` for JavaScript machines, and the score in a browser if the forges allow it; a language server only if T-117 reopens. | 1 ticket |
+| v0.8.5 | Monorepos and big trees | Monorepo tools' project graphs read for components and their links (T-86 staying declined for generating them), rules run in parallel, and a time budget that says what it left out. | 1 ticket |
+| v0.8.6 | A million files | Sampling with a stated margin, Rust only where a profile points, then the speed published as uv and ruff publish theirs. | 1 ticket |
 
 </details>
 
-<details><summary><b>v0.9.x</b> · 3 releases</summary>
+<details><summary><b>v0.9.x</b> · 2 releases</summary>
 
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
-| v0.9.0 | Any CI, any machine | Milestone decided by antoine (25 October 2026), the last before the format freezes: every other CI read, a single binary and an npm wrapper, ARM and musl, air-gapped networks; native Windows and a language server only if their declined tickets (T-94, T-117) reopen. | 1 ticket |
-| v0.9.1 | Monorepos and a million files | Rust and parallelism only where a profile points, sampling with a stated margin, then the speed published as uv and ruff publish theirs; monorepo tools' graphs read, T-86 staying declined for generating them. | 1 ticket |
-| v0.9.2 | Does the score mean anything? Measured, on every stack | The last proof before the stability promise, now that every stack is scored: ten senior engineers' ranking against kiln's, the score against public repos' incidents, readability against tokens, each published whatever it says. | 1 ticket |
+| v0.9.0 | Any CI, any machine, any size | Milestone decided by antoine (25 October 2026), reached here, the last before the format freezes: the bar of v1.0.0 run as a matrix in kiln's own CI, on GitHub's, GitLab's and one more CI, Linux, macOS and WSL, x86-64 and ARM64, a monorepo and a million files, each scored within its budget. | 1 ticket |
+| v0.9.1 | Does the score mean anything? Measured, on every stack | The last proof before the stability promise, now that every stack is scored: ten senior engineers' ranking against kiln's, the score against public repos' incidents, readability against tokens, each published whatever it says. | 1 ticket |
 
 </details>
 
