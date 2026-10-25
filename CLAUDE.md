@@ -50,8 +50,8 @@ un dossier ou un module.
   `social-preview.png` (déposée à la main dans les réglages de GitHub).
 - `docs/backlog/` : suivi du travail, en anglais (skill `/kiln:backlog`), dont la prochaine
   promotion de version ; `backlog.md` finit par son mode d'emploi (`## 📖`), la vision qui
-  ordonne les tickets (`## 🧭 Vision`) et les idées de `kiln score` (`## 💡`, pas des tickets) ;
-  à côté, seulement `done.md`, `rejected.md` et `urgent.md` ; `docs/assets/` : images de la vitrine.
+  ordonne les tickets (`## 🧭 Vision`) et la thèse de `kiln score` (`## 💡`, dont viennent
+  T-186 à T-319) ; à côté, seulement `done.md`, `rejected.md` et `urgent.md` ; `docs/assets/` : images de la vitrine.
 - `ROADMAP.md` (et `ROADMAP.fr.md`) : la feuille de route publique, liée depuis les README ; les
   étapes écrites à la main, les versions tirées de `## 🚀 Releases` du backlog par
   `scripts/roadmap.py`, à relancer après chaque changement du plan (`test_docs.py` échoue sinon).
