@@ -137,13 +137,7 @@ it.
 - T-165 · Write less code, measured: a ladder before writing (M)
 - Ideas (2): AI05, K17.
 
-### v0.5.8 · Findings where people look
-In the pull request, the CI's summary and GitHub's code scanning, written without a flag; repo-local
-rules in the grid's format.
-- T-91 · Findings where people look: SARIF in pull requests and code scanning (M)
-- Ideas (9): E23, E24, K08, K18, L02, L05, L10, R01, S03.
-
-### v0.5.9 · kiln never makes you wait
+### v0.5.8 · kiln never makes you wait
 The same features, sooner: what was measured slow on 24 October (the suite every release waits for,
 the session start, `kiln status`, each Bash call, the install), and the score's own start,
 benchmarked in CI.
@@ -154,7 +148,7 @@ benchmarked in CI.
 - T-178 · A lighter install: copier's dependencies trimmed, not fetched later (S)
 - Ideas (4): J01, J02, J03, J21.
 
-### v0.5.10 · Updates you take without reading them
+### v0.5.9 · Updates you take without reading them
 Asked at your pace, applied in one step, proven on real upgrade paths, the score before and after
 shown, Claude told what changed in its rules.
 - T-45 · Update reminders at the pace you choose (S)
@@ -162,7 +156,7 @@ shown, Claude told what changed in its rules.
 - T-54 · Every candidate proven on real upgrade paths (M)
 - Ideas (3): I11, K16, P08.
 
-### v0.5.11 · `kiln fix`: more gaps closed, faster, from scripts
+### v0.5.10 · `kiln fix`: more gaps closed, faster, from scripts
 The code's own rules get converters, the checks run once with a bisection on red, the options
 kiln-bot and the skills need; a fresh `kiln new` repo leaves `kiln fix` nothing to do.
 - T-174 · More converters: the code (M)
@@ -170,18 +164,24 @@ kiln-bot and the skills need; a fresh `kiln new` repo leaves `kiln fix` nothing 
 - T-176 · `kiln fix` options: several rules, `--skip`, `--json`, `--pr`, `--dry-run --verify` (M)
 - Ideas (4): F25, G08, K12, P02.
 
-### v0.5.12 · Rules that test themselves
+### v0.5.11 · Rules that test themselves
 Before the grid grows by hundreds of rules: each rule carries its examples, its rung and its message
 per place, and `kiln grid new`, `test`, `try` and `lint` make a rule in minutes.
 - Ideas (12): E01, E22, G01, G02, G07, G17, G18, G19, G21, G25, H05, L20.
 
+### v0.5.12 · Findings where people look
+With rules that test themselves (v0.5.11) to build on: in the pull request, the CI's summary and
+GitHub's code scanning, written without a flag; repo-local rules in the grid's format.
+- T-91 · Findings where people look: SARIF in pull requests and code scanning (M)
+- Ideas (9): E23, E24, K08, K18, L02, L05, L10, R01, S03.
+
 ### v0.5.13 · The grid grows: the exact rules first, three new themes
-T-141 opens here, its other boxes being the theme releases below: the twelve rules a detector
-decides exactly, the first rule of `licensing`, `infrastructure` and `data-science`, and the
-template held to every new rule by its own test.
+T-141 opens here, its other boxes being the theme releases below: the rules a detector decides
+exactly today, the first rule of `licensing`, `infrastructure` and `data-science`, and the template
+held to every new rule by its own test.
 - T-141 · Grid v2: the themes after the launch (L)
-- Ideas (18): AR01, AS02, AS32, CI08, CI10, CO04, CO20, CS18, DM05, DS01, FA05, FA19, GV13, IN02,
-  K13, LI01, P04, P05.
+- Ideas (16): AR01, AS32, CI08, CI10, CO04, CO20, CS18, DS01, FA05, FA19, GV13, IN02, K13, LI01,
+  P04, P05.
 
 ### v0.5.14 · Repos safe to hand to an agent
 What Claude Code users need first (17 October): narrow permissions, pinned MCP servers, no secret an
@@ -199,7 +199,7 @@ The other half of v0.6.0: generators that cost no tokens in the template, covera
 mutants measured by script, Claude on the holes only.
 - T-135 · Tests at the lowest token cost, measured on one module first (M)
 - T-136 · Test generators that cost no tokens, in the template (M)
-- Ideas (6): N06, O08, TE05, TE06, TE07, TE08.
+- Ideas (5): O08, TE05, TE06, TE07, TE08.
 
 ### v0.6.0 · Claude closes the gaps alone
 Milestone decided by antoine (16 October 2026: Claude does the work in the repo), its content
@@ -226,10 +226,12 @@ reads in their language, a file other agents can read too.
 Every week the sources are read, the data bundle refreshed, the rules whose sources moved flagged;
 each release note carries the grid's diff.
 - T-140 · The grid kept current: its sources watched every week (M)
-- Ideas (9): B22, G12, Q01, Q02, Q06, Q10, Q11, Q12, SU05.
+- Ideas (8): B22, G12, Q01, Q02, Q06, Q10, Q11, Q12.
 
 ### v0.6.4 · `kiln new` fits the person
 The quick door and the tailored one share the recap and the machine profile: built together.
+⚠ breaking: the size question becomes three questions and `--all-questions` gives way to the
+tailored mode, both converted by `kiln update`.
 - T-169 · `kiln new` asks about your situation, not about tools (L)
 - T-184 · `kiln new` tailored: it starts from what you know, then what the project needs (L)
 
@@ -280,8 +282,8 @@ fixes their converters; shell scripts and encodings come with them.
 ### v0.6.13 · Secrets and the settings that leak
 The secrets themselves, checksum-verified, and the production settings read as they resolve
 (v0.6.9): cookies, headers, HTTPS, debug flags, keys in the front.
-- Ideas (18): AS01, AS03, AS04, AS05, AS09, AS20, AS21, AS22, AS23, AS24, AS25, AS35, AS36, AS37,
-  AS38, AS39, AS45, E28.
+- Ideas (19): AS01, AS02, AS03, AS04, AS05, AS09, AS20, AS21, AS22, AS23, AS24, AS25, AS35, AS36,
+  AS37, AS38, AS39, AS45, E28.
 
 ### v0.6.14 · Precision measured on a thousand repos
 A labelled corpus re-scored at every candidate, precision and recall per rule as a release gate, new
@@ -306,7 +308,7 @@ Install scripts off, one index, tools and hooks pinned, downloads checked, no to
 ### v0.6.18 · What is on its way out, and when it breaks
 The calendar of what ends (runtimes, frameworks, runners, model IDs), the `hold` rules that detect
 what is leaving, the converters that move it.
-- Ideas (11): CI13, G13, I10, I22, Q04, Q05, Q13, Q14, SU19, SU27, SU30.
+- Ideas (12): CI13, G13, I10, I22, Q04, Q05, Q13, Q14, SU05, SU19, SU27, SU30.
 
 ### v0.6.19 · Containers built right
 Dockerfiles read stage by stage (v0.6.9): the final user, multi-stage builds, secrets at build time,
@@ -394,8 +396,8 @@ together.
 ### v0.6.34 · Data and migrations
 Migrations reversible, safe on a live table, linted in CI, run on the production engine; dumps out
 of git; invariants held by the database.
-- Ideas (23): B16, DM01, DM02, DM03, DM04, DM06, DM07, DM08, DM09, DM10, DM11, DM12, DM13, DM14,
-  DM15, DM16, DM17, DM18, DM19, DM20, F18, TE22, TE23.
+- Ideas (24): B16, DM01, DM02, DM03, DM04, DM05, DM06, DM07, DM08, DM09, DM10, DM11, DM12, DM13,
+  DM14, DM15, DM16, DM17, DM18, DM19, DM20, F18, TE22, TE23.
 
 ### v0.6.35 · Background tasks and concurrency
 Tasks that retry, time out, take IDs and run outside the request; increments and locks that survive
@@ -490,7 +492,7 @@ provenance of what is published, dependencies' licences, a health card for a new
 ### v0.6.51 · `--deep`: the repo's own checks, in a sandbox
 Opt-in, in a throwaway copy with the network off: the install from the lock, the tests (flaky,
 order, network, clock), Django's deploy check, type checkers at their strictest, a clean clone.
-- Ideas (11): DX07, F14, N01, N04, N05, N07, N08, N15, N16, N17, S08.
+- Ideas (12): DX07, F14, N01, N04, N05, N06, N07, N08, N15, N16, N17, S08.
 
 ### v0.6.52 · `--deep`: the app built and probed
 Images built and scanned, migrations applied and reversed, the API fuzzed, the front rendered for
@@ -582,6 +584,7 @@ base permissions, for organisation profiles.
 ### v0.7.3 · The charter and the grid, one engine
 Decision 4, before the format freezes: shared detectors first, then the charter as the grid's rules
 in strict or ratchet regime, its IDs kept as aliases; rule files checked by a published schema.
+⚠ breaking: `charter.toml` lists grid rule IDs with their regime, converted by `kiln update`.
 - Ideas (3): G09, G16, P11.
 
 ### v0.7.4 · Does the score mean anything? Measured
@@ -1517,6 +1520,9 @@ A slow check ends up not being run, and the time goes into the tools, not into k
 - **Origin**: vision of 17 October 2026 (the 23 themes); T-52, T-78, T-92, T-93, T-101, T-102,
   T-103 and T-105 merged here, as rules
 
+Planned box by box: the three new themes in v0.5.13, every other box with its theme's release
+in [🚀 Releases](#-releases), as the ideas that carry it.
+
 - [ ] Tests: property tests, mutation testing, API fuzzing, end-to-end journeys (with T-136).
 - [ ] Data and migrations: migrations linted before merge (django-migration-linter, squawk),
   seed data, anonymised dumps.
@@ -2303,7 +2309,7 @@ request: everything planned, the ideas included). The plan in short:
 | Releases | From this file | Why then |
 |---|---|---|
 | v0.4.7 to v0.5.0, before the launch | what their tickets already do (T-158's GitHub settings, T-159's containers run on a copy, kiln-bot, the study as the first corpus, kiln's repos at 100) and three small ones: the two silent passes (A30, A31) and the potential line (I07) | the launch's releases are full: a new idea there would push the gate |
-| v0.5.4 to v0.5.16 | what strangers meet first (K), the false alarms (A, E, H), the badge and the outputs where people look (L), speed, updates, `kiln fix`, rules that test themselves (G), the exact rules and the AI rules (Part III), the roadmap as context packs (O), tests at the lowest cost | the launch brings repos nobody here has seen, and v0.6.0 needs the roadmap and the tests |
+| v0.5.4 to v0.5.16 | what strangers meet first (K), the false alarms (A, E, H), the badge (L), speed, updates, `kiln fix`, rules that test themselves (G), the outputs where people look (L), the exact rules and the AI rules (Part III), the roadmap as context packs (O), tests at the lowest cost | the launch brings repos nobody here has seen, and v0.6.0 needs the roadmap and the tests |
 | v0.6.0 | O: the unattended run's scope guard, its labels and its costs | the milestone |
 | v0.6.1 to v0.6.11 | slimming, the grid's weekly watch, the repo model (A), rule format v2 (E, G), the syntax engine, mature tools (F), the cache (J) | the engine every later rule stands on |
 | v0.6.12 to v0.6.60 | Part III theme by theme, each after the rung it needs; between them the corpus and the critical cap (H, I), locks and registries, history and the forge (M), `--deep` (N), what the grid doesn't know (U), Python and JavaScript beyond Django and Nuxt (B, FP) | a rule enters once its detector's rung exists and the corpus can measure it |
@@ -2433,7 +2439,7 @@ others is a guess until the corpus measures it (B01).
 
 #### E · The detection engine
 
-- [ ] **E01** The ladder: L0 paths and names (microseconds), L1 structured files (TOML, JSON, YAML, INI, XML, HCL, Dockerfile, ignore files), L2 syntax patterns, L3 cross-file (imports, calls, references), L4 external tools, L5 git history, L6 forge and registry APIs, L7 running the code. Each rule declares its rung, each finding says which one found it. → v0.5.12
+- [ ] **E01** The ladder: L0 paths and names (microseconds), L1 structured files (TOML, JSON, YAML, INI, XML, HCL, Dockerfile, ignore files), L2 syntax patterns, L3 cross-file (imports, calls, references), L4 external tools, L5 git history, L6 forge and registry APIs, L7 running the code. Each rule declares its rung, each finding says which one found it. → v0.5.11
 - [ ] **E02** The default run is L0 to L3 plus the L4 tools shipped as wheels: offline, nothing of the repo executed. `--online` adds L6, `--history` L5, `--deep` L7 in a sandbox. → v0.6.10
 - [ ] **E03** A `syntax` detector kind on ast-grep (Rust, tree-sitter, YAML rules with `pattern`, `inside`, `has`, `not`, `constraints`): declarative like today's regexes, matching code instead of text (doctrine 11, T-144). → v0.6.9
 - [ ] **E04** One parse per file, shared by every syntax rule, the tree cached by blob SHA. → v0.6.9
@@ -2454,9 +2460,9 @@ others is a guess until the corpus measures it (B01).
 - [ ] **E19** Evidence for passes too: "met by `renovate.json`", "met: `USER app` in the final stage of `Dockerfile`". `--all` says why each rule passed. → v0.6.8
 - [ ] **E20** A third outcome, `unknown`: the detector couldn't decide (a config written as code, a tool missing, a file too big). Listed apart, never a pass, never a fail. → v0.6.8
 - [ ] **E21** Linear-time regexes (google-re2, or Rust's `regex` through the syntax engine) and a time budget per rule: one bad pattern can't hang a run. → v0.6.54
-- [ ] **E22** `kiln grid` lints every pattern for catastrophic backtracking when the grid loads. → v0.5.12
-- [ ] **E23** Locations with line, column and end (SARIF regions), with a snippet, redacted for secrets. → v0.5.8
-- [ ] **E24** A fingerprint per finding (rule, path, normalized snippet, like SARIF's `partialFingerprints`): a finding keeps its identity when lines move, so waivers and baselines survive edits. → v0.5.8
+- [ ] **E22** `kiln grid` lints every pattern for catastrophic backtracking when the grid loads. → v0.5.11
+- [ ] **E23** Locations with line, column and end (SARIF regions), with a snippet, redacted for secrets. → v0.5.12
+- [ ] **E24** A fingerprint per finding (rule, path, normalized snippet, like SARIF's `partialFingerprints`): a finding keeps its identity when lines move, so waivers and baselines survive edits. → v0.5.12
 - [ ] **E25** Baselines: `kiln score --baseline` records today's findings, and from then on only new ones fail a gate. The progressive path of doctrine 9 for any repo, not only kiln's. → v0.6.25
 - [ ] **E26** Approximate detectors return candidates with a confidence: the roadmap sends the uncertain ones to Claude "to confirm" and the certain ones as gaps. → v0.6.15
 - [ ] **E27** Docs checked against the tree: every path, command and make target quoted in the README and CLAUDE.md exists (REPO-MAP-FRESH, README-COMMANDS-EXIST). A map that lies costs Claude more than no map. → v0.6.43
@@ -2495,18 +2501,18 @@ others is a guess until the corpus measures it (B01).
 - [ ] **F22** Several tools on one line deduplicated: ruff's S608 and another tool on the same SQL string make one finding with both as evidence. → v0.6.10
 - [ ] **F23** A missing tool never fails a rule: "unknown: install kiln's tools extra, or run with `--deep`". → v0.6.10
 - [ ] **F24** A `kiln-cli[tools]` extra bringing the tools that ship as wheels in one install. → v0.6.10
-- [ ] **F25** The tool that detected becomes the tool that keeps it closed: `kiln fix` adds its config and its CI step when missing (ruff, zizmor, pre-commit). → v0.5.11
+- [ ] **F25** The tool that detected becomes the tool that keeps it closed: `kiln fix` adds its config and its CI step when missing (ruff, zizmor, pre-commit). → v0.5.10
 
 #### G · Rule format v2 and authoring
 
-- [ ] **G01** Examples inside the rule file (`[[examples]]` with `expect` and inline files): the grid tests itself, packs ship tested rules, and `tests/test_grid.py` reads them instead of its `CASES`. → v0.5.12
-- [ ] **G02** Several examples per rule, edge cases included; every false positive ever reported becomes a `pass` example, so it never comes back. → v0.5.12
+- [ ] **G01** Examples inside the rule file (`[[examples]]` with `expect` and inline files): the grid tests itself, packs ship tested rules, and `tests/test_grid.py` reads them instead of its `CASES`. → v0.5.11
+- [ ] **G02** Several examples per rule, edge cases included; every false positive ever reported becomes a `pass` example, so it never comes back. → v0.5.11
 - [ ] **G03** `applies` as an expression over the repo model (A). → v0.6.8
 - [ ] **G04** `any_of`: the ways one practice can be met, each with its own detector. → v0.6.8
 - [ ] **G05** `severity` (critical, high, medium, low, info), apart from `regime` (how it is enforced) and `level` (the radar). → v0.6.15
 - [ ] **G06** `effort` per place and per rule, in session minutes, and `impact`: the roadmap's order and the effort-to-100 estimate come from them. → v0.6.27
-- [ ] **G07** A `message` per place with placeholders (`{image} is named by tag: pin it as {image}@sha256:…`): the finding says what to do right there. → v0.5.12
-- [ ] **G08** A `fix` block: a converter, a ruff code, or a written recipe for Claude; `safety = "safe" | "unsafe"` as ruff marks its fixes. → v0.5.11
+- [ ] **G07** A `message` per place with placeholders (`{image} is named by tag: pin it as {image}@sha256:…`): the finding says what to do right there. → v0.5.11
+- [ ] **G08** A `fix` block: a converter, a ruff code, or a written recipe for Claude; `safety = "safe" | "unsafe"` as ruff marks its fixes. → v0.5.10
 - [ ] **G09** `related`, `supersedes` and `aliases`: old IDs answered forever, the stable-ID promise of v1.0. → v0.7.3
 - [ ] **G10** A `standards` table: CWE, OWASP Top 10 and ASVS, OpenSSF Scorecard, SLSA, NIST SSDF, CIS benchmarks, WCAG, the EU Cyber Resilience Act, twelve-factor. → v0.7.1
 - [ ] **G11** Profiles stay a membership list, never weights (decision 2): a rule outside the repo's profile is not applicable, so `SLO` asks nothing of a solo repo. → v0.6.63
@@ -2515,15 +2521,15 @@ others is a guess until the corpus measures it (B01).
 - [ ] **G14** `precision` and `prevalence` written by the calibration job (H), shown in `kiln grid ID` and on the rule's page. → v0.6.14
 - [ ] **G15** A Markdown page per rule beside its file (why, bad and good code, the fix, references), as ruff documents its rules; `kiln grid ID --doc` shows it, the site publishes it. → v0.6.5
 - [ ] **G16** A published JSON Schema for rule files: editors check a rule as it is typed (taplo, VS Code). → v0.7.3
-- [ ] **G17** `kiln grid new ID` scaffolds a rule and its examples; `kiln grid test [ID]` runs the examples; `kiln grid try ID --on <repo>` runs one rule with its timing. → v0.5.12
-- [ ] **G18** `kiln grid lint`: patterns that can backtrack, unknown facts, missing examples, stale sources, messages too long for a terminal line or for Claude's tokens. → v0.5.12
-- [ ] **G19** Rule IDs linted: uppercase, three words at most, naming the practice rather than the violation. → v0.5.12
+- [ ] **G17** `kiln grid new ID` scaffolds a rule and its examples; `kiln grid test [ID]` runs the examples; `kiln grid try ID --on <repo>` runs one rule with its timing. → v0.5.11
+- [ ] **G18** `kiln grid lint`: patterns that can backtrack, unknown facts, missing examples, stale sources, messages too long for a terminal line or for Claude's tokens. → v0.5.11
+- [ ] **G19** Rule IDs linted: uppercase, three words at most, naming the practice rather than the violation. → v0.5.11
 - [ ] **G20** One practice, several languages, one ID: `[detector.python]`, `[detector.typescript]`, `[detector.java]`. → v0.6.8
-- [ ] **G21** A hash per rule (content and engine version) for cache keys and for the report's `grid_version`. → v0.5.12
+- [ ] **G21** A hash per rule (content and engine version) for cache keys and for the report's `grid_version`. → v0.5.11
 - [ ] **G22** `inputs` declared per rule (the path classes it reads): the incremental engine knows what to recompute. → v0.6.11
 - [ ] **G23** `shadow = true`: a new detector runs and records on the corpus and on beta machines without showing, for one release, before it counts. → v0.6.14
 - [ ] **G24** Typed settings with defaults, for project data only (time zone, currency, integration branch): never a knob that weakens a rule (doctrine 1). → v0.6.8
-- [ ] **G25** A rule may carry its own small test repo folder (`rules/<theme>/<ID>/`) when inline examples get too big (a whole Django project). → v0.5.12
+- [ ] **G25** A rule may carry its own small test repo folder (`rules/<theme>/<ID>/`) when inline examples get too big (a whole Django project). → v0.5.11
 
 #### H · Precision and recall
 
@@ -2531,7 +2537,7 @@ others is a guess until the corpus measures it (B01).
 - [ ] **H02** Labels from Claude in batches (20 places per rule, "to confirm"), spot-checked by antoine, stored by fingerprint; only aggregates in public, anything that names a project in `kiln-private`. → v0.6.14
 - [ ] **H03** Precision and recall per rule at every candidate; a strict rule under 99 % precision, or any drop, stops the candidate (`kiln version cut`). → v0.6.14
 - [ ] **H04** Differential tests against reference tools (zizmor, Scorecard, gitleaks, ruff): each disagreement triaged into a kiln bug or a documented difference. → v0.6.14
-- [ ] **H05** Examples mutated: failing variants generated from each `pass` example (the `USER` line removed, a SHA turned into a tag), and the detector must flip. → v0.5.12
+- [ ] **H05** Examples mutated: failing variants generated from each `pass` example (the `USER` line removed, a SHA turned into a tag), and the detector must flip. → v0.5.11
 - [ ] **H06** Property tests (Hypothesis) on every parser (Dockerfile, workflows, compose, settings): random input never crashes, and the outcome is deterministic. → v0.6.54
 - [ ] **H07** A fuzzed tree: deep nesting, Unicode and spaces in paths, symlink loops, empty files, 100 MB files, invalid UTF-8, CRLF, BOM, case collisions. → v0.6.54
 - [ ] **H08** Known false-positive classes handled once, in the engine: tests, fixtures, templates, examples, code blocks in docs (a README showing the bad way), `.example` files, vendored and generated code, migrations, documented sample keys, localhost URLs. → v0.5.5
@@ -2560,7 +2566,7 @@ others is a guess until the corpus measures it (B01).
 - [ ] **I08** Effort to 100 from the rules' effort estimates, in session hours, the backlog's unit. → v0.6.27
 - [ ] **I09** A percentile against the study's distribution, bundled: "better than 82 % of public Django repos" (aggregates only, no repo named). → v0.5.6
 - [ ] **I10** `grid_version` in every report and badge; `kiln score --grid 0.4.5` re-scores with an older grid (bundled history) to compare like with like. → v0.6.18
-- [ ] **I11** New `adopt` rules announced one release ahead ("counts from v0.5.7: you meet it", or "you will lose 2 points: `kiln fix` closes it"): no score drops overnight. → v0.5.10
+- [ ] **I11** New `adopt` rules announced one release ahead ("counts from v0.5.7: you meet it", or "you will lose 2 points: `kiln fix` closes it"): no score drops overnight. → v0.5.9
 - [ ] **I12** `kiln score --history`: the score at each tag or merge (cheap with the cache), drawn as a curve; "41 to 78 since adoption". → v0.6.24
 - [ ] **I13** The score of a change: "this branch takes the score from 74 to 76; 1 new finding, 3 fixed". The gate is "no new finding", never an absolute number. → v0.6.24
 - [ ] **I14** Anti-gaming: presence rules check content (a README with install and usage, a SECURITY.md with a contact, tests that assert, CI that runs on pull requests and pushes). An empty file earns nothing. → v0.6.15
@@ -2575,9 +2581,9 @@ others is a guess until the corpus measures it (B01).
 
 #### J · Speed
 
-- [ ] **J01** Measure first: `kiln score --profile` (time per phase: listing, model, each rule, output; the ten slowest rules) and a benchmark suite (an empty repo, kiln, a copy of the reference repo, a 50,000-file monorepo, a synthetic million-file tree) in CI, with thresholds. → v0.5.9
-- [ ] **J02** Startup measured (`-X importtime`) and budgeted (80 ms to the first line): `urllib` imported only for `--online` (60 ms today), copier and Jinja never imported by `score`. → v0.5.9
-- [ ] **J03** A lean path: the score's dependencies kept minimal, so `uvx kiln-cli score` downloads little on a first run; the template's dependencies only for `new`, `adopt` and `update`. → v0.5.9
+- [ ] **J01** Measure first: `kiln score --profile` (time per phase: listing, model, each rule, output; the ten slowest rules) and a benchmark suite (an empty repo, kiln, a copy of the reference repo, a 50,000-file monorepo, a synthetic million-file tree) in CI, with thresholds. → v0.5.8
+- [ ] **J02** Startup measured (`-X importtime`) and budgeted (80 ms to the first line): `urllib` imported only for `--online` (60 ms today), copier and Jinja never imported by `score`. → v0.5.8
+- [ ] **J03** A lean path: the score's dependencies kept minimal, so `uvx kiln-cli score` downloads little on a first run; the template's dependencies only for `new`, `adopt` and `update`. → v0.5.8
 - [ ] **J04** One listing (`git ls-files -s` gives each tracked file's blob SHA for free); contents through `git cat-file --batch` when the tree is clean, from disk otherwise. → v0.6.11
 - [ ] **J05** A file-to-rules index built once, every rule's globs merged into one matcher: today each rule walks every file with its own patterns. → v0.6.11
 - [ ] **J06** Only the files some applicable rule needs are read; sizes from `git cat-file --batch-check` skip the huge ones before reading. → v0.6.11
@@ -2595,7 +2601,7 @@ others is a guess until the corpus measures it (B01).
 - [ ] **J18** Metrics sampled on huge repos with a stated margin (sizes, complexity); security rules always exhaustive. → v1.6.0
 - [ ] **J19** `--online` calls in parallel, cached a day with ETags (endoflife.date, OSV, forge APIs), batched (OSV's `querybatch` takes hundreds of packages at once). → v0.6.50
 - [ ] **J20** Speed published as uv and ruff publish theirs: "0.3 s on Django's own repo, 4 s on a million files". Speed is part of the pitch. → v1.6.0
-- [ ] **J21** A candidate more than 10 % slower on the suite waits for an explanation. → v0.5.9
+- [ ] **J21** A candidate more than 10 % slower on the suite waits for an explanation. → v0.5.8
 - [ ] **J22** The repo and CI models cached across commands (score, fix, dev, check) and across runs. → v0.6.11
 - [ ] **J23** `--first` for hooks: stop at the first critical finding. → v0.6.24
 - [ ] **J24** History scans incremental: each commit's blobs scanned once, ever (the cache knows them by SHA), so `--history` costs seconds after the first run. → v0.6.47
@@ -2609,32 +2615,32 @@ others is a guess until the corpus measures it (B01).
 - [ ] **K05** Remote scoring without a clone for L0 and L1 rules: the Git Trees API lists every path in one call for most repos, then a few config files are fetched. Seconds, for T-87's fleet view. → v0.7.0
 - [ ] **K06** In the browser with Pyodide, on a tarball fetched from the forge's API, no server at all; to verify (CORS on the tarball endpoints). → v1.5.0
 - [ ] **K07** No config, no question, no `kiln adopt` needed to score; a plain folder, a zip or a tarball scored too. → v0.6.5
-- [ ] **K08** CI detected (`GITHUB_ACTIONS`, `GITLAB_CI`, `CI`): annotations, SARIF and a job summary written without a flag, colours off outside a terminal (T-116). → v0.5.8
+- [ ] **K08** CI detected (`GITHUB_ACTIONS`, `GITLAB_CI`, `CI`): annotations, SARIF and a job summary written without a flag, colours off outside a terminal (T-116). → v0.5.12
 - [ ] **K09** Exit code 0 by default, since it is a measure; gates are explicit: `--fail-under 80`, `--fail-on critical`, `--no-new` against a baseline or the integration branch. → v0.6.24
 - [ ] **K10** Never a crash: a broken file is a finding, a rule that throws is reported as a kiln bug (with `/kiln:report`'s hint), and the run goes on. → v0.5.4
 - [ ] **K11** The next step always printed as one command: "`kiln fix` closes 5 of these 9 gaps, on a branch, no token". → v0.5.4
-- [ ] **K12** `kiln score --fix`: score, fix, score again, in one go. → v0.5.11
+- [ ] **K12** `kiln score --fix`: score, fix, score again, in one go. → v0.5.10
 - [ ] **K13** A repo generated by kiln scoring under 100 says it: kiln's bug, reported with consent ([REPORT-TO-KILN]). → v0.5.13
 - [ ] **K14** The integration branch, the main language and the profile detected; the report says what it assumed. → v0.6.61
 - [ ] **K15** Explanations a newcomer understands (one sentence, no jargon) and `--explain` for the details: "like a senior engineer would, even if you're not one". → v0.6.27
-- [ ] **K16** Offline on a plane: all but `--online` works; the data's date shown, with "12 new rules since your version" when the tool is old (`tool_update.py`). → v0.5.10
+- [ ] **K16** Offline on a plane: all but `--online` works; the data's date shown, with "12 new rules since your version" when the tool is old (`tool_update.py`). → v0.5.9
 - [ ] **K17** Claude Code does the work: the plugin's session start shows the score in one line (cached), the status line shows it, the edit hook keeps it. The user only reads. → v0.5.7
-- [ ] **K18** Nothing written in the repo by default (as today); `--output` writes a report when asked. → v0.5.8
+- [ ] **K18** Nothing written in the repo by default (as today); `--output` writes a report when asked. → v0.5.12
 - [ ] **K19** kiln-bot (T-59) as the effortless default for any public repo: one copy-paste, a weekly pull request with the score and `kiln fix`'s commits. → v0.4.8
 - [ ] **K20** On a machine, `kiln install` (T-161) is the only setup; in a repo, there is none. → v0.5.4
 
 #### L · Outputs and integrations
 
 - [ ] **L01** `--format`: text, json, sarif, junit, markdown, html, csv, gitlab-codequality, github-annotations, checkstyle. → v0.6.28
-- [ ] **L02** Complete SARIF 2.1.0: rules with `helpUri` to their page, regions, `partialFingerprints`, `fixes` for scripted fixes, waivers as `suppressions` with their reason (T-91). → v0.5.8
+- [ ] **L02** Complete SARIF 2.1.0: rules with `helpUri` to their page, regions, `partialFingerprints`, `fixes` for scripted fixes, waivers as `suppressions` with their reason (T-91). → v0.5.12
 - [ ] **L03** GitLab: the Code Quality report (merge request widget) and the SAST report format for security rules. → v0.6.62
 - [ ] **L04** JUnit XML, each rule a test case, for Jenkins, Azure and any CI's test tab. → v0.6.28
-- [ ] **L05** A Markdown summary for pull request comments and `$GITHUB_STEP_SUMMARY`. → v0.5.8
+- [ ] **L05** A Markdown summary for pull request comments and `$GITHUB_STEP_SUMMARY`. → v0.5.12
 - [ ] **L06** A self-contained HTML report in one file: the score, the pillars with their weakest themes, findings with snippets, filters, the potential bar, the history curve. → v0.6.28
 - [ ] **L07** A live badge: kiln-bot publishes a shields.io endpoint JSON (Pages or a gist) instead of a number frozen in the README (T-154). → v0.5.6
 - [ ] **L08** `--compare <ref or report.json>`: new, fixed and still-open findings, the delta, the rules that started or stopped applying. → v0.6.24
 - [ ] **L09** Pull request comments by the action: the delta, new findings as review comments on the diff's lines, fixed ones thanked. → v0.6.24
-- [ ] **L10** GitHub check runs with annotations, sent in batches of 50. → v0.5.8
+- [ ] **L10** GitHub check runs with annotations, sent in batches of 50. → v0.5.12
 - [ ] **L11** Scores kept in git notes (`refs/notes/kiln-score`), as `kiln ci` keeps its verdicts: history for free, travelling with the repo when pushed. → v0.6.24
 - [ ] **L12** A language server: diagnostics for place rules in any editor, code actions for scripted fixes ⚠ T-117 (a VS Code extension) is declined for now; a language server serves every editor at once, only if adopters ask. → v1.5.0
 - [ ] **L13** The `--json` schema published (`schema.json`), versioned with a changelog, stable at v1.0. → v1.0.0
@@ -2644,7 +2650,7 @@ others is a guess until the corpus measures it (B01).
 - [ ] **L17** `--open`: the HTML report in the browser. → v0.6.28
 - [ ] **L18** `--for-claude`: the roadmap's context packs, token-counted, nothing decorative. → v0.5.15
 - [ ] **L19** The report's absolute `root` left out by default: it names the user's home when shared. → v0.6.28
-- [ ] **L20** Messages in English only (decided on 16 October 2026), each finding short enough for one terminal line. → v0.5.12
+- [ ] **L20** Messages in English only (decided on 16 October 2026), each finding short enough for one terminal line. → v0.5.11
 - [ ] **L21** A finding links to its rule's page and to the line on the forge when the remote is known (`https://github.com/o/r/blob/<sha>/path#L12`). → v0.6.28
 
 #### M · History, forge and registries
@@ -2687,7 +2693,7 @@ others is a guess until the corpus measures it (B01).
 - [ ] **N03** Containers started read-only with every capability dropped: a service that still starts gets the hardening from `kiln fix` (what T-159 needs). → v0.4.7
 - [ ] **N04** An install from the lock that works (`uv sync --locked`, `pnpm install --frozen-lockfile`): LOCK-IN-SYNC proven. → v0.6.51
 - [ ] **N05** Tests run: pass rate, duration, the slowest, the flaky (failures run again), order dependence (random order), network use (sockets blocked: NO-NETWORK proven), clock dependence (a shifted fake clock: CLOCK proven). → v0.6.51
-- [ ] **N06** Coverage measured (lines and branches) and mutation testing on a sample (mutmut, Stryker): the tests theme's ratchets fed with real numbers. → v0.5.16
+- [ ] **N06** Coverage measured (lines and branches) and mutation testing on a sample (mutmut, Stryker): the tests theme's ratchets fed with real numbers. → v0.6.51
 - [ ] **N07** Django's own `manage.py check --deploy` against the production settings: HSTS, SSL redirect, secure cookies, `DEBUG`, `SECRET_KEY`'s strength, `ALLOWED_HOSTS`, X-Frame-Options. Official checks, mapped onto grid rules. → v0.6.51
 - [ ] **N08** `manage.py makemigrations --check --dry-run`: models and migrations in sync. → v0.6.51
 - [ ] **N09** Migrations applied to a fresh Postgres container, then reversed; their SQL linted by squawk (through `sqlmigrate`). → v0.6.52
@@ -2725,13 +2731,13 @@ others is a guess until the corpus measures it (B01).
 #### P · One measure drives every command
 
 - [ ] **P01** `kiln new` proven at 100: every combination of answers (stack, size, options) generated and scored at each candidate; a template change that lowers any of them fails (T-130's matrix). → v0.5.0
-- [ ] **P02** `kiln fix` on a fresh `kiln new` repo changes nothing; when it does, the template is behind the grid. → v0.5.11
+- [ ] **P02** `kiln fix` on a fresh `kiln new` repo changes nothing; when it does, the template is behind the grid. → v0.5.10
 - [ ] **P03** The radical form: `kiln new` as an empty folder, then `kiln adopt`, then `kiln fix`. The template and the converters can't drift apart. → v0.6.25
 - [ ] **P04** Each `adopt` rule names the template files that meet it (`met_by_template = […]`): `kiln grid` says "kiln new does this for you". → v0.5.13
 - [ ] **P05** Grid first: a new rule makes the template's test fail until the template meets it, test-driven development for the template. → v0.5.13
 - [ ] **P06** `kiln adopt` as a funnel: score before, lay files, `kiln fix`, score after, roadmap tickets; each step a commit on its branch. → v0.6.25
 - [ ] **P07** `kiln adopt --dry-run` shows the score it would reach. → v0.6.25
-- [ ] **P08** `kiln update` shows the score before and after, and the grid changes that touch this repo; a lower score stops the update unless the grid explains it. → v0.5.10
+- [ ] **P08** `kiln update` shows the score before and after, and the grid changes that touch this repo; a lower score stops the update unless the grid explains it. → v0.5.9
 - [ ] **P09** `kiln fix` reports the points each commit won. → v0.4.8
 - [ ] **P10** `kiln check` includes "no new finding against the integration branch". → v0.6.24
 - [ ] **P11** The charter and the grid as one engine (decision 4): shared detectors first, a test that makes a rule and its charter twin agree on the examples; at v1.0.0 a rule written once in the grid, `charter.toml` listing rule IDs with their regime and budget, the charter's IDs kept as aliases. → v0.7.3
@@ -2762,7 +2768,7 @@ others is a guess until the corpus measures it (B01).
 
 #### R · Packs, local rules, standards
 
-- [ ] **R01** Repo-local rules in `.kiln/grid/` (T-91), in the same format, their examples run by `kiln grid test`. → v0.5.8
+- [ ] **R01** Repo-local rules in `.kiln/grid/` (T-91), in the same format, their examples run by `kiln grid test`. → v0.5.12
 - [ ] **R02** Packs from any git repo (T-69), pinned by SHA, behind a trust prompt that shows what their detectors run; declarative detectors only unless trusted (a Python check is code execution). → v1.0.0
 - [ ] **R03** Organisation packs for the v0.7.0 targets: a university's rules for student repos, an association network's. → v0.7.0
 - [ ] **R04** Community packs for stacks kiln won't template: FastAPI, Rails, Laravel, Spring Boot, Go services. → v1.0.0
@@ -2777,7 +2783,7 @@ others is a guess until the corpus measures it (B01).
 
 - [ ] **S01** Static by default: no code of the scored repo ever runs (no setup.py, no `eslint.config.js`, no `conftest.py`). Scoring an untrusted repo is safe, which the study needs at scale. → v0.6.54
 - [ ] **S02** Hardened parsers: YAML alias bombs, deep nesting, huge JSON, path traversal through symlinks, linear-time regexes; limits on file size, file count, time and memory. → v0.6.54
-- [ ] **S03** Secrets never printed: snippets redacted (`ghp_****abcd`) in every output (terminal, JSON, SARIF, HTML, comments). → v0.5.8
+- [ ] **S03** Secrets never printed: snippets redacted (`ghp_****abcd`) in every output (terminal, JSON, SARIF, HTML, comments). → v0.5.12
 - [ ] **S04** Shareable reports: no absolute paths, user names or e-mail addresses. → v0.6.28
 - [ ] **S05** No telemetry, ever: only T-38's report, with consent and the exact lines shown, as v0.4.6 does; every later signal (U) goes through it. → v0.6.53
 - [ ] **S06** Reproducible: the report carries kiln's version, the grid's hash, the data's date and the commit; `kiln score --verify report.json` runs again and compares. → v0.6.15
@@ -2953,7 +2959,7 @@ new rules. Rule IDs are proposals; `kiln grid lint` (G) has the last word on the
 - [ ] **DM02** `COMMON-FIELDS` (draft, Django): models inherit a base carrying `created_at` and `updated_at`. L2 · fix J · trial. → v0.6.34
 - [ ] **DM03** `INDEXES` (draft, Postgres): fields filtered or ordered on in querysets have an index. L3≈ · fix J · assess. → v0.6.34
 - [ ] **DM04** `TRANSACTIONS` (draft): views writing several rows do it in `transaction.atomic` (or `ATOMIC_REQUESTS`). L2≈ · fix J · trial. → v0.6.34
-- [ ] **DM05** `USE-TZ` (Django): `USE_TZ = True`. L2 · fix S · adopt. → v0.5.13
+- [ ] **DM05** `USE-TZ` (Django): `USE_TZ = True`. L2 · fix S · adopt. → v0.6.34
 - [ ] **DM06** `REVERSIBLE-MIGRATIONS`: `RunPython` with `reverse_code`, `RunSQL` with `reverse_sql`. L2 · fix J · adopt. → v0.6.34
 - [ ] **DM07** `SAFE-MIGRATIONS`: no NOT NULL column added without a default to an existing table; indexes built concurrently on Postgres (`AddIndexConcurrently`, `atomic = False`). L2≈ · fix J · trial. → v0.6.34
 - [ ] **DM08** `SCHEMA-AND-DATA-APART`: data migrations (`RunPython`) in their own files. L2 · fix J · trial. → v0.6.34
@@ -3028,7 +3034,7 @@ new rules. Rule IDs are proposals; `kiln grid lint` (G) has the last word on the
 #### AS · Application security
 
 - [ ] **AS01** `SECRETS` (draft): the secrets themselves in tracked files (provider patterns, checksum-verified tokens, entropy last), where `SECRET-SCAN` checks that a scan runs and `NO-TRACKED-ENV` that no `.env` is tracked; critical: it caps the score at 49. L2 · fix J (rotate, then remove) · adopt. → v0.6.13
-- [ ] **AS02** `SESSION-COOKIES` (draft, Django): `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE`, `SESSION_COOKIE_HTTPONLY` and `SAMESITE` in the production settings, evaluated statically. L2 · fix S · adopt. → v0.5.13
+- [ ] **AS02** `SESSION-COOKIES` (draft, Django): `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE`, `SESSION_COOKIE_HTTPONLY` and `SAMESITE` in the production settings, evaluated statically. L2 · fix S · adopt. → v0.6.13
 - [ ] **AS03** `SECURITY-HEADERS` (draft): HSTS of a year or more, `nosniff`, frames denied, a referrer policy; in Django's settings, the reverse proxy (Caddy, nginx) or Nuxt (nuxt-security). L2 · fix S · adopt. → v0.6.13
 - [ ] **AS04** `CSP-NONCE` (draft): a Content Security Policy with nonces (Django 6.0's built-in CSP, django-csp, nuxt-security), no `unsafe-inline` for scripts. L2 · fix J · trial. → v0.6.13
 - [ ] **AS05** `CONSTANT-TIME` (draft): secrets compared with `hmac.compare_digest` or `crypto.timingSafeEqual`, never `==` on names like token, signature or digest; the charter's ban promoted. L2 · fix S · adopt. → v0.6.13
@@ -3095,7 +3101,7 @@ new rules. Rule IDs are proposals; `kiln grid lint` (G) has the last word on the
 - [ ] **SU02** `UNUSED-DEPENDENCIES` (trial): deptry and knip, promoted once precise. L4≈ · fix S · trial. → v0.6.1
 - [ ] **SU03** `NEW-DEPENDENCY` (draft): a dependency added on a branch gets a health card in the pull request (maintainers, age, downloads, licence, install scripts). L6 · fix J · trial. → v0.6.50
 - [ ] **SU04** `IMAGES-BY-DIGEST` (scored): extended to compose, Kubernetes, Helm values and CI images, with `ARG` defaults resolved. → v0.6.19
-- [ ] **SU05** `SUPPORTED-RUNTIMES` (scored): every runtime endoflife.date knows; an app judged on what it runs, a library's support floor shown as information. → v0.6.3
+- [ ] **SU05** `SUPPORTED-RUNTIMES` (scored): every runtime endoflife.date knows; an app judged on what it runs, a library's support floor shown as information. → v0.6.18
 - [ ] **SU06** `DEPENDENCY-UPDATES` (scored): every manifest folder covered by the bot's config, not merely "a config exists". → v0.6.16
 - [ ] **SU07** `LOCK-IN-SYNC`: every dependency of the manifest is in the lock's root with a matching constraint. L1 · fix S · adopt. → v0.6.16
 - [ ] **SU08** `FROZEN-INSTALL-IN-CI`: CI installs from the lock (`uv sync --locked`, `npm ci`, `pnpm install --frozen-lockfile`, `cargo build --locked`, `bundle install` frozen). L1 · fix S · adopt. → v0.6.16
