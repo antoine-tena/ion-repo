@@ -52,6 +52,9 @@ un dossier ou un module.
   promotion de version ; `backlog.md` finit par son mode d'emploi (`## 📖`), la vision qui
   ordonne les tickets (`## 🧭 Vision`) et les idées de `kiln score` (`## 💡`, pas des tickets) ;
   à côté, seulement `done.md`, `rejected.md` et `urgent.md` ; `docs/assets/` : images de la vitrine.
+- `ROADMAP.md` (et `ROADMAP.fr.md`) : la feuille de route publique, liée depuis les README ; les
+  étapes écrites à la main, les versions tirées de `## 🚀 Releases` du backlog par
+  `scripts/roadmap.py`, à relancer après chaque changement du plan (`test_docs.py` échoue sinon).
 - `scripts/screenshots.py` : dessine les images du README à partir des vraies sorties de kiln
   (et le logo, l'image de partage) ; `scripts/social_preview.py` : l'image de partage en PNG
   (Playwright) ; `scripts/demo_shell.sh` : le shell des démos enregistrées (kiln de ce dossier,
@@ -119,15 +122,22 @@ et kiln-bot (T-59) rendra la mise à jour gratuite. Les changements cassants res
 - **la mineure ne monte que pour une étape** décidée par antoine (par exemple kiln tout en
   anglais) : `kiln version --minor` ; Claude peut la proposer quand un groupe de tickets
   forme une étape (permis par antoine le 16 octobre 2026), jamais la décider ;
-- **étapes décidées** (antoine, 16 octobre 2026) : v0.5.0 lancement public, v0.6.0 Claude
-  travaille seul dans le repo, v0.7.0 kiln pour les équipes et les organisations, v1.0.0 promesse
-  de stabilité, juste avant les modules de la communauté (T-69) qui s'appuieront sur l'API de
-  kiln ; le plan de `docs/backlog/` les porte. Leur contenu suit la vision du 17 octobre 2026
+- **étapes décidées** (antoine, 16 octobre 2026, complétées le 25 octobre) : v0.5.0 lancement
+  public, v0.6.0 Claude travaille seul dans le repo, v0.7.0 kiln pour les équipes et les
+  organisations, v0.8.0 chaque stack courante notée, v0.9.0 n'importe quelle CI, machine et
+  taille, v1.0.0 promesse de stabilité, juste avant les modules de la communauté (T-69) qui
+  s'appuieront sur l'API de kiln ; le plan de `docs/backlog/` les porte, `ROADMAP.md` les
+  montre (ses deux tableaux d'étapes, écrits à la main, suivent cette liste). Leur contenu suit la vision du 17 octobre 2026
   (section `🧭 Vision` de `docs/backlog/backlog.md`) : v0.5.0 note n'importe quel
   repo Django ou Nuxt face à la grille et le corrige par script, v0.6.0 Claude comble seul les
   écarts que le script laisse, v0.7.0 profils de structure et flottes de repos (associations,
-  universités, PME ; pas encore les grandes entreprises), v1.0.0 format de la grille stable pour
-  les paquets de règles de la communauté ;
+  universités, PME ; pas encore les grandes entreprises), v0.8.0 et v0.9.0 le format éprouvé sur
+  chaque stack, CI et machine courantes avant qu'il se fige, v1.0.0 format de la grille stable pour
+  les paquets de règles de la communauté. **Barre de la v1.0.0** (antoine, 25 octobre 2026, qui la
+  voulait « pour absolument tout » ; « tout » ne s'atteint jamais et la longue traîne revient aux
+  paquets de la communauté) : le format a tenu sans casser sur les stacks qui font environ 95 % des
+  repos du corpus (B01), sur la CI de GitHub, celle de GitLab et une autre, sous Linux, macOS et
+  WSL, et sur les monorepos, chacun noté et corrigé par script comme Django à la v0.5.0 ;
 - **lancement public** (date fixée le 17 octobre 2026 à la demande d'antoine) : **mercredi
   11 novembre 2026 à 16 h** (heure de Paris), sur tous les forums le même après-midi (T-03),
   seulement si la v0.5.0 est promue et que la barre de T-03 tient le lundi 9 novembre à 20 h ;
@@ -187,6 +197,8 @@ Demande d'antoine (19 octobre 2026) : le README, « le mieux au monde », entiè
 d'une version à l'autre. Il montre kiln en peu de mots et en vraies images (sur le modèle d'uv,
 ruff, Bun) ; la référence (`docs/reference.md`, `docs/reference.fr.md`) contient tout le
 reste. `tests/test_docs.py` échoue si :
+- la feuille de route (`ROADMAP.md`, `ROADMAP.fr.md`) ne montre plus le plan du backlog, ou un
+  README ne la cite plus ;
 - la référence d'une langue oublie une commande, une option, un réglage de `kiln set`, un
   plugin, une skill, un hook ou un workflow réutilisable ;
 - un README cite une commande qui n'existe pas, ne renvoie pas à sa référence, ou ne suit plus

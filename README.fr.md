@@ -199,7 +199,9 @@ ses versions comme Claude Code : en `0.x`, chaque version monte le correctif, le
 cassants viennent en tête du [journal](CHANGELOG.md) et `kiln update` les convertit ; la mineure
 marque une étape. Le semver strict commence à la 1.0. La suite est pour les repos que vous avez
 déjà : n'importe quel repo Django ou Nuxt noté face à la grille en quelques secondes, puis mis à
-niveau par script partout où un script le peut (v0.5.0).
+niveau par script partout où un script le peut (v0.5.0). Ensuite Claude Code qui comble seul ce
+qu'un script laisse, les organisations entières, chaque stack, CI et machine courantes, et la
+promesse de stabilité de la 1.0, version par version : [**ROADMAP.fr.md**](ROADMAP.fr.md).
 
 ## Contribuer
 

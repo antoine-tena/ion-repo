@@ -187,7 +187,9 @@ Code's: in `0.x`, each release bumps the patch, breaking changes come first in t
 [changelog](CHANGELOG.md) and `kiln update` converts them; the minor marks a milestone. Strict
 semver starts at 1.0. What comes next is for the repos you already have: any Django or Nuxt repo
 scored against the grid in seconds, then brought up to it by script wherever a script can
-(v0.5.0).
+(v0.5.0). Then Claude Code closing alone what a script leaves, whole organisations, every common
+stack, CI and machine, and the stability promise of 1.0, release by release:
+[**ROADMAP.md**](ROADMAP.md).
 
 ## Contributing
 

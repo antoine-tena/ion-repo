@@ -98,7 +98,8 @@ Format of the section, one block per release, in order:
 
 Tickets stay in their priority sections; the release section only quotes ID, short title and
 effort. After writing, show the user the releases (name, tickets, why) and what moved since
-the last plan; they reshuffle by asking.
+the last plan; they reshuffle by asking. A repo that shows this section as a public roadmap
+(`scripts/roadmap.py`, as kiln does) has it redrawn after every change to the section.
 
 An ID is never reused. Changes are committed on the work branch, never on the integration
 branch. Never copy a ticket into `rejected.md` without an explicit decision from the user.
