@@ -81,3 +81,22 @@ def test_a_person_s_commit_on_the_branch_is_never_reset(tmp_path: Path) -> None:
     with pytest.raises(KilnError, match="kiln-bot did not write"):
         bot.run(root)
     assert "docs: my notes" in git(root, "log", "--format=%s", "kiln/bot")
+
+
+def test_without_a_token_what_writes_workflows_is_left_out_and_named(tmp_path: Path) -> None:
+    """GITHUB_TOKEN may never push `.github/workflows/`: those commits wait for a token."""
+    root = make(
+        tmp_path,
+        {
+            "a.ts": "// @ts-ignore\nconst x = 1\n",
+            ".github/workflows/ci.yml": "on: push\njobs:\n  a:\n    runs-on: x\n    steps:\n"
+            "      - run: make\n",
+        },
+    )
+    proposal = bot.run(root, workflows=False)
+    subjects = [subject for subject, _ in proposal.commits]
+    assert any(subject.startswith("fix(TS-EXPECT-ERROR)") for subject in subjects)
+    changed = git(root, "diff", "--name-only", "main..kiln/bot")
+    assert ".github/workflows/" not in changed
+    assert "fix(WORKFLOW-PERMISSIONS)" in proposal.notes[0]
+    assert "KILN_BOT_TOKEN" in bot.body(proposal)

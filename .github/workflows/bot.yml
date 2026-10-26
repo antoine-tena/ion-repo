@@ -4,8 +4,9 @@ name: kiln-bot
 # (a kiln repo) then `kiln fix` on the branch `kiln/bot`, started again from the default branch,
 # and one pull request is kept up to date with the score before and after and the why of each
 # commit; closed when nothing is left to propose. A pull request opened with `GITHUB_TOKEN` does
-# not start the repo's CI: pass a fine-grained token (contents and pull requests: write) as the
-# `token` secret, or an app's.
+# not start the repo's CI, and may never push `.github/workflows/` (those commits are then left
+# out): pass a fine-grained token (contents, pull requests and workflows: write) as the `token`
+# secret, or an app's.
 on:
   workflow_call:
     inputs:
@@ -33,27 +34,31 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      # kiln at the exact version of this workflow, installed as a tool (removed at once).
+      # kiln at the exact version of this workflow, installed as a tool.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           repository: antoine-tena/kiln
           ref: ${{ job.workflow_sha || 'develop' }}
           path: .kiln
+      # Kept to the end of the job, where setup-uv's post step reads the action again; out of git.
       - uses: ./.kiln/actions/charter
         with:
           ref: ${{ job.workflow_sha || 'develop' }}
-      - name: Remove kiln from the project directory
-        run: rm -rf .kiln
+      - name: Keep kiln out of the project's git
+        run: echo ".kiln/" >> .git/info/exclude
 
       - name: kiln bot
         env:
           UPDATE: ${{ inputs.update }}
+          # GITHUB_TOKEN may never push .github/workflows/: what writes there waits for a token.
+          HAS_TOKEN: ${{ secrets.token != '' }}
         run: |
           git config user.name "kiln-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           options=()
           [ "$UPDATE" = "true" ] || options+=(--no-update)
+          [ "$HAS_TOKEN" = "true" ] || options+=(--no-workflows)
           kiln bot "${options[@]}" --body "$RUNNER_TEMP/body.md"
 
       - name: Pull request

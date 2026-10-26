@@ -351,6 +351,11 @@ def _add_bot_command(commands: argparse._SubParsersAction[argparse.ArgumentParse
     )
     bot_parser.add_argument("--no-update", action="store_true", help="kiln fix only")
     bot_parser.add_argument("--body", type=Path, help="write the pull request's body there")
+    bot_parser.add_argument(
+        "--no-workflows",
+        action="store_true",
+        help="leave out what writes .github/workflows/ (GITHUB_TOKEN may not push it)",
+    )
 
 
 def _add_pause_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
@@ -568,7 +573,10 @@ def dispatch(arguments: argparse.Namespace) -> list[str]:
         from kiln import bot
 
         bot.run_bot(
-            arguments.path.resolve(), update=not arguments.no_update, body_path=arguments.body
+            arguments.path.resolve(),
+            update=not arguments.no_update,
+            body_path=arguments.body,
+            workflows=not arguments.no_workflows,
         )
     elif arguments.command == "pause":
         from kiln import pause

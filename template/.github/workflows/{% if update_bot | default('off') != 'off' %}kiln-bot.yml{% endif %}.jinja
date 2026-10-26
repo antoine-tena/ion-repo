@@ -7,8 +7,8 @@ name: kiln-bot
 
 # kiln-bot ({{ update_bot }}): `kiln update` then `kiln fix` on the branch kiln/bot, one pull
 # request kept up to date with the score before and after. A pull request opened with
-# GITHUB_TOKEN does not start the CI: a fine-grained token (contents and pull requests: write) in
-# the secret KILN_BOT_TOKEN fixes that. Off with `kiln set update_bot=off`.
+# GITHUB_TOKEN does not start the CI nor push workflows: a fine-grained token (contents, pull
+# requests and workflows: write) in the secret KILN_BOT_TOKEN fixes that. Off with `kiln set update_bot=off`.
 on:
   schedule:
 {%- if update_bot == 'monthly' %}

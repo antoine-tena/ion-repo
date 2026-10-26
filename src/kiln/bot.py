@@ -22,6 +22,7 @@ BRANCH = "kiln/bot"
 BOT_SUBJECT = re.compile(r"^(fix\([A-Z0-9-]+\)|chore\(kiln\)): ")
 GRID_URL = "https://github.com/antoine-tena/kiln/blob/develop/docs/reference.md"
 UPDATE_SUBJECT = "chore(kiln): kiln update to {version}"
+WORKFLOWS = ".github/workflows/"
 
 
 @dataclass
@@ -36,12 +37,16 @@ class Proposal:
         return bool(self.commits)
 
 
-def run(root: Path, *, update: bool = True) -> Proposal:
+def run(root: Path, *, update: bool = True, workflows: bool = True) -> Proposal:
+    """`workflows`: commits may write `.github/workflows/`; without it (`GITHUB_TOKEN` may not
+    push them) they are left out and named."""
     root = Path(fix.git(root, "rev-parse", "--show-toplevel").strip())
     _start_branch(root)
     before = _score_of(root, "HEAD")
     notes = _update(root) if update and (root / ANSWERS_FILE).exists() else []
     fix.fix(root, on=BRANCH)
+    if not workflows:
+        notes += _without_workflows(root)
     log = fix.git(root, "log", "--reverse", "--format=%s%x1f%b%x1e", f"HEAD..{BRANCH}")
     commits = [
         (subject.strip(), body.strip())
@@ -67,6 +72,41 @@ def _start_branch(root: Path) -> None:
                 "merge or delete the branch, kiln-bot then starts it again"
             )
     fix.git(root, "branch", "-f", BRANCH, "HEAD")
+
+
+def _without_workflows(root: Path) -> list[str]:
+    """The branch rebuilt without the commits that write GitHub workflows (or depend on one)."""
+    commits = fix.git(root, "rev-list", "--reverse", f"HEAD..{BRANCH}").split()
+    touching = {
+        commit
+        for commit in commits
+        if any(
+            name.startswith(WORKFLOWS)
+            for name in fix.git(
+                root, "diff-tree", "--no-commit-id", "--name-only", "-r", commit
+            ).splitlines()
+        )
+    }
+    if not touching:
+        return []
+    left_out = []
+    with fix.scratch_worktree(root, "--detach") as copy:
+        for commit in commits:
+            subject = fix.git(root, "log", "-1", "--format=%s", commit).strip()
+            if commit in touching:
+                left_out.append(subject)
+                continue
+            if subprocess.run(
+                ["git", "cherry-pick", "--allow-empty", commit], cwd=copy, capture_output=True
+            ).returncode:
+                fix.git(copy, "cherry-pick", "--abort", check=False)
+                left_out.append(f"{subject} (it builds on one left out)")
+        fix.git(root, "branch", "-f", BRANCH, fix.git(copy, "rev-parse", "HEAD").strip())
+    return [
+        "Left out, they write GitHub workflows, which `GITHUB_TOKEN` may not push (a token with"
+        " the *Workflows* permission in `KILN_BOT_TOKEN` brings them): "
+        + "; ".join(f"`{subject}`" for subject in left_out)
+    ]
 
 
 def _score_of(root: Path, ref: str) -> int | None:
@@ -131,8 +171,10 @@ def body(proposal: Proposal) -> str:
     return "\n".join(lines) + "\n"
 
 
-def run_bot(root: Path, *, update: bool, body_path: Path | None) -> Proposal:
-    proposal = run(root, update=update)
+def run_bot(
+    root: Path, *, update: bool, body_path: Path | None, workflows: bool = True
+) -> Proposal:
+    proposal = run(root, update=update, workflows=workflows)
     if proposal.changed:
         text = body(proposal)
         if body_path is not None:

@@ -26,18 +26,19 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      # kiln at the exact version of this workflow, installed as a tool (removed at once).
+      # kiln at the exact version of this workflow, installed as a tool.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           repository: antoine-tena/kiln
           ref: ${{ job.workflow_sha || 'develop' }}
           path: .kiln
+      # Kept to the end of the job, where setup-uv's post step reads the action again; out of git.
       - uses: ./.kiln/actions/charter
         with:
           ref: ${{ job.workflow_sha || 'develop' }}
-      - name: Remove kiln from the project directory
-        run: rm -rf .kiln
+      - name: Keep kiln out of the project's git
+        run: echo ".kiln/" >> .git/info/exclude
 
       - name: kiln score
         env:
