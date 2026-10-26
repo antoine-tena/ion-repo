@@ -37,7 +37,7 @@ v1.0.0 in mid-June 2027. These are consequences of the plan rather than promises
 the launch adds pushes them by two days. The public view of this plan is
 [`ROADMAP.md`](../../ROADMAP.md), drawn from this section by `scripts/roadmap.py`.
 
-### Shipped: v0.4.0 to v0.4.5
+### Shipped: v0.4.0 to v0.4.6
 - v0.4.0 · kiln speaks English: promoted on Mon 19 Oct, the milestone decided by antoine
   (⚠ breaking, all converted by `kiln update`).
 - v0.4.1 · The grid, as data: `kiln grid`, 105 drafts from the reference repo.
@@ -48,15 +48,9 @@ the launch adds pushes them by two days. The public view of this plan is
 - v0.4.5 · Cheaper sessions, CI only at the release: promoted on Fri 23 Oct, with the outside
   fixes #54 to #56 (thanks @NathanBarrachin). Its planned theme slipped: T-90's rest moved to
   v0.4.8, T-130's proof to v0.5.0, T-160 to v0.6.23.
-
-### v0.4.6 · Every issue closed: adoption at full strength
-Frozen: its candidate is tagged (`v0.4.6-rc.1`). Candidate Sat 24 Oct, brought forward: antoine
-asked for every open issue to be resolved before the next release. `kiln adopt` brings a repo to the
-level of `kiln new` and `kiln update` serves it afterwards (#59, his choice of 24 October reversing
-the one of 19 October); a Vite + React front; a Streamlit or Dash front deploys to the VPS (#43,
-T-155); committed models tied to their code (#44, T-156); what the grid does not know, told to kiln
-with consent (#42, T-38); `kiln dev` refuses a taken port (#60) and installs missing Node
-dependencies; the tool update moves the plugin too (#58, thanks @NathanBarrachin).
+- v0.4.6 · Every issue closed, adoption at full strength: promoted on Mon 26 Oct (urgent, on
+  antoine's request: no repo of the code folder runs candidates since they all follow `beta`),
+  `kiln adopt` at the level of `kiln new`, #42 to #44 and #58 to #60.
 
 ### v0.4.7 · Every gap seen, wherever the code lives
 Candidate Tue 27 Oct. The score and the fixes reach what they miss today: GitHub settings, code at

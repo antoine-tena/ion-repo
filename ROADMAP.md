@@ -42,11 +42,10 @@ the backlog it takes (its tickets). Something missing, or wanted sooner?
 
 <!-- roadmap:start: drawn from docs/backlog/backlog.md by scripts/roadmap.py -->
 
-### v0.4.x · 3 releases
+### v0.4.x · 2 releases
 
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
-| v0.4.6 | Every issue closed: adoption at full strength | Frozen: its candidate is tagged (`v0.4.6-rc.1`). Candidate Sat 24 Oct, brought forward: antoine asked for every open issue to be resolved before the next release. `kiln adopt` brings a repo to the level of `kiln new` and `kiln update` serves it afterwards (#59, his choice of 24 October reversing the one of 19 October); a Vite + React front; a Streamlit or Dash front deploys to the VPS (#43, T-155); committed models tied to their code (#44, T-156); what the grid does not know, told to kiln with consent (#42, T-38); `kiln dev` refuses a taken port (#60) and installs missing Node dependencies; the tool update moves the plugin too (#58, thanks @NathanBarrachin). | in its candidate |
 | v0.4.7 | Every gap seen, wherever the code lives | Candidate Tue 27 Oct. The score and the fixes reach what they miss today: GitHub settings, code at the root as well as in `backend/` and `frontend/`, compose services, loose requirements, files read as empty. | 7 tickets |
 | v0.4.8 | Never lets it rot, kiln first | Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other people's repos: each commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03). | 5 tickets |
 
