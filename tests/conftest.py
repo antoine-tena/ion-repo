@@ -17,3 +17,5 @@ def git_identity(tmp_path_factory: pytest.TempPathFactory, monkeypatch: pytest.M
     # The machine's kiln settings (`~/.config/kiln/config.toml`): a machine on the beta channel
     # changed what the session hook offers.
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path_factory.mktemp("config")))
+    # Never the machine's GitHub through gh: a test that needs settings gives its own.
+    monkeypatch.setattr("kiln.grid.forge.ENABLED", False)

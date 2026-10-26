@@ -37,7 +37,8 @@ folder or a module.
   whether Claude's commits say Claude helped, Claude Code's `attribution`).
 - `src/kiln/grid/`: the grid (T-123): `rules/<theme>/<ID>.toml` one rule per file, `model.py`
   (format, closed lists, validation), `facts.py` (what a repo is made of), `detectors.py`
-  (declarative detectors, Python checks), `fixers/` (`kiln fix` converters: `ci.py`, `python.py`,
+  (declarative detectors, Python checks), `forge.py` (the GitHub settings read through `gh`,
+  cached a day), `fixers/` (`kiln fix` converters: `ci.py`, `python.py`,
   `containers.py`, `resolve.py` for SHAs and digests online), `fix.py` (`kiln fix`), `show.py`
   (`kiln grid`), `score.py` (`kiln score`, a repo scored against the grid), `gap_report.py` (what
   the grid doesn't cover, reported to kiln with the user's consent, T-38), `roadmap.py`
@@ -94,7 +95,8 @@ folder or a module.
 - `tests/`: `test_template.py` (the template rendered for each stack), `test_cli.py` (the
   command: welcome, errors, summary, output outside a terminal, old names), `test_questions.py`
   (`kiln new`'s questions), `test_new.py` (what `kiln new` says at the end), `test_grid.py` (the
-  grid), `test_score.py` (`kiln score`), `test_gap_report.py` (reports of the grid's gaps),
+  grid), `test_score.py` (`kiln score`), `test_gap_report.py` (reports of the grid's gaps), `test_forge.py` (GitHub settings through a
+  fake `gh`),
   `test_fix.py` (`kiln fix` and its conversions), `test_adopted.py` (adopted repos),
   `test_unites.py`, `test_ci.py`, `test_flotte.py`, `test_waivers.py` (waivers), `test_waive.py`,
   `test_charter_file.py` (`charter file`, the hook after an edit), `test_shipping.py`

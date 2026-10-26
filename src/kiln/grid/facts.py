@@ -11,6 +11,8 @@ import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path, PurePosixPath
 
+from kiln.grid import forge
+
 # Facts a rule may ask for, and what tells them.
 KNOWN_FACTS = (
     "python",
@@ -24,6 +26,7 @@ KNOWN_FACTS = (
     "github-actions",
     "containers",
     "agent",
+    "github",
 )
 # A coding agent's folder: the repo is worked with one (on disk, even when git ignores it).
 AGENT_FOLDERS = (".claude", ".cursor", ".codex", ".gemini")
@@ -167,6 +170,8 @@ def detect_facts(root: Path, files: tuple[str, ...]) -> set[str]:
         facts.add("containers")
     if any((root / folder).is_dir() for folder in AGENT_FOLDERS):
         facts.add("agent")
+    if forge.github_slug(root) is not None:
+        facts.add("github")
     return facts
 
 

@@ -1,0 +1,23 @@
+id = "DEPENDABOT-ALERTS"
+title = "Dependabot alerts and security updates are on"
+pillar = "methods"
+theme = "supply-chain"
+scope = { kind = "tool", name = "github" }
+level = "adopt"
+regime = "strict"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "A known vulnerability in a dependency is said the day it is published, with the pull request that fixes it."
+applies = ["github"]
+detectable = "script"
+fixable = "judgment"
+fixer = ""
+since = "0.4.10"
+
+[detector]
+kind = "python"
+check = "forge_dependabot_alerts"
+
+[[sources]]
+url = "https://docs.github.com/en/code-security/dependabot/dependabot-alerts/about-dependabot-alerts"
+kind = "docs"
+checked = 2026-10-26

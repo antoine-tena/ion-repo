@@ -113,6 +113,21 @@ def test_binary_and_minified_files_are_left_to_code_rules(tmp_path: Path) -> Non
     assert report.not_utf8 == ()
 
 
+def test_github_settings_out_of_reach_are_left_out_and_said(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = make(tmp_path, GOOD)
+    subprocess.run(["git", "-C", str(root), "remote", "add", "origin", "https://github.com/a/b"])
+    monkeypatch.setattr("kiln.grid.forge.ENABLED", True)
+    monkeypatch.setattr("kiln.grid.forge.shutil.which", lambda name: None)
+    report = score.score_repo(root)
+
+    assert report.score == 100
+    assert statuses(report)["FORGE-SECRET-SCANNING"] == "n/a"
+    score.show(report)
+    assert "GitHub settings unknown" in capsys.readouterr().out
+
+
 def test_the_same_repo_gets_the_same_score_and_nothing_is_written(tmp_path: Path) -> None:
     root = make(tmp_path, {"app.py": "try:\n    pass\nexcept:\n    pass\n"})
     before = sorted(path.name for path in root.rglob("*"))

@@ -218,7 +218,10 @@ def _dispatch_score(arguments: argparse.Namespace) -> None:
     if not root.is_dir():
         raise KilnError(f"no folder {arguments.path}")
     if arguments.online:
+        from kiln.grid import forge
+
         score.refresh_end_of_life()
+        forge.REFRESH = True
     report = score.score_repo(root)
     if arguments.rule or arguments.roadmap:
         from kiln.grid import roadmap
@@ -266,7 +269,9 @@ def _add_score_command(commands: argparse._SubParsersAction[argparse.ArgumentPar
     score_parser.add_argument("--all", action="store_true", help="every rule and every location")
     score_parser.add_argument("--badge", action="store_true", help="a README badge (Markdown)")
     score_parser.add_argument(
-        "--online", action="store_true", help="refresh end-of-life dates from endoflife.date"
+        "--online",
+        action="store_true",
+        help="refresh end-of-life dates from endoflife.date and the GitHub settings",
     )
     score_parser.add_argument(
         "--roadmap", action="store_true", help="what needs judgment, for Claude, with its places"

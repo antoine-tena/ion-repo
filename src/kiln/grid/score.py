@@ -19,7 +19,7 @@ from pathlib import Path, PurePosixPath
 from kiln import ui
 from kiln.charter.waivers import Waivers
 from kiln.charter.waivers import load as load_waivers
-from kiln.grid import detectors
+from kiln.grid import detectors, forge
 from kiln.grid.facts import Repo, read_repo
 from kiln.grid.model import PILLARS, Rule, load_rules
 
@@ -31,7 +31,7 @@ TOP_GAPS = 3
 SHOWN_LOCATIONS = 3
 NOT_COVERED = ": not covered by the grid yet"
 # Facts that say how the repo is worked rather than what it is made of.
-NOT_STACKS = frozenset({"agent"})
+NOT_STACKS = frozenset({"agent", "github"})
 # Manifests of stacks the grid does not cover yet: named beside the stacks it scores, listed at
 # the end, never counted (T-38).
 UNCOVERED = {
@@ -337,6 +337,8 @@ def show(report: Report, *, every: bool = False) -> None:
     counted = [found for found in report.findings if found.status in (PASSED, FAILED)]
     passed = sum(found.status == PASSED for found in counted)
     print(ui.paint(f"  {passed} of {len(counted)} rules met", ui.STONE))
+    if any(found.detail == forge.UNKNOWN for found in report.findings):
+        print(ui.paint(f"  {forge.UNKNOWN} (gh auth login)", ui.STONE))
     if report.not_utf8:
         shown = report.not_utf8 if every else report.not_utf8[:SHOWN_LOCATIONS]
         more = (
