@@ -1237,8 +1237,9 @@ From the kiln score ideas of 24 October 2026:
 
 - [ ] On fresh GitHub-hosted runners (Ubuntu, macOS) and in a clean container: the README's
   commands copied as they are, `uvx kiln-cli score` from an empty cache on three public repos of
-  the study, `kiln fix --dry-run` then `kiln fix`, kiln-bot on a throwaway repo; the time of
-  each step.
+  the study and three of other stacks (Go, Rust, a JavaScript library), their first screen read
+  for anything false, `kiln fix --dry-run` then `kiln fix`, kiln-bot on a throwaway repo; the time
+  of each step.
 - [ ] Every stumble fixed in v0.5.1 to v0.5.3, never on the day.
 - [ ] The texts of T-03 checked against each forum's rules.
 
@@ -1261,6 +1262,12 @@ Nothing is posted on a forum before it (T-118 starts after).
 - [ ] `kiln score` deterministic, offline, without a token, under 5 seconds on a 50,000-line
   repo (T-46); `kiln fix` closes every scriptable gap of the two local copies, their checks
   still green (T-126 to T-128, T-131); kiln-bot runs on a test repo (T-59).
+- [ ] `kiln score` on ten known public repos of other stacks (Go, Rust, Ruby, Java, PHP,
+  TypeScript) says nothing false about tests, CI and linters, and names at the top the language it
+  doesn't score yet: a launch's visitors run it on their own repos, not on Django ones. Measured on
+  26 October 2026: 8 false alarms in 6 of 10 such repos (no tests found in a Rust and a Ruby repo,
+  no linter in CI where clippy, golangci-lint and RuboCop ran), fixed the same day; one class left,
+  a linter run by `npm test`'s script, for T-190.
 - [ ] The study published (T-132); the README's first screen and the docs done, the demo
   recorded from the released version (T-30, T-33).
 - [ ] kiln passes its own grid, its CI green on `main` (T-90).
@@ -2032,6 +2039,10 @@ every note says when the grid moved.
 - [ ] **E06** Path classes instead of hand-written globs: `where = ["code"]`, `["tests"]`,
   `["config"]`, `["docs"]`, `["ci"]`, `["containers"]`, from the model; generated, vendored,
   fixtures and templates left out by default.
+- [ ] CI steps that hide their commands followed one level: `npm test` or `make check` read in
+  `package.json`'s scripts or the Makefile, a reusable workflow of another repo read at its pinned
+  ref (`--online`); until then, a step kiln can't follow leaves the rule `unknown`, never a gap
+  (a JavaScript library whose `npm test` runs xo, 26 October 2026).
 - [ ] **E07** A policy per rule for tests: `in_tests = "skip" | "lower" | "same"` (SQL built in a
   test is noise; a naive datetime in a test can hide a bug).
 - [ ] **H08** Known false-positive classes handled once, in the engine: tests, fixtures, templates,

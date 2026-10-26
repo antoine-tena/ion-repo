@@ -91,6 +91,17 @@ def test_stacks_the_grid_does_not_cover_are_listed(tmp_path: Path) -> None:
     assert report.uncovered == ("PHP: not covered by the grid yet",)
 
 
+def test_a_language_not_scored_yet_is_said_beside_the_score(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    files = {**GOOD, "Cargo.toml": "[package]\n", "src/main.rs": "fn main() {}\n"}
+
+    score.show(score.score_repo(make(tmp_path, files)))
+
+    header = capsys.readouterr().out.strip().splitlines()[:4]
+    assert any("not scored yet: Rust" in line for line in header)
+
+
 @pytest.mark.parametrize(
     ("files", "uncovered"),
     [

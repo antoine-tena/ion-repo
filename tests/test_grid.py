@@ -284,11 +284,57 @@ def test_sql_formatted_around_quotes_of_the_other_kind_is_caught(tmp_path: Path,
 
 @pytest.mark.parametrize(
     "test_file",
-    ["Converter.Tests/ExtractTests.cs", "src/socialnetwork/BavardTest.java", "tests/BookTest.php"],
+    [
+        "Converter.Tests/ExtractTests.cs",
+        "src/socialnetwork/BavardTest.java",
+        "tests/BookTest.php",
+        "tests/tests.rs",
+        "spec/models/user_spec.rb",
+        "test/models/user_test.rb",
+        "test/base-url.ts",
+        "test/app_test.exs",
+        "test/widget_test.dart",
+        "Tests/AppTests/AppTests.swift",
+        "tests/parse.cpp",
+    ],
 )
-def test_tests_are_found_in_dotnet_java_and_php(tmp_path: Path, test_file: str) -> None:
+def test_tests_are_found_in_every_common_stack(tmp_path: Path, test_file: str) -> None:
     rule = next(rule for rule in RULES if rule.id == "TESTS-PRESENT")
     repo = make_repo(tmp_path, {test_file: "// a test\n"})
+
+    assert detectors.detect(rule.detector, repo).status == detectors.PASS
+
+
+@pytest.mark.parametrize(
+    ("rule_id", "step"),
+    [
+        ("TESTS-IN-CI", "run: bundle exec rake spec"),
+        ("TESTS-IN-CI", "run: php artisan test"),
+        ("TESTS-IN-CI", "run: ./mvnw -B verify"),
+        ("TESTS-IN-CI", "run: ./gradlew build"),
+        ("TESTS-IN-CI", "run: dotnet test"),
+        ("TESTS-IN-CI", "run: mix test"),
+        ("TESTS-IN-CI", "run: npx ava"),
+        ("LINT-IN-CI", "run: cargo clippy --all-targets -- -Dwarnings"),
+        ("LINT-IN-CI", "uses: golangci/golangci-lint-action@v9"),
+        ("LINT-IN-CI", "run: bundle exec rubocop"),
+        ("LINT-IN-CI", "run: vendor/bin/phpstan analyse"),
+        ("LINT-IN-CI", "run: ./gradlew ktlintCheck detekt"),
+        ("LINT-IN-CI", "run: dotnet format --verify-no-changes"),
+        ("LINT-IN-CI", "run: flutter analyze"),
+    ],
+)
+def test_the_ci_of_every_common_stack_is_read(tmp_path: Path, rule_id: str, step: str) -> None:
+    rule = next(rule for rule in RULES if rule.id == rule_id)
+    repo = make_repo(tmp_path, {WORKFLOW: f"jobs:\n  a:\n    steps:\n      - {step}\n"})
+
+    assert detectors.detect(rule.detector, repo).status == detectors.PASS
+
+
+def test_a_linter_bound_to_the_build_runs_with_it(tmp_path: Path) -> None:
+    rule = next(rule for rule in RULES if rule.id == "LINT-IN-CI")
+    plugin = "<plugin><artifactId>maven-checkstyle-plugin</artifactId></plugin>\n"
+    repo = make_repo(tmp_path, {"pom.xml": plugin})
 
     assert detectors.detect(rule.detector, repo).status == detectors.PASS
 

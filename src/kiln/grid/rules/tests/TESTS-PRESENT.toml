@@ -15,8 +15,15 @@ since = "0.4.2"
 
 [detector]
 kind = "file"
-paths = ["**/test_*.py", "**/*_test.py", "**/tests/**/*.py", "**/*.spec.ts", "**/*.test.ts", "**/*.spec.tsx", "**/*.test.tsx", "**/*.spec.js", "**/*.test.js", "**/*_test.go", "**/src/test/**",
-    "**/*Test.java", "**/*Tests.java", "**/*Test.cs", "**/*Tests.cs", "**/*Test.php", "**/tests/**/*.php",
+paths = [
+    "**/test_*.py", "**/*_test.py", "**/tests/**/*.py", "**/test/**/*.py",
+    "**/*.spec.ts", "**/*.test.ts", "**/*.spec.tsx", "**/*.test.tsx", "**/*.spec.js", "**/*.test.js",
+    "**/test/**/*.ts", "**/test/**/*.js", "**/test/**/*.mjs", "**/__tests__/**",
+    "**/*_test.go", "**/tests/**/*.rs",
+    "**/src/test/**", "**/*Test.java", "**/*Tests.java", "**/*Test.kt", "**/*Test.cs", "**/*Tests.cs",
+    "**/*Test.php", "**/tests/**/*.php",
+    "**/spec/**/*_spec.rb", "**/test/**/*_test.rb", "**/test/**/*_test.exs", "**/test/**/*_test.dart",
+    "**/Tests/**/*.swift", "**/tests/**/*.c", "**/tests/**/*.cpp", "**/test/**/*.c", "**/test/**/*.cpp",
 ]
 
 [[sources]]
