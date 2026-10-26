@@ -154,6 +154,21 @@ def test_every_repo_reproduces_first_and_links_directly(tmp_path: Path) -> None:
     assert "kiln set ai_trailers=disclose|never" in project_rules
 
 
+@pytest.mark.parametrize(
+    ("backend", "frontend"), [("none", "nuxt"), ("none", "astro"), ("none", "none")]
+)
+def test_project_rules_name_only_the_stack_there_is(
+    tmp_path: Path, backend: str, frontend: str
+) -> None:
+    # A front alone, or a repo adopted without a stack of kiln: no empty check list, no "None".
+    kept = ["src"] if frontend == "none" else []
+    project_dir = generate(tmp_path / "demo", backend=backend, frontend=frontend, kept=kept)
+
+    project_rules = (project_dir / ".claude/rules/kiln/project.md").read_text()
+    assert not re.search(r"of the stack \((?!\w)", project_rules)
+    assert "None" not in project_rules
+
+
 def test_vue_templates_keep_their_mustaches(tmp_path: Path) -> None:
     project_dir = generate(tmp_path / "demo")
 
