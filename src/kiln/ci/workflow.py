@@ -81,7 +81,7 @@ def _input_text(value: object) -> str:
 
 def _inline_job(name: str, definition: dict[str, object]) -> Job:
     if definition.get("services"):
-        return Job(name, INLINE_KIND, reason="services propres au job")
+        return Job(name, INLINE_KIND, reason="services of its own")
     steps = definition.get("steps")
     if not isinstance(steps, list):
         return Job(name, INLINE_KIND, reason="no step")

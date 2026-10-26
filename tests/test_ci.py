@@ -88,7 +88,7 @@ def test_jobs_are_sorted_into_replayed_and_skipped(tmp_path: Path) -> None:
     assert jobs["backend-quality"].is_replayable
     assert jobs["backend-quality"].inputs["mypy"] == "false"
     assert "infra" in jobs["infra"].reason
-    assert jobs["end-to-end"].reason == "services propres au job"
+    assert jobs["end-to-end"].reason == "services of its own"
     assert jobs["versions"].kind == INLINE_KIND
     assert jobs["versions"].commands == ("python3 scripts/ci/check_versions.py",)
 
