@@ -45,6 +45,9 @@ class UserConfig:
     channel: str = PUBLIC_CHANNEL
     statusline: str | None = None  # None: not chosen yet (kiln install sets it)
     ai_trailers: str | None = None  # None: not chosen yet (kiln install asks)
+    # Repos of the code folder `kiln update --all` leaves as they are (a witness repo kept at an
+    # old release on purpose), by their path in it.
+    frozen_repos: tuple[str, ...] = ()
 
 
 def config_path() -> Path:
@@ -59,6 +62,7 @@ def load_config() -> UserConfig:
     values = machine_settings(tomllib.loads(path.read_text()))
     team = values.get("team", [])
     statusline = values.get("statusline")
+    frozen = values.get("frozen_repos", [])
     return UserConfig(
         system=values.get("system"),
         owner=values.get("owner"),
@@ -67,6 +71,7 @@ def load_config() -> UserConfig:
         channel=renames.machine_value("channel", str(values.get("channel", PUBLIC_CHANNEL))),
         statusline=renames.machine_value("statusline", str(statusline)) if statusline else None,
         ai_trailers=values.get("ai_trailers"),
+        frozen_repos=tuple(str(repo) for repo in frozen) if isinstance(frozen, list) else (),
     )
 
 
@@ -92,6 +97,8 @@ def save_config(config: UserConfig) -> None:
         lines.append(f'statusline = "{config.statusline}"')
     if config.ai_trailers:
         lines.append(f'ai_trailers = "{config.ai_trailers}"')
+    if config.frozen_repos:
+        lines.append("frozen_repos = [" + ", ".join(f'"{r}"' for r in config.frozen_repos) + "]")
     path = config_path()
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n")

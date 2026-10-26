@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from kiln import fleet
+from kiln.config import UserConfig
 from kiln.fleet import (
     MAX_FILES_PER_COMMIT,
     commit_in_batches,
@@ -220,3 +221,55 @@ def test_update_all_shows_one_line_per_repo_and_logs_the_rest(
     (log,) = (tmp_path / "logs").glob("*/stuck.log")
     assert f"log: {log}" in shown
     assert "hook passed" in log.read_text() and "hook warning" in log.read_text()
+
+
+def test_an_update_with_nothing_to_take_runs_no_check_and_leaves_no_branch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    clone = _clone_with_develop(tmp_path)
+    monkeypatch.setattr(fleet, "_update_worktree", lambda worktree, **_: None)
+    monkeypatch.setattr(fleet, "run_checks", lambda root: pytest.fail("checks run"))
+
+    assert fleet.update_one(clone, allow_major=False) == "already up to date"
+    branches = subprocess.run(
+        ["git", "branch"], cwd=clone, capture_output=True, text=True, check=True
+    ).stdout
+    assert "chore/kiln-update" not in branches
+
+
+def test_conflicts_of_the_template_are_reported_before_any_check(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    clone = _clone_with_develop(tmp_path)
+
+    def conflicted_update(worktree: Path, **_: object) -> None:
+        (worktree / "pnpm-workspace.yaml").write_text("<<<<<<< before updating\n")
+
+    monkeypatch.setattr(fleet, "_update_worktree", conflicted_update)
+    monkeypatch.setattr(fleet, "conflicted_files", lambda root: ["pnpm-workspace.yaml"])
+    # The checks would install from the conflicted pnpm-workspace.yaml, and fail on it.
+    monkeypatch.setattr(fleet, "run_checks", lambda root: pytest.fail("checks run"))
+
+    outcome = fleet.update_one(clone, allow_major=False)
+
+    assert outcome.startswith("conflicts to resolve (pnpm-workspace.yaml)")
+
+
+def test_a_frozen_repo_is_left_alone_by_update_all(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]
+) -> None:
+    code_dir = tmp_path / "code"
+    for name in ("live", "witness"):
+        make_repo(code_dir / name, "https://github.com/antoine-tena/kiln.git")
+    monkeypatch.setattr(fleet, "LOGS_DIR", tmp_path / "logs")
+    monkeypatch.setattr(fleet, "require_tools", lambda *_: None)
+    monkeypatch.setattr(fleet, "load_config", lambda: UserConfig(frozen_repos=("witness",)))
+    updated: list[str] = []
+    monkeypatch.setattr(
+        fleet, "update_one", lambda root, **_: updated.append(root.name) or "merged into develop"
+    )
+
+    fleet.update_all(code_dir, allow_major=False)
+
+    assert updated == ["live"]
+    assert "✓ witness" in capfd.readouterr().out

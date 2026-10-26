@@ -2,8 +2,8 @@
 
 They live in `~/.config/kiln/config.toml`: system, default GitHub owner and team of `kiln new`,
 code directory of `kiln status` and `kiln update --all`, release channel, Claude Code's status
-line, whether Claude's commits say Claude helped. Keys and values of before kiln 0.4.0
-(`canal=interne`) are still accepted.
+line, whether Claude's commits say Claude helped, the repos `kiln update --all` leaves alone.
+Keys and values of before kiln 0.4.0 (`canal=interne`) are still accepted.
 """
 
 from dataclasses import replace
@@ -28,7 +28,16 @@ from kiln.statusline import apply_statusline_choice
 from kiln.trailers import apply_trailers_choice
 from kiln.versions import beta_install_command
 
-MACHINE_KEYS = ("system", "owner", "team", "code_dir", "channel", "statusline", "ai_trailers")
+MACHINE_KEYS = (
+    "system",
+    "owner",
+    "team",
+    "code_dir",
+    "channel",
+    "statusline",
+    "ai_trailers",
+    "frozen_repos",
+)
 
 
 def show_machine(config: UserConfig) -> None:
@@ -46,6 +55,9 @@ def show_machine(config: UserConfig) -> None:
         "ai_trailers": (
             f"{config.ai_trailers or DISCLOSE_TRAILERS} (disclose: Claude's commits and pull "
             "requests say Claude helped; never: they don't)"
+        ),
+        "frozen_repos": (
+            f"{', '.join(config.frozen_repos) or '(none)'} (left alone by kiln update --all)"
         ),
     }
     width = max(len(key) for key in MACHINE_KEYS)
@@ -84,8 +96,9 @@ def apply_machine(config: UserConfig, assignments: list[str]) -> UserConfig:
         elif key == "owner":
             updated = replace(updated, owner=value or None)
         elif key == "team":
-            team = tuple(login.strip() for login in value.strip("[]").split(",") if login.strip())
-            updated = replace(updated, team=team)
+            updated = replace(updated, team=_listed(value))
+        elif key == "frozen_repos":
+            updated = replace(updated, frozen_repos=_listed(value))
         elif key == "channel":
             if value not in CHANNELS:
                 raise KilnError(f"channel: {', '.join(CHANNELS)}")
@@ -101,6 +114,11 @@ def apply_machine(config: UserConfig, assignments: list[str]) -> UserConfig:
         else:
             updated = replace(updated, code_dir=Path(value).expanduser())
     return updated
+
+
+def _listed(value: str) -> tuple[str, ...]:
+    """`alice,bob` or `[alice, bob]` as a list; empty clears it."""
+    return tuple(item.strip() for item in value.strip("[]").split(",") if item.strip())
 
 
 def run_machine(assignments: list[str]) -> None:
