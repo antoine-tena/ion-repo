@@ -97,6 +97,36 @@ def fix(root: Path, *, dry_run: bool = False, only: str | None = None) -> list[O
     return outcomes
 
 
+def convert_in_place(root: Path, spared: list[str]) -> list[str]:
+    """`kiln update`'s pass: the same converters, after the template, left in the tree with its
+    changes for the review the update asks for; no branch, no commit. The `spared` files (frozen,
+    kept) come out as they went in. A converter that fails is named and skipped. Returns the
+    rules converted."""
+    before = {name: _read_bytes(root / name) for name in spared}
+    converted = []
+    for rule in plan(root):
+        try:
+            changed = FIXERS[rule.fixer].convert(read_repo(root))
+        except (OSError, ValueError, KilnError) as error:
+            ui.note(f"{rule.id} left for kiln fix: {error}")
+            continue
+        if set(changed) - set(spared):
+            converted.append(rule.id)
+    for name, content in before.items():
+        path = root / name
+        if content is not None:
+            path.write_bytes(content)
+        elif path.is_file():
+            path.unlink()
+    if converted:
+        ui.note(f"Converted after the template (kiln fix's converters): {', '.join(converted)}")
+    return converted
+
+
+def _read_bytes(path: Path) -> bytes | None:
+    return path.read_bytes() if path.is_file() else None
+
+
 def _apply(root: Path, rule: Rule, judges: list[checks.Check], unverified: str) -> Outcome:
     """`unverified` says why the checks cannot judge this converter; empty when they can."""
     fixer = FIXERS[rule.fixer]

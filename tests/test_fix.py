@@ -457,3 +457,30 @@ def test_files_the_repo_ignores_are_still_committed(tmp_path: Path) -> None:
 def test_docker_hub_images_are_asked_of_its_registry(name: str, expected: tuple[str, str]) -> None:
     """`docker.io/library/node` named in full answers at registry-1.docker.io, not docker.io."""
     assert resolve.registry_path(name) == expected
+
+
+def test_kiln_update_converts_in_place_and_spares_frozen_files(tmp_path: Path) -> None:
+    """`kiln update`'s pass (T-159): the converters run in the tree, nothing committed, and a
+    frozen file comes out as it went in."""
+    frozen = ".github/workflows/deploy.yml"
+    unpinned = "jobs:\n  a:\n    steps:\n      - uses: actions/checkout@v4\n"
+    root = make(tmp_path, {WORKFLOW: unpinned, frozen: unpinned, "README.md": "# a\n"})
+    head = git(root, "rev-parse", "HEAD")
+    assert "PINNED-ACTIONS" in fix.convert_in_place(root, [frozen])
+    assert f"actions/checkout@{SHA}" in (root / WORKFLOW).read_text()
+    assert (root / frozen).read_text() == unpinned
+    assert git(root, "rev-parse", "HEAD") == head
+    assert git(root, "branch", "--show-current").strip() == "main"
+
+
+def test_kiln_update_names_a_converter_that_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    def offline(repo: str, ref: str) -> str:
+        raise KilnError("GitHub unreachable")
+
+    monkeypatch.setattr(resolve, "commit_of", offline)
+    unpinned = "jobs:\n  a:\n    steps:\n      - uses: actions/checkout@v4\n"
+    root = make(tmp_path, {WORKFLOW: unpinned, "README.md": "# a\n"})
+    assert "PINNED-ACTIONS" not in fix.convert_in_place(root, [])
+    assert "PINNED-ACTIONS left for kiln fix: GitHub unreachable" in capsys.readouterr().out

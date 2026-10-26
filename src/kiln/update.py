@@ -17,6 +17,7 @@ from kiln.check import check_project
 from kiln.contract import generate_api_contract
 from kiln.deps import lock_dependencies, sync_dependencies, update_dependencies
 from kiln.frozen import frozen_files, report_frozen_drift
+from kiln.grid.fix import convert_in_place
 from kiln.rules import write_unverified_rules
 from kiln.shell import KilnError, capture, quiet_git, require_tools, run, step
 from kiln.stack import ANSWERS_FILE, kept_of, load_stack, read_answers
@@ -81,6 +82,9 @@ def update_project(
         sync_dependencies(root, stack)
     generate_api_contract(root, stack)
     write_unverified_rules(root, stack)
+    if should_update_template:
+        # What the template leaves to the repo (SHAs, digests, a lock): closed like kiln fix.
+        convert_in_place(root, [*frozen_files(root), *kept_of(root)])
     report_changes(root)
     if should_check:
         check_project(root)
@@ -167,14 +171,19 @@ def resolve_kiln_ref_conflicts(root: Path) -> None:
         if None in stages:
             continue
         base, ours, theirs = (str(text) for text in stages)
-        project_refs = _kiln_refs(ours)
-        rendered_refs = _kiln_refs(base)
-        if len(project_refs) != 1 or len(rendered_refs) != 1 or project_refs == rendered_refs:
+        project_refs, rendered_refs = _kiln_refs(ours), _kiln_refs(base)
+        project_spellings, rendered_spellings = _kiln_spellings(ours), _kiln_spellings(base)
+        if len(project_spellings) != 1 or len(rendered_spellings) != 1:
+            continue
+        if project_spellings == rendered_spellings or len(project_refs) != 1:
             continue
         # The tag also appears outside the `uses:` (header comment of ci.yml): it is replaced
         # everywhere, without touching a longer tag that extends it.
         rendered_tag = re.escape(rendered_refs.pop())
         aligned_base = re.sub(rf"{rendered_tag}(?![\w.-])", project_refs.pop(), base)
+        # Pinned by kiln fix (`@<sha> # v0.4.1`): the old render takes the pin, the new render
+        # wins the merge, and the update's converters pin it again.
+        aligned_base = KILN_WORKFLOW_REF.sub(rf"\g<1>@{project_spellings.pop()}", aligned_base)
         merged = _merge_cleanly(aligned_base, ours, theirs)
         if merged is not None:
             (root / name).write_text(merged)
@@ -184,6 +193,11 @@ def resolve_kiln_ref_conflicts(root: Path) -> None:
 
 def _kiln_refs(text: str) -> set[str]:
     return {match.group(3) or match.group(2) for match in KILN_WORKFLOW_REF.finditer(text)}
+
+
+def _kiln_spellings(text: str) -> set[str]:
+    """What follows the `@` of kiln's workflows: `v0.4.1`, or `<sha> # v0.4.1` once pinned."""
+    return {match.group(0)[len(match.group(1)) + 1 :] for match in KILN_WORKFLOW_REF.finditer(text)}
 
 
 def _index_stage(root: Path, stage: int, name: str) -> str | None:

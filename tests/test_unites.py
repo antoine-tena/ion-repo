@@ -915,3 +915,33 @@ def test_pnpm_install_frozen_only_with_a_lockfile(tmp_path: Path) -> None:
     (tmp_path / "pnpm-lock.yaml").write_text("lockfileVersion: '9.0'\n")
     frozen = ["pnpm", "install", "--frozen-lockfile", PNPM_LENIENT_BUILDS]
     assert pnpm_install_command(tmp_path) == frozen
+
+
+def test_a_kiln_workflow_pinned_by_kiln_fix_follows_the_template(tmp_path: Path) -> None:
+    """`@<sha> # v0.4.10` (kiln fix) against the old render `@v0.4.10` and the new `@v0.4.11`:
+    no conflict left, the new tag taken, for the update's converters to pin again (T-159)."""
+    from kiln.update import CONFLICT_MARKER, resolve_kiln_ref_conflicts
+
+    def run_git(*arguments: str, given: str | None = None) -> str:
+        return subprocess.run(
+            ["git", *arguments],
+            cwd=tmp_path,
+            input=given,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+
+    uses = "    uses: antoine-tena/kiln/.github/workflows/charter.yml@"
+    base = f"# kiln v0.4.10\njobs:\n  a:\n{uses}v0.4.10\n"
+    ours = f"# kiln v0.4.10\njobs:\n  a:\n{uses}{'a' * 40} # v0.4.10\n"
+    theirs = f"# kiln v0.4.11\njobs:\n  a:\n{uses}v0.4.11\n"
+    run_git("init", "-q")
+    name = ".github/workflows/ci.yml"
+    blobs = [run_git("hash-object", "-w", "--stdin", given=text) for text in (base, ours, theirs)]
+    entries = "".join(f"100644 {blob} {stage}\t{name}\n" for stage, blob in enumerate(blobs, 1))
+    run_git("update-index", "--index-info", given=entries)
+    (tmp_path / ".github/workflows").mkdir(parents=True)
+    (tmp_path / name).write_text(f"{CONFLICT_MARKER}\n{ours}=======\n{theirs}>>>>>>> after\n")
+    resolve_kiln_ref_conflicts(tmp_path)
+    assert (tmp_path / name).read_text() == theirs
