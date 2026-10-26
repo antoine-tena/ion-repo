@@ -60,12 +60,10 @@ Candidate Tue 27 Oct. The score and the fixes reach what they miss today: GitHub
 the root as well as in `backend/` and `frontend/`, compose services, loose requirements, files read
 as empty.
 - T-159 · What T-126 to T-128 left: compose hardening, pyproject from requirements, `kiln update` (M)
-- T-158 · `kiln score` reads the GitHub settings when `gh` is logged in (S)
 - T-166 · An adopted repo whose code is not in `backend/` or `frontend/` gets its stack too (M)
 - T-185 · `kiln dev` in an adopted repo with a compose file offers its services (S)
 - T-172 · The checks of `kiln fix` told apart, timed out, their log kept for Claude (S)
 - T-173 · More converters: the CI and the supply chain (M)
-- T-186 · Binary and non-UTF-8 files read right, GitHub settings read through `gh` (M)
 
 ### v0.4.11 · Never lets it rot, kiln first
 Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other people's repos: each
@@ -1056,24 +1054,6 @@ without judgment. Each one with its passing and failing case in `tests/test_fix.
   quoted here).
 
 
-### T-158 · `kiln score` reads the GitHub settings when `gh` is logged in
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-20
-- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: left from T-46 (2026-10-20)
-
-Branch protection or rulesets on the integration branch, secret scanning and push protection,
-Dependabot alerts: read through `gh api` when logged in, left out of the count otherwise (never a
-failure for lack of a token).
-- [ ] Shown in full on the owner's machine only; what leaves it (the badge, a gap report to kiln,
-  the CI summary of a public repo) carries the score and the rule IDs alone, never a setting's
-  detail (antoine's question of 26 October 2026, decision 37).
-
-From the kiln score ideas of 24 October 2026:
-- [ ] **M15** Forge settings read through the CLI already logged in (`gh`, `glab`, `tea`); a token
-  is never asked for (T-158, generalized).
-
 ### T-130 · Generated repos pass the whole grid
 - **Type**: improvement
 - **Status**: todo
@@ -1469,31 +1449,6 @@ ignores a leading `cd` (`git -C` got through). It should judge the repo the comm
 After the first push, `ci.yml` was not registered (dispatch answered 404 for minutes); a second
 commit touching the file registered it. Reproduce with `kiln publish`, then find out whether it
 is GitHub's or kiln's doing.
-
-### T-186 · Binary and non-UTF-8 files read right, GitHub settings read through `gh`
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-25
-- **Effort**: M · **Owner**: — · **Due**: —
-- **Origin**: kiln score ideas of 24 October 2026 (One model of the repo, History, forge and
-  registries, Trust, privacy and safety), made a ticket on 25 October 2026 at antoine's request
-
-Planned in v0.4.10, "Every gap seen, wherever the code lives": Candidate Tue 27 Oct. The score and
-the fixes reach what they miss today: GitHub settings, code at the root as well as in `backend/` and
-`frontend/`, compose services, loose requirements, files read as empty.
-
-- [ ] **A30** Binary files skipped on a NUL byte in their first 8 KB; minified files (lines over
-  1,000 characters) skipped by code rules but counted.
-- [ ] **A31** A non-UTF-8 source decoded (BOM, then cp1252 or latin-1) and reported; never read as
-  empty, which passes every regex rule today.
-- [ ] **M16** GitHub: rulesets or branch protection on the integration branch (pull requests
-  required, checks required, no force push, no deletion), signatures required, linear history when
-  the repo merges that way.
-- [ ] **M17** GitHub: secret scanning and push protection, Dependabot alerts and security updates,
-  code scanning, private vulnerability reporting.
-- [ ] **M29** All of it cached and rate-limited, with "unknown: log in with gh to check" without
-  access. Never a failure for lack of a token.
-- [ ] **S09** Forge tokens borrowed from `gh` or `glab`, never stored, never printed.
 
 ### T-187 · `kiln fix` shows the points each commit won
 - **Type**: improvement

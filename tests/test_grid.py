@@ -2,6 +2,7 @@
 should, on an example of each."""
 
 import datetime
+import json
 import re
 import sys
 from pathlib import Path
@@ -9,17 +10,57 @@ from pathlib import Path
 import pytest
 
 from kiln import cli
-from kiln.grid import detectors, facts, fixers, model
+from kiln.grid import detectors, facts, fixers, forge, model
 from kiln.grid.facts import read_repo
 from kiln.shell import KilnError
 
 RULES = model.load_rules()
 WORKFLOW = ".github/workflows/ci.yml"
+# A case of a forge rule: the GitHub settings `gh` would read, as JSON, under this name.
+FORGE = "<github settings>"
+GITHUB = {
+    "slug": "acme/app",
+    "default_branch": "main",
+    "public": True,
+    "merge_commits": True,
+    "branch_rules": ["deletion", "non_fast_forward"],
+    "secret_scanning": True,
+    "push_protection": True,
+    "vulnerability_alerts": True,
+    "security_updates": True,
+    "private_reporting": True,
+    "code_scanning": True,
+}
+
+
+def github(**changes: object) -> dict[str, str]:
+    return {FORGE: json.dumps({**GITHUB, **changes})}
+
+
+def given_github(files: dict[str, str], monkeypatch: pytest.MonkeyPatch) -> dict[str, str]:
+    """The settings of a forge case handed to the rule as `gh` would read them; the files."""
+    if FORGE in files:
+        data = json.loads(files[FORGE])
+        settings = forge.Settings(**{**data, "branch_rules": tuple(data["branch_rules"])})
+        monkeypatch.setattr(forge, "settings", lambda root: settings)
+    return {name: content for name, content in files.items() if name != FORGE}
+
+
 SHA = "b4ffde65f46336ab88eb53be808477a3936bae11"
 
 # For each rule, a repo that passes and one that fails (doctrine 7: a rule that flags wrongly
 # is worse than none). Files as {path: content}.
 CASES: dict[str, dict[str, dict[str, str]]] = {
+    "PROTECTED-BRANCH": {
+        "pass": github(
+            merge_commits=False, branch_rules=[*GITHUB["branch_rules"], "required_linear_history"]
+        ),
+        "fail": github(branch_rules=["deletion"]),
+    },
+    "FORGE-SECRET-SCANNING": {"pass": github(), "fail": github(push_protection=False)},
+    "DEPENDABOT-ALERTS": {"pass": github(), "fail": github(security_updates=False)},
+    "PRIVATE-VULN-REPORTING": {"pass": github(), "fail": github(private_reporting=False)},
+    "CODE-SCANNING": {"pass": github(), "fail": github(code_scanning=False)},
     "LOCKED-DEPENDENCIES": {
         "pass": {
             "backend/pyproject.toml": '[project]\nname = "a"\ndependencies = ["django"]\n',
@@ -252,9 +293,9 @@ DETECTED = [rule for rule in RULES if rule.detector]
 @pytest.mark.parametrize("rule", DETECTED, ids=lambda rule: rule.id)
 @pytest.mark.parametrize("expected", ["pass", "fail"])
 def test_each_rule_says_pass_and_fail_where_it_should(
-    tmp_path: Path, rule: model.Rule, expected: str
+    tmp_path: Path, rule: model.Rule, expected: str, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    repo = make_repo(tmp_path, CASES[rule.id][expected])
+    repo = make_repo(tmp_path, given_github(CASES[rule.id][expected], monkeypatch))
 
     outcome = detectors.detect(rule.detector, repo)
 

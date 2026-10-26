@@ -49,7 +49,7 @@ anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
-| v0.4.10 | Every gap seen, wherever the code lives | Candidate Tue 27 Oct. The score and the fixes reach what they miss today: GitHub settings, code at the root as well as in `backend/` and `frontend/`, compose services, loose requirements, files read as empty. | 7 tickets |
+| v0.4.10 | Every gap seen, wherever the code lives | Candidate Tue 27 Oct. The score and the fixes reach what they miss today: GitHub settings, code at the root as well as in `backend/` and `frontend/`, compose services, loose requirements, files read as empty. | 5 tickets |
 | v0.4.11 | Never lets it rot, kiln first | Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other people's repos: each commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03). | 6 tickets |
 
 ### v0.5.x · 18 releases

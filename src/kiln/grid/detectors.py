@@ -24,6 +24,7 @@ from pathlib import PurePosixPath
 
 import yaml  # brought by copier
 
+from kiln.grid import forge
 from kiln.grid.facts import Repo
 
 PASS, FAIL, NOT_APPLICABLE = "pass", "fail", "n/a"
@@ -111,6 +112,8 @@ def _regex(detector: Mapping[str, object], repo: Repo) -> Outcome:
     within = str(detector.get("within", ""))
     locations: list[str] = []
     for name in files:
+        if not repo.is_code(name):
+            continue
         text = repo.text(name)
         for found in _matches(pattern, text, within if name.endswith(".py") else ""):
             if wants_match:
@@ -170,7 +173,7 @@ def _key(kind: str, detector: Mapping[str, object], repo: Repo) -> Outcome:
     failing: list[str] = []
     for name in files:
         try:
-            data = _parse(kind, (repo.root / name).read_text(encoding="utf-8"))
+            data = _parse(kind, repo.text(name))
         except OSError, ValueError, yaml.YAMLError:
             failing.append(name)
             continue
@@ -240,7 +243,7 @@ def lockfiles(repo: Repo) -> Outcome:
 def _pinned_requirements(repo: Repo, name: str) -> bool:
     """Every requirement of the file is `==` (an `-r` include or an option line aside)."""
     try:
-        lines = (repo.root / name).read_text(encoding="utf-8").splitlines()
+        lines = repo.text(name).splitlines()
     except OSError, UnicodeDecodeError:
         return True
     wanted = [line.split("#")[0].strip() for line in lines]
@@ -252,7 +255,7 @@ def _has_deps(repo: Repo, manifest: str) -> bool:
     if PurePosixPath(manifest).name != "pyproject.toml":
         return True
     try:
-        project = tomllib.loads((repo.root / manifest).read_text(encoding="utf-8"))
+        project = tomllib.loads(repo.text(manifest))
     except OSError, tomllib.TOMLDecodeError:
         return True
     return bool(project.get("project", {}).get("dependencies")) or bool(
@@ -272,7 +275,7 @@ def non_root_containers(repo: Repo) -> Outcome:
     failing = []
     for name in files:
         try:
-            lines = (repo.root / name).read_text(encoding="utf-8").splitlines()
+            lines = repo.text(name).splitlines()
         except OSError, UnicodeDecodeError:
             continue
         users = [line.split()[1] for line in lines if re.match(r"\s*USER\s+\S", line, re.I)]
@@ -319,7 +322,7 @@ def workflow_permissions(repo: Repo) -> Outcome:
     failing = []
     for name in files:
         try:
-            workflow = yaml.safe_load((repo.root / name).read_text(encoding="utf-8"))
+            workflow = yaml.safe_load(repo.text(name))
         except OSError, UnicodeDecodeError, yaml.YAMLError:
             continue
         if not isinstance(workflow, dict) or "permissions" in workflow:
@@ -446,7 +449,7 @@ def hardened_compose(repo: Repo) -> Outcome:
     failing = []
     for name in files:
         try:
-            compose = yaml.safe_load((repo.root / name).read_text(encoding="utf-8"))
+            compose = yaml.safe_load(repo.text(name))
         except OSError, UnicodeDecodeError, yaml.YAMLError:
             continue
         services = compose.get("services") if isinstance(compose, dict) else None
@@ -524,6 +527,80 @@ def traced_models(repo: Repo) -> Outcome:
     return Outcome(FAIL, tuple(untraced[:MAX_LOCATIONS])) if untraced else Outcome(PASS)
 
 
+def _forge(
+    repo: Repo, judge: Callable[[forge.Settings], list[str] | None], section: str
+) -> Outcome:
+    """A setting of the repo's GitHub project: `judge` lists what is missing (empty: met), or
+    None when GitHub does not offer it to this repo; a gap ends with its settings page."""
+    found = forge.settings(repo.root)
+    if found is None:
+        return Outcome(NOT_APPLICABLE, detail=forge.UNKNOWN if forge.ENABLED else "")
+    missing = judge(found)
+    if missing is None:
+        return Outcome(NOT_APPLICABLE)
+    if not missing:
+        return Outcome(PASS)
+    return Outcome(FAIL, detail=f"{'; '.join(missing)}: {found.page(section)}")
+
+
+def protected_branch(repo: Repo) -> Outcome:
+    def judge(found: forge.Settings) -> list[str]:
+        wanted = {"non_fast_forward": "force pushes allowed", "deletion": "deletion allowed"}
+        if not found.merge_commits:
+            wanted["required_linear_history"] = "linear history not required"
+        branch = found.default_branch
+        return [
+            f"{branch}: {why}" for rule, why in wanted.items() if rule not in found.branch_rules
+        ]
+
+    return _forge(repo, judge, "rules")
+
+
+def forge_secret_scanning(repo: Repo) -> Outcome:
+    def judge(found: forge.Settings) -> list[str] | None:
+        if found.secret_scanning is None:
+            return None
+        return [
+            what
+            for what, on in (
+                ("secret scanning off", found.secret_scanning),
+                ("push protection off", found.push_protection),
+            )
+            if not on
+        ]
+
+    return _forge(repo, judge, "security_analysis")
+
+
+def forge_dependabot_alerts(repo: Repo) -> Outcome:
+    def judge(found: forge.Settings) -> list[str] | None:
+        if found.vulnerability_alerts is None:
+            return None
+        if not found.vulnerability_alerts:
+            return ["Dependabot alerts off"]
+        return [] if found.security_updates else ["Dependabot security updates off"]
+
+    return _forge(repo, judge, "security_analysis")
+
+
+def forge_private_reporting(repo: Repo) -> Outcome:
+    def judge(found: forge.Settings) -> list[str] | None:
+        if not found.public or found.private_reporting is None:
+            return None
+        return [] if found.private_reporting else ["private vulnerability reporting off"]
+
+    return _forge(repo, judge, "security_analysis")
+
+
+def forge_code_scanning(repo: Repo) -> Outcome:
+    def judge(found: forge.Settings) -> list[str] | None:
+        if found.code_scanning is None:
+            return None
+        return [] if found.code_scanning else ["code scanning not set up"]
+
+    return _forge(repo, judge, "security_analysis")
+
+
 PYTHON_CHECKS: dict[str, Callable[[Repo], Outcome]] = {
     "lockfiles": lockfiles,
     "non_root_containers": non_root_containers,
@@ -535,4 +612,9 @@ PYTHON_CHECKS: dict[str, Callable[[Repo], Outcome]] = {
     "committed_migrations": committed_migrations,
     "python_linter": python_linter,
     "traced_models": traced_models,
+    "protected_branch": protected_branch,
+    "forge_secret_scanning": forge_secret_scanning,
+    "forge_dependabot_alerts": forge_dependabot_alerts,
+    "forge_private_reporting": forge_private_reporting,
+    "forge_code_scanning": forge_code_scanning,
 }

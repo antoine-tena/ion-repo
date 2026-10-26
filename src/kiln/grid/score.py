@@ -19,7 +19,7 @@ from pathlib import Path, PurePosixPath
 from kiln import ui
 from kiln.charter.waivers import Waivers
 from kiln.charter.waivers import load as load_waivers
-from kiln.grid import detectors
+from kiln.grid import detectors, forge
 from kiln.grid.facts import Repo, read_repo
 from kiln.grid.model import PILLARS, Rule, load_rules
 
@@ -31,7 +31,7 @@ TOP_GAPS = 3
 SHOWN_LOCATIONS = 3
 NOT_COVERED = ": not covered by the grid yet"
 # Facts that say how the repo is worked rather than what it is made of.
-NOT_STACKS = frozenset({"agent"})
+NOT_STACKS = frozenset({"agent", "github"})
 # Manifests of stacks the grid does not cover yet: named beside the stacks it scores, listed at
 # the end, never counted (T-38).
 UNCOVERED = {
@@ -129,6 +129,7 @@ class Report:
     uncovered: tuple[str, ...] = ()
     misfired: tuple[str, ...] = ()  # rules waived again and again: they may not fit
     advice: tuple[Finding, ...] = ()  # gaps of unscored rules, shown apart
+    not_utf8: tuple[str, ...] = ()  # texts read in another encoding: `path (cp1252)`
     schema: int = SCHEMA
     checked: str = field(default_factory=lambda: datetime.date.today().isoformat())
 
@@ -181,6 +182,7 @@ def score_repo(root: Path, rules: list[Rule] | None = None) -> Report:
         uncovered=tuple(_uncovered(repo, rules)),
         misfired=tuple(_misfired(waivers)),
         advice=tuple(advice),
+        not_utf8=tuple(f"{name} ({encoding})" for name, encoding in sorted(repo.encodings.items())),
     )
 
 
@@ -335,6 +337,16 @@ def show(report: Report, *, every: bool = False) -> None:
     counted = [found for found in report.findings if found.status in (PASSED, FAILED)]
     passed = sum(found.status == PASSED for found in counted)
     print(ui.paint(f"  {passed} of {len(counted)} rules met", ui.STONE))
+    if any(found.detail == forge.UNKNOWN for found in report.findings):
+        print(ui.paint(f"  {forge.UNKNOWN} (gh auth login)", ui.STONE))
+    if report.not_utf8:
+        shown = report.not_utf8 if every else report.not_utf8[:SHOWN_LOCATIONS]
+        more = (
+            f" and {len(report.not_utf8) - len(shown)} more"
+            if len(shown) < len(report.not_utf8)
+            else ""
+        )
+        print(ui.paint(f"  not UTF-8, read all the same: {', '.join(shown)}{more}", ui.STONE))
     if top := report.top_gaps():
         print(f"\n  {ui.paint('Close first', ui.FIRE, bold=True)}")
         for found in top:
