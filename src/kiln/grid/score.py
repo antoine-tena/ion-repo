@@ -29,7 +29,9 @@ PASSED, FAILED, WAIVED, LEFT_OUT = "pass", "fail", "waived", "n/a"
 BY_SCRIPT, BY_JUDGMENT = "kiln fix", "by judgment (Claude Code)"
 TOP_GAPS = 3
 SHOWN_LOCATIONS = 3
-# Manifests of stacks the grid does not cover yet: listed at the end, never counted (T-38).
+NOT_COVERED = ": not covered by the grid yet"
+# Manifests of stacks the grid does not cover yet: named beside the stacks it scores, listed at
+# the end, never counted (T-38).
 UNCOVERED = {
     "composer.json": "PHP",
     "go.mod": "Go",
@@ -246,7 +248,13 @@ def _uncovered(repo: Repo, rules: list[Rule]) -> list[str]:
         for package, what in NOTABLE_PACKAGES.items()
         if package in repo.dependencies and package not in named
     }
-    return sorted(f"{stack}: not covered by the grid yet" for stack in found)
+    return sorted(f"{stack}{NOT_COVERED}" for stack in found)
+
+
+def _languages(uncovered: tuple[str, ...]) -> list[str]:
+    """The languages among what the grid does not know, said beside the stacks it scores."""
+    known = {*UNCOVERED.values(), *UNCOVERED_SOURCES.values()}
+    return [stack for line in uncovered if (stack := line.removesuffix(NOT_COVERED)) in known]
 
 
 def _misfired(waivers: Waivers) -> list[str]:
@@ -304,7 +312,11 @@ def show(report: Report, *, every: bool = False) -> None:
     print(f"\n  {title}  {ui.paint(score, ui.GLOW, bold=True)}")
     pillars = [f"{pillar} {value}" for pillar, value in report.pillars.items() if value is not None]
     print(ui.paint(f"  {'  ·  '.join(pillars)}", ui.STONE_LIGHT))
-    print(ui.paint(f"  stacks: {', '.join(report.facts) or 'none found'}", ui.STONE))
+    stacks = f"  stacks: {', '.join(report.facts) or 'none found'}"
+    if languages := _languages(report.uncovered):
+        # A visitor's Go or Rust repo: the number holds none of its language's rules yet.
+        stacks += f"  ·  not scored yet: {', '.join(languages)}"
+    print(ui.paint(stacks, ui.STONE))
     if report.uncovered and not report.facts:
         only = "  universal rules only: the grid does not know this repo's stack"
         print(ui.paint(only, ui.STONE))
