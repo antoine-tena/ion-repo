@@ -12,8 +12,8 @@ status line counts the open boxes ("urgent N").
   rules say how): https://www.reddit.com/register/ — antoine
 - [ ] Choose the launch plan (T-03, decision 1 of 26 October): 11 November without HN and Reddit,
   then HN and Reddit once your accounts are accepted; or everything later — antoine
-- [ ] Say yes or no to the numbering proposal (decision 23 of 26 October: a minor every ten
-  releases or so, small patch numbers) — antoine
+- [ ] Ask kiln's outside authors (@NathanBarrachin, @darnak69, @HarshRajSinghania, @SakarPaisen)
+  for their ok to the licence `MIT OR Apache-2.0` (T-345); a message is enough — antoine
 - [ ] Choose kiln's mascot (T-347; proposal: a fire salamander) — antoine
 - [ ] Open kiln's accounts on X (https://x.com/i/flow/signup) and Mastodon
   (https://fosstodon.org/auth/sign_up), then give their tokens through `/kiln:token` (T-118) —

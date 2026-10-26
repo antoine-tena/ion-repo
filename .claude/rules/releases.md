@@ -26,7 +26,9 @@ its workflows at the exact tag and only move through `kiln update`, which conver
 The number dates a release; the release note says what changes. From Next.js, the discipline
 (candidates, breaking changes first in the notes, automatic migration), not the numbering.
 - In 0.x every release bumps the patch (`v0.3.1`, `v0.3.2`… `v0.3.192` if need be).
-- The minor moves only for a milestone decided by antoine (`kiln version cut --minor`). Decided:
+- The minor moves about every ten releases (`kiln version cut --minor`), at a themed milestone
+  holding its breaking changes, as uv and ruff do (antoine, 26 October 2026). Decided before
+  that rule, until T-360 renumbers them:
   v0.5.0 public launch (T-03), v0.6.0 Claude works alone in the repo, v0.7.0 kiln for teams and
   organizations, v0.8.0 every common stack scored, v0.9.0 any CI, machine and size, v1.0.0 the
   stability promise, just before the community modules (T-69). Their content and the v1.0.0 bar
