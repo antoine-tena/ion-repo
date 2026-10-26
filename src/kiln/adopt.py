@@ -26,7 +26,7 @@ from kiln.charter.config import LEGACY_CHARTER_FILE
 from kiln.migrations import ci_runner_for
 from kiln.new import user_defaults
 from kiln.rules import write_unverified_rules
-from kiln.shell import KilnError, capture, require_tools, run_status, step
+from kiln.shell import KilnError, capture, require_clean_tree, require_tools, run_status, step
 from kiln.stack import (
     ANSWERS_FILE,
     BACKEND_DIR,
@@ -95,8 +95,7 @@ def check_adoptable(root: Path) -> None:
         raise KilnError(
             f"{LEGACY_CHARTER_FILE}: adopted under kiln 0.3, kiln update first moves its names"
         )
-    if capture(["git", "status", "--porcelain"], root):
-        raise KilnError("working tree not clean: commit or set aside the changes")
+    require_clean_tree(root)
     leave_protected_branch(root, "chore/kiln-adopt")
 
 
