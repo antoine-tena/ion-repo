@@ -59,7 +59,6 @@ the launch adds pushes them by two days. The public view of this plan is
 Candidate Tue 27 Oct. The score and the fixes reach what they miss today: GitHub settings, code at
 the root as well as in `backend/` and `frontend/`, compose services, loose requirements, files read
 as empty.
-- T-173 · More converters: the CI and the supply chain (M)
 
 ### v0.4.11 · Never lets it rot, kiln first
 Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other people's repos: each
@@ -961,27 +960,6 @@ existing branch, and a crash leaves the user on a half-done branch.
   one line).
 - [ ] A branch name already taken gets a suffix (`kiln/fix-2026-10-24-2`), or the existing
   branch is updated when it holds only `kiln fix` commits (what kiln-bot needs, T-59).
-
-### T-173 · More converters: the CI and the supply chain
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-24
-- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: review of `kiln fix` asked by antoine, 24 October 2026; 26 `adopt` rules have a
-  detector but no converter
-
-The north star says "brought up to it by script": these `adopt` rules are closed by a script
-without judgment. Each one with its passing and failing case in `tests/test_fix.py`.
-- [ ] WORKFLOW-INJECTION: `${{ github.event… }}` inside a `run:` moved to an `env:` variable
-  (what zizmor's fix does).
-- [ ] VULNERABILITY-AUDIT: a `pip-audit` or `npm audit` step added to the existing CI.
-- [ ] LINT-IN-CI and TESTS-IN-CI: the missing step added to an existing CI (`add_ci` only
-  writes one when there is none).
-- [ ] NO-TRACKED-ENV: `git rm --cached .env`, the file added to `.gitignore`, a
-  `.env.example` with the keys and no values.
-- [ ] Ordered by how often the two training repos miss them (measures in `kiln-private`, never
-  quoted here).
-
 
 ### T-130 · Generated repos pass the whole grid
 - **Type**: improvement

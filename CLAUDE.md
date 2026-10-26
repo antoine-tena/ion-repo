@@ -38,8 +38,8 @@ folder or a module.
 - `src/kiln/grid/`: the grid (T-123): `rules/<theme>/<ID>.toml` one rule per file, `model.py`
   (format, closed lists, validation), `facts.py` (what a repo is made of), `detectors.py`
   (declarative detectors, Python checks), `forge.py` (the GitHub settings read through `gh`,
-  cached a day), `fixers/` (`kiln fix` converters: `ci.py`, `python.py`,
-  `containers.py`, `resolve.py` for SHAs and digests online), `fix.py` (`kiln fix`), `checks.py` (the repo's checks that judge
+  cached a day), `fixers/` (`kiln fix` converters: `ci.py`, `workflows.py`
+  (what an existing CI lacks, a tracked `.env`), `python.py`, `containers.py`, `resolve.py` for SHAs and digests online), `fix.py` (`kiln fix`), `checks.py` (the repo's checks that judge
   each converter: found, timed out, told apart, a reverted converter's log kept), `show.py`
   (`kiln grid`), `score.py` (`kiln score`, a repo scored against the grid), `gap_report.py` (what
   the grid doesn't cover, reported to kiln with the user's consent, T-38), `roadmap.py`

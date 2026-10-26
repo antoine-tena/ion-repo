@@ -262,44 +262,71 @@ def _ci_steps(repo: Repo) -> list[str]:
     return steps
 
 
+# `cd frontend && pnpm run lint`: the command, its folder aside.
+IN_FOLDER = re.compile(r"^cd \S+ && ")
+SETUP_ACTIONS = (
+    "actions/checkout",
+    "astral-sh/setup-uv",
+    "pnpm/action-setup",
+    "actions/setup-python",
+    "actions/setup-node",
+)
+
+
+def _needs(action: str, commands: list[str]) -> bool:
+    return {
+        "actions/checkout": True,
+        "astral-sh/setup-uv": any(command.startswith(("uv ", "uvx ")) for command in commands),
+        "actions/setup-python": any(
+            command.startswith(("pip ", "python ")) for command in commands
+        ),
+        "pnpm/action-setup": any(command.startswith("pnpm ") for command in commands),
+        "actions/setup-node": any(command.startswith(("pnpm ", "npm ")) for command in commands),
+    }[action]
+
+
+def setup_steps(steps: list[str]) -> list[str]:
+    """The actions `steps` need, pinned by SHA: checkout, then uv, pnpm, Python, Node."""
+    commands = [IN_FOLDER.sub("", step) for step in steps]
+    uses = []
+    for action in SETUP_ACTIONS:
+        if not _needs(action, commands):
+            continue
+        version = resolve.latest_release(action)
+        uses.append(f"      - uses: {action}@{resolve.commit_of(action, version)} # {version}")
+        if action == "actions/checkout":
+            uses.append("        with:\n          persist-credentials: false")
+        if action == "actions/setup-python":
+            uses.append('        with:\n          python-version: "3.13"')
+        if action == "actions/setup-node":
+            uses.append("        with:\n          node-version: 24")
+    return uses
+
+
+def write_workflow(
+    repo: Repo, name: str, job: str, steps: list[str], *, weekly: bool = False
+) -> None:
+    """A workflow of one job on each push and pull request (and every Monday when `weekly`),
+    its token reading the repo only."""
+    schedule = '  schedule:\n    - cron: "0 6 * * 1"\n' if weekly else ""
+    runs = [f"      - run: {step}" for step in steps]
+    _write(
+        repo,
+        name,
+        f"name: {PurePosixPath(name).stem}\non:\n  push:\n  pull_request:\n{schedule}"
+        f"permissions:\n  contents: read\njobs:\n  {job}:\n    runs-on: ubuntu-latest\n"
+        "    steps:\n" + "\n".join(setup_steps(steps) + runs) + "\n",
+    )
+
+
 def add_ci(repo: Repo) -> list[str]:
     """A minimal GitHub Actions CI: the repo's own install, lint and tests on each push and pull
     request, actions pinned by SHA."""
     steps = _ci_steps(repo)
     if not steps:
         return []
-    uses = []
-    for action in (
-        "actions/checkout",
-        "astral-sh/setup-uv",
-        "pnpm/action-setup",
-        "actions/setup-python",
-        "actions/setup-node",
-    ):
-        needed = {
-            "actions/checkout": True,
-            "astral-sh/setup-uv": any(step.startswith("uv ") for step in steps),
-            "actions/setup-python": any(step.startswith(("pip ", "python ")) for step in steps),
-            "pnpm/action-setup": any(step.startswith("pnpm ") for step in steps),
-            "actions/setup-node": any(step.startswith(("pnpm ", "npm ")) for step in steps),
-        }[action]
-        if needed:
-            version = resolve.latest_release(action)
-            uses.append(f"      - uses: {action}@{resolve.commit_of(action, version)} # {version}")
-            if action == "actions/checkout":
-                uses.append("        with:\n          persist-credentials: false")
-            if action == "actions/setup-python":
-                uses.append('        with:\n          python-version: "3.13"')
-            if action == "actions/setup-node":
-                uses.append("        with:\n          node-version: 24")
     name = ".github/workflows/ci.yml"
-    runs = [f"      - run: {step}" for step in steps]
-    _write(
-        repo,
-        name,
-        "name: ci\non:\n  push:\n  pull_request:\npermissions:\n  contents: read\njobs:\n"
-        "  checks:\n    runs-on: ubuntu-latest\n    steps:\n" + "\n".join(uses + runs) + "\n",
-    )
+    write_workflow(repo, name, "checks", steps)
     return [name]
 
 

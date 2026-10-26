@@ -9,8 +9,8 @@ profiles = ["solo", "association", "company", "university", "enterprise"]
 why = "A rule only the author's editor checks is a suggestion."
 applies = []
 detectable = "script"
-fixable = "judgment"
-fixer = ""
+fixable = "script"
+fixer = "add_lint_job"
 since = "0.4.2"
 
 [detector]

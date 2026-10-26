@@ -334,6 +334,64 @@ def workflow_permissions(repo: Repo) -> Outcome:
     return Outcome(FAIL, tuple(failing[:MAX_LOCATIONS])) if failing else Outcome(PASS)
 
 
+# What an outsider writes (a title, a body, a branch name), read from the event.
+UNTRUSTED = re.compile(
+    r"github\.(head_ref|event\.(issue|pull_request|comment|review|review_comment|discussion|"
+    r"head_commit|commits|pages)\S*\.(title|body|message|name|email|label|ref|head_ref|"
+    r"default_branch))"
+)
+EXPRESSION = re.compile(r"\$\{\{\s*(?P<inner>.*?)\s*\}\}")
+# The keys whose value is code: a shell script, the JavaScript of `actions/github-script`.
+SCRIPT_KEYS = ("run", "script")
+
+
+def untrusted_expressions(text: str) -> list[re.Match[str]]:
+    """The `${{ … }}` of `text` that read an outsider's text."""
+    return [found for found in EXPRESSION.finditer(text) if UNTRUSTED.search(found["inner"])]
+
+
+def workflow_scripts(text: str) -> list[tuple[yaml.MappingNode, yaml.ScalarNode]]:
+    """Each `run:` or `script:` of a workflow: the mapping holding it (the step), and its value,
+    with the positions the converter edits. Raises `yaml.YAMLError` on a file YAML cannot read."""
+    found = []
+    pending: list[yaml.Node] = [yaml.compose(text) or yaml.ScalarNode("tag", "")]
+    while pending:
+        node = pending.pop()
+        if isinstance(node, yaml.MappingNode):
+            for key, value in node.value:
+                is_script = isinstance(key, yaml.ScalarNode) and key.value in SCRIPT_KEYS
+                if is_script and isinstance(value, yaml.ScalarNode):
+                    found.append((node, value))
+                else:
+                    pending.append(value)
+        elif isinstance(node, yaml.SequenceNode):
+            pending.extend(node.value)
+    return found
+
+
+def workflow_injection(repo: Repo) -> Outcome:
+    """No outsider's text expanded inside a script: through `env:`, it stays data. A file YAML
+    cannot read counts every such expression."""
+    files = repo.matching(*WORKFLOWS)
+    if not files:
+        return Outcome(NOT_APPLICABLE)
+    failing = []
+    for name in files:
+        text = repo.text(name)
+        try:
+            lines = sorted(
+                value.start_mark.line + 1
+                for _, value in workflow_scripts(text)
+                if untrusted_expressions(value.value)
+            )
+        except yaml.YAMLError:
+            lines = [
+                text.count("\n", 0, found.start()) + 1 for found in untrusted_expressions(text)
+            ]
+        failing += [f"{name}:{line}" for line in lines]
+    return Outcome(FAIL, tuple(failing[:MAX_LOCATIONS])) if failing else Outcome(PASS)
+
+
 # Shared configurations that set `strict` themselves: extending one is strict.
 STRICT_TS_PRESETS = re.compile(
     r'"extends"\s*:\s*"(astro/tsconfigs/(strict|strictest)|@tsconfig/strictest(/tsconfig\.json)?)"'
@@ -606,6 +664,7 @@ PYTHON_CHECKS: dict[str, Callable[[Repo], Outcome]] = {
     "non_root_containers": non_root_containers,
     "images_by_digest": images_by_digest,
     "workflow_permissions": workflow_permissions,
+    "workflow_injection": workflow_injection,
     "strict_typescript": strict_typescript,
     "supported_runtimes": supported_runtimes,
     "hardened_compose": hardened_compose,

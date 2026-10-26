@@ -61,6 +61,10 @@ def closes(rule_id: str, root: Path) -> bool:
 
 
 WORKFLOW = ".github/workflows/ci.yml"
+# A CI that only builds: no lint, no tests, no audit.
+BUILD_ONLY = (
+    "on: push\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - run: make\n"
+)
 CONVERTED = {
     "PINNED-ACTIONS": {
         WORKFLOW: "jobs:\n  a:\n    steps:\n      - uses: actions/checkout@v4\n"
@@ -85,6 +89,18 @@ CONVERTED = {
     "HARDENED-CONTAINERS": {
         "compose.yaml": "services:\n  app:\n    build: .\n  db:\n    image: postgres\n"
     },
+    "WORKFLOW-INJECTION": {
+        WORKFLOW: "jobs:\n  a:\n    steps:\n"
+        '      - run: echo "${{ github.event.pull_request.title }}"\n'
+    },
+    "LINT-IN-CI": {WORKFLOW: BUILD_ONLY, "pyproject.toml": "[tool.ruff]\n"},
+    "TESTS-IN-CI": {
+        WORKFLOW: BUILD_ONLY,
+        "web/package.json": '{"scripts": {"test": "vitest"}}',
+        "web/pnpm-lock.yaml": "",
+    },
+    "VULNERABILITY-AUDIT": {WORKFLOW: BUILD_ONLY, "uv.lock": ""},
+    "NO-TRACKED-ENV": {".env": "A=1\n", "web/.env.local": "export B=2\n"},
     "SUPPORTED-RUNTIMES": {
         ".nvmrc": "18\n",
         "package.json": '{"engines": {"node": ">=16"}}',
@@ -484,3 +500,137 @@ def test_kiln_update_names_a_converter_that_fails(
     root = make(tmp_path, {WORKFLOW: unpinned, "README.md": "# a\n"})
     assert "PINNED-ACTIONS" not in fix.convert_in_place(root, [])
     assert "PINNED-ACTIONS left for kiln fix: GitHub unreachable" in capsys.readouterr().out
+
+
+INJECTED = """on: pull_request_target
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "${{ github.event.pull_request.title }}"
+      - name: body
+        env:
+          TOKEN: ${{ secrets.T }}
+        run: |
+          echo "${{ github.event.issue.body }}" ${{ github.sha }}
+      - run: echo "${{ github.event.issue.title || 'x' }}"
+      - uses: actions/github-script@v7
+        with:
+          script: console.log("${{ github.event.issue.title }}")
+      - shell: pwsh
+        run: echo "${{ github.head_ref }}"
+"""
+
+
+def test_event_text_reaches_the_shell_through_env_and_the_rest_stays(tmp_path: Path) -> None:
+    """T-173: a bare context read moves to the step's `env:` (its own, or one added after the
+    script); an expression with more in it, `github-script` and pwsh stay for judgment."""
+    root = make(tmp_path, {WORKFLOW: INJECTED})
+    assert FIXERS["move_to_env"].convert(read_repo(root)) == [WORKFLOW]
+    text = (root / WORKFLOW).read_text()
+    assert (
+        '      - run: echo "${PULL_REQUEST_TITLE}"\n'
+        "        env:\n"
+        "          PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}\n"
+    ) in text
+    assert (
+        "        env:\n"
+        "          ISSUE_BODY: ${{ github.event.issue.body }}\n"
+        "          TOKEN: ${{ secrets.T }}\n"
+        "        run: |\n"
+        '          echo "${ISSUE_BODY}" ${{ github.sha }}\n'
+    ) in text
+    for kept in ("|| 'x' }}", 'console.log("${{ github', 'echo "${{ github.head_ref }}"'):
+        assert kept in text
+    outcome = detectors.workflow_injection(read_repo(root))
+    # The three left, three lines lower for the `env:` lines added above them.
+    assert outcome.locations == (f"{WORKFLOW}:15", f"{WORKFLOW}:18", f"{WORKFLOW}:20")
+
+
+def test_a_windows_workflow_is_left_to_judgment(tmp_path: Path) -> None:
+    windows = INJECTED.replace("runs-on: ubuntu-latest", "runs-on: windows-latest")
+    root = make(tmp_path, {WORKFLOW: windows})
+    assert FIXERS["move_to_env"].convert(read_repo(root)) == []
+
+
+def test_event_text_already_in_env_is_not_an_injection(tmp_path: Path) -> None:
+    safe = (
+        'jobs:\n  a:\n    steps:\n      - run: echo "$TITLE"\n        env:\n'
+        "          TITLE: ${{ github.event.pull_request.title }}\n"
+    )
+    root = make(tmp_path, {WORKFLOW: safe})
+    assert detectors.workflow_injection(read_repo(root)).status == detectors.PASS
+
+
+def test_missing_jobs_come_as_workflows_of_their_own(tmp_path: Path) -> None:
+    """Lint and tests as the repo declares them, folder by folder, installed from their lock;
+    the audit also every Monday. The repo's own workflow is left as it is."""
+    root = make(
+        tmp_path,
+        {
+            WORKFLOW: BUILD_ONLY,
+            "pyproject.toml": "[tool.ruff]\n[tool.pytest.ini_options]\n",
+            "requirements.txt": "flask\n",
+            "web/package.json": '{"scripts": {"lint": "eslint", "test": "vitest"}}',
+            "web/package-lock.json": "{}",
+        },
+    )
+    lint = FIXERS["add_lint_job"].convert(read_repo(root))
+    tests = FIXERS["add_test_job"].convert(read_repo(root))
+    audit = FIXERS["add_audit"].convert(read_repo(root))
+    assert (lint, tests, audit) == (
+        [".github/workflows/lint.yml"],
+        [".github/workflows/tests.yml"],
+        [".github/workflows/audit.yml"],
+    )
+    workflows = root / ".github/workflows"
+    assert (
+        (workflows / "lint.yml")
+        .read_text()
+        .endswith(
+            "      - run: uvx ruff check\n      - run: cd web && npm ci\n"
+            "      - run: cd web && npm run lint\n"
+        )
+    )
+    assert (
+        "      - run: pip install -r requirements.txt pytest\n"
+        in (workflows / "tests.yml").read_text()
+    )
+    audited = (workflows / "audit.yml").read_text()
+    assert '    - cron: "0 6 * * 1"\n' in audited
+    assert audited.endswith(
+        "      - run: uvx pip-audit -r requirements.txt\n"
+        "      - run: cd web && npm audit --omit=dev --audit-level=high\n"
+    )
+    assert (root / WORKFLOW).read_text() == BUILD_ONLY
+
+
+def test_no_job_is_added_without_a_github_ci(tmp_path: Path) -> None:
+    root = make(tmp_path, {".gitlab-ci.yml": "build:\n  script: make\n", "uv.lock": ""})
+    assert FIXERS["add_audit"].convert(read_repo(root)) == []
+
+
+def test_a_tracked_env_leaves_git_not_the_disk(tmp_path: Path) -> None:
+    root = make(
+        tmp_path,
+        {".env": "SECRET=abc\n# a note\nexport OTHER = 2\n", ".gitignore": "node_modules"},
+    )
+    assert FIXERS["untrack_env"].convert(read_repo(root)) == [".gitignore", ".env.example"]
+    assert (root / ".env").read_text().startswith("SECRET=abc")
+    assert git(root, "ls-files", ".env") == ""
+    assert (root / ".env.example").read_text() == "SECRET=\nOTHER=\n"
+    assert (root / ".gitignore").read_text().startswith("node_modules\n.env\n.env.local\n")
+
+
+def test_a_rule_an_earlier_converter_closed_is_left_alone(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The minimal CI runs the linters: LINT-IN-CI, next in the plan, adds no second workflow."""
+    root = make(tmp_path, {"pyproject.toml": "[tool.ruff]\n", "uv.lock": "", "a.py": "x = 1\n"})
+    monkeypatch.setattr(
+        fix, "plan", lambda root, only=None: [RULES["CI-PRESENT"], RULES["LINT-IN-CI"]]
+    )
+    outcomes = {found.rule: found for found in fix.fix(root)}
+    assert outcomes["CI-PRESENT"].status == "fixed"
+    assert outcomes["LINT-IN-CI"].note == fix.CLOSED
+    assert not (root / ".github/workflows/lint.yml").exists()
