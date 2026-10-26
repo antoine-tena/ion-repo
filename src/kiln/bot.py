@@ -31,6 +31,7 @@ class Proposal:
     after: int | None
     commits: list[tuple[str, str]] = field(default_factory=list)  # subject, body
     notes: list[str] = field(default_factory=list)
+    rebuilt: bool = False  # commits left out: each one's points no longer add up
 
     @property
     def changed(self) -> bool:
@@ -45,8 +46,8 @@ def run(root: Path, *, update: bool = True, workflows: bool = True) -> Proposal:
     before = _score_of(root, "HEAD")
     notes = _update(root) if update and (root / ANSWERS_FILE).exists() else []
     fix.fix(root, on=BRANCH)
-    if not workflows:
-        notes += _without_workflows(root)
+    left_out = [] if workflows else _without_workflows(root)
+    notes += left_out
     log = fix.git(root, "log", "--reverse", "--format=%s%x1f%b%x1e", f"HEAD..{BRANCH}")
     commits = [
         (subject.strip(), body.strip())
@@ -58,7 +59,7 @@ def run(root: Path, *, update: bool = True, workflows: bool = True) -> Proposal:
         fix.git(root, "branch", "-D", BRANCH)
         ui.note("kiln-bot: nothing to propose, the repo is as kiln would make it.")
         return Proposal(before, before, [], notes)
-    return Proposal(before, _score_of(root, BRANCH), commits, notes)
+    return Proposal(before, _score_of(root, BRANCH), commits, notes, rebuilt=bool(left_out))
 
 
 def _start_branch(root: Path) -> None:
@@ -150,15 +151,17 @@ def body(proposal: Proposal) -> str:
     lines = [
         f"## kiln score: {before} → {after}{delta}",
         "",
-        f"Each commit closes a rule of [kiln's grid]({GRID_URL}), proven: its rule passes again,"
-        " no other rule turned red, and the repo's own checks judged it (named in the commit).",
+        f"Each commit closes a rule of [kiln's grid]({GRID_URL}), proven: its rule passes again"
+        " and no other rule turned red; the repo's own checks judged it where the commit says"
+        " `Checked:`, none could where it says `unverified`.",
         "",
         "### Commits",
     ]
     for subject, text in proposal.commits:
         why = text.split("\n\n", 1)[0].replace("\n", " ")
         points = re.search(r"^Score: .*$", text, re.MULTILINE)
-        lines.append(f"- **{subject}**{f' · {points.group(0)}' if points else ''}")
+        shown = f" · {points.group(0)}" if points and not proposal.rebuilt else ""
+        lines.append(f"- **{subject}**{shown}")
         if why and not why.startswith(("Score:", "Checked:", "unverified")):
             lines.append(f"  {why}")
     if proposal.notes:
