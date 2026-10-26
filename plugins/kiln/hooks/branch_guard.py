@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""PreToolUse (Bash): refuses a `git commit` on a main branch (main, master, develop), and a
-commit message signed by Claude (`Co-Authored-By: Claude`, `Claude-Session:`): once pushed to
-the integration branch, it cannot be erased.
+"""PreToolUse (Bash): refuses a `git commit` on a main branch (main, master, develop), a
+`Claude-Session:` line (a link nobody else can open), and a `Co-Authored-By: Claude` line on a
+machine set to `kiln set ai_trailers=never`: once pushed to the integration branch, it cannot be
+erased.
 
 Only exception: the commit that concludes a merge in progress (MERGE_HEAD present), for example
 after resolving a conflict of `git merge --no-ff`.
@@ -16,6 +17,7 @@ import os
 import re
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 
 PROTECTED_BRANCHES = {"main", "master", "develop"}
@@ -28,6 +30,14 @@ def git_config(directory: str, key: str) -> str:
         text=True,
         timeout=5,
     ).stdout.strip()
+
+
+def trailers_choice() -> str:
+    """The machine's `ai_trailers` (kiln's `config.toml`), `disclose` by default."""
+    base = os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config"
+    with contextlib.suppress(OSError, ValueError, KeyError):
+        return str(tomllib.loads((Path(base) / "kiln/config.toml").read_text())["ai_trailers"])
+    return "disclose"
 
 
 data = json.load(sys.stdin)
@@ -50,7 +60,10 @@ for part in re.split(r"&&|\|\||[;|\n]", cmd):
         targets.append(os.path.join(cwd, *(p.strip("'\"") for p in c)) if c else cwd)
 
 # The message is in the command (-m, heredoc) or in a file (-F, --file).
-SIGNATURE = re.compile(r"co-authored-by:\s*claude|claude-session:", re.I)
+SESSION = r"claude-session:"
+SIGNATURE = re.compile(
+    SESSION if trailers_choice() != "never" else rf"co-authored-by:\s*claude|{SESSION}", re.I
+)
 if targets:
     message = cmd
     for path in re.findall(r"(?:-F\s*|--file[=\s])(\S+)", cmd):
@@ -58,8 +71,8 @@ if targets:
             message += Path(cwd, path.strip("'\"")).read_text()
     if SIGNATURE.search(message):
         print(
-            "Commit refused: no Co-Authored-By: Claude or Claude-Session: "
-            "in a commit message. Remove them.",
+            "Commit refused: no Claude-Session: in a commit message, and no "
+            "Co-Authored-By: Claude on this machine (kiln set ai_trailers=never). Remove them.",
             file=sys.stderr,
         )
         sys.exit(2)

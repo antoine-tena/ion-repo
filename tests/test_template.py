@@ -103,6 +103,14 @@ def test_size_sets_podman_default(tmp_path: Path, size: str, has_podman: bool) -
     assert f"**{size.capitalize()}**" in project_rules
 
 
+def test_every_repo_reproduces_first_and_links_directly(tmp_path: Path) -> None:
+    project_rules = (generate(tmp_path / "demo") / ".claude/rules/kiln/project.md").read_text()
+
+    assert "**[REPRODUCE-FIRST]**" in project_rules
+    assert "**[DIRECT-LINKS]**" in project_rules
+    assert "kiln set ai_trailers=disclose|never" in project_rules
+
+
 def test_vue_templates_keep_their_mustaches(tmp_path: Path) -> None:
     project_dir = generate(tmp_path / "demo")
 

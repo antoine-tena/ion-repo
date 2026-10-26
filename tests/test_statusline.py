@@ -18,6 +18,7 @@ from kiln.statusline import (
     ensure_statusline,
     is_kiln_statusline,
 )
+from kiln.trailers import apply_trailers_choice, ensure_trailers
 
 SCRIPT = Path(__file__).parent.parent / "plugins" / "kiln" / "scripts" / "statusline.py"
 OWN = {"type": "command", "command": "~/bin/ma-ligne.sh"}
@@ -65,6 +66,44 @@ def test_statusline_choice_is_checked() -> None:
     assert apply_machine(UserConfig(), ["statusline=band"]).statusline == "band"
     with pytest.raises(KilnError, match="statusline"):
         apply_machine(UserConfig(), ["statusline=arc-en-ciel"])
+
+
+def test_trailers_choice_is_checked() -> None:
+    assert apply_machine(UserConfig(), ["ai_trailers=never"]).ai_trailers == "never"
+    with pytest.raises(KilnError, match="ai_trailers"):
+        apply_machine(UserConfig(), ["ai_trailers=sometimes"])
+
+
+def test_never_empties_claudes_attribution_and_disclose_gives_it_back(home: Path) -> None:
+    settings = home / ".claude" / "settings.json"
+    settings.write_text(json.dumps({"model": "opus"}))
+
+    apply_trailers_choice("never")
+    assert json.loads(settings.read_text()) == {
+        "model": "opus",
+        "attribution": {"commit": "", "pr": ""},
+    }
+    apply_trailers_choice("disclose")
+    assert json.loads(settings.read_text()) == {"model": "opus"}
+
+
+def test_disclose_keeps_an_attribution_the_user_wrote(home: Path) -> None:
+    settings = home / ".claude" / "settings.json"
+    own = {"attribution": {"commit": "Assisted-by: Claude"}}
+    settings.write_text(json.dumps(own))
+
+    apply_trailers_choice("disclose")
+    assert json.loads(settings.read_text()) == own
+
+
+def test_choose_for_me_means_disclose(home: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+    monkeypatch.setattr("sys.stdin.isatty", lambda: True)
+    monkeypatch.setattr("builtins.input", lambda prompt: "")
+
+    assert ensure_trailers(UserConfig()).ai_trailers == "disclose"
+    assert 'ai_trailers = "disclose"' in (home / ".config/kiln/config.toml").read_text()
+    assert ensure_trailers(UserConfig(ai_trailers="never")).ai_trailers == "never"
 
 
 def test_styles_named_before_kiln_0_4_are_still_accepted() -> None:
