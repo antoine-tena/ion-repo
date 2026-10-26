@@ -1814,6 +1814,9 @@ in [🚀 Releases](#-releases), as the ideas that carry it.
 From the kiln score ideas of 24 October 2026:
 - [ ] **Q02** The weekly watch (T-140) refreshes the bundle and flags the rules whose sources
   changed.
+- [ ] **Q16** A rule whose sources nobody re-read for a year leaves the score, back to assess,
+  until someone does: the watch (Q02) flags what moved, this catches what nobody looked at, so
+  the grid's breadth can't rot silently and a pack nobody keeps goes quiet rather than wrong.
 
 ### T-57 · A tutorial series: bring a Django repo up to date in an afternoon
 - **Type**: task
@@ -2719,6 +2722,11 @@ cache keyed by blob SHA: a warm run recomputes nothing unchanged, in under 50 ms
   warm run recomputes nothing unchanged, in under 50 ms.
 - [ ] **J22** The repo and CI models cached across commands (score, fix, dev, check) and across
   runs.
+- [ ] **J25** The grid compiled once into one index (each rule's `applies`, inputs and detector),
+  at build or on the first run: a run parses only the rules whose facts the repo has, and a test
+  proves a Django repo loads no Go rule. Measured on 26 October 2026: 138 rules parsed one by one
+  in 30 ms (0.22 ms each), so the plan's 800 or so would cost about 170 ms on every run; budget:
+  under 30 ms whatever the grid's size.
 
 ### T-215 · Python standards ruff already decides: modern syntax, formatting, linting
 - **Type**: improvement
@@ -2851,6 +2859,12 @@ rule ships with its passing and failing examples.
   · adopt.
 - [ ] **AS36** `NO-SECRETS-IN-FRONT`: no secret-looking key under Nuxt's `runtimeConfig.public`,
   `NUXT_PUBLIC_*`, `VITE_*` or `NEXT_PUBLIC_*`. L2 · fix J · adopt.
+- [ ] **AS49** `BAAS-ACCESS-RULES`: Firebase's `firestore.rules`, `storage.rules` and
+  `database.rules.json` never open to everyone (`allow read, write: if true`, or the test mode's
+  `request.time <` date left in), and every Supabase table of an exposed schema under row-level
+  security in its migrations, the `service_role` key never in front code; the anon key is public
+  by design, so these rules are the only lock (170 generated apps found readable and writable by
+  anyone in 2025, CVE-2025-48757). L1 · fix J · adopt.
 - [ ] **AS37** `PRIVATE-SOURCEMAPS`: production source maps not served publicly. L2 · fix S · trial.
 - [ ] **AS38** `DEV-TOOLS-DEV-ONLY`: debug toolbars and devtools only in development settings and
   dependency groups. L2 · fix S · adopt.
@@ -3096,6 +3110,12 @@ rule ships with its passing and failing examples.
   vision wanted to measure.
 - [ ] **Q14** Rules retire too: a practice everyone now meets by default (a framework made it the
   default) leaves the score, kept as history.
+- [ ] **Q15** A framework on `hold` (AngularJS, Vue 2, create-react-app…) gets the successor its
+  maintainers name, with the source, never one of kiln's taste; the move sized in session hours;
+  the roadmap splits it into steps the score proves (the old framework's last line first, a test
+  net around the behaviour, then route by route behind the same URLs, the strangler fig), never a
+  rewrite in one go; one finding in the score, never a collapse. A living framework (Django,
+  Flask, Express) never goes on `hold` for being less used than another (the doctrine, 12).
 - [ ] **SU05** `SUPPORTED-RUNTIMES` (scored): every runtime endoflife.date knows; an app judged on
   what it runs, a library's support floor shown as information.
 - [ ] **SU19** `NO-DEPRECATED-PACKAGES`: a bundled list (`request`, `node-sass`, `tslint`, `moment`,
@@ -7048,6 +7068,21 @@ frozen then abandoned in 2025, shows what happens when the one way stops moving.
     those precise and mature enough, only what changed rechecked (cache, changed files,
     parallelism), our own rules declarative for a fast engine such as ast-grep; Rust of our own
     only where a measurement shows our code is the slow part (T-144).
+12. **A living choice is never a finding.** The one way governs how a stack is run, never which
+    living stack a repo picked: a Django repo is held to Django at its best, never told to become
+    FastAPI, since each fits its own job (`kiln new` picks one per job: Django for a full app,
+    FastAPI for an API alone). A choice becomes a finding only on dated, sourced facts: its line
+    is past its end (`SUPPORTED-FRAMEWORKS`), its maintainers deprecated it and name a successor
+    (the `hold` rules), or it is abandoned with open advisories (`ABANDONED-DEPENDENCIES`). kiln
+    then names the successor its maintainers name, never one of its own taste, and splits the
+    move into steps the score proves, never a rewrite in one go (T-225; antoine's question of
+    26 October 2026).
+13. **Breadth costs data, not weight.** `kiln new` keeps few complete stacks (decision 1); the
+    grid reads every stack, and a stack is mostly facts for the rules that span stacks (about
+    four planned rules in five on 26 October 2026; 5 of the grid's 138 rules belong to a
+    framework), its own rules a thin layer, its mature tools (Brakeman, Sobelow, SpotBugs…) run
+    rather than rewritten. A repo loads only its stacks' rules (T-214), and a rule nobody re-read
+    for a year leaves the score (T-140): a pack nobody keeps goes quiet rather than wrong.
 
 ### How it works: the script finds, Claude judges
 
