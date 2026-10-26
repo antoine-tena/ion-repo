@@ -67,7 +67,6 @@ as empty.
 - T-173 · More converters: the CI and the supply chain (M)
 - T-186 · Binary and non-UTF-8 files read right, GitHub settings read through `gh` (M)
 - T-342 · Not using an agent is not a fault: agent files out of the score (S)
-- T-343 · Two habits for every repo: reproduce first, a direct link for every online step (XS)
 
 ### v0.4.11 · Never lets it rot, kiln first
 Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other people's repos: each
@@ -822,25 +821,6 @@ evidence: ETH Zurich finds context files don't raise success and cost 20 to 23 %
 - [ ] `REPO-MAP` also reads the map from `README.md`, `CONTRIBUTING.md` and `ARCHITECTURE.md`: a
   map is a human practice first (matklad's ARCHITECTURE.md, 2021).
 - [ ] The rules' examples in `tests/test_grid.py` follow; kiln's own score stays at 100.
-
-### T-343 · Two habits for every repo: reproduce first, a direct link for every online step
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-26
-- **Effort**: XS · **Owner**: — · **Due**: —
-- **Origin**: antoine's answers of 26 October 2026 (Q93: which generic parts of his global
-  instructions should every repo get? "find them yourself"), decision 35
-
-- [ ] The template's `project.md` gets **[REPRODUCE-FIRST]** (a bug is reproduced, by a failing
-  test or a command, before it is fixed; a diagnosis, one's own or another session's, is checked
-  on a copy first) and **[DIRECT-LINKS]** (a step asked of a human online comes with its direct
-  link, as precise as possible, never a menu path).
-- [ ] The commit trailer rule ("never `Co-Authored-By: Claude`") is antoine's taste, not the
-  world's way (Q67): it becomes a setting asked at install, "choose for me" meaning disclosure,
-  as the AI policies of several large open-source projects now ask; antoine's machine keeps
-  "never".
-- Not generated, antoine's own: one session at a time, no fleet of subagents, CI only at the
-  release, the language of his replies.
 
 ### T-345 · The licence: `MIT OR Apache-2.0`, the template's output free of attribution
 - **Type**: task
