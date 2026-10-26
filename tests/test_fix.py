@@ -19,6 +19,9 @@ DIGEST = "sha256:" + "a" * 64
 RULES = {rule.id: rule for rule in load_rules()}
 
 
+IMAGE_BUILDS = checks.image_builds
+
+
 @pytest.fixture(autouse=True)
 def offline(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(resolve, "commit_of", lambda repo, ref: SHA)
@@ -28,6 +31,8 @@ def offline(monkeypatch: pytest.MonkeyPatch) -> None:
     # podman starts every service hardened; tests below say otherwise when they need to.
     monkeypatch.setattr(containers, "_podman_ready", lambda: True)
     monkeypatch.setattr(containers, "_starts", lambda root, name, text, services: set(services))
+    # No image is built here: the test that needs a build gives its own.
+    monkeypatch.setattr(checks, "image_builds", lambda root, changed: [])
 
 
 def git(root: Path, *arguments: str) -> str:
@@ -363,6 +368,35 @@ def test_a_converter_that_turns_the_checks_red_is_undone_and_handed_to_claude(
     capsys.readouterr()
     roadmap.show_roadmap(report)
     assert f"kiln fix's converter broke a check, undone: {log}" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(("built_before", "status"), [(True, "reverted"), (False, "fixed")])
+def test_an_image_a_converter_touched_is_built(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, built_before: bool, status: str
+) -> None:
+    # T-159: a converter that breaks the image is undone; an image red before cannot judge.
+    root = make(tmp_path, CONVERTED["NON-ROOT-CONTAINERS"])
+    monkeypatch.setattr(checks, "find", lambda root: [checks.Check(("true",))])
+    build = checks.Check(("sh", "-c", "echo 'useradd: not found'; exit 1"))
+    monkeypatch.setattr(checks, "image_builds", lambda root, changed: [build])
+    monkeypatch.setattr(fix, "_built_before", lambda root, check: built_before)
+
+    outcomes = fix.fix(root, only="NON-ROOT-CONTAINERS")
+
+    assert [found.status for found in outcomes] == [status]
+    if built_before:
+        assert "useradd: not found" in checks.reverted(root)["NON-ROOT-CONTAINERS"].read_text()
+    else:
+        assert "was red before the fix" in git(root, "log", "--format=%b", "-1")
+
+
+def test_only_container_files_are_built(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(checks.shutil, "which", lambda name: f"/usr/bin/{name}")
+    builds = IMAGE_BUILDS(tmp_path, ["api/Dockerfile", "web/app.Dockerfile", "README.md"])
+    assert [build.argv[-3:] for build in builds] == [
+        ("-f", "api/Dockerfile", "api"),
+        ("-f", "web/app.Dockerfile", "web"),
+    ]
 
 
 def test_a_kiln_repo_is_checked_whole_before_and_after(tmp_path: Path) -> None:

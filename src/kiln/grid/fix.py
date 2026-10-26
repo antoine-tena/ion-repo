@@ -111,6 +111,15 @@ def _apply(root: Path, rule: Rule, judges: list[checks.Check], unverified: str) 
     if not git(root, "diff", "--cached", "--name-only"):
         return Outcome(rule.id, "unchanged", note="nothing to change")
     failure = None if unverified else checks.first_failure(root, judges)
+    builds = checks.image_builds(root, changed)
+    build_failure = checks.first_failure(root, builds) if failure is None else None
+    if build_failure is not None and not _built_before(root, build_failure.check):
+        # The image did not build before the converter either: it cannot judge it.
+        unverified = (unverified + "; " if unverified else "") + (
+            f"unverified: `{build_failure.check}` was red before the fix"
+        )
+        build_failure = None
+    failure = failure or build_failure
     if failure is not None:
         git(root, "reset", "-q", "--hard")
         git(root, "clean", "-fdq")
@@ -121,9 +130,21 @@ def _apply(root: Path, rule: Rule, judges: list[checks.Check], unverified: str) 
     checks.forget_log(root, rule.id)
     source = rule.sources[0].url if rule.sources else ""
     body = f"{rule.why}\n\nSource: {source}\nRule: kiln grid {rule.id}"
-    body += f"\n\n{unverified}" if unverified else f"\n\nChecked: {', '.join(map(str, judges))}"
+    proven = [*map(str, judges), *(str(build) for build in builds if not unverified)]
+    body += f"\n\n{unverified}" if unverified else f"\n\nChecked: {', '.join(proven)}"
     git(root, "commit", "-q", "-m", f"fix({rule.id}): {fixer.summary}", "-m", body)
     return Outcome(rule.id, "fixed", tuple(changed), unverified)
+
+
+def _built_before(root: Path, build: checks.Check) -> bool:
+    """Whether the image built from the last commit, the converter's change aside."""
+    with tempfile.TemporaryDirectory(prefix="kiln-fix-build-") as scratch:
+        copy = Path(scratch) / "repo"
+        git(root, "worktree", "add", "-q", "--detach", str(copy))
+        try:
+            return checks.run(copy, build).ok
+        finally:
+            git(root, "worktree", "remove", "--force", str(copy), check=False)
 
 
 def _stage(root: Path, changed: list[str]) -> None:
