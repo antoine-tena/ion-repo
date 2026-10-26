@@ -64,10 +64,8 @@ as empty.
 Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other people's repos: each
 commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before
 anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03).
-- T-170 · `kiln fix` proves each commit: its rule closed, no other rule broken (M)
 - T-59 · kiln-bot: the grid's fixes as a weekly pull request (L)
 - T-90 · kiln passes its own grid: zizmor, provenance and Scorecard left (M)
-- T-187 · `kiln fix` shows the points each commit won (S)
 - T-344 · `/kiln:pause`: a session named and its place kept, listed at the next start (S)
 
 ### v0.5.0 · Public launch: the proof and the page
@@ -918,31 +916,6 @@ keeps it from being written.
 - [ ] Measured before it stays, with T-53's method: the same tasks with and without, tokens,
   lines written, tests, bugs caught; dropped if it does not win.
 
-### T-170 · `kiln fix` proves each commit: its rule closed, no other rule broken
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-24
-- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
-
-`fix.py` promises "with proof", but `_apply` commits as soon as the converter leaves a diff:
-it never runs the rule's detector again. kiln-bot (T-59) cannot open pull requests on
-strangers' repos until each commit is proven.
-- [ ] After each converter, the rule's detector runs again: `fixed` when it passes, `partial`
-  when it still fails (the diff is kept, the rest goes to `kiln score --roadmap`), `unchanged`
-  when nothing moved.
-- [ ] The whole grid compared before and after each commit: a converter that turns another rule
-  red (`add_ci` writing an unpinned action, say) is undone and reported.
-- [ ] Any exception from a converter is caught, not only `OSError`, `ValueError` and
-  `KilnError`: today a `KeyError` or a `yaml.YAMLError` stops the run halfway with a dirty tree
-  on the `kiln/fix-…` branch. Tree reset, outcome `unchanged (converter bug)`.
-- [ ] A test over every `FIXERS` entry: a second run of the converter changes nothing
-  (idempotence).
-- [ ] A converter that turns the repo's own tests red leaves the batch: kept on a branch of its
-  own with its log and handed to Claude (`/kiln:modernize`), never merged red, never dropped
-  silently (decision 21 of 26 October 2026).
-- [ ] The summary gives the points each rule brought, not only the score before and after.
-
 ### T-130 · Generated repos pass the whole grid
 - **Type**: improvement
 - **Status**: todo
@@ -1338,21 +1311,6 @@ ignores a leading `cd` (`git -C` got through). It should judge the repo the comm
 After the first push, `ci.yml` was not registered (dispatch answered 404 for minutes); a second
 commit touching the file registered it. Reproduce with `kiln publish`, then find out whether it
 is GitHub's or kiln's doing.
-
-### T-187 · `kiln fix` shows the points each commit won
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-25
-- **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: kiln score ideas of 24 October 2026 (One measure drives every command), made a ticket
-  on 25 October 2026 at antoine's request
-
-Planned in v0.4.11, "Never lets it rot, kiln first": Candidate Thu 29 Oct. kiln-bot runs kiln's
-workflows with write access in other people's repos: each commit it brings is proven first, and
-kiln's own workflows pass zizmor and carry provenance before anyone runs them. kiln-bot on a test
-repo is a box of the launch gate (T-03).
-
-- [ ] **P09** `kiln fix` reports the points each commit won.
 
 ### T-188 · The potential on every run, the frozen templates scored, an honest comparison
 - **Type**: improvement
