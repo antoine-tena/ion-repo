@@ -946,3 +946,10 @@ def test_a_kiln_workflow_pinned_by_kiln_fix_follows_the_template(tmp_path: Path)
     (tmp_path / name).write_text(f"{CONFLICT_MARKER}\n{ours}=======\n{theirs}>>>>>>> after\n")
     resolve_kiln_ref_conflicts(tmp_path)
     assert (tmp_path / name).read_text() == theirs
+
+
+def test_an_npm_folder_installs_with_npm_and_no_pnpm_lock(tmp_path: Path) -> None:
+    # An adopted npm repo: pnpm would write a pnpm-lock.yaml next to its package-lock.json,
+    # leaving the tree dirty (kiln update --all then stopped on it).
+    (tmp_path / "package-lock.json").write_text("{}\n")
+    assert pnpm_install_command(tmp_path) == ["npm", "ci"]
