@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-363.**
+**Next free: T-364.**
 
 ---
 
@@ -206,6 +206,7 @@ held to every new rule by its own test.
 - T-141 · Grid v2: the themes after the launch (L)
 - T-198 · The exact rules first, and the template held to each new rule (L)
 - T-199 · Three new themes open: licensing, infrastructure, data science (M)
+- T-363 · New tools found the week they come out, assessed before recommended (M)
 
 ### v0.5.14 · Repos safe to hand to an agent
 What Claude Code users need first (17 October): narrow permissions, pinned MCP servers, no secret an
@@ -2237,6 +2238,32 @@ From the kiln score ideas of 24 October 2026:
 - [ ] **Q16** A rule whose sources nobody re-read for a year leaves the score, back to assess,
   until someone does: the watch (Q02) flags what moved, this catches what nobody looked at, so
   the grid's breadth can't rot silently and a pack nobody keeps goes quiet rather than wrong.
+
+### T-363 · New tools found the week they come out, assessed before recommended
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: antoine, 26 October 2026 ("a technology watch, so that as soon as a tool comes out
+  kiln knows"): T-140 watches the tools the grid already names; this finds the ones it doesn't
+
+- [ ] Collection by script, no tokens, once a week: the lines added to the stacks' `awesome-*`
+  lists (a diff of their README: curated already), the newsletters' feeds (PyCoder's Weekly,
+  Django News, JavaScript Weekly, Vue and Nuxt news), Show HN above a points threshold through
+  the Algolia API, the packages whose dependents grow fastest on ecosyste.ms, and the unknown
+  packages several gap reports name (T-38). Proven libraries only (`feedparser`, `httpx`, a git
+  diff): no crawler of kiln's own.
+- [ ] A deterministic filter: already seen (a state file), no stack of kiln's, no licence, no
+  release in a year; what is left is a short list, about 5 to 15 a week.
+- [ ] A scheduled workflow of kiln's repo (free on a public repo, like T-349) opens or updates one
+  issue per week, `Watch, week N`, one line per candidate with its sources; nothing on an empty
+  week.
+- [ ] Judgment by Claude on that list only, in a normal session (a step of `/kiln:backlog`, or a
+  skill of its own): replaces a tool of the grid, completes one, or nothing; a yes becomes a
+  ticket or a pull request that adds the rule at `assess`, its sources attached.
+- [ ] Known the week it comes out, recommended only on evidence: a new tool enters at `assess`
+  and moves to `trial` then `adopt` through T-140's doctrine (maturity, sources, G12's
+  `level_history`), never because it is new.
 
 ### T-57 · A tutorial series: bring a Django repo up to date in an afternoon
 - **Type**: task
