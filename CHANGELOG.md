@@ -6,6 +6,10 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 `release/vX.Y.Z` branch, rewritten before its first candidate. Names are those of their release:
 entries before v0.4.0 quote kiln's former French names.
 
+## v0.4.7 — 2026-10-26
+<!-- readme: unchanged: a fix, no new command nor option -->
+- `kiln install` and `kiln check` no longer fail with `ERR_PNPM_NO_LOCKFILE` in a repo whose front has no `pnpm-lock.yaml`: pnpm installs without `--frozen-lockfile` and creates the lockfile, to commit.
+
 ## v0.4.6 — 2026-10-24
 - `kiln adopt` brings an existing repo to the level of `kiln new`: `CLAUDE.md`, the Claude rules, the size's charter, pre-commit hooks, the CI calling kiln's workflows and the backlog, for the stack it finds in `backend/` and `frontend/`. Nothing the repo has is overwritten: those files, and its code folders, are kept under `kept` in `.copier-answers.yml`, and `kiln update` then keeps the repo current like a generated one (#59).
 - **After updating**: in a repo adopted before 0.4.6, run `kiln adopt` again on a work branch to lay the rest of the template; until then `kiln update` only moves its workflows' tag.
