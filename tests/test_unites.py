@@ -22,7 +22,7 @@ from kiln.config import UserConfig
 from kiln.deps import _major_bounds
 from kiln.dev import read_env_file, service_prefix
 from kiln.dev.backing import backing_services
-from kiln.doctor import Level, workstation_findings
+from kiln.doctor import Level, repo_findings, workstation_findings
 from kiln.install import (
     ensure_env_file,
     moved_from,
@@ -537,6 +537,19 @@ def test_doctor_without_a_chosen_system_detects_it(monkeypatch: pytest.MonkeyPat
     findings = {f.label: f for f in workstation_findings(UserConfig(), None)}
 
     assert findings["podman"].fix.startswith("brew install podman")
+
+
+def test_doctor_knows_kilns_own_repo(tmp_path: Path) -> None:
+    # kiln is the template's source: no answers, no charter, and not a stranger's repo (T-362).
+    (tmp_path / "template").mkdir()
+    (tmp_path / "copier.yml").write_text("_subdirectory: template\n")
+    stranger = repo_findings(tmp_path, None)[0]
+    (tmp_path / "pyproject.toml").write_text('[project]\nname = "kiln-cli"\n')
+    kiln = repo_findings(tmp_path, None)[0]
+
+    assert (stranger.level, stranger.detail) == (Level.WARN, "not a kiln repo")
+    assert kiln.level is Level.OK
+    assert "kiln's own repo" in kiln.detail
 
 
 def test_dev_prefixes_line_up_outside_a_terminal() -> None:

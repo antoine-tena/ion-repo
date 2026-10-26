@@ -66,7 +66,6 @@ as empty.
 - T-172 · The checks of `kiln fix` told apart, timed out, their log kept for Claude (S)
 - T-173 · More converters: the CI and the supply chain (M)
 - T-186 · Binary and non-UTF-8 files read right, GitHub settings read through `gh` (M)
-- T-362 · `kiln doctor` calls kiln's own repo "not a kiln repo" (XS)
 - T-342 · Not using an agent is not a fault: agent files out of the score (S)
 - T-343 · Two habits for every repo: reproduce first, a direct link for every online step (XS)
 
@@ -806,19 +805,6 @@ packs (T-69). From here, strict semver: breaking → major, `feat` → minor.
 ## 🔴 Critical
 
 ## 🟠 Important
-
-### T-362 · `kiln doctor` calls kiln's own repo "not a kiln repo"
-- **Type**: bug
-- **Status**: todo
-- **Opened**: 2026-10-26
-- **Effort**: XS · **Owner**: — · **Due**: before the v0.4.10 candidate (Tue 27 Oct)
-- **Origin**: antoine's `kiln doctor` run in kiln, 26 October 2026
-
-`_template` in `src/kiln/doctor.py` warns when `.copier-answers.yml` and the charter are missing,
-which is true of kiln itself, the source of the template: a false alarm in the repo antoine
-works in most.
-- [ ] kiln's own checkout (its `copier.yml` and `template/`) recognized and reported as such, with
-  a test; a stranger's repo still gets the warning.
 
 ### T-342 · Not using an agent is not a fault: agent files out of the score
 - **Type**: improvement
