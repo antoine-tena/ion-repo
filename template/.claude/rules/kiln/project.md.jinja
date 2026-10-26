@@ -18,8 +18,10 @@ Size: **{{ size | capitalize }}**, {{ size_text }} (`kiln set size=…` changes 
 Backend {{ back_text }} {{ 'at the root' if bd == '.' else 'in `' ~ bdir ~ '`' }}, frontend {{ front_text }} {{ 'at the root' if fd == '.' else 'in `' ~ fdir ~ '`' }}.
 {%- elif back_text -%}
 Backend {{ back_text }} {{ 'at the root' if bd == '.' else 'in `' ~ bdir ~ '`' }}.
-{%- else -%}
+{%- elif front_text -%}
 Frontend {{ front_text }} {{ 'at the root' if fd == '.' else 'in `' ~ fdir ~ '`' }}.
+{%- else -%}
+No stack of kiln here: its common part only (CI, hooks, rules, charter).
 {%- endif %}
 The repo is generated and kept current by [kiln](https://github.com/antoine-tena/kiln).
 
@@ -40,9 +42,8 @@ The repo is generated and kept current by [kiln](https://github.com/antoine-tena
 {%- elif backend == 'java' %}
 - `cd {{ bd }} && ./mvnw verify`: compile (warnings are errors), run JUnit, check coverage.
 {%- endif %}
-- `kiln check`: every check of the stack ({% if python_dirs %}ruff, mypy, pytest{% endif %}
-{%- if backend == 'java' %}{{ ', ' if python_dirs }}Maven{% endif %}
-{%- if frontend in ['nuxt', 'next', 'vite-react'] %}, ESLint, type checks{% elif frontend == 'astro' %}, ESLint, `astro check`{% endif %}), then `charter`.
+{%- set checks = (['ruff', 'mypy', 'pytest'] if python_dirs else []) + (['Maven'] if backend == 'java' else []) + (['ESLint', 'type checks'] if frontend in ['nuxt', 'next', 'vite-react'] else ['ESLint', '`astro check`'] if frontend == 'astro' else []) %}
+- `kiln check`: {% if checks %}every check of the stack ({{ checks | join(', ') }}), then `charter`{% else %}`charter`, the rules of `charter.toml`{% endif %}.
   Run it before saying a change is done.
 {%- if backend == 'django' and frontend == 'nuxt' %}
 - `kiln contract`: export `openapi.json` from the Django code and regenerate the front's types
