@@ -20,7 +20,8 @@ folder or a module.
   podman, `menu.py` what to run and the logs offered, `background.py` background, `status`,
   `logs`, `stop`, `foreground.py` `--foreground`, `containers.py` `--containers`), `check.py`,
   `settings.py` (`kiln set`, the settable keys), `machine.py` (`kiln set` outside a repo: machine
-  settings), `waive.py` (`kiln waive`), `pause.py` (`kiln pause`, a session's place kept, T-344), `update.py`, `contract.py`, `release.py`
+  settings), `waive.py` (`kiln waive`), `pause.py` (`kiln pause`, a session's place kept, T-344), `bot.py` (`kiln bot`, kiln-bot's run on `kiln/bot`, T-59; its public test bench
+  `antoine-tena/kiln-bot-test` calls `bot.yml`, `score.yml` and `charter.yml`), `update.py`, `contract.py`, `release.py`
   (`kiln version`), `shipping.py` (`kiln version cut` and `promote`), `github_ci.py` (GitHub CI's
   verdict on a commit, awaited by `cut` and `promote`), `doctor.py` (machine and repo diagnosis),
   `tool_update.py` (tool update offered after a command typed outside Claude Code), `fleet.py`

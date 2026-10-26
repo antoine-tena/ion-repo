@@ -69,7 +69,10 @@ jobs:
           postgres: ${{ inputs.postgres }}
           redis: ${{ inputs.redis }}
       - name: Remove kiln from the project directory
-        run: rm -rf .kiln
+        # Its charter action is set aside: setup-uv's post step reads it again at the end.
+        run: |
+          cp -r .kiln/actions/charter "$RUNNER_TEMP/kiln-charter-action"
+          rm -rf .kiln
 
       - name: Project variables
         if: inputs.env != ''
@@ -117,3 +120,9 @@ jobs:
       - name: Coverage floors
         if: inputs.coverage
         run: charter coverage
+
+      # Once the project's checks are done: the charter action back for setup-uv's post step,
+      # which otherwise fails the job ("Can't find 'action.yml'").
+      - name: kiln's charter action back
+        if: always()
+        run: mkdir -p .kiln/actions && cp -r "$RUNNER_TEMP/kiln-charter-action" .kiln/actions/charter

@@ -1,0 +1,67 @@
+name: kiln score
+
+# On each pull request (P16): what it changes in the kiln score since its base, the rules it
+# closes and opens, in the run's summary and as one comment kept up to date. A pull request from
+# a fork gets the summary only: its token cannot comment.
+on:
+  workflow_call:
+    inputs:
+      comment:
+        description: Comment the change on the pull request
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      # kiln at the exact version of this workflow, installed as a tool.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          repository: antoine-tena/kiln
+          ref: ${{ job.workflow_sha || 'develop' }}
+          path: .kiln
+      # Kept to the end of the job, where setup-uv's post step reads the action again; out of git.
+      - uses: ./.kiln/actions/charter
+        with:
+          ref: ${{ job.workflow_sha || 'develop' }}
+      - name: Keep kiln out of the project's git
+        run: echo ".kiln/" >> .git/info/exclude
+
+      - name: kiln score
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          kiln score --against "$BASE" > "$RUNNER_TEMP/score.md"
+          cat "$RUNNER_TEMP/score.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment
+        if: >-
+          inputs.comment && github.event.pull_request
+          && github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          marker='<!-- kiln-score -->'
+          { echo "$marker"; cat "$RUNNER_TEMP/score.md"; } > "$RUNNER_TEMP/comment.md"
+          id="$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" --paginate \
+            --jq ".[] | select(.body | startswith(\"${marker}\")) | .id" | head -n 1)"
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${id}" \
+              -F body=@"$RUNNER_TEMP/comment.md" > /dev/null
+          else
+            gh pr comment "$PR" --body-file "$RUNNER_TEMP/comment.md"
+          fi

@@ -292,6 +292,18 @@ ci_runner:
     "On GitHub (free and unlimited for a public repo)": github
   default: local
 
+# kiln-bot (T-59): `kiln update` then `kiln fix` as one pull request, on a schedule. Off by
+# default: on a private repo each run spends GitHub minutes. Set with `kiln set update_bot=weekly`.
+update_bot:
+  type: str
+  help: kiln-bot, the grid's fixes and kiln's updates as a pull request?
+  choices:
+    "Off": "off"
+    "Every Monday": weekly
+    "On the 1st of each month": monthly
+  default: "off"
+  when: "{{ (update_bot | default('off')) != 'off' }}"
+
 # Claude Code's status line (kiln plugin): settings set as `git config statusline.*` by
 # `kiln install`, `kiln new` and `kiln set`, never by hand.
 statusline_ci:

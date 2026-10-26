@@ -64,7 +64,6 @@ as empty.
 Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other people's repos: each
 commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before
 anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03).
-- T-59 · kiln-bot: the grid's fixes as a weekly pull request (L)
 
 ### v0.5.0 · Public launch: the proof and the page
 Candidate Sun 1 Nov, promoted Tue 3 Nov. Milestone decided by antoine (16 October 2026), its content
@@ -937,30 +936,6 @@ From the kiln score ideas of 24 October 2026:
   generated and scored at each candidate; a template change that lowers any of them fails (T-130's
   matrix).
 - [ ] **T07** kiln, its generated repos and the reference repo at 100, visibly (T-90, T-130, T-134).
-
-### T-59 · kiln-bot: the grid's fixes as a weekly pull request
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-16
-- **Effort**: L · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: growth review, 16 October 2026 ("Never lets it rot"); rewritten 17 October 2026
-  (vision, step 5: continuous)
-
-"Dependabot for your methods" is only true if the fixes come by themselves. `kiln fix` needs no
-token, so it runs in CI for free on any public repo.
-- [ ] A reusable workflow (and a composite action) on a weekly schedule: `kiln score`,
-  `kiln fix` (and `kiln update` in a kiln repo), one pull request kept up to date, with the
-  score before and after and the why of each commit; nothing when nothing changed.
-- [ ] The score and its delta commented on each pull request, optional.
-- [ ] Set up in one copy-paste in any repo; the docs say the catch: a pull request opened with
-  `GITHUB_TOKEN` does not start the CI, and which token or app to use instead.
-- [ ] In generated repos: `kiln set update_bot=weekly|monthly|off`.
-
-From the kiln score ideas of 24 October 2026:
-- [ ] **K19** kiln-bot (T-59) as the effortless default for any public repo: one copy-paste, a
-  weekly pull request with the score and `kiln fix`'s commits.
-- [ ] **P16** kiln-bot (T-59) posts the delta on each pull request and opens the weekly fix pull
-  request.
 
 ### T-134 · The reference repo's score in every release note
 - **Type**: improvement

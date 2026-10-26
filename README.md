@@ -47,9 +47,11 @@ kiln itself calls no AI and needs no API key.
 - `kiln grid` lists the practices kiln stands behind, each with its reason, its sources (checked
   and dated) and how it is detected. `kiln score` measures any repo against them in about a
   second, without a token: a score out of 100, one per pillar, and the gaps to close first. `kiln fix` closes on a
-  branch those a script can close, one commit per rule, undone if your checks turn red.
-  `kiln score --roadmap` hands the rest to Claude Code as a short list with file and line, and
-  `/kiln:modernize` works through it, each gap proven closed by `kiln score --rule`.
+  branch those a script can close, one commit per rule, each proven, set aside if your checks turn
+  red. `kiln score --roadmap` hands the rest to Claude Code as a short list with file and line,
+  and `/kiln:modernize` works through it, each gap proven closed by `kiln score --rule`.
+  [kiln-bot](docs/reference.md) brings the fixes as a weekly pull request, in one
+  copy-paste.
 - Skills for worktrees, merges, releases and reviews; hooks that keep Claude off `main` and
   `develop`; a status line that shows CI, tickets and production.
 - A private repo's CI runs on your machine (`kiln ci`, its verdict kept as a git note) and spends

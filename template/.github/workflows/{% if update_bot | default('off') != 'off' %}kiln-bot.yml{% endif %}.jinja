@@ -1,0 +1,31 @@
+{#- The kiln release the project comes from, as in ci.yml: kiln-bot runs at that release, and
+    `kiln update` moves it forward. -#}
+{%- set kiln_commit = _copier_answers._commit | default('') | string %}
+{%- set kiln_ref = kiln_commit if (kiln_commit.startswith('v') and '-g' not in kiln_commit) else 'develop' -%}
+{%- set kiln_pin = (_copier_conf.vcs_ref_hash ~ ' # ' ~ kiln_ref) if kiln_ref != 'develop' else 'develop' -%}
+name: kiln-bot
+
+# kiln-bot ({{ update_bot }}): `kiln update` then `kiln fix` on the branch kiln/bot, one pull
+# request kept up to date with the score before and after. A pull request opened with
+# GITHUB_TOKEN does not start the CI nor push workflows: a fine-grained token (contents, pull
+# requests and workflows: write) in the secret KILN_BOT_TOKEN fixes that. Off with `kiln set update_bot=off`.
+on:
+  schedule:
+{%- if update_bot == 'monthly' %}
+    - cron: "0 6 1 * *"
+{%- else %}
+    - cron: "0 6 * * 1"
+{%- endif %}
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bot:
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: antoine-tena/kiln/.github/workflows/bot.yml@{{ kiln_pin }}
+    secrets:
+      token: {{ '${{ secrets.KILN_BOT_TOKEN }}' }}

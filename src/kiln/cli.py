@@ -30,7 +30,7 @@ LANGUAGES = ("en", "fr")
 COMMAND_GROUPS = (
     ("Project", ("new", "adopt", "install", "publish", "update", "set", "waive")),
     ("Day to day", ("dev", "check", "ci", "contract", "doctor", "pause", "completion")),
-    ("The grid", ("grid", "score", "fix")),
+    ("The grid", ("grid", "score", "fix", "bot")),
     ("All repos", ("status", "update --all", "version")),
 )
 FLEET_UPDATE_ROLE = "update every kiln repo, merged straight away"
@@ -52,7 +52,7 @@ LEGACY_OPTIONS = {
     "set": {"--poste": "--global"},
 }
 NO_RECAP_COMMANDS = frozenset(
-    {"dev", "ci", "status", "doctor", "version", "waive", "grid", "score", "fix", "pause"}
+    {"dev", "ci", "status", "doctor", "version", "waive", "grid", "score", "fix", "pause", "bot"}
 )
 HELP_FLAGS: tuple[list[str], ...] = ([], ["-h"], ["--help"])
 
@@ -178,6 +178,7 @@ def build_parser() -> argparse.ArgumentParser:
     _add_grid_command(commands)
     _add_score_command(commands)
     _add_fix_command(commands)
+    _add_bot_command(commands)
     _add_pause_command(commands)
     status_parser = commands.add_parser("status", help="state of the kiln repos of the code folder")
     status_parser.add_argument("--all", action="store_true", help="every repo (the default)")
@@ -265,6 +266,12 @@ def _dispatch_score(arguments: argparse.Namespace) -> None:
         score.refresh_end_of_life()
         forge.REFRESH = True
     report = score.score_repo(root)
+    if arguments.against:
+        from kiln.grid import fix
+
+        with fix.scratch_worktree(root, "--detach", ref=arguments.against) as copy:
+            print("\n".join(score.compared(score.score_repo(copy), report)))
+        return
     if arguments.rule or arguments.roadmap:
         from kiln.grid import roadmap
 
@@ -322,6 +329,9 @@ def _add_score_command(commands: argparse._SubParsersAction[argparse.ArgumentPar
         "--write", action="store_true", help="with --roadmap: the items as backlog tickets"
     )
     score_parser.add_argument("--rule", help="one rule only: fails while its gap is open")
+    score_parser.add_argument(
+        "--against", metavar="REF", help="the change since a commit (a pull request's base)"
+    )
 
 
 def _add_fix_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
@@ -333,6 +343,22 @@ def _add_fix_command(commands: argparse._SubParsersAction[argparse.ArgumentParse
     )
     fix_parser.add_argument("--dry-run", action="store_true", help="the plan and the diff only")
     fix_parser.add_argument("--rule", help="only this rule (its ID)")
+
+
+def _add_bot_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+    bot_parser = commands.add_parser(
+        "bot", help="kiln-bot's run: kiln update and kiln fix on kiln/bot, for one pull request"
+    )
+    bot_parser.add_argument(
+        "path", type=Path, nargs="?", default=Path(), help="the repo (default: here)"
+    )
+    bot_parser.add_argument("--no-update", action="store_true", help="kiln fix only")
+    bot_parser.add_argument("--body", type=Path, help="write the pull request's body there")
+    bot_parser.add_argument(
+        "--no-workflows",
+        action="store_true",
+        help="leave out what writes .github/workflows/ (GITHUB_TOKEN may not push it)",
+    )
 
 
 def _add_pause_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
@@ -548,6 +574,15 @@ def dispatch(arguments: argparse.Namespace) -> list[str]:
         from kiln.grid import fix
 
         fix.fix(arguments.path.resolve(), dry_run=arguments.dry_run, only=arguments.rule)
+    elif arguments.command == "bot":
+        from kiln import bot
+
+        bot.run_bot(
+            arguments.path.resolve(),
+            update=not arguments.no_update,
+            body_path=arguments.body,
+            workflows=not arguments.no_workflows,
+        )
     elif arguments.command == "pause":
         from kiln import pause
 
