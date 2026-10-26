@@ -82,7 +82,7 @@ def install_project(root: Path) -> None:
         run(["uv", "run", "python", "manage.py", "migrate"], root / BACKEND_DIR)
     if stack.pnpm_dir is not None:
         step(f"{stack.pnpm_dir}: pnpm dependencies")
-        run(["pnpm", "install", "--frozen-lockfile"], root / stack.pnpm_dir)
+        run(pnpm_install_command(root / stack.pnpm_dir), root / stack.pnpm_dir)
     step("git guards (pre-commit) and status line")
     install_git_hooks(root)
     apply_statusline_settings(root)
@@ -196,6 +196,14 @@ def moved_from(venv: Path) -> Path | None:
         same_place = os.path.realpath(created_in) == os.path.realpath(venv)
         return None if same_place else created_in
     return None
+
+
+def pnpm_install_command(directory: Path) -> list[str]:
+    """Frozen to the lockfile when there is one; without it (a repo that never committed one),
+    `--frozen-lockfile` fails with ERR_PNPM_NO_LOCKFILE: a plain install creates it."""
+    if (directory / PNPM_LOCKFILE).is_file():
+        return ["pnpm", "install", "--frozen-lockfile"]
+    return ["pnpm", "install"]
 
 
 def pnpm_behind(directory: Path) -> bool:
