@@ -84,7 +84,10 @@ def plan(root: Path, only: str | None = None) -> list[Rule]:
     return rules
 
 
-def fix(root: Path, *, dry_run: bool = False, only: str | None = None) -> list[Outcome]:
+def fix(
+    root: Path, *, dry_run: bool = False, only: str | None = None, on: str = ""
+) -> list[Outcome]:
+    """`on`: an existing branch the commits go on (kiln-bot's), left to its caller."""
     root = Path(git(root, "rev-parse", "--show-toplevel").strip())
     if git(root, "status", "--porcelain"):
         ui.note("From the last commit: uncommitted changes left out, and left as they are.")
@@ -92,6 +95,10 @@ def fix(root: Path, *, dry_run: bool = False, only: str | None = None) -> list[O
         with scratch_worktree(root, "--detach") as copy:
             rules = _announce(copy, only)
             return _dry_run(copy, rules) if rules else []
+    if on:
+        with scratch_worktree(root, ref=on) as copy:
+            rules = _announce(copy, only)
+            return _run(copy, rules, on, False, widen=only is None) if rules else []
     branch, reused = _branch(root)
     with scratch_worktree(root, "-B" if reused else "-b", branch) as copy:
         rules = _announce(copy, only)
@@ -170,14 +177,14 @@ def _branch(root: Path, base: str = "") -> tuple[str, bool]:
 
 
 @contextmanager
-def scratch_worktree(root: Path, *options: str) -> Iterator[Path]:
+def scratch_worktree(root: Path, *options: str, ref: str = "HEAD") -> Iterator[Path]:
     """A worktree of the last commit out of the user's tree (`options`: `--detach`, or `-b`
     and a branch), with what the checks need from the tree; removed afterwards, its branch kept."""
     SCRATCH.mkdir(parents=True, exist_ok=True)
     scratch = Path(tempfile.mkdtemp(prefix="kiln-fix-", dir=SCRATCH))
     copy = scratch / "repo"
     try:
-        git(root, "worktree", "add", "-q", *options, str(copy), "HEAD")
+        git(root, "worktree", "add", "-q", *options, str(copy), ref)
         _bring_local_files(root, copy)
         yield copy
     finally:
