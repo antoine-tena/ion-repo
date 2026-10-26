@@ -60,7 +60,6 @@ Candidate Tue 27 Oct. The score and the fixes reach what they miss today: GitHub
 the root as well as in `backend/` and `frontend/`, compose services, loose requirements, files read
 as empty.
 - T-159 · What T-126 to T-128 left: compose hardening, pyproject from requirements, `kiln update` (M)
-- T-185 · `kiln dev` in an adopted repo with a compose file offers its services (S)
 - T-172 · The checks of `kiln fix` told apart, timed out, their log kept for Claude (S)
 - T-173 · More converters: the CI and the supply chain (M)
 
@@ -884,18 +883,6 @@ moved into this file, in English, on 24 Oct.
 - T-164 (French docs translated at the candidate) and T-55 (README in Chinese, Japanese,
   Spanish, Portuguese) ruled out by antoine on 24 Oct (`rejected.md`); T-30 keeps no French
   summary.
-
-### T-185 · `kiln dev` in an adopted repo with a compose file offers its services
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-24
-- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: issue #59 (antoine, 23 October 2026): `kiln dev` ran `npm run dev` and
-  `npm run server` while the repo's `compose.yaml` had a `web` and a `server` service
-
-- [ ] When a compose file names services that `kiln dev` would also run from `package.json`, the
-  menu offers the compose services (as `--containers` does in a generated repo).
-
 
 ### T-163 · Skills call one kiln command, the backlog first
 - **Type**: improvement
