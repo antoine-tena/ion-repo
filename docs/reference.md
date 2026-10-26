@@ -104,7 +104,7 @@ kiln's workflows work from any repository, kiln-generated or not:
 ```yaml
 jobs:
   backend:
-    uses: antoine-tena/kiln/.github/workflows/django.yml@v0.4.6   # a kiln release tag
+    uses: antoine-tena/kiln/.github/workflows/django.yml@v0.4.7   # a kiln release tag
 ```
 
 `django.yml`, `python.yml`, `maven.yml`, `pnpm.yml`, `charter.yml`, `security.yml` (`uv audit`,
