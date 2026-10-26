@@ -13,13 +13,14 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from kiln import ui
-from kiln.grid import checks, score
+from kiln.grid import checks, detectors, score
 from kiln.grid.facts import read_repo
 from kiln.grid.fixers import FIXERS
 from kiln.grid.model import Rule, load_rules
 from kiln.shell import KilnError
 
 UNVERIFIED = "unverified: no check found"
+CLOSED = "closed by an earlier converter"
 
 
 @dataclass(frozen=True)
@@ -105,6 +106,8 @@ def convert_in_place(root: Path, spared: list[str]) -> list[str]:
     before = {name: _read_bytes(root / name) for name in spared}
     converted = []
     for rule in plan(root):
+        if _closed(root, rule):
+            continue
         try:
             changed = FIXERS[rule.fixer].convert(read_repo(root))
         except (OSError, ValueError, KilnError) as error:
@@ -131,6 +134,8 @@ def _apply(root: Path, rule: Rule, judges: list[checks.Check], unverified: str) 
     """`unverified` says why the checks cannot judge this converter; empty when they can."""
     fixer = FIXERS[rule.fixer]
     ui.step(f"{rule.id}: {fixer.summary}")
+    if _closed(root, rule):
+        return Outcome(rule.id, "unchanged", note=CLOSED)
     try:
         changed = fixer.convert(read_repo(root))
     except (OSError, ValueError, KilnError) as error:
@@ -164,6 +169,12 @@ def _apply(root: Path, rule: Rule, judges: list[checks.Check], unverified: str) 
     body += f"\n\n{unverified}" if unverified else f"\n\nChecked: {', '.join(proven)}"
     git(root, "commit", "-q", "-m", f"fix({rule.id}): {fixer.summary}", "-m", body)
     return Outcome(rule.id, "fixed", tuple(changed), unverified)
+
+
+def _closed(root: Path, rule: Rule) -> bool:
+    """An earlier converter closed the rule too (the minimal CI runs the linters): nothing left
+    to add."""
+    return detectors.detect(rule.detector, read_repo(root)).status != detectors.FAIL
 
 
 def _built_before(root: Path, build: checks.Check) -> bool:
