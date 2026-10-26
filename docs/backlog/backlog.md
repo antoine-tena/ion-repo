@@ -59,7 +59,6 @@ the launch adds pushes them by two days. The public view of this plan is
 Candidate Tue 27 Oct. The score and the fixes reach what they miss today: GitHub settings, code at
 the root as well as in `backend/` and `frontend/`, compose services, loose requirements, files read
 as empty.
-- T-159 · What T-126 to T-128 left: compose hardening, pyproject from requirements, `kiln update` (M)
 - T-173 · More converters: the CI and the supply chain (M)
 
 ### v0.4.11 · Never lets it rot, kiln first
@@ -920,30 +919,6 @@ keeps it from being written.
 - [ ] A few lines in `template/.claude/rules/kiln/` (they are read at every message).
 - [ ] Measured before it stays, with T-53's method: the same tasks with and without, tokens,
   lines written, tests, bugs caught; dropped if it does not win.
-
-### T-159 · What T-126 to T-128 left: compose hardening, pyproject from requirements, `kiln update`
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-20
-- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: left from T-126, T-127 and T-128 (2026-10-20)
-
-- [ ] Compose services `read_only`, `cap_drop: [ALL]`, `no-new-privileges`, kept only where the
-  service still starts (needs the containers run: `podman compose up` on a copy).
-- [ ] `requirements*.txt` to `pyproject.toml` and `uv.lock` (today: the loose file becomes its
-  `.in` and uv compiles exact versions, which keeps images and scripts working).
-- [ ] In a kiln repo, `kiln update` runs the same converters after the template.
-- [ ] Images: a converter commit that touches a `Dockerfile` builds it when podman or docker is
-  there (today: left to the repo's CI).
-- [x] The repo's checks found beyond its root (done with T-172, `grid/checks.py`): `check_commands` read only the root manifests,
-  so a repo with `backend/` and `frontend/` (most of the training fleet, 20 October 2026) gets
-  every commit marked "unverified" although it has tests; look one folder down, and run a
-  Django project's tests through `manage.py` when its settings start without secrets.
-
-From the kiln score ideas of 24 October 2026:
-- [ ] **N03** Containers started read-only with every capability dropped: a service that still
-  starts gets the hardening from `kiln fix` (what T-159 needs).
-
 
 ### T-170 · `kiln fix` proves each commit: its rule closed, no other rule broken
 - **Type**: improvement
