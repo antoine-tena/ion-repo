@@ -66,7 +66,7 @@ jobs:
           cache-dependency-path: ${{ inputs.frontend }}/pnpm-lock.yaml
 
       - name: Front dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --config.strict-dep-builds=false
         working-directory: ./${{ inputs.frontend }}
 
       - name: Types and input rules match the schema

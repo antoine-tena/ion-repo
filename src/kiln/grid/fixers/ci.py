@@ -12,6 +12,7 @@ import yaml  # brought by copier
 from kiln.grid.detectors import CONTAINER_FILES, WORKFLOWS
 from kiln.grid.facts import Repo
 from kiln.grid.fixers import Fixer, register, resolve
+from kiln.stack import PNPM_LENIENT_BUILDS
 
 COOLDOWN_DAYS = 7
 DEPENDABOT = ".github/dependabot.yml"
@@ -249,7 +250,11 @@ def _ci_steps(repo: Repo) -> list[str]:
             steps += ["pip install pytest", "python -m pytest -q"]
     if "package.json" in names:
         manager = "pnpm" if "pnpm-lock.yaml" in names else "npm"
-        install = "pnpm install --frozen-lockfile" if manager == "pnpm" else "npm ci"
+        install = (
+            f"pnpm install --frozen-lockfile {PNPM_LENIENT_BUILDS}"
+            if manager == "pnpm"
+            else "npm ci"
+        )
         package = json.loads(repo.text("package.json") or "{}")
         scripts = package.get("scripts", {}) if isinstance(package, dict) else {}
         steps.append(install)

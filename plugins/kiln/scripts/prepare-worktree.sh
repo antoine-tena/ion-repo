@@ -20,7 +20,7 @@ git -C "$main_tree" ls-files --others --ignored --exclude-standard -- '*.env' '*
 git -C "$worktree" ls-files -- '*pnpm-lock.yaml' '*package-lock.json' | while read -r lock; do
   dir="$worktree/$(dirname "$lock")"
   case "$lock" in
-    *pnpm-lock.yaml) (cd "$dir" && pnpm install --frozen-lockfile --prefer-offline) ;;
+    *pnpm-lock.yaml) (cd "$dir" && pnpm install --frozen-lockfile --prefer-offline --config.strict-dep-builds=false) ;;
     *package-lock.json) (cd "$dir" && npm ci --prefer-offline) ;;
   esac
 done
