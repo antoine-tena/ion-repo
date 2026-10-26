@@ -9,7 +9,8 @@ scripts of its `package.json` that keep running while one edits: `dev`, `dev:*`,
 `serve`, `watch`, `watch:*`, else `start`; through the package manager its lock names (npm
 without one). A `Procfile.dev` line of the same name replaces such a script. Its dependencies are
 installed first when `node_modules/` is missing or older than the lock (a fresh clone): the
-script would otherwise stop on `vite: not found`.
+script would otherwise stop on `vite: not found`. The stack's front (`pnpm dev`) also goes
+through the manager of its lock: an adopted Nuxt app kept on npm runs `npm run dev`.
 
 Each process gets the `.env` of its folder, then, when a process outside the front runs too, its
 `.env.dev` (what the full local stack changes, such as the API's address or a production key to
@@ -67,7 +68,9 @@ NPM_WITHOUT_LOCK = ("npm", "install")
 def dev_processes(root: Path) -> list[Command]:
     """The stack's servers, then the processes of the `Procfile.dev`s; a same name replaces."""
     stack = load_stack(root)
-    by_label = {command.label: command for command in stack.dev_commands()}
+    by_label = {
+        command.label: through_lock_manager(root, command) for command in stack.dev_commands()
+    }
     served = {command.directory for command in by_label.values()}
     directories = list(dict.fromkeys((stack.backend_dir, stack.frontend_dir, *PROCFILE_DIRS)))
     for directory in directories:
@@ -78,6 +81,19 @@ def dev_processes(root: Path) -> list[Command]:
         for command in procfile_commands(root, directory):
             by_label[command.label] = command
     return list(by_label.values())
+
+
+def through_lock_manager(root: Path, command: Command) -> Command:
+    """A stack server run by pnpm, in a folder whose lock another package manager wrote (an
+    adopted npm repo), runs through that one: pnpm 11+ would first install over that lock, and
+    stop on a dependency's build script (ERR_PNPM_IGNORED_BUILDS)."""
+    folder = root / command.directory
+    if command.argv[0] != "pnpm" or not any((folder / lock).is_file() for lock, _ in LOCK_MANAGERS):
+        return command
+    manager = package_manager(folder)
+    if manager == "pnpm":
+        return command
+    return Command(command.label, command.directory, (manager, "run", *command.argv[1:]))
 
 
 def runs_beyond_front(commands: list[Command], front_dir: str = FRONTEND_DIR) -> bool:
