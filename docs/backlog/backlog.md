@@ -66,7 +66,6 @@ as empty.
 - T-172 · The checks of `kiln fix` told apart, timed out, their log kept for Claude (S)
 - T-173 · More converters: the CI and the supply chain (M)
 - T-186 · Binary and non-UTF-8 files read right, GitHub settings read through `gh` (M)
-- T-342 · Not using an agent is not a fault: agent files out of the score (S)
 
 ### v0.4.11 · Never lets it rot, kiln first
 Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other people's repos: each
@@ -804,23 +803,6 @@ packs (T-69). From here, strict semver: breaking → major, `feat` → minor.
 ## 🔴 Critical
 
 ## 🟠 Important
-
-### T-342 · Not using an agent is not a fault: agent files out of the score
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-26
-- **Effort**: S · **Owner**: — · **Due**: before the v0.4.10 candidate (Tue 27 Oct)
-- **Origin**: antoine's answers of 26 October 2026 (Q42: a developer without Claude must not be
-  marked down), decisions 10 and 16 of 26 October
-
-A stranger who codes without an agent must not lose points for it, and the repos known for their
-quality (the calibration, T-132) mostly have no agent file. The vision's market section has the
-evidence: ETH Zurich finds context files don't raise success and cost 20 to 23 % more tokens.
-- [ ] `AI-CONTEXT` out of the score (`assess`), its advice still shown to a repo that uses an
-  agent (a `.claude/`, `.cursor/`, `.codex/` or `.gemini/` folder).
-- [ ] `REPO-MAP` also reads the map from `README.md`, `CONTRIBUTING.md` and `ARCHITECTURE.md`: a
-  map is a human practice first (matklad's ARCHITECTURE.md, 2021).
-- [ ] The rules' examples in `tests/test_grid.py` follow; kiln's own score stays at 100.
 
 ### T-345 · The licence: `MIT OR Apache-2.0`, the template's output free of attribution
 - **Type**: task
