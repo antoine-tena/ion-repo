@@ -57,8 +57,9 @@ HELP_FLAGS: tuple[list[str], ...] = ([], ["-h"], ["--help"])
 
 
 class _VersionAction(argparse.Action):
-    """`--version`, computed only when asked: `installed_version()` runs git on an install
-    from a folder, a cost the other commands need not pay."""
+    """`--version` (`-V` as uv and ruff have it, `-v` as typed by habit), computed only when
+    asked: `installed_version()` runs git on an install from a folder, a cost the other commands
+    need not pay."""
 
     def __init__(self, option_strings: Sequence[str], dest: str, **_: object) -> None:
         super().__init__(option_strings, dest, nargs=0, help="show the version of kiln")
@@ -72,6 +73,41 @@ class _VersionAction(argparse.Action):
     ) -> NoReturn:
         print(installed_version())
         parser.exit()
+
+
+class _KilnParser(argparse.ArgumentParser):
+    """A command's `--help` drawn like the home screen (banner, sections) instead of argparse's
+    plain text, its usage short as uv has it (`kiln new [options] [directory]`)."""
+
+    def print_help(self, file: object = None) -> None:
+        self.color = False  # Python 3.14 paints argparse's help, which ours paints itself
+        formatter = self._get_formatter()
+        groups: list[banner.OptionGroup] = []
+        for title, positional in (("Arguments", True), ("Options", False)):
+            options = [
+                (formatter._format_action_invocation(action), _sentence(formatter, action))
+                for action in self._actions
+                if bool(action.option_strings) != positional
+                and not isinstance(action, argparse._HelpAction)
+                and action.help != argparse.SUPPRESS
+            ]
+            if options:
+                groups.append((title, options))
+        positionals = [
+            formatter._format_args(action, formatter._get_default_metavar_for_positional(action))
+            for action in self._actions
+            if not action.option_strings
+        ]
+        usage = " ".join([self.prog, "[options]", *positionals])
+        banner.show_command_help(_sentence(formatter, self), usage, groups)
+
+
+def _sentence(formatter: argparse.HelpFormatter, source: object) -> str:
+    if isinstance(source, argparse.Action):
+        text = formatter._expand_help(source) if source.help else ""
+    else:
+        text = getattr(source, "description", None) or ""
+    return text[:1].upper() + text[1:]
 
 
 def modernize(arguments: Sequence[str]) -> list[str]:
@@ -97,8 +133,8 @@ def _flag_legacy(old: str, new: str) -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="kiln", description=__doc__)
-    parser.add_argument("--version", action=_VersionAction)
-    commands = parser.add_subparsers(dest="command")
+    parser.add_argument("-V", "-v", "--version", action=_VersionAction)
+    commands = parser.add_subparsers(dest="command", parser_class=_KilnParser)
     _add_new_command(commands)
     adopt_parser = commands.add_parser("adopt", help="bring an existing repo under kiln")
     adopt_parser.add_argument("--size", choices=SIZES, help="size of the project (default: ember)")
@@ -142,7 +178,7 @@ def build_parser() -> argparse.ArgumentParser:
     _add_score_command(commands)
     _add_fix_command(commands)
     status_parser = commands.add_parser("status", help="state of the kiln repos of the code folder")
-    status_parser.add_argument("--all", action="store_true", help="(default) every repo")
+    status_parser.add_argument("--all", action="store_true", help="every repo (the default)")
     set_parser = commands.add_parser(
         "set", help="show or change the repo's settings (outside a repo: this machine's)"
     )
@@ -158,6 +194,8 @@ def build_parser() -> argparse.ArgumentParser:
         "completion", help="shell completion script (eval it in ~/.bashrc)"
     )
     completion_parser.add_argument("shell", choices=["bash"], help="target shell")
+    for choice in commands._choices_actions:
+        commands.choices[choice.dest].description = choice.help
     return parser
 
 

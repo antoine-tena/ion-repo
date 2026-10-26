@@ -21,6 +21,8 @@ option, setting, plugin, skill, hook or workflow is missing here.
 </p>
 <p align="center"><i><code>kiln</code> on its own: every command, grouped by what you are doing.</i></p>
 
+`kiln <command> --help` (or `-h`) draws a command's options the same way: the banner, a short usage line (`kiln new [options] [directory]`), its arguments and options. `kiln --version` (or `-V`, `-v`) prints the version.
+
 | Command | What it does |
 |---|---|
 | `kiln new [dir]` | Questionnaire, generation, lockfiles, install, first commit on `main`, then `develop` where all work happens. Three questions (what you build, size, language), the rest by option: `--name`, `--title`, `--description`, `--type`, `--size`, `--backend`, `--frontend`, `--language`, `--owner`, `--team`, `--podman`, `--vps`, `--goal`, `--prod-url`; `--no-github` (local only), `--no-install`, `--template` (another source), `--all-questions` (the whole questionnaire). |
