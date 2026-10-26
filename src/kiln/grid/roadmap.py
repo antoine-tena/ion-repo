@@ -46,7 +46,7 @@ def show_roadmap(report: Report) -> None:
         if found.detail:
             print(ui.paint(f"     {found.detail}", ui.STONE))
         if log := logs.get(found.rule):
-            print(ui.paint(f"     kiln fix's converter broke a check, undone: {log}", ui.STONE))
+            print(ui.paint(f"     kiln fix's commit broke a check, set aside: {log}", ui.STONE))
         print(ui.paint(f"     done when: kiln score --rule {found.rule}", ui.STONE))
     print(ui.paint("\n  One at a time with Claude Code: /kiln:modernize", ui.STONE))
     print(ui.paint(f"  A false positive: {FALSE_POSITIVE.format(rule='<ID>')}", ui.STONE))

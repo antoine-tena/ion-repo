@@ -2,11 +2,13 @@
 branch, undone when the checks turn red, nothing written by a dry run, and each converter
 closing its rule. The network (commit SHAs, digests) is faked."""
 
+import re
 import subprocess
 from collections.abc import Callable
 from pathlib import Path
 
 import pytest
+import yaml
 
 from kiln.grid import checks, detectors, fix, roadmap, score
 from kiln.grid.facts import Repo, read_repo
@@ -386,14 +388,18 @@ def test_a_converter_that_turns_the_checks_red_is_undone_and_handed_to_claude(
 
     assert [(found.rule, found.status) for found in outcomes] == [("TS-EXPECT-ERROR", "reverted")]
     assert "@ts-ignore" in (root / "a.ts").read_text()
-    assert fix_branch(root) == ""  # nothing committed: no branch left
+    # T-170: never merged red, never dropped: the commit waits on a branch of its own.
+    aside = fix_branch(root)
+    assert aside.endswith("-ts-expect-error")
+    assert "@ts-expect-error" in git(root, "show", f"{aside}:a.ts")
+    assert "Red: `sh -c" in git(root, "log", "-1", "--format=%b", aside)
     log = checks.reverted(root)["TS-EXPECT-ERROR"]
-    assert "tsc: TS2578" in log.read_text()
+    assert f"git switch {aside}" in log.read_text() and "tsc: TS2578" in log.read_text()
     report = score.score_repo(root)
     assert "TS-EXPECT-ERROR" in [found.rule for found in report.roadmap()]
     capsys.readouterr()
     roadmap.show_roadmap(report)
-    assert f"kiln fix's converter broke a check, undone: {log}" in capsys.readouterr().out
+    assert f"kiln fix's commit broke a check, set aside: {log}" in capsys.readouterr().out
 
 
 @pytest.mark.parametrize(("built_before", "status"), [(True, "reverted"), (False, "fixed")])
@@ -684,3 +690,101 @@ def test_the_throwaway_worktree_has_what_the_checks_need(tmp_path: Path) -> None
         assert (copy / "web/node_modules/x").is_dir()
     assert not copy.exists()
     assert (root / "web/node_modules/x").is_dir()
+
+
+# --- each commit proven (T-170) ---------------------------------------------------------------
+
+
+def converter(monkeypatch: pytest.MonkeyPatch, rule_id: str, convert: Callable) -> None:
+    """`rule_id`'s converter replaced by `convert` for one test."""
+    name = RULES[rule_id].fixer
+    monkeypatch.setitem(FIXERS, name, FIXERS[name].__class__(name, convert, "test converter"))
+
+
+def test_a_converter_that_leaves_a_gap_is_kept_as_partial(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = make(tmp_path, {"a.ts": "// @ts-ignore\nx\n// @ts-ignore\ny\n"})
+
+    def first_only(repo: Repo) -> list[str]:
+        (repo.root / "a.ts").write_text("// @ts-expect-error\nx\n// @ts-ignore\ny\n")
+        return ["a.ts"]
+
+    converter(monkeypatch, "TS-EXPECT-ERROR", first_only)
+    [outcome] = fix.fix(root, only="TS-EXPECT-ERROR")
+    assert (outcome.status, outcome.note) == (
+        "partial",
+        f"{fix.UNVERIFIED}; a gap left for judgment",
+    )
+    assert git(root, "rev-list", "--count", f"main..{fix_branch(root)}").strip() == "1"
+
+
+def test_a_converter_that_turns_another_rule_red_is_undone(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = make(
+        tmp_path,
+        {
+            **CONVERTED["TS-EXPECT-ERROR"],
+            WORKFLOW: f"jobs:\n  a:\n    steps:\n      - uses: actions/checkout@{SHA}\n",
+        },
+    )
+
+    def unpins(repo: Repo) -> list[str]:
+        (repo.root / "a.ts").write_text("// @ts-expect-error\nconst x = 1\n")
+        (repo.root / WORKFLOW).write_text(
+            "jobs:\n  a:\n    steps:\n      - uses: actions/checkout@v4\n"
+        )
+        return ["a.ts", WORKFLOW]
+
+    converter(monkeypatch, "TS-EXPECT-ERROR", unpins)
+    [outcome] = fix.fix(root, only="TS-EXPECT-ERROR")
+    assert outcome.status == "reverted"
+    assert outcome.note.startswith("turned PINNED-ACTIONS red: undone")
+    assert fix_branch(root) == ""
+
+
+@pytest.mark.parametrize("error", [KeyError("services"), yaml.YAMLError("bad")])
+def test_a_converter_bug_is_caught_and_the_tree_put_back(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, error: Exception
+) -> None:
+    root = make(tmp_path, {**CONVERTED["TS-EXPECT-ERROR"], **CONVERTED["NO-OBSOLETE-BACKPORTS"]})
+
+    def crashes(repo: Repo) -> list[str]:
+        (repo.root / "half.txt").write_text("half done\n")
+        raise error
+
+    converter(monkeypatch, "TS-EXPECT-ERROR", crashes)
+    outcomes = {found.rule: found for found in fix.fix(root)}
+    assert outcomes["TS-EXPECT-ERROR"].status == "unchanged"
+    assert outcomes["TS-EXPECT-ERROR"].note.startswith("converter bug (")
+    # The run went on, and nothing half-done reached a commit.
+    assert outcomes["NO-OBSOLETE-BACKPORTS"].status == "fixed"
+    assert "half.txt" not in git(root, "ls-tree", "-r", "--name-only", fix_branch(root))
+
+
+def test_each_commit_says_the_points_it_won(tmp_path: Path) -> None:
+    """T-187: in the commit, in the outcome, in the summary."""
+    root = make(tmp_path, CONVERTED["TS-EXPECT-ERROR"])
+    [outcome] = fix.fix(root, only="TS-EXPECT-ERROR")
+    assert outcome.points is not None and outcome.points > 0
+    body = git(root, "log", "-1", "--format=%b", fix_branch(root))
+    assert re.search(rf"Score: \d+ → \d+ \(\+{outcome.points}\)", body)
+
+
+def test_a_gap_a_converter_brings_into_play_joins_the_run(tmp_path: Path) -> None:
+    """The minimal CI makes the audit apply: closed in the same run."""
+    root = make(tmp_path, {"uv.lock": "", "pyproject.toml": "[project]\nname = 'a'\n"})
+    outcomes = {found.rule: found.status for found in fix.fix(root)}
+    assert outcomes["CI-PRESENT"] == "fixed"
+    assert outcomes["VULNERABILITY-AUDIT"] == "fixed"
+
+
+@pytest.mark.parametrize("rule_id", sorted(CONVERTED))
+def test_a_second_run_of_a_converter_changes_nothing(tmp_path: Path, rule_id: str) -> None:
+    root = make(tmp_path, CONVERTED[rule_id])
+    convert = FIXERS[RULES[rule_id].fixer].convert
+    fix._stage(root, convert(read_repo(root)))
+    git(root, "commit", "-q", "--allow-empty", "-m", "first run")
+    convert(read_repo(root))
+    assert git(root, "status", "--porcelain") == ""
