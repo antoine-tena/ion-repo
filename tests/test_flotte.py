@@ -190,3 +190,33 @@ def test_worktree_with_changes_is_never_touched(tmp_path: Path) -> None:
     with pytest.raises(KilnError, match="left work in"):
         fleet._create_worktree(clone, worktree, "chore/kiln-update", "develop")
     assert (worktree / "travail.txt").read_text() == "à garder\n"
+
+
+def test_update_all_shows_one_line_per_repo_and_logs_the_rest(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]
+) -> None:
+    code_dir = tmp_path / "code"
+    for name in ("ok", "stuck"):
+        make_repo(code_dir / name, "https://github.com/antoine-tena/kiln.git")
+    monkeypatch.setattr(fleet, "LOGS_DIR", tmp_path / "logs")
+    monkeypatch.setattr(fleet, "require_tools", lambda *_: None)
+
+    def noisy_update(root: Path, *, allow_major: bool) -> str:
+        fleet.step("Check: charter")
+        # A command's output, written straight to the descriptors (pre-commit's hooks).
+        subprocess.run(["sh", "-c", "echo hook passed; echo hook warning >&2"], check=True)
+        return "merged into develop" if root.name == "ok" else "failed: tree not clean\n  a.lock"
+
+    monkeypatch.setattr(fleet, "update_one", noisy_update)
+
+    fleet.update_all(code_dir, allow_major=False)
+
+    shown = capfd.readouterr().out
+    assert "hook" not in shown
+    assert "Check: charter" not in shown
+    assert "✓ ok" in shown and "merged into develop" in shown
+    assert "✗ stuck" in shown and "a.lock" in shown
+    assert "1 of 2 repos to finish by hand" in shown
+    (log,) = (tmp_path / "logs").glob("*/stuck.log")
+    assert f"log: {log}" in shown
+    assert "hook passed" in log.read_text() and "hook warning" in log.read_text()

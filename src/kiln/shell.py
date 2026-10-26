@@ -3,9 +3,11 @@
 import os
 import shutil
 import subprocess
+import sys
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import contextmanager, redirect_stderr, redirect_stdout
 from pathlib import Path
+from typing import TextIO
 
 from kiln import ui
 
@@ -80,6 +82,32 @@ def spinner_line(label: str) -> Iterator[None]:
         succeeded = True
     finally:
         spinner.finish(succeeded=succeeded)
+
+
+@contextmanager
+def output_to(log: Path) -> Iterator[TextIO]:
+    """Everything written meanwhile, by kiln and the commands it runs (pre-commit's hooks
+    included), goes to `log`, as outside a terminal; yields the terminal, for one line of
+    progress."""
+    sys.stdout.flush()
+    sys.stderr.flush()
+    saved = os.dup(1), os.dup(2)
+    terminal = os.fdopen(os.dup(saved[0]), "w")
+    try:
+        # Line by line, so that kiln's lines and its commands' stay in order.
+        with log.open("w", buffering=1) as written:
+            os.dup2(written.fileno(), 1)
+            os.dup2(written.fileno(), 2)
+            try:
+                with redirect_stdout(written), redirect_stderr(written):
+                    yield terminal
+            finally:
+                os.dup2(saved[0], 1)
+                os.dup2(saved[1], 2)
+    finally:
+        terminal.close()
+        for descriptor in saved:
+            os.close(descriptor)
 
 
 def require_clean_tree(root: Path) -> None:
