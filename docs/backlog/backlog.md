@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-361.**
+**Next free: T-363.**
 
 ---
 
@@ -66,6 +66,8 @@ as empty.
 - T-172 · The checks of `kiln fix` told apart, timed out, their log kept for Claude (S)
 - T-173 · More converters: the CI and the supply chain (M)
 - T-186 · Binary and non-UTF-8 files read right, GitHub settings read through `gh` (M)
+- T-361 · `kiln ci` speaks French in one reason (XS)
+- T-362 · `kiln doctor` calls kiln's own repo "not a kiln repo" (XS)
 - T-342 · Not using an agent is not a fault: agent files out of the score (S)
 - T-343 · Two habits for every repo: reproduce first, a direct link for every online step (XS)
 
@@ -804,6 +806,31 @@ packs (T-69). From here, strict semver: breaking → major, `feat` → minor.
 ## 🔴 Critical
 
 ## 🟠 Important
+
+### T-361 · `kiln ci` speaks French in one reason
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: XS · **Owner**: — · **Due**: before the v0.4.10 candidate (Tue 27 Oct)
+- **Origin**: antoine's `kiln ci` run on the association's repo, 26 October 2026
+
+A job with its own services is reported as `services propres au job`
+(`src/kiln/ci/workflow.py`, `_inline_job`), the one French string left in an English output.
+- [ ] The reason in English ("services of its own"), a test on the reason, and a scan of
+  `src/kiln/` for other French strings in what the user reads.
+
+### T-362 · `kiln doctor` calls kiln's own repo "not a kiln repo"
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: XS · **Owner**: — · **Due**: before the v0.4.10 candidate (Tue 27 Oct)
+- **Origin**: antoine's `kiln doctor` run in kiln, 26 October 2026
+
+`_template` in `src/kiln/doctor.py` warns when `.copier-answers.yml` and the charter are missing,
+which is true of kiln itself, the source of the template: a false alarm in the repo antoine
+works in most.
+- [ ] kiln's own checkout (its `copier.yml` and `template/`) recognized and reported as such, with
+  a test; a stranger's repo still gets the warning.
 
 ### T-342 · Not using an agent is not a fault: agent files out of the score
 - **Type**: improvement
