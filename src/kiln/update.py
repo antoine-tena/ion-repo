@@ -33,7 +33,8 @@ from kiln.versions import (
     upgrade_command,
 )
 
-PROTECTED_BRANCHES = ("main", "develop")
+PROTECTED_BRANCHES = ("main", "master", "develop")
+UPDATE_BRANCH = "chore/kiln-update"
 # Start of a conflict left by Copier (`git merge-file`).
 CONFLICT_MARKER = "<<<<<<< before updating"
 # A reusable workflow of kiln cited at a tag: `antoine-tena/kiln/….yml@v0.3.1`.
@@ -271,16 +272,34 @@ def show_release_notes(root: Path, previous: str, current: str) -> None:
         ui.note(f"to do right after this update: {ticket} in docs/backlog/backlog.md")
 
 
-def check_working_branch(root: Path) -> None:
+def check_working_branch(root: Path, work_branch: str = UPDATE_BRANCH) -> None:
     if not (root / ANSWERS_FILE).exists() and not is_adopted(root):
         raise KilnError(
             f"no {ANSWERS_FILE} nor charter: this repo is not under kiln (kiln adopt brings it)"
         )
-    branch = capture(["git", "branch", "--show-current"], root)
-    if branch in PROTECTED_BRANCHES:
-        raise KilnError(f"on {branch}: create a branch first (e.g. chore/kiln-update)")
     if capture(["git", "status", "--porcelain"], root):
         raise KilnError("working tree not clean: commit or set aside the changes")
+    leave_protected_branch(root, work_branch)
+
+
+def leave_protected_branch(root: Path, work_branch: str) -> None:
+    """On `main`, `master` or `develop`, the work branch is opened in place (clean tree checked
+    first): kiln never writes on an integration branch, and the user has nothing to type."""
+    current = capture(["git", "branch", "--show-current"], root)
+    if current not in PROTECTED_BRANCHES:
+        return
+    branch = work_branch
+    if _branch_exists(root, branch):
+        branch = f"{work_branch}-{datetime.date.today().isoformat()}"
+    if _branch_exists(root, branch):
+        raise KilnError(f"on {current}: {work_branch} and {branch} exist, merge or delete them")
+    run(["git", "switch", "-q", "-c", branch], root)
+    ui.note(f"on {current}: work branch {branch} opened, to merge into {current} once reviewed")
+
+
+def _branch_exists(root: Path, branch: str) -> bool:
+    command = ["git", "rev-parse", "--verify", "--quiet", f"refs/heads/{branch}"]
+    return subprocess.run(command, cwd=root, capture_output=True, check=False).returncode == 0
 
 
 def report_changes(root: Path) -> None:
