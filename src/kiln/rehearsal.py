@@ -4,7 +4,7 @@ Measured on a copy first, never in the repo itself: annway's update to v0.4.0-rc
 copy in two minutes (T-147), where it would have failed halfway through the real one. The
 clone takes the repo's last commit and its ignored `.env*` files; the update runs there with
 its checks, and only the outcome comes back: files changed, conflicts, failure. A clone that
-failed is kept for a look.
+failed is kept for a look; a repo not under kiln is refused before any clone.
 """
 
 import shutil
@@ -15,7 +15,7 @@ from pathlib import Path
 
 from kiln import ui
 from kiln.shell import KilnError, capture, run, step
-from kiln.update import conflicted_files, update_project
+from kiln.update import conflicted_files, require_under_kiln, update_project
 
 REHEARSAL_BRANCH = "chore/kiln-update-rehearsal"
 # The local files ignored by git that the checks may need, as `prepare-worktree.sh` copies them.
@@ -30,6 +30,7 @@ class Rehearsal:
 
 def rehearse(root: Path, *, should_update_deps: bool, allow_major: bool) -> Rehearsal:
     """The update of `root` played on a clone of its last commit, with the checks."""
+    require_under_kiln(root)  # before the clone: nothing to rehearse, nothing left in /tmp
     directory = Path(tempfile.mkdtemp(prefix=f"kiln-rehearsal-{root.name}-"))
     clone = directory / root.name
     run(["git", "clone", "-q", "--no-local", str(root), str(clone)], directory)

@@ -281,12 +281,16 @@ def show_release_notes(root: Path, previous: str, current: str) -> None:
 
 
 def check_working_branch(root: Path, work_branch: str = UPDATE_BRANCH) -> None:
+    require_under_kiln(root)
+    require_clean_tree(root)
+    leave_protected_branch(root, work_branch)
+
+
+def require_under_kiln(root: Path) -> None:
     if not (root / ANSWERS_FILE).exists() and not is_adopted(root):
         raise KilnError(
             f"no {ANSWERS_FILE} nor charter: this repo is not under kiln (kiln adopt brings it)"
         )
-    require_clean_tree(root)
-    leave_protected_branch(root, work_branch)
 
 
 def leave_protected_branch(root: Path, work_branch: str) -> None:
