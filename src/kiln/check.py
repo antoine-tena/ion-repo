@@ -24,7 +24,13 @@ from kiln.ci.jobs import RELAYS, Plan, plan_job
 from kiln.ci.services import remove_orphan_containers, running_services
 from kiln.ci.workflow import CI_WORKFLOW, load_jobs
 from kiln.dev.backing import start_backing_services
-from kiln.install import ensure_env_file, moved_from, pnpm_behind, sync_command
+from kiln.install import (
+    ensure_env_file,
+    moved_from,
+    pnpm_behind,
+    pnpm_install_command,
+    sync_command,
+)
 from kiln.shell import KilnError, run, run_status, step
 from kiln.stack import BACKEND_DIR, Command, Stack, load_stack
 
@@ -41,7 +47,7 @@ def run_checks(root: Path, with_tests: bool = False, changed: list[str] | None =
     is_pnpm_checked = stack.pnpm_dir is not None and _touches(changed, stack.pnpm_dir)
     if is_pnpm_checked and stack.pnpm_dir is not None and pnpm_behind(root / stack.pnpm_dir):
         step(f"{stack.pnpm_dir}: pnpm dependencies, as the lockfile says")
-        run(["pnpm", "install", "--frozen-lockfile"], root / stack.pnpm_dir)
+        run(pnpm_install_command(root / stack.pnpm_dir), root / stack.pnpm_dir)
     # A repo moved since its venv was created: the tools' scripts call the old folder's Python.
     for directory in stack.python_dirs:
         if moved_from(root / directory / ".venv") is not None:

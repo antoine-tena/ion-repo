@@ -23,7 +23,13 @@ from kiln.deps import _major_bounds
 from kiln.dev import read_env_file, service_prefix
 from kiln.dev.backing import backing_services
 from kiln.doctor import Level, workstation_findings
-from kiln.install import ensure_env_file, moved_from, pnpm_behind, sync_command
+from kiln.install import (
+    ensure_env_file,
+    moved_from,
+    pnpm_behind,
+    pnpm_install_command,
+    sync_command,
+)
 from kiln.release import (
     Evidence,
     Tag,
@@ -879,3 +885,9 @@ def test_synced_pnpm_dependencies_run_the_postinstall_a_skipped_install_leaves_o
     deps.sync_dependencies(tmp_path, Stack(backend="none", frontend="nuxt", has_podman=False))
 
     assert ran == [["pnpm", "install"], ["pnpm", "run", "--if-present", "postinstall"]]
+
+
+def test_pnpm_install_frozen_only_with_a_lockfile(tmp_path: Path) -> None:
+    assert pnpm_install_command(tmp_path) == ["pnpm", "install"]
+    (tmp_path / "pnpm-lock.yaml").write_text("lockfileVersion: '9.0'\n")
+    assert pnpm_install_command(tmp_path) == ["pnpm", "install", "--frozen-lockfile"]
