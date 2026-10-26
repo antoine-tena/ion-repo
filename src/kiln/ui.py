@@ -256,7 +256,8 @@ def recap(command: str, started: float, *, succeeded: bool) -> None:
     else:
         verdict = f"Interrupted after {total}"
     if not is_styled():
-        print(f"\n{verdict} ({len(_steps)} steps)", flush=True)
+        count = len(_steps)
+        print(f"\n{verdict} ({count} step{'s' if count > 1 else ''})", flush=True)
         return
     durations = [format_duration(record.duration) for record in _steps]
     inner = min(
