@@ -103,7 +103,7 @@ def _scalar(raw_value: str) -> object:
 def apply_settings(root: Path, assignments: list[str]) -> None:
     changes = parse_assignments(assignments)
     require_tools("git", "uv")
-    check_working_branch(root)
+    check_working_branch(root, "chore/kiln-set")
     step("Settings: " + ", ".join(f"{key}={value}" for key, value in changes.items()))
     previous_stack = load_stack(root)
     apply_template(root, changes)

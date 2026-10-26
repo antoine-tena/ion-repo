@@ -133,6 +133,33 @@ def test_adoption_refuses_kiln_repos_and_dirty_trees(repo: Path) -> None:
         adopt.check_adoptable(repo)
 
 
+def test_on_an_integration_branch_kiln_opens_its_work_branch(repo: Path) -> None:
+    def current() -> str:
+        return subprocess.run(
+            ["git", "-C", str(repo), "branch", "--show-current"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+
+    subprocess.run(["git", "-C", str(repo), "switch", "-q", "-c", "develop"], check=True)
+    update.leave_protected_branch(repo, "chore/kiln-update")
+    assert current() == "chore/kiln-update"
+
+    subprocess.run(["git", "-C", str(repo), "switch", "-q", "develop"], check=True)
+    update.leave_protected_branch(repo, "chore/kiln-update")
+    assert current().startswith("chore/kiln-update-")
+
+    subprocess.run(["git", "-C", str(repo), "switch", "-q", "develop"], check=True)
+    with pytest.raises(KilnError, match="merge or delete them"):
+        update.leave_protected_branch(repo, "chore/kiln-update")
+
+    update.leave_protected_branch(repo, "chore/kiln-set")
+    assert current() == "chore/kiln-set"
+    update.leave_protected_branch(repo, "chore/kiln-other")  # already on a work branch
+    assert current() == "chore/kiln-set"
+
+
 def test_a_repo_adopted_before_is_completed(repo: Path) -> None:
     (repo / "charter.toml").write_text('size = "spark"\n')
     commit(repo, "adopted by kiln 0.4.5")

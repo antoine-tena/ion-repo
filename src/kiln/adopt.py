@@ -43,7 +43,7 @@ from kiln.stack import (
 )
 from kiln.statusline import apply_statusline_settings
 from kiln.template import template_revision, template_source
-from kiln.update import PROTECTED_BRANCHES
+from kiln.update import leave_protected_branch
 from kiln.versions import follows_candidates
 
 BACKLOG_DIR = Path("docs") / "backlog"
@@ -95,11 +95,9 @@ def check_adoptable(root: Path) -> None:
         raise KilnError(
             f"{LEGACY_CHARTER_FILE}: adopted under kiln 0.3, kiln update first moves its names"
         )
-    branch = capture(["git", "branch", "--show-current"], root)
-    if branch in (*PROTECTED_BRANCHES, "master"):
-        raise KilnError(f"on {branch}: create a branch first (e.g. chore/kiln-adopt)")
     if capture(["git", "status", "--porcelain"], root):
         raise KilnError("working tree not clean: commit or set aside the changes")
+    leave_protected_branch(root, "chore/kiln-adopt")
 
 
 def adoption_answers(root: Path, size: str, stack: Stack) -> dict[str, object]:
