@@ -27,6 +27,7 @@ from kiln.ci.verdict import (
 )
 from kiln.ci.workflow import load_jobs
 from kiln.shell import KilnError, capture, require_tools
+from kiln.stack import PNPM_LENIENT_BUILDS
 
 CACHE_DIR = Path.home() / ".cache" / "kiln" / "ci"
 SHORT_SHA = 12
@@ -127,7 +128,7 @@ def _prepare(plans: list[Plan], workspace: Workspace) -> list[JobOutcome]:
     python_dirs = sorted({directory for plan in plans for directory in plan.python_dirs})
     pnpm_dirs = sorted({directory for plan in plans for directory in plan.pnpm_dirs})
     steps = [Step(f"uv sync {path}", "uv sync --locked", path) for path in python_dirs]
-    install = "pnpm install --frozen-lockfile"
+    install = f"pnpm install --frozen-lockfile {PNPM_LENIENT_BUILDS}"
     steps += [Step(f"pnpm install {path}", install, path) for path in pnpm_dirs]
     env = base_env({})
     log_path = workspace.log_dir / f"{PREPARATION}.log"

@@ -6,6 +6,10 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 `release/vX.Y.Z` branch, rewritten before its first candidate. Names are those of their release:
 entries before v0.4.0 quote kiln's former French names.
 
+## v0.4.9 — 2026-10-26
+<!-- readme: unchanged: a fix, no new command nor option -->
+- `kiln ci`, `/kiln:worktree` and kiln's reusable GitHub workflows (`pnpm.yml`, `api-contract.yml`) skip the dependencies' build scripts that `allowBuilds` does not list too, instead of failing with `ERR_PNPM_IGNORED_BUILDS` (pnpm 11+), as `kiln install` does since 0.4.8.
+
 ## v0.4.8 — 2026-10-26
 <!-- readme: unchanged: a fix, no new command nor option -->
 - `kiln install`, `kiln check`, `kiln dev` and `kiln update` no longer fail with `ERR_PNPM_IGNORED_BUILDS` in a front whose `pnpm-workspace.yaml` does not list its dependencies' build scripts under `allowBuilds` (pnpm 11+): those scripts are skipped, as in generated repos, and pnpm names them.
