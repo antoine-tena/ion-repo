@@ -160,8 +160,8 @@ SPINNER_DELAY = 0.08
 
 
 class Spinner:
-    """Animated line during an external command: fire wheel, command, last line of its output
-    in grey. At the end, a fixed line: ✓ or ✗, the command and its duration."""
+    """Animated line during an external command: fire wheel, command, time elapsed, last line
+    of its output in grey. At the end, a fixed line: ✓ or ✗, the command and its duration."""
 
     def __init__(self, label: str, stream: TextIO | None = None) -> None:
         self.label = label
@@ -221,10 +221,12 @@ class Spinner:
             with self._lock:
                 detail = self.detail
             label = _fit(self.label, _columns() // 2)
-            room = _columns() - len(label) - 8
+            elapsed = format_duration(time.monotonic() - self.started)
+            room = _columns() - len(label) - len(elapsed) - 10
             stream = self.stream
             wheel = paint(SPINNER_FRAMES[frame % len(SPINNER_FRAMES)], FIRE, stream=stream)
             text = paint(label, STONE_LIGHT, stream=stream)
+            text += paint(f"  {elapsed}", STONE_DARK, stream=stream)
             if detail and room > 10:
                 text += paint(f"  {_fit(detail, room)}", STONE_DARK, stream=stream)
             stream.write(f"\r\033[2K  {wheel} {text}")
