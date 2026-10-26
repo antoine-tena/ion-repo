@@ -19,7 +19,7 @@ from kiln.deps import lock_dependencies, sync_dependencies, update_dependencies
 from kiln.frozen import frozen_files, report_frozen_drift
 from kiln.grid.fix import convert_in_place
 from kiln.rules import write_unverified_rules
-from kiln.shell import KilnError, capture, quiet_git, require_tools, run, step
+from kiln.shell import KilnError, capture, quiet_git, require_clean_tree, require_tools, run, step
 from kiln.stack import ANSWERS_FILE, kept_of, load_stack, read_answers
 from kiln.template import DEFAULT_TEMPLATE_SOURCE, template_revision
 from kiln.versions import (
@@ -277,8 +277,7 @@ def check_working_branch(root: Path, work_branch: str = UPDATE_BRANCH) -> None:
         raise KilnError(
             f"no {ANSWERS_FILE} nor charter: this repo is not under kiln (kiln adopt brings it)"
         )
-    if capture(["git", "status", "--porcelain"], root):
-        raise KilnError("working tree not clean: commit or set aside the changes")
+    require_clean_tree(root)
     leave_protected_branch(root, work_branch)
 
 

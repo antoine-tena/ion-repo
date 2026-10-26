@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from kiln import new
 
 EXIT_FAILURE = 1
+EXIT_INTERRUPTED = 130  # 128 + SIGINT, as shells report it
 PROJECT_NAME = re.compile(r"[a-z][a-z0-9-]*")
 SIZES = ("spark", "ember", "flame", "blaze")
 PROJECT_TYPES = ("app", "api", "site", "dashboard", "analysis", "cli")
@@ -768,6 +769,11 @@ def main() -> None:
     except KilnError as error:
         ui.error(str(error))
         sys.exit(EXIT_FAILURE)
+    except KeyboardInterrupt:
+        # Ctrl-C: the cleanups already ran on the way out (copies, containers), no traceback.
+        print()
+        ui.note("Interrupted.")
+        sys.exit(EXIT_INTERRUPTED)
 
 
 def _recap(arguments: argparse.Namespace, started: float, *, succeeded: bool) -> None:

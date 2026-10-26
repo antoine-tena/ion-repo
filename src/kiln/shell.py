@@ -82,6 +82,22 @@ def spinner_line(label: str) -> Iterator[None]:
         spinner.finish(succeeded=succeeded)
 
 
+def require_clean_tree(root: Path) -> None:
+    """Fails on uncommitted changes, naming the first files, so that the user knows what to set
+    aside."""
+    listing = subprocess.run(
+        ["git", "status", "--porcelain"], cwd=root, capture_output=True, text=True, check=False
+    )
+    changes = listing.stdout.splitlines()
+    if not changes:
+        return
+    shown = [line[3:] for line in changes[:5]]
+    if len(changes) > 5:
+        shown.append(f"… {len(changes) - 5} more")
+    listed = "\n".join(f"  {path}" for path in shown)
+    raise KilnError(f"working tree not clean: commit or set aside the changes\n{listed}")
+
+
 def capture(command: list[str], cwd: Path) -> str:
     """Runs a command and returns its standard output, stripped."""
     completed = subprocess.run(command, cwd=cwd, capture_output=True, text=True, check=False)

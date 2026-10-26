@@ -254,6 +254,9 @@ def _hook(root: Path) -> Finding:
     path = root / (hooks_dir.stdout.strip() if hooks_dir else ".git/hooks") / "pre-commit"
     if path.exists():
         return Finding(Level.OK, "pre-commit", "hook installed")
+    if not (root / ".pre-commit-config.yaml").exists():
+        # kiln install has nothing to install: the config comes with the template.
+        return Finding(Level.WARN, "pre-commit", "no .pre-commit-config.yaml", "kiln adopt")
     return Finding(Level.WARN, "pre-commit", "hook missing", "kiln install")
 
 
