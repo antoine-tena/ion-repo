@@ -133,11 +133,13 @@ def add_ruff(repo: Repo) -> list[str]:
     its safe fixes applied: imports sorted, syntax of the supported Pythons, unused noqa."""
     name = "pyproject.toml"
     text = repo.text(name)
+    if "[tool.ruff" in text or (repo.root / "ruff.toml").exists():
+        return []  # set up already: a second run changes nothing
     length = _line_length(repo)
-    section = "\n[tool.ruff]\n" + (f"line-length = {length}\n" if length else "")
+    section = "[tool.ruff]\n" + (f"line-length = {length}\n" if length else "")
     section += "\n[tool.ruff.lint]\nselect = [" + ", ".join(f'"{code}"' for code in RUFF_SELECT)
     section += "]\n"
-    _write(repo, name, (text.rstrip("\n") + "\n" if text else "") + section)
+    _write(repo, name, (text.rstrip("\n") + "\n\n" if text else "") + section)
     if shutil.which("uvx") is not None:
         subprocess.run(
             ["uvx", "ruff", "check", "--fix", "--select", SAFE_FIXES, "--quiet", "."],

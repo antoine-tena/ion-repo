@@ -193,6 +193,8 @@ PRE_COMMIT = (".pre-commit-config.yaml", ".pre-commit-config.yml")
 
 def add_secret_scan(repo: Repo) -> list[str]:
     """gitleaks in the pre-commit hooks when the repo has them, otherwise a workflow."""
+    if any("gitleaks" in repo.text(name) for name in repo.matching(*PRE_COMMIT, *WORKFLOWS)):
+        return []  # there already: a second run changes nothing
     version = resolve.latest_release(GITLEAKS)
     for name in repo.matching(*PRE_COMMIT):
         text = repo.text(name).rstrip("\n")

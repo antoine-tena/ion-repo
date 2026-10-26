@@ -217,13 +217,15 @@ def logs_dir(root: Path) -> Path | None:
     return Path(common) / LOGS
 
 
-def keep_log(root: Path, rule: str, result: Result) -> Path | None:
+def keep_log(root: Path, rule: str, result: Result, branch: str = "") -> Path | None:
+    """The failing output, headed by the branch the converter's commit was set aside on."""
     folder = logs_dir(root)
     if folder is None:
         return None
     folder.mkdir(parents=True, exist_ok=True)
     path = folder / f"{rule}.log"
-    path.write_text(f"$ {result.check}\n{result.log}", encoding="utf-8")
+    head = f"# kiln fix's commit, set aside: git switch {branch}\n" if branch else ""
+    path.write_text(f"{head}$ {result.check}\n{result.log}", encoding="utf-8")
     return path
 
 
