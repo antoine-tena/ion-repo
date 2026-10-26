@@ -53,6 +53,18 @@ def backing_services(compose: Path) -> dict[str, str]:
     return {service: name or f"{project}_{service}_1" for service, name in named.items()}
 
 
+def app_services(compose: Path) -> list[str]:
+    """The services of a compose file that are the project itself, databases aside."""
+    services: list[str] = []
+    in_services = False
+    for line in compose.read_text(encoding="utf-8").splitlines():
+        if line and not line[0].isspace():
+            in_services = line.rstrip() == "services:"
+        elif in_services and (found := _SERVICE_LINE.match(line)):
+            services.append(found.group(1))
+    return [service for service in services if service not in BACKING_SERVICES]
+
+
 def start_backing_services(root: Path) -> None:
     compose = compose_file(root)
     if compose is None or shutil.which("podman") is None:

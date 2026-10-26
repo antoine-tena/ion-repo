@@ -298,3 +298,54 @@ def test_a_fresh_clone_installs_its_node_dependencies_from_the_lock(tmp_path: Pa
 
 def test_a_folder_without_package_json_installs_nothing(tmp_path: Path) -> None:
     assert node_installs(tmp_path, [Command("worker", ".", ("sleep", "1"))]) == []
+
+
+ISSUE_59_COMPOSE = (
+    "services:\n  web:\n    build: .\n  server:\n    build: ./server\n  db:\n    image: postgres\n"
+)
+
+
+@pytest.fixture
+def adopted(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """Issue #59: package.json's `dev` and `server`, a compose file running `web` and `server`."""
+    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
+    (tmp_path / "package.json").write_text(
+        '{"scripts": {"dev": "vite", "server": "node server.js"}}', encoding="utf-8"
+    )
+    (tmp_path / "compose.yaml").write_text(ISSUE_59_COMPOSE, encoding="utf-8")
+    monkeypatch.setattr("kiln.dev.shutil.which", lambda name: f"/usr/bin/{name}")
+    return tmp_path
+
+
+def test_a_compose_file_running_the_project_is_offered_and_remembered(adopted: Path) -> None:
+    from kiln.dev import _compose_instead
+
+    asked: list[str] = []
+
+    def answer(reply: str) -> Callable[[str], str]:
+        return lambda prompt: asked.append(prompt) or reply
+
+    commands = dev_processes(adopted)
+    assert _compose_instead(adopted, commands, answer("c"))
+    assert asked == ["Choice [c]: "]
+    assert not _compose_instead(adopted, commands, answer("m"))
+    assert _compose_instead(adopted, commands, answer("")) is False
+    assert asked[-1] == "Choice [m]: "
+
+
+def test_outside_a_terminal_the_compose_file_is_only_pointed_to(
+    adopted: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    from kiln.dev import _compose_instead
+
+    assert not _compose_instead(adopted, dev_processes(adopted), None)
+    assert "compose.yaml runs web, server too: kiln dev --containers" in capsys.readouterr().out
+
+
+def test_a_stack_kiln_serves_keeps_its_servers_beside_its_compose_file(adopted: Path) -> None:
+    from kiln.dev import _compose_instead
+
+    (adopted / "backend").mkdir()
+    (adopted / "backend/manage.py").touch()
+
+    assert not _compose_instead(adopted, dev_processes(adopted), lambda prompt: "c")

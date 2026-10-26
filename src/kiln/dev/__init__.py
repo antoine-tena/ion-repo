@@ -7,18 +7,24 @@ process outside the front needs them. Everything runs in the background, then th
 offered (`background`); `kiln dev status`, `kiln dev logs [service] [-f]` and `kiln dev stop`
 read and stop it. `--foreground` keeps it in the terminal, Ctrl+C stopping the processes and
 keeping the databases (`foreground`). `--containers` runs the whole stack in podman instead
-(`containers`).
+(`containers`), which a repo whose compose file runs its own services is offered at once.
 """
 
+import shutil
 from pathlib import Path
 
 from kiln import ui
 from kiln.dev import background, containers, menu
-from kiln.dev.backing import start_backing_services, stop_backing_services
+from kiln.dev.backing import (
+    app_services,
+    compose_file,
+    start_backing_services,
+    stop_backing_services,
+)
 from kiln.dev.foreground import run_foreground, service_prefix
 from kiln.dev.processes import dev_processes, node_installs, read_env_file, runs_beyond_front
 from kiln.shell import KilnError, run, step
-from kiln.stack import load_stack
+from kiln.stack import Command, load_stack
 
 ACTIONS = ("status", "logs", "stop")
 
@@ -56,6 +62,10 @@ def run_dev(
 
 def _start(root: Path, *, foreground: bool, only: list[str] | None, ask: menu.Ask | None) -> None:
     every = dev_processes(root)
+    if only is None and _compose_instead(root, every, ask):
+        containers.up(root, detached=not foreground)
+        _offer_logs(root, None if foreground else ask)
+        return
     if not every:
         raise KilnError(
             "nothing to run: no server of the stack, no dev script in package.json,"
@@ -76,6 +86,22 @@ def _start(root: Path, *, foreground: bool, only: list[str] | None, ask: menu.As
     background.start(root, commands)
     background.show_status(root)
     _offer_logs(root, ask)
+
+
+def _compose_instead(root: Path, commands: list[Command], ask: menu.Ask | None) -> bool:
+    """A repo kiln's stack does not serve, whose compose file runs the project's own services
+    while kiln would run its package.json scripts: offered to run the compose file instead."""
+    compose = compose_file(root)
+    if compose is None or load_stack(root).dev_commands():
+        return False
+    scripts = [command for command in commands if command.argv[1:2] == ("run",)]
+    services = app_services(compose)
+    if not scripts or not services:
+        return False
+    if ask is None or shutil.which("podman") is None:
+        ui.note(f"{compose.name} runs {', '.join(services)} too: kiln dev --containers, in podman")
+        return False
+    return menu.prefers_containers(compose.name, services, background.state_dir(root), ask)
 
 
 def _offer_logs(root: Path, ask: menu.Ask | None) -> None:
