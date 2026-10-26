@@ -25,6 +25,9 @@ def offline(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(resolve, "exact_version", lambda repo, sha: "v4.2.2")
     monkeypatch.setattr(resolve, "latest_release", lambda repo, major=None: "v4.2.0")
     monkeypatch.setattr(resolve, "image_digest", lambda image: DIGEST)
+    # podman starts every service hardened; tests below say otherwise when they need to.
+    monkeypatch.setattr(containers, "_podman_ready", lambda: True)
+    monkeypatch.setattr(containers, "_starts", lambda root, name, text, services: set(services))
 
 
 def git(root: Path, *arguments: str) -> str:
@@ -74,6 +77,9 @@ CONVERTED = {
     "IMAGES-BY-DIGEST": {"Dockerfile": "FROM node:24 AS build\nFROM build\n"},
     "CURRENT-DEBIAN": {"Dockerfile": f"FROM python:3.12-slim-bookworm@{DIGEST}\n"},
     "NON-ROOT-CONTAINERS": {"Dockerfile": 'FROM python:3.14-slim\nCOPY . .\nCMD ["app"]\n'},
+    "HARDENED-CONTAINERS": {
+        "compose.yaml": "services:\n  app:\n    build: .\n  db:\n    image: postgres\n"
+    },
     "SUPPORTED-RUNTIMES": {
         ".nvmrc": "18\n",
         "package.json": '{"engines": {"node": ">=16"}}',
@@ -94,6 +100,44 @@ def test_every_converter_named_by_a_rule_has_a_case() -> None:
         "DEAD-CODE",
         "UNUSED-DEPENDENCIES",
     }
+
+
+def test_a_service_is_hardened_under_its_own_keys_and_comments_stay() -> None:
+    text = (
+        "# the stack\nname: shop\nservices:\n  web:\n    image: nginx  # front\n"
+        "    read_only: true\n  worker:\n      build: .\nvolumes:\n  data: {}\n"
+    )
+    assert containers.harden_text(text, ["web", "worker"]) == (
+        "# the stack\nname: shop\nservices:\n  web:\n"
+        "    cap_drop: [ALL]\n    security_opt: [no-new-privileges:true]\n    tmpfs: [/tmp]\n"
+        "    image: nginx  # front\n    read_only: true\n  worker:\n"
+        "      read_only: true\n      cap_drop: [ALL]\n"
+        "      security_opt: [no-new-privileges:true]\n      tmpfs: [/tmp]\n"
+        "      build: .\nvolumes:\n  data: {}\n"
+    )
+
+
+def test_a_service_that_does_not_start_hardened_is_left_as_it_was(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    compose = "services:\n  app:\n    build: .\n  web:\n    image: nginx\n"
+    root = make(tmp_path, {"compose.yaml": compose})
+    monkeypatch.setattr(containers, "_starts", lambda root, name, text, services: {"app"})
+
+    assert containers.harden_compose(read_repo(root)) == ["compose.yaml"]
+    text = (root / "compose.yaml").read_text()
+    assert text.startswith("services:\n  app:\n    read_only: true\n")
+    assert text.endswith("  web:\n    image: nginx\n")
+    assert "compose.yaml (web)" in capsys.readouterr().out
+
+
+def test_hardening_is_never_guessed_without_podman(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = make(tmp_path, CONVERTED["HARDENED-CONTAINERS"])
+    monkeypatch.setattr(containers, "_podman_ready", lambda: False)
+    with pytest.raises(KilnError, match="podman and podman-compose are needed"):
+        containers.harden_compose(read_repo(root))
 
 
 def test_pinned_actions_keep_their_exact_version_as_a_comment(tmp_path: Path) -> None:

@@ -9,8 +9,8 @@ profiles = ["solo", "association", "company", "university", "enterprise"]
 why = "What a broken-into container can reach depends on what it was allowed."
 applies = ["containers"]
 detectable = "script"
-fixable = "judgment"
-fixer = ""
+fixable = "script"
+fixer = "harden_compose"
 since = "0.4.1"
 charter_rule = "HARDENED-CONTAINERS"
 
