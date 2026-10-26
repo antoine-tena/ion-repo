@@ -156,6 +156,31 @@ class Report:
         )
 
 
+def compared(before: Report, after: Report) -> list[str]:
+    """What changed from `before` to `after`, in Markdown a pull request comment shows as is."""
+    old = {found.rule: found.status for found in before.findings}
+    new = {found.rule: found for found in after.findings}
+    closed = sorted(
+        r for r, found in new.items() if found.status != FAILED and old.get(r) == FAILED
+    )
+    opened = [
+        found for r, found in sorted(new.items()) if found.status == FAILED and old.get(r) != FAILED
+    ]
+    delta = (
+        f" ({after.score - before.score:+d})"
+        if after.score is not None and before.score is not None
+        else ""
+    )
+    lines = [f"**kiln score: {before.score} → {after.score}{delta}**"]
+    if closed:
+        lines += ["", "Closed: " + ", ".join(f"`{rule}`" for rule in closed)]
+    if opened:
+        lines += ["", "Opened:", *(f"- `{found.rule}`: {found.title}" for found in opened)]
+    if not closed and not opened:
+        lines += ["", "No rule changed."]
+    return lines
+
+
 def score_repo(root: Path, rules: list[Rule] | None = None) -> Report:
     repo = read_repo(root)
     waivers = load_waivers(root)
