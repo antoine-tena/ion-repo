@@ -17,7 +17,7 @@ from packaging.utils import canonicalize_name
 from packaging.version import Version
 
 from kiln.shell import run, step
-from kiln.stack import Stack
+from kiln.stack import PNPM_LENIENT_BUILDS, Stack
 
 PNPM_WORKSPACE = "pnpm-workspace.yaml"
 DEV_DEPENDENCY_TYPE = "devDependencies"
@@ -39,7 +39,7 @@ def sync_dependencies(root: Path, stack: Stack) -> None:
     for directory in stack.python_dirs:
         run(["uv", "sync"], root / directory)
     if stack.pnpm_dir is not None:
-        run(["pnpm", "install"], root / stack.pnpm_dir)
+        run(["pnpm", "install", PNPM_LENIENT_BUILDS], root / stack.pnpm_dir)
         run(["pnpm", "run", "--if-present", "postinstall"], root / stack.pnpm_dir)
 
 

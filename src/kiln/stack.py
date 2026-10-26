@@ -31,6 +31,9 @@ MAVEN_BACKENDS = frozenset({"java"})
 MAVEN_WRAPPER = "./mvnw"
 PYTHON_FRONTENDS = frozenset({"streamlit", "dash"})
 PNPM_FRONTENDS = frozenset({"nuxt", "next", "astro", "vite-react"})
+# pnpm 11+ fails on a dependency's build script that `allowBuilds` (pnpm-workspace.yaml) does not
+# list (ERR_PNPM_IGNORED_BUILDS): a repo without that list skips them, as kiln's template does.
+PNPM_LENIENT_BUILDS = "--config.strict-dep-builds=false"
 NO_FRAMEWORK = "none"
 VITE_REACT = "vite-react"
 

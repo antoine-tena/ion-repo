@@ -46,7 +46,14 @@ from kiln.settings import (
     stop_on_conflicts,
 )
 from kiln.shell import KilnError, quiet_git
-from kiln.stack import Command, Stack, answers_if_any, load_stack, stack_from_answers
+from kiln.stack import (
+    PNPM_LENIENT_BUILDS,
+    Command,
+    Stack,
+    answers_if_any,
+    load_stack,
+    stack_from_answers,
+)
 from kiln.template import DEFAULT_TEMPLATE_SOURCE, template_revision
 from kiln.update import (
     apply_template,
@@ -884,10 +891,14 @@ def test_synced_pnpm_dependencies_run_the_postinstall_a_skipped_install_leaves_o
 
     deps.sync_dependencies(tmp_path, Stack(backend="none", frontend="nuxt", has_podman=False))
 
-    assert ran == [["pnpm", "install"], ["pnpm", "run", "--if-present", "postinstall"]]
+    assert ran == [
+        ["pnpm", "install", PNPM_LENIENT_BUILDS],
+        ["pnpm", "run", "--if-present", "postinstall"],
+    ]
 
 
 def test_pnpm_install_frozen_only_with_a_lockfile(tmp_path: Path) -> None:
-    assert pnpm_install_command(tmp_path) == ["pnpm", "install"]
+    assert pnpm_install_command(tmp_path) == ["pnpm", "install", PNPM_LENIENT_BUILDS]
     (tmp_path / "pnpm-lock.yaml").write_text("lockfileVersion: '9.0'\n")
-    assert pnpm_install_command(tmp_path) == ["pnpm", "install", "--frozen-lockfile"]
+    frozen = ["pnpm", "install", "--frozen-lockfile", PNPM_LENIENT_BUILDS]
+    assert pnpm_install_command(tmp_path) == frozen
