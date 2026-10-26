@@ -75,7 +75,7 @@ anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 | v0.5.15 | The roadmap Claude reads without exploring | The input of v0.6.0: each gap a context pack with its recipe and its proof, ordered by points per token, cut into batches that fit a session. | 1 ticket |
 | v0.5.16 | Tests at the lowest token cost | The other half of v0.6.0: generators that cost no tokens in the template, coverage and surviving mutants measured by script, Claude on the holes only. | 3 tickets |
 
-<details><summary><b>v0.6.x</b> · 65 releases</summary>
+<details><summary><b>v0.6.x</b> · 66 releases</summary>
 
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
@@ -135,15 +135,16 @@ anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 | v0.6.53 | What the grid doesn't know, shown | Every tracked file claimed by a fact or listed, fingerprints as data from Linguist and SchemaStore, the gap reports carrying them, corrections counted as signals. | 1 ticket |
 | v0.6.54 | Never a crash, whatever the repo | Static by default, hardened parsers, linear-time regexes, fuzzed trees, symlinks, untracked and ignored files handled; zero crashes on the corpus at each candidate. | 1 ticket |
 | v0.6.55 | Python beyond Django | FastAPI, Flask, SQLAlchemy and every packaging tool read; a new stack's rules count only once ten corpus repos of it were checked. | 1 ticket |
-| v0.6.56 | JavaScript beyond Nuxt | Next.js, React, Angular, Svelte, Express, NestJS, Electron and every JS package manager, each with its pack. | 2 tickets |
-| v0.6.57 | Data science repos | The first outside issues came from data repos: notebooks without outputs or secrets, data out of git, seeds and environments locked, models loaded safely. | 2 tickets |
-| v0.6.58 | Open source done right | A licence that says the same everywhere, notices kept, contributing, conduct and security policies, issue forms, sponsors, the OpenSSF badge. | 2 tickets |
-| v0.6.59 | Libraries and CLIs that publish cleanly | Trusted publishing with attestations, complete metadata, one version source, typed exports, packages that hold what they should and nothing else. | 2 tickets |
-| v0.6.60 | Infrastructure as code | Terraform and OpenTofu, Kubernetes and Helm, Ansible: state out of git, versions pinned, buckets private, pods restricted. | 2 tickets |
-| v0.6.61 | Every kind of repo | A library, an awesome list, a template, a fork or an archive each held to what it needs; the kind and what kiln assumed on the report's first lines, with their evidence. | 1 ticket |
-| v0.6.62 | GitLab too | Universities and companies often run GitLab: its CI read like GitHub's, its settings through `glab`, its merge request widget fed. | 1 ticket |
-| v0.6.63 | Profiles read from the repo, never asked | Solo, association, company or university, inferred from signals; criticality raises the bar by itself; moving up applies the new rules as ratchets. | 2 tickets |
-| v0.6.64 | Coursework and research | A course's repos scored on what a student can act on, a teacher's guide, research artefacts that can be reproduced and cited. | 1 ticket |
+| v0.6.56 | JavaScript beyond Nuxt: the fronts | Every JS framework and package manager read; Next.js, React, React Router, Angular, Vue without Nuxt, Svelte and Astro each with its pack, Electron and Tauri locked down. | 2 tickets |
+| v0.6.57 | JavaScript beyond Nuxt: the Node back ends | Express, Fastify, NestJS and Hono, the most used back ends after Django's peers, each with its own release's worth of rules rather than a share of the fronts' (framework coverage review of 26 October 2026). | 1 ticket |
+| v0.6.58 | Data science repos | The first outside issues came from data repos: notebooks without outputs or secrets, data out of git, seeds and environments locked, models loaded safely. | 2 tickets |
+| v0.6.59 | Open source done right | A licence that says the same everywhere, notices kept, contributing, conduct and security policies, issue forms, sponsors, the OpenSSF badge. | 2 tickets |
+| v0.6.60 | Libraries and CLIs that publish cleanly | Trusted publishing with attestations, complete metadata, one version source, typed exports, packages that hold what they should and nothing else. | 2 tickets |
+| v0.6.61 | Infrastructure as code | Terraform and OpenTofu, Kubernetes and Helm, Ansible: state out of git, versions pinned, buckets private, pods restricted. | 2 tickets |
+| v0.6.62 | Every kind of repo | A library, an awesome list, a template, a fork or an archive each held to what it needs; the kind and what kiln assumed on the report's first lines, with their evidence. | 1 ticket |
+| v0.6.63 | GitLab too | Universities and companies often run GitLab: its CI read like GitHub's, its settings through `glab`, its merge request widget fed. | 1 ticket |
+| v0.6.64 | Profiles read from the repo, never asked | Solo, association, company or university, inferred from signals; criticality raises the bar by itself; moving up applies the new rules as ratchets. | 2 tickets |
+| v0.6.65 | Coursework and research | A course's repos scored on what a student can act on, a teacher's guide, research artefacts that can be reproduced and cited. | 1 ticket |
 
 </details>
 
@@ -160,11 +161,11 @@ anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 | v0.7.6 | Rust repos, read | Cargo, clippy, the edition and `unsafe` read, `Cargo.lock` held to the rules that span stacks. | 1 ticket |
 | v0.7.7 | The Rust pack | Rust's own rules, from clippy with warnings as errors to a declared MSRV, counted once ten corpus repos of Rust were checked (B24). | 1 ticket |
 | v0.7.8 | Java and Kotlin repos, read | Maven and Gradle read with their wrappers, Spring Boot, Quarkus and Micronaut recognised: kiln's own frozen Java template held to its stack's rules at last. | 1 ticket |
-| v0.7.9 | The Java and Kotlin pack | A supported LTS, a verified wrapper, locked dependencies and a bug finder in the build, counted once ten corpus repos of Java and Kotlin were checked (B24). | 1 ticket |
+| v0.7.9 | The Java and Kotlin pack | A supported LTS, a verified wrapper, locked dependencies and a bug finder in the build, then Spring Boot's own rules, counted once ten corpus repos of Java and Kotlin were checked (B24). | 2 tickets |
 | v0.7.10 | C# and .NET repos, read | Projects, solutions and central package management read, with nullable references and the supported .NET lines. | 1 ticket |
-| v0.7.11 | The C# pack | NuGetAudit, lock files, warnings as errors and a pinned SDK, counted once ten corpus repos of C# were checked (B24). | 1 ticket |
+| v0.7.11 | The C# pack | NuGetAudit, lock files, warnings as errors and a pinned SDK, then the rules of ASP.NET Core and Blazor, counted once ten corpus repos of C# were checked (B24). | 2 tickets |
 | v0.7.12 | PHP repos, read | Composer, Laravel, Symfony and WordPress read, with their analysers, formatters, tests and auditor. | 1 ticket |
-| v0.7.13 | The PHP pack | Strict types, `composer audit` in CI, a supported PHP and no `phpinfo()` left, counted once ten corpus repos of PHP were checked (B24). | 1 ticket |
+| v0.7.13 | The PHP pack | Strict types, `composer audit` in CI, a supported PHP and no `phpinfo()` left, then the rules of Laravel, Symfony and WordPress, counted once ten corpus repos of PHP were checked (B24). | 2 tickets |
 | v0.7.14 | Ruby repos, read | Bundler and Rails read, with RuboCop, Sorbet or RBS, RSpec or Minitest and bundler-audit. | 1 ticket |
 | v0.7.15 | The Ruby pack | Brakeman and bundler-audit in CI, RuboCop configured, a supported Ruby and no `permit!`, counted once ten corpus repos of Ruby were checked (B24). | 1 ticket |
 | v0.7.16 | Elixir repos, read and packed | A smaller ecosystem, read and packed in one release: mix and Phoenix, with Credo, Dialyzer, Sobelow and mix_audit as its rules. | 1 ticket |
@@ -180,7 +181,7 @@ anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
 | v0.8.0 | Every common stack scored | Milestone decided by antoine (25 October 2026), reached here: every common stack scored and fixed by script before the format freezes. The rarer languages come as data packs that the community packs of v1.0.0 will extend; then the gate, the corpus re-scored and each stack among those that make 95 % of its repos shown at the level of Django at v0.5.0. | 2 tickets |
-| v0.8.1 | The CIs used most after GitHub's and GitLab's | The road to v0.9.0: any CI, any machine, any size, the last before the format freezes. First the CIs used most after GitHub's and GitLab's (v0.6.62), read into the CI model of v0.6.21 with their pinning and their untrusted text (appendix B). | 1 ticket |
+| v0.8.1 | The CIs used most after GitHub's and GitLab's | The road to v0.9.0: any CI, any machine, any size, the last before the format freezes. First the CIs used most after GitHub's and GitLab's (v0.6.63), read into the CI model of v0.6.21 with their pinning and their untrusted text (appendix B). | 1 ticket |
 | v0.8.2 | Every other CI | Jenkins, Buildkite, Woodpecker, the clouds' own CIs, Tekton and the rest, read the same way. | 1 ticket |
 | v0.8.3 | Every machine, every network | macOS and WSL tested beside Linux, ARM64 and musl, air-gapped and corporate networks; native Windows only if T-94 reopens. | 1 ticket |
 | v0.8.4 | No Python needed | A single signed binary, `npx kiln-cli score` for JavaScript machines, and the score in a browser if the forges allow it; a language server only if T-117 reopens. | 1 ticket |

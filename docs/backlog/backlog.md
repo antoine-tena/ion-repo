@@ -13,25 +13,27 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-336.**
+**Next free: T-340.**
 
 ---
 
 ## 🚀 Releases
 
 A candidate every two days, about 4 of its 7 session-hours planned, the rest margin. v0.4.0 to
-v0.4.5 went out a week ahead of the first plan: the week won goes to the releases below, and
-v0.5.0 keeps its date (the launch, T-03). Every open ticket has its release and is listed under
-it, the 1,070 [kiln score ideas](#-kiln-score-the-thesis) included: each became a box of a ticket
-(T-186 to T-319, or the existing ticket it extended) in the release it was planned in (antoine,
-25 October 2026: everything a ticket, in one format, in its place). A milestone takes its minor in
-the release that reaches it, so the work leading to it carries the minor before: every common stack
-is v0.7.x, and v0.8.0 is the release where the last one is scored. Each stack gets two releases,
-about what Django and Nuxt each took once the engine is set aside. From v0.5.4 on, releases carry no
-date: at this pace v0.6.0 lands in early December 2026, v0.7.0 in mid-April 2027, v0.8.0 at the end
-of May, v0.9.0 and v1.0.0 in June 2027. These are consequences of the plan rather than promises,
-and each release the launch adds pushes them by two days. The public view of this plan is
-[`ROADMAP.md`](../../ROADMAP.md), drawn from this section by `scripts/roadmap.py`.
+v0.4.5 went out a week ahead of the first plan: the week won goes to the releases below, and v0.5.0
+keeps its date (the launch, T-03). Every open ticket has its release and is listed under it, the
+1,070 [kiln score ideas](#-kiln-score-the-thesis) included: each became a box of a ticket (T-186 to
+T-319, or the existing ticket it extended) in the release it was planned in (antoine, 25 October
+2026: everything a ticket, in one format, in its place). A milestone takes its minor in the release
+that reaches it, so the work leading to it carries the minor before: every common stack is v0.7.x,
+and v0.8.0 is the release where the last one is scored. Each stack gets two releases, about what
+Django and Nuxt each took once the engine is set aside, and its pack holds the rules of its most
+used frameworks as well as its language's (framework coverage review of 26 October 2026: Spring
+Boot, ASP.NET Core, Laravel, Rails; the Node back ends a release of their own). From v0.5.4 on,
+releases carry no date: at this pace v0.6.0 lands in early December 2026, v0.7.0 in mid-April 2027,
+v0.8.0 at the end of May, v0.9.0 and v1.0.0 in June 2027. These are consequences of the plan rather
+than promises, and each release the launch adds pushes them by two days. The public view of this
+plan is [`ROADMAP.md`](../../ROADMAP.md), drawn from this section by `scripts/roadmap.py`.
 
 ### Shipped: v0.4.0 to v0.4.5
 - v0.4.0 · kiln speaks English: promoted on Mon 19 Oct, the milestone decided by antoine
@@ -532,53 +534,59 @@ FastAPI, Flask, SQLAlchemy and every packaging tool read; a new stack's rules co
 corpus repos of it were checked.
 - T-289 · Python beyond Django: every packaging tool, FastAPI and Flask (L)
 
-### v0.6.56 · JavaScript beyond Nuxt
-Next.js, React, Angular, Svelte, Express, NestJS, Electron and every JS package manager, each with
-its pack.
+### v0.6.56 · JavaScript beyond Nuxt: the fronts
+Every JS framework and package manager read; Next.js, React, React Router, Angular, Vue without
+Nuxt, Svelte and Astro each with its pack, Electron and Tauri locked down.
 - T-290 · JavaScript beyond Nuxt: every framework and package manager (M)
-- T-291 · Framework packs: Next.js, React, Angular, Svelte, Express, NestJS (L)
+- T-291 · Framework packs: Next.js, React, Angular, Svelte, Astro (L)
 
-### v0.6.57 · Data science repos
+### v0.6.57 · JavaScript beyond Nuxt: the Node back ends
+Express, Fastify, NestJS and Hono, the most used back ends after Django's peers, each with its own
+release's worth of rules rather than a share of the fronts' (framework coverage review of 26 October
+2026).
+- T-336 · Node back ends: Express, Fastify, NestJS, Hono (L)
+
+### v0.6.58 · Data science repos
 The first outside issues came from data repos: notebooks without outputs or secrets, data out of
 git, seeds and environments locked, models loaded safely.
 - T-292 · Data science repos: notebooks, data out of git, seeds, locked environments (L)
 - T-293 · Data science repos: pipelines, model loading, experiments, Streamlit (L)
 
-### v0.6.58 · Open source done right
+### v0.6.59 · Open source done right
 A licence that says the same everywhere, notices kept, contributing, conduct and security policies,
 issue forms, sponsors, the OpenSSF badge.
 - T-294 · Licences right: files, manifests, notices, assets, community health (L)
 - T-295 · Open source done right: contributing, conduct, security policy, issue forms (L)
 
-### v0.6.59 · Libraries and CLIs that publish cleanly
+### v0.6.60 · Libraries and CLIs that publish cleanly
 Trusted publishing with attestations, complete metadata, one version source, typed exports, packages
 that hold what they should and nothing else.
 - T-296 · Packages published cleanly: trusted publishing, attestations, contents (L)
 - T-297 · Packages that behave: typed exports, engines, one version source, CLIs (M)
 
-### v0.6.60 · Infrastructure as code
+### v0.6.61 · Infrastructure as code
 Terraform and OpenTofu, Kubernetes and Helm, Ansible: state out of git, versions pinned, buckets
 private, pods restricted.
 - T-298 · Infrastructure as code: Terraform locked, scanned, private, encrypted (L)
 - T-299 · Kubernetes, Helm and Ansible by the book (L)
 
-### v0.6.61 · Every kind of repo
+### v0.6.62 · Every kind of repo
 A library, an awesome list, a template, a fork or an archive each held to what it needs; the kind
 and what kiln assumed on the report's first lines, with their evidence.
 - T-300 · Every kind of repo, each with its rules (L)
 
-### v0.6.62 · GitLab too
+### v0.6.63 · GitLab too
 Universities and companies often run GitLab: its CI read like GitHub's, its settings through `glab`,
 its merge request widget fed.
 - T-301 · GitLab too: its CI, its forge, its reports (M)
 
-### v0.6.63 · Profiles read from the repo, never asked
+### v0.6.64 · Profiles read from the repo, never asked
 Solo, association, company or university, inferred from signals; criticality raises the bar by
 itself; moving up applies the new rules as ratchets.
 - T-39 · Profiles of structure: the rules that fit an association, a company, a university (L)
 - T-302 · Profiles read from the repo: stages, criticality, team signals (M)
 
-### v0.6.64 · Coursework and research
+### v0.6.65 · Coursework and research
 A course's repos scored on what a student can act on, a teacher's guide, research artefacts that can
 be reproduced and cited.
 - T-303 · Coursework and research repos (M)
@@ -635,9 +643,10 @@ frozen Java template held to its stack's rules at last.
 - T-310 · Java and Kotlin read: Maven, Gradle, Spring Boot, the LTS lines (L)
 
 ### v0.7.9 · The Java and Kotlin pack
-A supported LTS, a verified wrapper, locked dependencies and a bug finder in the build, counted once
-ten corpus repos of Java and Kotlin were checked (B24).
+A supported LTS, a verified wrapper, locked dependencies and a bug finder in the build, then Spring
+Boot's own rules, counted once ten corpus repos of Java and Kotlin were checked (B24).
 - T-311 · The Java and Kotlin pack (L)
+- T-337 · The Spring Boot pack (M)
 
 ### v0.7.10 · C# and .NET repos, read
 Projects, solutions and central package management read, with nullable references and the supported
@@ -645,18 +654,20 @@ Projects, solutions and central package management read, with nullable reference
 - T-322 · C# and .NET read: projects, central packages, nullable, supported lines (L)
 
 ### v0.7.11 · The C# pack
-NuGetAudit, lock files, warnings as errors and a pinned SDK, counted once ten corpus repos of C#
-were checked (B24).
+NuGetAudit, lock files, warnings as errors and a pinned SDK, then the rules of ASP.NET Core and
+Blazor, counted once ten corpus repos of C# were checked (B24).
 - T-323 · The C# pack (L)
+- T-338 · The ASP.NET Core and Blazor pack (M)
 
 ### v0.7.12 · PHP repos, read
 Composer, Laravel, Symfony and WordPress read, with their analysers, formatters, tests and auditor.
 - T-312 · PHP read: Composer, Laravel, Symfony, WordPress (L)
 
 ### v0.7.13 · The PHP pack
-Strict types, `composer audit` in CI, a supported PHP and no `phpinfo()` left, counted once ten
-corpus repos of PHP were checked (B24).
+Strict types, `composer audit` in CI, a supported PHP and no `phpinfo()` left, then the rules of
+Laravel, Symfony and WordPress, counted once ten corpus repos of PHP were checked (B24).
 - T-313 · The PHP pack (L)
+- T-339 · The Laravel, Symfony and WordPress pack (M)
 
 ### v0.7.14 · Ruby repos, read
 Bundler and Rails read, with RuboCop, Sorbet or RBS, RSpec or Minitest and bundler-audit.
@@ -702,7 +713,7 @@ its repos shown at the level of Django at v0.5.0.
 
 ### v0.8.1 · The CIs used most after GitHub's and GitLab's
 The road to v0.9.0: any CI, any machine, any size, the last before the format freezes. First the CIs
-used most after GitHub's and GitLab's (v0.6.62), read into the CI model of v0.6.21 with their
+used most after GitHub's and GitLab's (v0.6.63), read into the CI model of v0.6.21 with their
 pinning and their untrusted text (appendix B).
 - T-316 · The CIs used most after GitHub's and GitLab's: Forgejo, Bitbucket, Azure, CircleCI (L)
 
@@ -3577,6 +3588,9 @@ rule ships with its passing and failing examples.
   adopt.
 - [ ] **AS18** `NO-WEAK-CRYPTO`: no MD5 or SHA-1 for security, no DES, RC4 or ECB (S324, S303 to
   S305). L4 · fix J · adopt.
+- [ ] **AS48** `NO-SQL-INJECTION`: no query built from a variable by concatenation, `%` or an
+  f-string: `raw`, `extra` and `RawSQL` of Django, `text` of SQLAlchemy, a DB-API `execute`; each
+  stack's pack adds its own APIs (T-336, T-337, T-338, T-339). L2 · fix J · adopt.
 
 ### T-242 · Code that can be attacked: redirects, SSRF, paths, escaping, JWT, SAST
 - **Type**: improvement
@@ -5190,6 +5204,10 @@ rule ships with its passing and failing examples.
   production for private APIs. L2 · fix J · trial.
 - [ ] **FP05** Flask · `FLASK-APP-FACTORY`: a `create_app` factory, the secret key from the
   environment, CSRF protection on forms (Flask-WTF). L2 · fix J · trial.
+- [ ] **FP20** Pydantic · `PYDANTIC-V2`: Pydantic 2 rather than 1, which is no longer developed
+  (`bump-pydantic` migrates). L1 · fix S · adopt.
+- [ ] **AS23** (FastAPI's part) `CORS-STRICT`: `CORSMiddleware` never with `allow_origins=["*"]` and
+  `allow_credentials=True` together. L2 · fix S · adopt.
 
 ### T-290 · JavaScript beyond Nuxt: every framework and package manager
 - **Type**: improvement
@@ -5199,8 +5217,9 @@ rule ships with its passing and failing examples.
 - **Origin**: kiln score ideas of 24 October 2026 (Every ecosystem, Application security), made a
   ticket on 25 October 2026 at antoine's request
 
-Planned in v0.6.56, "JavaScript beyond Nuxt": Next.js, React, Angular, Svelte, Express, NestJS,
-Electron and every JS package manager, each with its pack.
+Planned in v0.6.56, "JavaScript beyond Nuxt: the fronts": Every JS framework and package manager
+read; Next.js, React, React Router, Angular, Vue without Nuxt, Svelte and Astro each with its pack,
+Electron and Tauri locked down.
 
 Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
 converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
@@ -5213,8 +5232,10 @@ rule ships with its passing and failing examples.
   Bun, Deno (deno.json, deno.lock, JSR), corepack's `packageManager`.
 - [ ] **AS43** `ELECTRON-SAFE`: `contextIsolation` on, `nodeIntegration` off, `sandbox` on. L2 · fix
   S · adopt.
+- [ ] **FP27** Tauri · `TAURI-CAPABILITIES`: the capabilities of Tauri 2 grant each window only the
+  commands it uses, and a CSP is set. L1 · fix J · adopt.
 
-### T-291 · Framework packs: Next.js, React, Angular, Svelte, Express, NestJS
+### T-291 · Framework packs: Next.js, React, Angular, Svelte, Astro
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5222,8 +5243,9 @@ rule ships with its passing and failing examples.
 - **Origin**: kiln score ideas of 24 October 2026 (Framework packs), made a ticket on 25 October
   2026 at antoine's request
 
-Planned in v0.6.56, "JavaScript beyond Nuxt": Next.js, React, Angular, Svelte, Express, NestJS,
-Electron and every JS package manager, each with its pack.
+Planned in v0.6.56, "JavaScript beyond Nuxt: the fronts": Every JS framework and package manager
+read; Next.js, React, React Router, Angular, Vue without Nuxt, Svelte and Astro each with its pack,
+Electron and Tauri locked down.
 
 The `NOTABLE_PACKAGES` of `score.py` already name what the gap report sees; a pack turns one of them
 into rules.
@@ -5248,12 +5270,51 @@ rule ships with its passing and failing examples.
   the rest). L2 · fix S · trial.
 - [ ] **FP15** SvelteKit · `SVELTEKIT-CSRF`: `csrf.checkOrigin` never turned off. L1 · fix S ·
   adopt.
+- [ ] **FP21** Next.js · `NEXT-SERVER-ACTIONS-AUTH`: every Server Action checks authorization and
+  validates its input, since each one is a public endpoint. L2≈ · fix J · adopt.
+- [ ] **FP22** React Router · `ROUTER-LOADER-AUTH`: the loaders and actions of React Router 7
+  (formerly Remix) check authorization themselves, like the data layer of Next.js. L2≈ · fix J ·
+  trial.
+- [ ] **FP23** Astro · `ASTRO-CHECK`: `astro check` in CI. L1 · fix S · adopt.
+- [ ] **AS33** (Svelte's part) `AUTOESCAPE`: `{@html}` on variables, like `v-html`. L2 · fix J ·
+  adopt.
+- [ ] **AS36** (SvelteKit's and Astro's part) `NO-SECRETS-IN-FRONT`: their `PUBLIC_*` variables too.
+  L2 · fix J · adopt.
+- [ ] Vue's rules (`VUE-MULTI-WORD-COMPONENTS`, `API-CALLS`, `STATE-IN-STORES` and the rest) read a
+  Vite + Vue repo as they read Nuxt, each with a passing and a failing example without Nuxt.
+
+### T-336 · Node back ends: Express, Fastify, NestJS, Hono
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: L · **Owner**: — · **Due**: —
+- **Origin**: split from T-291 by the framework coverage review of 26 October 2026, at antoine's
+  request (the most used frameworks of the 2025 surveys checked against the plan): the Node back
+  ends get their own release instead of a share of the fronts'
+
+Planned in v0.6.57, "JavaScript beyond Nuxt: the Node back ends": Express, Fastify, NestJS and Hono,
+the most used back ends after Django's peers, each with its own release's worth of rules rather than
+a share of the fronts' (framework coverage review of 26 October 2026).
+
+Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
+converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
+rule ships with its passing and failing examples.
+
 - [ ] **FP16** Express · `EXPRESS-5`: Express 5, whose router passes rejected promises to the error
   handler. L1 · fix J · trial.
 - [ ] **FP17** NestJS · `NEST-VALIDATION-PIPE`: a global `ValidationPipe` with `whitelist` and
   `forbidNonWhitelisted`. L2 · fix S · adopt.
 - [ ] **FP18** NestJS · `NEST-GUARD-BY-DEFAULT`: a global authentication guard, public routes marked
   one by one. L2 · fix J · trial.
+- [ ] **FP24** Express · `EXPRESS-TRUST-PROXY`: `trust proxy` set to the proxies in front when the
+  app runs behind one, so `req.ip` and rate limits see the real client. L2≈ · fix J · trial.
+- [ ] **FP25** Fastify · `FASTIFY-SCHEMAS`: a schema on every route's body, query and response, in
+  JSON Schema or through a type provider (TypeBox, Zod). L2 · fix J · adopt.
+- [ ] **FP26** Hono · `HONO-VALIDATOR`: request input through a validator (`@hono/zod-validator`,
+  `@hono/standard-validator`). L2 · fix J · trial.
+- [ ] **AS48** (the Node ORMs' part) `NO-SQL-INJECTION`: `$queryRawUnsafe` and `$executeRawUnsafe`
+  of Prisma, `raw` of Knex, `query` of TypeORM and `sql.raw` of Drizzle never built from a variable.
+  L2 · fix J · adopt.
 
 ### T-292 · Data science repos: notebooks, data out of git, seeds, locked environments
 - **Type**: improvement
@@ -5263,7 +5324,7 @@ rule ships with its passing and failing examples.
 - **Origin**: kiln score ideas of 24 October 2026 (Every ecosystem, Data science), made a ticket on
   25 October 2026 at antoine's request
 
-Planned in v0.6.57, "Data science repos": The first outside issues came from data repos: notebooks
+Planned in v0.6.58, "Data science repos": The first outside issues came from data repos: notebooks
 without outputs or secrets, data out of git, seeds and environments locked, models loaded safely.
 
 The first data repos came through issues (#43, #44): v0.4.6 deploys a Streamlit or Dash front
@@ -5274,7 +5335,7 @@ converter closes the gap or `fix J` when it takes judgment, then the radar level
 rule ships with its passing and failing examples.
 
 - [ ] **B18** Notebooks as code: `.ipynb` parsed (cells, outputs, execution order), Quarto and R
-  Markdown read.
+  Markdown read, Shiny apps recognised next to Streamlit and Dash.
 - [ ] **DS02** `NOTEBOOK-OUTPUTS-CLEAN`: notebooks committed without outputs or execution counts
   (nbstripout, or Jupytext pairs). L1 · fix S · adopt.
 - [ ] **DS03** `NOTEBOOKS-PAIRED`: notebooks paired with a `.py` file (Jupytext's percent format) so
@@ -5298,7 +5359,7 @@ rule ships with its passing and failing examples.
 - **Origin**: kiln score ideas of 24 October 2026 (Data science, Framework packs), made a ticket on
   25 October 2026 at antoine's request
 
-Planned in v0.6.57, "Data science repos": The first outside issues came from data repos: notebooks
+Planned in v0.6.58, "Data science repos": The first outside issues came from data repos: notebooks
 without outputs or secrets, data out of git, seeds and environments locked, models loaded safely.
 
 The first data repos came through issues (#43, #44): v0.4.6 deploys a Streamlit or Dash front
@@ -5315,13 +5376,16 @@ rule ships with its passing and failing examples.
 - [ ] **DS11** `NOTEBOOKS-RUN-IN-CI`: notebooks that are part of the deliverable executed in CI
   (nbmake, papermill). L1 · fix S · trial.
 - [ ] **DS12** `SAFE-MODEL-LOADING`: no `pickle.load` or `torch.load(..., weights_only=False)` on
-  downloaded files; safetensors or ONNX for models from outside. L2 · fix S · adopt.
+  downloaded files, nor `trust_remote_code=True` (Hugging Face) without a pinned revision;
+  safetensors or ONNX for models from outside. L2 · fix S · adopt.
 - [ ] **DS13** `EXPERIMENTS-TRACKED`: runs logged with their commit (MLflow, a results file). L1≈ ·
   fix J · assess.
 - [ ] **DS14** `DATA-SCHEMA`: input tables validated by a schema (pandera, Great Expectations,
   Pydantic). L2≈ · fix J · assess.
 - [ ] **FP19** Streamlit and Dash · the DS theme's rules plus `STREAMLIT-SECRETS-IGNORED`, and the
   deploy of v0.4.6 checked (a health route, a non-root image). L1 · fix S · trial.
+- [ ] **FP38** Gradio · `GRADIO-SHARE-OFF`: no `launch(share=True)` in committed code, which opens
+  the app to the whole Internet through a public link. L2 · fix S · adopt.
 
 ### T-294 · Licences right: files, manifests, notices, assets, community health
 - **Type**: improvement
@@ -5331,7 +5395,7 @@ rule ships with its passing and failing examples.
 - **Origin**: kiln score ideas of 24 October 2026 (Mature tools as detectors, History, forge and
   registries, Licensing), made a ticket on 25 October 2026 at antoine's request
 
-Planned in v0.6.58, "Open source done right": A licence that says the same everywhere, notices kept,
+Planned in v0.6.59, "Open source done right": A licence that says the same everywhere, notices kept,
 contributing, conduct and security policies, issue forms, sponsors, the OpenSSF badge.
 
 Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
@@ -5362,7 +5426,7 @@ rule ships with its passing and failing examples.
 - **Origin**: kiln score ideas of 24 October 2026 (Community), made a ticket on 25 October 2026 at
   antoine's request
 
-Planned in v0.6.58, "Open source done right": A licence that says the same everywhere, notices kept,
+Planned in v0.6.59, "Open source done right": A licence that says the same everywhere, notices kept,
 contributing, conduct and security policies, issue forms, sponsors, the OpenSSF badge.
 
 For the open-source profile; kiln's own vitrine (CONTRIBUTING, Code of Conduct, SECURITY, templates,
@@ -5396,7 +5460,7 @@ rule ships with its passing and failing examples.
 - **Origin**: kiln score ideas of 24 October 2026 (Packaging and publishing), made a ticket on 25
   October 2026 at antoine's request
 
-Planned in v0.6.59, "Libraries and CLIs that publish cleanly": Trusted publishing with attestations,
+Planned in v0.6.60, "Libraries and CLIs that publish cleanly": Trusted publishing with attestations,
 complete metadata, one version source, typed exports, packages that hold what they should and
 nothing else.
 
@@ -5427,7 +5491,7 @@ rule ships with its passing and failing examples.
 - **Origin**: kiln score ideas of 24 October 2026 (Packaging and publishing), made a ticket on 25
   October 2026 at antoine's request
 
-Planned in v0.6.59, "Libraries and CLIs that publish cleanly": Trusted publishing with attestations,
+Planned in v0.6.60, "Libraries and CLIs that publish cleanly": Trusted publishing with attestations,
 complete metadata, one version source, typed exports, packages that hold what they should and
 nothing else.
 
@@ -5456,7 +5520,7 @@ rule ships with its passing and failing examples.
 - **Origin**: kiln score ideas of 24 October 2026 (Every ecosystem, Mature tools as detectors,
   Infrastructure as code), made a ticket on 25 October 2026 at antoine's request
 
-Planned in v0.6.60, "Infrastructure as code": Terraform and OpenTofu, Kubernetes and Helm, Ansible:
+Planned in v0.6.61, "Infrastructure as code": Terraform and OpenTofu, Kubernetes and Helm, Ansible:
 state out of git, versions pinned, buckets private, pods restricted.
 
 Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
@@ -5491,7 +5555,7 @@ rule ships with its passing and failing examples.
 - **Origin**: kiln score ideas of 24 October 2026 (Infrastructure as code), made a ticket on 25
   October 2026 at antoine's request
 
-Planned in v0.6.60, "Infrastructure as code": Terraform and OpenTofu, Kubernetes and Helm, Ansible:
+Planned in v0.6.61, "Infrastructure as code": Terraform and OpenTofu, Kubernetes and Helm, Ansible:
 state out of git, versions pinned, buckets private, pods restricted.
 
 Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
@@ -5524,7 +5588,7 @@ rule ships with its passing and failing examples.
   profile, Nothing to do, Application security), made a ticket on 25 October 2026 at antoine's
   request
 
-Planned in v0.6.61, "Every kind of repo": A library, an awesome list, a template, a fork or an
+Planned in v0.6.62, "Every kind of repo": A library, an awesome list, a template, a fork or an
 archive each held to what it needs; the kind and what kiln assumed on the report's first lines, with
 their evidence.
 
@@ -5561,6 +5625,10 @@ rule ships with its passing and failing examples.
   what it assumed.
 - [ ] **AS44** `EXTENSION-PERMISSIONS`: browser extensions ask for the fewest permissions and hosts.
   L1 · fix J · trial.
+- [ ] **FP39** Unity · `UNITY-REPO`: `.meta` files committed with their assets, `Library/`, `Temp/`
+  and builds ignored, large binaries in Git LFS. L0 · fix S · adopt.
+- [ ] **FP40** Godot · `GODOT-REPO`: `.godot/` ignored, no signing credentials in
+  `export_presets.cfg`. L0 · fix S · adopt.
 
 ### T-301 · GitLab too: its CI, its forge, its reports
 - **Type**: improvement
@@ -5571,7 +5639,7 @@ rule ships with its passing and failing examples.
   integrations, History, forge and registries, CI/CD), made a ticket on 25 October 2026 at antoine's
   request
 
-Planned in v0.6.62, "GitLab too": Universities and companies often run GitLab: its CI read like
+Planned in v0.6.63, "GitLab too": Universities and companies often run GitLab: its CI read like
 GitHub's, its settings through `glab`, its merge request widget fed.
 
 Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
@@ -5601,7 +5669,7 @@ rule ships with its passing and failing examples.
 - **Origin**: kiln score ideas of 24 October 2026 (Every kind of repo, every profile, Rule format v2
   and authoring), made a ticket on 25 October 2026 at antoine's request
 
-Planned in v0.6.63, "Profiles read from the repo, never asked": Solo, association, company or
+Planned in v0.6.64, "Profiles read from the repo, never asked": Solo, association, company or
 university, inferred from signals; criticality raises the bar by itself; moving up applies the new
 rules as ratchets.
 
@@ -5623,7 +5691,7 @@ rules as ratchets.
 - **Origin**: kiln score ideas of 24 October 2026 (Every kind of repo, every profile, Docs, teaching
   and reach, Community), made a ticket on 25 October 2026 at antoine's request
 
-Planned in v0.6.64, "Coursework and research": A course's repos scored on what a student can act on,
+Planned in v0.6.65, "Coursework and research": A course's repos scored on what a student can act on,
 a teacher's guide, research artefacts that can be reproduced and cited.
 
 Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
@@ -5895,7 +5963,7 @@ converter closes the gap or `fix J` when it takes judgment, then the radar level
 rule ships with its passing and failing examples.
 
 - [ ] **B06** Go: go.mod and go.sum, the `go` and `toolchain` directives, golangci-lint, gofmt,
-  govulncheck, `go vet`, `-race` in CI, vendoring.
+  govulncheck, `go vet`, `-race` in CI, vendoring. Gin, Echo, Fiber and chi recognised.
 - [ ] **F10** govulncheck for Go (reachable vulnerabilities only); cargo-deny, `composer audit` and
   bundler-audit come with their stacks (T-320, T-312, T-324).
 - [ ] **CC09** `GO-RACE`: `go test -race` in CI. L1 · fix S · adopt.
@@ -5937,6 +6005,8 @@ rule ships with its passing and failing examples.
   trial.
 - [ ] Ten corpus repos of Go scored and their findings checked before the pack counts (B24), each
   false alarm fixed in the engine.
+- [ ] **FP28** Go · `GO-HTTP-TIMEOUTS`: an `http.Server` with `ReadHeaderTimeout`, never a bare
+  `http.ListenAndServe` in a server (gosec G112, G114). L2 · fix J · adopt.
 
 ### T-320 · Rust read: Cargo, clippy, editions, `unsafe`, locks
 - **Type**: improvement
@@ -5954,7 +6024,8 @@ converter closes the gap or `fix J` when it takes judgment, then the radar level
 rule ships with its passing and failing examples.
 
 - [ ] **B07** Rust: Cargo.lock committed, clippy, rustfmt, cargo-deny or cargo-audit,
-  `rust-version`, the edition, `unsafe` justified, cargo-semver-checks for libraries.
+  `rust-version`, the edition, `unsafe` justified, cargo-semver-checks for libraries. Axum and Actix
+  Web recognised.
 - [ ] **F10** (Rust's part) cargo-deny for Rust.
 - [ ] **CC11** `RUST-NO-STATIC-MUT`: no `static mut`. L2 · fix J · adopt.
 - [ ] **SU33** (Rust's part) `LOCKS-COMMITTED`: `Cargo.lock` committed. L0 · fix J · adopt.
@@ -6013,9 +6084,9 @@ converter closes the gap or `fix J` when it takes judgment, then the radar level
 rule ships with its passing and failing examples.
 
 - [ ] **B08** Java and Kotlin: Maven (wrapper and checksum), Gradle (wrapper validation, version
-  catalogs, locking, verification metadata), Spring Boot, Quarkus, Micronaut; Checkstyle, SpotBugs,
-  Error Prone, Spotless, ktlint, detekt; JUnit 5; Java's LTS lines. kiln's own frozen Java template
-  would finally be scored.
+  catalogs, locking, verification metadata), Spring Boot, Quarkus, Micronaut, Ktor; Checkstyle,
+  SpotBugs, Error Prone, Spotless, ktlint, detekt; JUnit 5; Java's LTS lines. kiln's own frozen Java
+  template would finally be scored.
 - [ ] **AT27** `KOTLIN-EXPLICIT-API`: explicit API mode for Kotlin libraries. L1 · fix S · trial.
 - [ ] **AT28** `JAVA-NULLNESS`: JSpecify annotations checked by NullAway. L1 · fix J · assess.
 - [ ] **SU24** `GRADLE-WRAPPER-VERIFIED`: `distributionSha256Sum` set and the wrapper validated in
@@ -6033,8 +6104,8 @@ rule ships with its passing and failing examples.
   antoine's request; one stack per ticket from the same day (C# in T-323)
 
 Planned in v0.7.9, "The Java and Kotlin pack": A supported LTS, a verified wrapper, locked
-dependencies and a bug finder in the build, counted once ten corpus repos of Java and Kotlin were
-checked (B24).
+dependencies and a bug finder in the build, then Spring Boot's own rules, counted once ten corpus
+repos of Java and Kotlin were checked (B24).
 
 One pack per ecosystem, each with its facts, rules and examples; they enter in the order the corpus
 measures (Part I). Rules already listed in a theme (`GO-RACE`, `LOCKS-COMMITTED`,
@@ -6055,6 +6126,44 @@ rule ships with its passing and failing examples.
 - [ ] Ten corpus repos of Java and Kotlin scored and their findings checked before the pack counts
   (B24), each false alarm fixed in the engine.
 
+### T-337 · The Spring Boot pack
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: framework coverage review of 26 October 2026 at antoine's request: the most used
+  frameworks of the 2025 surveys checked against the plan; the pack of its language held only the
+  language's rules
+
+Planned in v0.7.9, "The Java and Kotlin pack": A supported LTS, a verified wrapper, locked
+dependencies and a bug finder in the build, then Spring Boot's own rules, counted once ten corpus
+repos of Java and Kotlin were checked (B24).
+
+Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
+converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
+rule ships with its passing and failing examples.
+
+- [ ] **FP29** Spring Boot · `SPRING-DDL-AUTO`: `spring.jpa.hibernate.ddl-auto` never `update`,
+  `create` or `create-drop` outside development; the schema moved by Flyway or Liquibase. L1 · fix J
+  · adopt.
+- [ ] **FP30** Spring Boot · `SPRING-OPEN-IN-VIEW-OFF`: `spring.jpa.open-in-view=false`, so no query
+  runs while the view renders. L1 · fix S · trial.
+- [ ] **FP31** Spring Boot · `SPRING-VALIDATION`: `@Valid` or `@Validated` on every request body. L2
+  · fix J · adopt.
+- [ ] **FP32** Spring Boot · `SPRING-CONSTRUCTOR-INJECTION`: dependencies through the constructor,
+  no `@Autowired` field. L2 · fix J · trial.
+- [ ] **AS20** (Spring's part) `NO-HARDCODED-PASSWORDS`: no password, key or token in
+  `application.yml` or `application.properties`, `${…}` placeholders from the environment instead.
+  L1 · fix J · adopt.
+- [ ] **AS22** (Spring Security's part) `CSRF-ON`: `csrf` disabled only on a stateless API, with a
+  justification marker. L2 · fix J · adopt.
+- [ ] **AS48** (Spring's part) `NO-SQL-INJECTION`: `createNativeQuery`, `JdbcTemplate` and
+  `@Query(nativeQuery = true)` never built by concatenation. L2 · fix J · adopt.
+- [ ] **DM18** (Flyway's and Liquibase's part) `ORM-MIGRATIONS-COMMITTED`: their migrations
+  committed. L0 · fix J · adopt.
+- [ ] Ten corpus repos of Spring Boot scored and their findings checked before the pack counts
+  (B24), each false alarm fixed in the engine.
+
 ### T-322 · C# and .NET read: projects, central packages, nullable, supported lines
 - **Type**: improvement
 - **Status**: todo
@@ -6072,7 +6181,8 @@ rule ships with its passing and failing examples.
 
 - [ ] **B09** C# and .NET: .csproj, .sln and .slnx, central package management,
   `packages.lock.json`, `<Nullable>enable`, analyzers, `dotnet format`, `global.json`, supported
-  .NET lines.
+  .NET lines. ASP.NET Core (`Program.cs`, minimal APIs or controllers), Blazor Server and
+  WebAssembly, EF Core, user secrets.
 - [ ] **AT25** `CSHARP-NULLABLE`: `<Nullable>enable</Nullable>` in every project. L1 · fix S ·
   adopt.
 - [ ] The rules that span stacks (`TESTS-PRESENT`, `TESTS-IN-CI`, `LINT-IN-CI`,
@@ -6087,8 +6197,8 @@ rule ships with its passing and failing examples.
 - **Origin**: split from T-311 on 25 October 2026, one stack per ticket (kiln score ideas of 24
   October 2026: Stack packs)
 
-Planned in v0.7.11, "The C# pack": NuGetAudit, lock files, warnings as errors and a pinned SDK,
-counted once ten corpus repos of C# were checked (B24).
+Planned in v0.7.11, "The C# pack": NuGetAudit, lock files, warnings as errors and a pinned SDK, then
+the rules of ASP.NET Core and Blazor, counted once ten corpus repos of C# were checked (B24).
 
 One pack per ecosystem, each with its facts, rules and examples; they enter in the order the corpus
 measures (Part I). Rules already listed in a theme (`GO-RACE`, `LOCKS-COMMITTED`,
@@ -6110,6 +6220,43 @@ rule ships with its passing and failing examples.
   fix S · trial.
 - [ ] Ten corpus repos of C# scored and their findings checked before the pack counts (B24), each
   false alarm fixed in the engine.
+
+### T-338 · The ASP.NET Core and Blazor pack
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: framework coverage review of 26 October 2026 at antoine's request: the most used
+  frameworks of the 2025 surveys checked against the plan; the pack of its language held only the
+  language's rules
+
+Planned in v0.7.11, "The C# pack": NuGetAudit, lock files, warnings as errors and a pinned SDK, then
+the rules of ASP.NET Core and Blazor, counted once ten corpus repos of C# were checked (B24).
+
+Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
+converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
+rule ships with its passing and failing examples.
+
+- [ ] **AS07** (ASP.NET Core's part) `PUBLIC-ROUTES`: a fallback authorization policy that requires
+  an authenticated user, every `[AllowAnonymous]` deliberate. L2 · fix J · adopt.
+- [ ] **AS22** (ASP.NET Core's part) `CSRF-ON`: antiforgery on for forms and Blazor, each
+  `[IgnoreAntiforgeryToken]` with a justification marker. L2 · fix J · adopt.
+- [ ] **AS20** (ASP.NET Core's part) `NO-HARDCODED-PASSWORDS`: no password in a connection string of
+  `appsettings*.json`; user secrets in development, the environment or a vault in production. L1 ·
+  fix J · adopt.
+- [ ] **AS45** (ASP.NET Core's part) `FRAMEWORK-DEBUG-OFF`: `UseDeveloperExceptionPage` only in the
+  Development environment. L2 · fix S · adopt.
+- [ ] **AS35** (ASP.NET Core's part) `HTTPS-ONLY`: `UseHttpsRedirection` and `UseHsts` outside
+  development. L2 · fix S · adopt.
+- [ ] **AS36** (Blazor's part) `NO-SECRETS-IN-FRONT`: nothing secret in the
+  `wwwroot/appsettings*.json` of a Blazor WebAssembly client, which every visitor downloads. L1 ·
+  fix J · adopt.
+- [ ] **AS48** (EF Core's part) `NO-SQL-INJECTION`: `FromSqlRaw` and `ExecuteSqlRaw` never given an
+  interpolated string (`FromSql` takes one safely). L2 · fix S · adopt.
+- [ ] **DM18** (EF Core's part) `ORM-MIGRATIONS-COMMITTED`: EF Core migrations committed. L0 · fix J
+  · adopt.
+- [ ] Ten corpus repos of ASP.NET Core and Blazor scored and their findings checked before the pack
+  counts (B24), each false alarm fixed in the engine.
 
 ### T-312 · PHP read: Composer, Laravel, Symfony, WordPress
 - **Type**: improvement
@@ -6145,7 +6292,8 @@ rule ships with its passing and failing examples.
   antoine's request; one stack per ticket from the same day (Ruby in T-325, Elixir in T-326)
 
 Planned in v0.7.13, "The PHP pack": Strict types, `composer audit` in CI, a supported PHP and no
-`phpinfo()` left, counted once ten corpus repos of PHP were checked (B24).
+`phpinfo()` left, then the rules of Laravel, Symfony and WordPress, counted once ten corpus repos of
+PHP were checked (B24).
 
 One pack per ecosystem, each with its facts, rules and examples; they enter in the order the corpus
 measures (Part I). Rules already listed in a theme (`GO-RACE`, `LOCKS-COMMITTED`,
@@ -6162,6 +6310,47 @@ rule ships with its passing and failing examples.
 - [ ] **SP25** PHP · `NO-PHPINFO`: no `phpinfo()` reachable. L2 · fix S · adopt.
 - [ ] Ten corpus repos of PHP scored and their findings checked before the pack counts (B24), each
   false alarm fixed in the engine.
+
+### T-339 · The Laravel, Symfony and WordPress pack
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: framework coverage review of 26 October 2026 at antoine's request: the most used
+  frameworks of the 2025 surveys checked against the plan; the pack of its language held only the
+  language's rules
+
+Planned in v0.7.13, "The PHP pack": Strict types, `composer audit` in CI, a supported PHP and no
+`phpinfo()` left, then the rules of Laravel, Symfony and WordPress, counted once ten corpus repos of
+PHP were checked (B24).
+
+Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
+converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
+rule ships with its passing and failing examples.
+
+- [ ] **AS32** (Laravel's part) `NO-MASS-ASSIGNMENT`: no `$guarded = []` nor `Model::unguard()`, a
+  `$fillable` list instead. L2 · fix J · adopt.
+- [ ] **FP33** Laravel · `LARAVEL-ENV-IN-CONFIG`: `env()` called only in `config/`, which
+  `config:cache` would otherwise break; `.env` untracked and `.env.example` committed. L2 · fix J ·
+  adopt.
+- [ ] **AT26** (Laravel's part) `PHPSTAN-LEVEL`: Larastan loaded, so PHPStan understands facades and
+  Eloquent. L1 · fix S · trial.
+- [ ] **AS22** (Laravel's part) `CSRF-ON`: each route left out of CSRF checks
+  (`validateCsrfTokens(except: …)`) with a justification marker. L2 · fix J · adopt.
+- [ ] **AS48** (the part of Laravel, Doctrine and WordPress) `NO-SQL-INJECTION`: `whereRaw`,
+  `DB::raw`, DQL and `$wpdb->query` never built from a variable, `$wpdb->prepare` for WordPress. L2
+  · fix J · adopt.
+- [ ] **AS01** (Symfony's part) `SECRETS`: a real `APP_SECRET` never in a committed `.env`,
+  Symfony's secrets vault or the environment instead. L1 · fix J · adopt.
+- [ ] **AS45** (the part of Symfony and WordPress) `FRAMEWORK-DEBUG-OFF`: `APP_ENV=prod` with
+  `APP_DEBUG=0`, `WP_DEBUG` and `WP_DEBUG_DISPLAY` off in production. L2 · fix S · adopt.
+- [ ] **FP34** WordPress · `WP-NONCES`: every admin, AJAX and REST handler checks a nonce and a
+  capability (`check_ajax_referer`, `current_user_can`, a `permission_callback`). L2 · fix J ·
+  adopt.
+- [ ] **FP35** WordPress · `WP-CODING-STANDARDS`: PHPCS with the WordPress Coding Standards in CI,
+  whose sniffs check escaping and sanitizing. L1 · fix S · adopt.
+- [ ] Ten corpus repos of Laravel, Symfony and WordPress scored and their findings checked before
+  the pack counts (B24), each false alarm fixed in the engine.
 
 ### T-324 · Ruby read: Bundler, Rails, RuboCop, bundler-audit
 - **Type**: improvement
@@ -6211,6 +6400,10 @@ rule ships with its passing and failing examples.
 - [ ] **SP29** Ruby · `RAILS-STRONG-PARAMS`: no `permit!`. L2 · fix J · adopt.
 - [ ] Ten corpus repos of Ruby scored and their findings checked before the pack counts (B24), each
   false alarm fixed in the engine.
+- [ ] **FP36** Rails · `RAILS-STRONG-MIGRATIONS`: the strong_migrations gem, so a migration that
+  would lock a live table is stopped. L1 · fix S · trial.
+- [ ] **AS01** (Rails' part) `SECRETS`: `config/master.key` and `config/credentials/*.key` never
+  committed. L0 · fix J · adopt.
 
 ### T-326 · Elixir read and its pack: mix, Phoenix, Credo, Sobelow
 - **Type**: improvement
@@ -6259,7 +6452,8 @@ converter closes the gap or `fix J` when it takes judgment, then the radar level
 rule ships with its passing and failing examples.
 
 - [ ] **B12** Swift (SwiftPM, CocoaPods, SwiftLint), Android (manifest, R8), Dart and Flutter
-  (pubspec, analysis_options); Elixir's part is in T-326.
+  (pubspec, analysis_options); React Native and Expo (`app.json`, `app.config.*`, `eas.json`);
+  Elixir's part is in T-326.
 - [ ] **AS41** `ANDROID-MANIFEST`: not debuggable, no cleartext traffic, backups off, every
   component's `exported` explicit. L1 · fix S · adopt.
 - [ ] **AS42** `IOS-ATS`: App Transport Security left on. L1 · fix J · adopt.
@@ -6300,6 +6494,10 @@ rule ships with its passing and failing examples.
   · trial.
 - [ ] Ten corpus repos of apps (iOS, Android, Flutter) scored and their findings checked before the
   pack counts (B24), each false alarm fixed in the engine.
+- [ ] **FP37** Expo · `EXPO-SDK-SUPPORTED`: one of the Expo SDKs still supported. L1 · fix J ·
+  adopt.
+- [ ] **AS36** (Expo's part) `NO-SECRETS-IN-FRONT`: `EXPO_PUBLIC_*` variables too, compiled into the
+  app. L2 · fix J · adopt.
 
 ### T-327 · C and C++ read: CMake, Meson, Bazel, Conan, vcpkg
 - **Type**: improvement
@@ -6410,7 +6608,7 @@ The gate of v0.8.0, as T-03 is the launch's: the milestone is cut only once thes
 
 Planned in v0.8.1, "The CIs used most after GitHub's and GitLab's": The road to v0.9.0: any CI, any
 machine, any size, the last before the format freezes. First the CIs used most after GitHub's and
-GitLab's (v0.6.62), read into the CI model of v0.6.21 with their pinning and their untrusted text
+GitLab's (v0.6.63), read into the CI model of v0.6.21 with their pinning and their untrusted text
 (appendix B).
 
 - [ ] **C03** The CIs used most after GitHub's and GitLab's, read into the CI model (T-230): Forgejo
@@ -7081,14 +7279,14 @@ Every idea is a box of a ticket listed under its release in [🚀 Releases](#-re
 | v0.5.4 to v0.5.16 | what strangers meet first (K), the false alarms (A, E, H), the badge (L), speed, updates, `kiln fix`, rules that test themselves (G), the outputs where people look (L), the exact rules and the AI rules (Part III), the roadmap as context packs (O), tests at the lowest cost | the launch brings repos nobody here has seen, and v0.6.0 needs the roadmap and the tests |
 | v0.6.0 | O: the unattended run's scope guard, its labels and its costs | the milestone |
 | v0.6.1 to v0.6.11 | slimming, the grid's weekly watch, the repo model (A), rule format v2 (E, G), the syntax engine, mature tools (F), the cache (J) | the engine every later rule stands on |
-| v0.6.12 to v0.6.60 | the rule themes one by one, each after the rung it needs; between them the corpus and the critical cap (H, I), locks and registries, history and the forge (M), `--deep` (N), what the grid doesn't know (U), Python and JavaScript beyond Django and Nuxt (B, FP) | a rule enters once its detector's rung exists and the corpus can measure it |
-| v0.6.61 to v0.7.3 | kinds and profiles (D), GitLab (C), coursework, the fleet (K, P), compliance views (R), the charter as the grid's rules (decision 4) | a university or an association network scores every repo |
+| v0.6.12 to v0.6.61 | the rule themes one by one, each after the rung it needs; between them the corpus and the critical cap (H, I), locks and registries, history and the forge (M), `--deep` (N), what the grid doesn't know (U), Python and JavaScript beyond Django and Nuxt (B, FP) | a rule enters once its detector's rung exists and the corpus can measure it |
+| v0.6.62 to v0.7.3 | kinds and profiles (D), GitLab (C), coursework, the fleet (K, P), compliance views (R), the charter as the grid's rules (decision 4) | a university or an association network scores every repo |
 | v0.7.4 to v0.8.0 | the other ecosystems, two releases a stack (B, SP), the long tail as data packs, the gate measured on the corpus | the format has to hold on every common stack before it freezes, in the order the corpus measures |
 | v0.8.1 to v0.9.0 | every CI and machine (C, K), monorepos and huge trees (J), the bar's matrix run | and on every CI, machine and size |
 | v0.9.1 | the score itself measured on every stack (T) | the last proof before the promise |
 | v1.0.0 | packs (R, T-69), the published JSON schema, every executable thing pinned | the format is the public API; the long tail comes as packs |
 
-Among the ecosystems, generic Python and JS/TS come first (v0.6.55, v0.6.56); the order of the
+Among the ecosystems, generic Python and JS/TS come first (v0.6.55 to v0.6.57); the order of the
 others is a guess until the corpus measures it (B01).
 
 ### Appendices
