@@ -65,7 +65,6 @@ Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other 
 commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before
 anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03).
 - T-170 · `kiln fix` proves each commit: its rule closed, no other rule broken (M)
-- T-171 · `kiln fix` works in a throwaway worktree, never in the user's tree (S)
 - T-59 · kiln-bot: the grid's fixes as a weekly pull request (L)
 - T-90 · kiln passes its own grid: zizmor, provenance and Scorecard left (M)
 - T-187 · `kiln fix` shows the points each commit won (S)
@@ -943,23 +942,6 @@ strangers' repos until each commit is proven.
   own with its log and handed to Claude (`/kiln:modernize`), never merged red, never dropped
   silently (decision 21 of 26 October 2026).
 - [ ] The summary gives the points each rule brought, not only the score before and after.
-
-### T-171 · `kiln fix` works in a throwaway worktree, never in the user's tree
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-24
-- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
-
-`kiln fix` runs `git switch -c kiln/fix-<date>` in the user's tree, against kiln's own rule (one
-worktree per branch, no switch in the main tree): a second run the same day fails on the
-existing branch, and a crash leaves the user on a half-done branch.
-- [ ] The converters run in a temporary worktree, as `--dry-run` already does; only the branch
-  remains, the user's tree is never touched.
-- [ ] A dirty tree is no longer refused (the worktree starts from the last commit, said in
-  one line).
-- [ ] A branch name already taken gets a suffix (`kiln/fix-2026-10-24-2`), or the existing
-  branch is updated when it holds only `kiln fix` commits (what kiln-bot needs, T-59).
 
 ### T-130 · Generated repos pass the whole grid
 - **Type**: improvement

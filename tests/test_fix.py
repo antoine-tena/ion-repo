@@ -261,6 +261,12 @@ def test_black_line_length_is_carried_over_to_ruff(tmp_path: Path) -> None:
 # --- the engine -----------------------------------------------------------------------------
 
 
+def fix_branch(root: Path) -> str:
+    """The branch `kiln fix` left, the latest when there are several."""
+    branches = git(root, "for-each-ref", "--format=%(refname:short)", "refs/heads/kiln/").split()
+    return sorted(branches, key=len)[-1] if branches else ""
+
+
 def test_one_commit_per_rule_on_a_work_branch(tmp_path: Path) -> None:
     root = make(tmp_path, {**CONVERTED["NO-OBSOLETE-BACKPORTS"], **CONVERTED["TS-EXPECT-ERROR"]})
 
@@ -268,8 +274,12 @@ def test_one_commit_per_rule_on_a_work_branch(tmp_path: Path) -> None:
 
     fixed = {found.rule for found in outcomes if found.status == "fixed"}
     assert {"NO-OBSOLETE-BACKPORTS", "TS-EXPECT-ERROR", "CI-PRESENT"} <= fixed
-    assert git(root, "branch", "--show-current").startswith("kiln/fix-")
-    log = git(root, "log", "--format=%s%n%b", "main..")
+    # T-171: the user's tree stays where it was, only the branch remains.
+    assert git(root, "branch", "--show-current").strip() == "main"
+    assert git(root, "status", "--porcelain") == ""
+    assert git(root, "worktree", "list").count("\n") == 1
+    assert fix_branch(root).startswith("kiln/fix-")
+    log = git(root, "log", "--format=%s%n%b", f"main..{fix_branch(root)}")
     assert "fix(NO-OBSOLETE-BACKPORTS): obsolete backports removed" in log
     assert "Source: https://pypi.org/project/typing/" in log and fix.UNVERIFIED in log
 
@@ -344,7 +354,7 @@ def test_checks_red_before_the_fix_are_named_and_the_green_ones_judge(
 
     fix.fix(root, only="TS-EXPECT-ERROR")
 
-    log = git(root, "log", "--format=%b", "main..")
+    log = git(root, "log", "--format=%b", f"main..{fix_branch(root)}")
     assert "Checked: true" in log and "unverified" not in log
     out = capsys.readouterr().out
     assert "not judging: `false` was red before the fix" in out
@@ -359,7 +369,7 @@ def test_no_green_check_leaves_every_commit_unverified_with_why(
 
     fix.fix(root, only="TS-EXPECT-ERROR")
 
-    log = git(root, "log", "--format=%b", "main..")
+    log = git(root, "log", "--format=%b", f"main..{fix_branch(root)}")
     assert "unverified: `false` was red before the fix" in log
     assert fix.UNVERIFIED not in log
 
@@ -376,7 +386,7 @@ def test_a_converter_that_turns_the_checks_red_is_undone_and_handed_to_claude(
 
     assert [(found.rule, found.status) for found in outcomes] == [("TS-EXPECT-ERROR", "reverted")]
     assert "@ts-ignore" in (root / "a.ts").read_text()
-    assert git(root, "log", "--oneline", "main..") == ""
+    assert fix_branch(root) == ""  # nothing committed: no branch left
     log = checks.reverted(root)["TS-EXPECT-ERROR"]
     assert "tsc: TS2578" in log.read_text()
     report = score.score_repo(root)
@@ -403,7 +413,7 @@ def test_an_image_a_converter_touched_is_built(
     if built_before:
         assert "useradd: not found" in checks.reverted(root)["NON-ROOT-CONTAINERS"].read_text()
     else:
-        assert "was red before the fix" in git(root, "log", "--format=%b", "-1")
+        assert "was red before the fix" in git(root, "log", "--format=%b", "-1", fix_branch(root))
 
 
 def test_only_container_files_are_built(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -433,11 +443,37 @@ def test_a_dry_run_writes_nothing(tmp_path: Path, capsys: pytest.CaptureFixture[
     assert "@ts-ignore" in (root / "a.ts").read_text()
 
 
-def test_a_dirty_tree_is_refused(tmp_path: Path) -> None:
-    root = make(tmp_path, {"a.ts": "x\n"})
-    (root / "a.ts").write_text("y\n")
-    with pytest.raises(KilnError, match="uncommitted"):
-        fix.fix(root)
+def test_a_dirty_tree_is_left_alone_and_the_fix_starts_from_the_last_commit(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    root = make(tmp_path, CONVERTED["TS-EXPECT-ERROR"])
+    (root / "a.ts").write_text("// mine\n")
+
+    fix.fix(root, only="TS-EXPECT-ERROR")
+
+    assert "uncommitted changes left out" in capsys.readouterr().out
+    assert (root / "a.ts").read_text() == "// mine\n"
+    assert "@ts-expect-error" in git(root, "show", f"{fix_branch(root)}:a.ts")
+
+
+def test_a_second_run_takes_over_its_branch_or_gets_a_suffix(tmp_path: Path) -> None:
+    """A branch holding only `kiln fix` commits starts again from the last commit; one a person
+    committed on is never touched."""
+    root = make(tmp_path, CONVERTED["TS-EXPECT-ERROR"])
+    fix.fix(root, only="TS-EXPECT-ERROR")
+    first = fix_branch(root)
+    fix.fix(root, only="TS-EXPECT-ERROR")
+    assert fix_branch(root) == first
+    assert git(root, "rev-list", "--count", f"main..{first}").strip() == "1"
+
+    git(root, "switch", "-q", first)
+    (root / "notes.md").write_text("mine\n")
+    git(root, "add", "notes.md")
+    git(root, "commit", "-q", "-m", "docs: my notes")
+    git(root, "switch", "-q", "main")
+    fix.fix(root, only="TS-EXPECT-ERROR")
+    assert fix_branch(root) == f"{first}-2"
+    assert "docs: my notes" in git(root, "log", "--format=%s", first)
 
 
 def test_a_dry_run_leaves_a_dirty_tree_alone(tmp_path: Path) -> None:
@@ -456,7 +492,7 @@ def test_files_the_repo_ignores_are_still_committed(tmp_path: Path) -> None:
 
     fix.fix(root, only="DEPENDENCY-UPDATES")
 
-    assert ".github/dependabot.yml" in git(root, "ls-files")
+    assert ".github/dependabot.yml" in git(root, "ls-tree", "-r", "--name-only", fix_branch(root))
 
 
 @pytest.mark.parametrize(
@@ -634,3 +670,17 @@ def test_a_rule_an_earlier_converter_closed_is_left_alone(
     assert outcomes["CI-PRESENT"].status == "fixed"
     assert outcomes["LINT-IN-CI"].note == fix.CLOSED
     assert not (root / ".github/workflows/lint.yml").exists()
+
+
+def test_the_throwaway_worktree_has_what_the_checks_need(tmp_path: Path) -> None:
+    """The installed Node dependencies linked, the local settings copied, at the root and one
+    folder down; the worktree gone afterwards."""
+    root = make(tmp_path / "repo", {".gitignore": ".env\nnode_modules\n", "web/package.json": "{}"})
+    (root / ".env").write_text("A=1\n")
+    (root / "web/node_modules/x").mkdir(parents=True)
+    with fix.scratch_worktree(root, "--detach") as copy:
+        assert (copy / ".env").read_text() == "A=1\n"
+        assert (copy / "web/node_modules").resolve() == (root / "web/node_modules").resolve()
+        assert (copy / "web/node_modules/x").is_dir()
+    assert not copy.exists()
+    assert (root / "web/node_modules/x").is_dir()
