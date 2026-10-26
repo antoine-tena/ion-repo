@@ -880,9 +880,9 @@ Apache-2.0 brings a patent grant MIT lacks; offered side by side with MIT, as uv
 (https://docs.astral.sh/uv/reference/policies/license/), it keeps MIT's reach (GPLv2 projects
 can take MIT code, not Apache-2.0 code). The cheapest moment is before the launch, while few
 outside contributors have code in kiln. antoine said yes to the pair (26 October, follow-up).
-- [ ] The outside authors of kiln's history (@NathanBarrachin, @darnak69, @HarshRajSinghania,
-  @SakarPaisen; antoine counts none, so maybe people he knows) asked for their ok to license
-  their past contributions under the pair; without it, their code stays MIT, which the pair
+- [ ] The outside authors of kiln's code (@NathanBarrachin: #33, #45, #46, #54 to #56;
+  @HarshRajSinghania: #41; @SakarPaisen: #39; @darnak69 opened issues only) asked for their ok
+  to license their past contributions under the pair; without it, their code stays MIT, which the pair
   allows.
 - [ ] `LICENSE-MIT`, `LICENSE-APACHE`, `license = "MIT OR Apache-2.0"` in `pyproject.toml` (PEP
   639), the READMEs' licence lines, `CONTRIBUTING.md` (contributions under the same terms).
