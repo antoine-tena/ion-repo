@@ -5,6 +5,7 @@ is there. Compose services are hardened only where podman proves they still star
 throwaway copy of the repo.
 """
 
+import contextlib
 import datetime
 import json
 import os
@@ -18,7 +19,7 @@ from pathlib import Path
 
 import yaml  # brought by copier
 
-from kiln import ui
+from kiln import shell, ui
 from kiln.grid import detectors
 from kiln.grid.detectors import COMPOSE_FILES, CONTAINER_FILES
 from kiln.grid.facts import Repo
@@ -341,15 +342,20 @@ def _starts(root: Path, name: str, hardened: str, services: list[str]) -> set[st
         compose = copy / name
         compose.write_text(re.sub(r"(?m)^\s+container_name:.*\n", "", hardened), encoding="utf-8")
         command = ["podman-compose", "-p", project, "-f", str(compose)]
+        # Building the images can take minutes: said, so that the run does not look stuck.
+        label = f"podman builds and starts {', '.join(services)} hardened, on a throwaway copy"
+        if not shell.shows_spinner():
+            ui.note(f"{label} (up to {START_TIMEOUT // 60} min)")
         try:
-            subprocess.run(
-                [*command, "up", "-d", *services],
-                cwd=compose.parent,
-                capture_output=True,
-                timeout=START_TIMEOUT,
-                check=False,
-            )
-            time.sleep(SETTLE_SECONDS)
+            with shell.spinner_line(label) if shell.shows_spinner() else contextlib.nullcontext():
+                subprocess.run(
+                    [*command, "up", "-d", *services],
+                    cwd=compose.parent,
+                    capture_output=True,
+                    timeout=START_TIMEOUT,
+                    check=False,
+                )
+                time.sleep(SETTLE_SECONDS)
             return {service for service in services if _running(project, service)}
         except subprocess.TimeoutExpired:
             return set()
