@@ -296,6 +296,22 @@ def test_a_fresh_clone_installs_its_node_dependencies_from_the_lock(tmp_path: Pa
     assert [install.argv for install in node_installs(tmp_path, commands)] == [("npm", "ci")]
 
 
+def test_the_stack_front_runs_through_the_manager_of_its_lock(tmp_path: Path) -> None:
+    # An adopted Nuxt app kept on npm: `pnpm dev` installed over its lock and stopped on
+    # ERR_PNPM_IGNORED_BUILDS (pnpm 12).
+    front = tmp_path / "frontend"
+    front.mkdir()
+    (front / "nuxt.config.ts").touch()
+    (front / "package.json").write_text('{"scripts": {"dev": "nuxt dev"}}', encoding="utf-8")
+    assert [command.argv for command in dev_processes(tmp_path)] == [("pnpm", "dev")]
+
+    (front / "package-lock.json").write_text("{}", encoding="utf-8")
+    assert [command.argv for command in dev_processes(tmp_path)] == [("npm", "run", "dev")]
+
+    (front / "pnpm-lock.yaml").touch()
+    assert [command.argv for command in dev_processes(tmp_path)] == [("pnpm", "dev")]
+
+
 def test_a_folder_without_package_json_installs_nothing(tmp_path: Path) -> None:
     assert node_installs(tmp_path, [Command("worker", ".", ("sleep", "1"))]) == []
 
