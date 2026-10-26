@@ -1,3 +1,4 @@
+{%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
 # --- Secrets: only the example without real values is tracked ---
 .env
 .env.*
@@ -28,7 +29,7 @@ logs/
 Thumbs.db
 *:Zone.Identifier
 
-{%- set python_dirs = (['backend'] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + (['frontend'] if frontend in ['streamlit', 'dash'] else []) %}
+{%- set python_dirs = ([bd] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + ([fd] if frontend in ['streamlit', 'dash'] else []) %}
 {%- if python_dirs %}
 # --- Python ({{ python_dirs | join(', ') }}) ---
 __pycache__/
@@ -44,7 +45,7 @@ htmlcov/
 {%- if backend == 'java' %}
 
 # --- Java (backend): Maven and JVM output, key stores ---
-backend/target/
+{{ bp }}target/
 *.class
 hs_err_pid*.log
 replay_pid*.log
@@ -58,15 +59,15 @@ replay_pid*.log
 .factorypath
 {%- endif %}
 {%- if backend == 'django' %}
-backend/db.sqlite3
+{{ bp }}db.sqlite3
 # Collected static files and the version written by the deployment: generated.
-backend/staticfiles/
-backend/GIT_SHA
+{{ bp }}staticfiles/
+{{ bp }}GIT_SHA
 {%- endif %}
 {%- if backend == 'data' %}
 
 # --- Data: raw and intermediate sets stay out of the repo ([LARGE-DATA]) ---
-backend/data/raw/
-backend/data/interim/
+{{ bp }}data/raw/
+{{ bp }}data/interim/
 __marimo__/
 {%- endif %}

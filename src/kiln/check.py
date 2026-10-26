@@ -32,7 +32,7 @@ from kiln.install import (
     sync_command,
 )
 from kiln.shell import KilnError, run, run_status, step
-from kiln.stack import BACKEND_DIR, Command, Stack, load_stack
+from kiln.stack import Command, Stack, load_stack
 
 
 def run_checks(root: Path, with_tests: bool = False, changed: list[str] | None = None) -> list[str]:
@@ -41,8 +41,8 @@ def run_checks(root: Path, with_tests: bool = False, changed: list[str] | None =
     failed_checks: list[str] = []
     stack = load_stack(root)
     # A worktree has no backend/.env (ignored by git): without it, Django does not start.
-    if stack.has_api and not (root / BACKEND_DIR / ".env").exists():
-        ensure_env_file(root / BACKEND_DIR)
+    if stack.has_api and not (root / stack.backend_dir / ".env").exists():
+        ensure_env_file(root / stack.backend_dir)
     # Nor node_modules, or older ones than the lockfile (uv run syncs Python by itself).
     is_pnpm_checked = stack.pnpm_dir is not None and _touches(changed, stack.pnpm_dir)
     if is_pnpm_checked and stack.pnpm_dir is not None and pnpm_behind(root / stack.pnpm_dir):
@@ -102,7 +102,7 @@ def _check_commands(
     declares its packages and environment (`[types]`): a bare `mypy .` knows neither. With
     `changed`, only the directories it touches, and the charter's bans on those files."""
     types = charter_config.load(root).get("types")
-    typed_directory = types.get("directory", BACKEND_DIR) if isinstance(types, dict) else None
+    typed_directory = types.get("directory", stack.backend_dir) if isinstance(types, dict) else None
     commands: list[Command] = []
     for command in stack.check_commands(with_tests):
         if command.label == "charter":

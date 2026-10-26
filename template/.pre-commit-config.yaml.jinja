@@ -1,3 +1,4 @@
+{%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
 # Guards and CI checks replayed before each commit.
 #
 # Installed once, at the root of the repo: kiln install (or: uv tool install pre-commit &&
@@ -30,28 +31,30 @@ repos:
 
   - repo: local
     hooks:
-{%- set python_dirs = (['backend'] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + (['frontend'] if frontend in ['streamlit', 'dash'] else []) %}
+{%- set python_dirs = ([bd] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + ([fd] if frontend in ['streamlit', 'dash'] else []) %}
 {%- for directory in python_dirs %}
-      - id: ruff-check-{{ directory }}
-        name: ruff check ({{ directory }})
-        entry: bash -c 'cd {{ directory }} && uv run ruff check --fix --force-exclude "${@#{{ directory }}/}"' --
+{%- set prefix = '' if directory == '.' else directory ~ '/' %}
+{%- set label = 'root' if directory == '.' else directory %}
+      - id: ruff-check-{{ label }}
+        name: ruff check ({{ label }})
+        entry: bash -c 'cd {{ directory }} && uv run ruff check --fix --force-exclude "${@#{{ prefix }}}"' --
         language: system
         types: [python]
-        files: ^{{ directory }}/
+        files: ^{{ prefix }}
 
-      - id: ruff-format-{{ directory }}
-        name: ruff format ({{ directory }})
-        entry: bash -c 'cd {{ directory }} && uv run ruff format --force-exclude "${@#{{ directory }}/}"' --
+      - id: ruff-format-{{ label }}
+        name: ruff format ({{ label }})
+        entry: bash -c 'cd {{ directory }} && uv run ruff format --force-exclude "${@#{{ prefix }}}"' --
         language: system
         types: [python]
-        files: ^{{ directory }}/
+        files: ^{{ prefix }}
 {% endfor %}
 {%- if frontend in ['nuxt', 'next'] %}
       - id: eslint
         name: eslint (frontend)
-        entry: bash -c 'cd frontend && pnpm exec eslint --fix "${@#frontend/}"' --
+        entry: bash -c 'cd {{ fd }} && pnpm exec eslint --fix "${@#{{ fp }}}"' --
         language: system
-        files: ^frontend/.*\.(vue|ts|tsx|mjs)$
+        files: ^{{ fp }}.*\.(vue|ts|tsx|mjs)$
 {% endif %}
       - id: charter
         name: charter (charter.toml, committed files)

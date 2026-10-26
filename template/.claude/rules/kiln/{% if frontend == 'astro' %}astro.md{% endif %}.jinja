@@ -1,13 +1,14 @@
+{%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
 {%- set level = {'spark': 0, 'ember': 1, 'flame': 2, 'blaze': 3}[size] -%}
 ---
 paths:
-  - "frontend/**"
+  - "{{ fp }}**"
 ---
 <!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten. -->
 # Frontend: Astro 7
 
-`frontend/src/`: pages (`pages/`), layouts (`layouts/`), styles, constants (`constants.ts`). Read
-`frontend/AGENTS.md` before using an Astro API. Run: `kiln dev` (an agent runs
+`{{ fp }}src/`: pages (`pages/`), layouts (`layouts/`), styles, constants (`constants.ts`). Read
+`{{ fp }}AGENTS.md` before using an Astro API. Run: `kiln dev` (an agent runs
 `astro dev --background`, then `astro dev stop`); check: `kiln check` (`astro check`).
 
 ## Code

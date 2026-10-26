@@ -33,6 +33,7 @@ def select(
     state: Path,
     only: list[str] | None = None,
     ask: Ask | None = None,
+    front_dir: str = FRONTEND_DIR,
 ) -> list[Command]:
     """The processes to run: `--only`, else the menu in a terminal, else all of them."""
     labels = [command.label for command in commands]
@@ -44,7 +45,7 @@ def select(
     elif ask is None or len(commands) < MENU_THRESHOLD:
         return commands
     else:
-        front = [command.label for command in commands if command.directory == FRONTEND_DIR]
+        front = [command.label for command in commands if command.directory == front_dir]
         chosen = _ask_selection(labels, front, _last_selection(state, labels), ask)
     state.mkdir(parents=True, exist_ok=True)
     (state / SELECTION_FILE).write_text(json.dumps(chosen), encoding="utf-8")

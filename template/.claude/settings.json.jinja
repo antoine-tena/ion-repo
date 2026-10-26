@@ -1,10 +1,11 @@
+{%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "env": {
     "KILN_PROJECT": "{{ name }}",
-    "KILN_BACKEND_DIR": "{{ 'backend' if backend != 'none' else '' }}",
-    "KILN_FRONTEND_DIR": "{{ 'frontend' if frontend != 'none' else '' }}",
-    "KILN_TEST_ENV": "{{ 'backend/.env' if backend in ['django', 'fastapi'] else '' }}"
+    "KILN_BACKEND_DIR": "{{ bd if backend != 'none' else '' }}",
+    "KILN_FRONTEND_DIR": "{{ fd if frontend != 'none' else '' }}",
+    "KILN_TEST_ENV": "{{ (bp ~ '.env') if backend in ['django', 'fastapi'] else '' }}"
 {%- if deploy == 'vps' %},
     "KILN_VPS": "{{ vps_host }}",
     "KILN_VPS_DIR": "/opt/{{ name }}",

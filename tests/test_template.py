@@ -1,4 +1,5 @@
 import json
+import re
 import subprocess
 import tomllib
 from pathlib import Path
@@ -68,6 +69,48 @@ def test_every_stack_renders_valid_files(tmp_path: Path, backend: str, frontend:
         json.loads((project_dir / name).read_text())
     assert (project_dir / "backend").is_dir() == (backend != "none")
     assert (project_dir / "frontend").is_dir() == (frontend != "none")
+
+
+@pytest.mark.parametrize(
+    ("backend", "frontend"),
+    [(back, "none") for back in BACKENDS[:-1]] + [("none", front) for front in FRONTENDS[:-1]],
+)
+def test_every_stack_follows_its_code_to_the_root(
+    tmp_path: Path, backend: str, frontend: str
+) -> None:
+    # An adopted repo with its code at the root (T-166): the paths of CI, hooks, rules, charter
+    # and Dependabot go there, never to a `backend/` or `frontend/` it does not have.
+    where = {"backend_dir": "."} if backend != "none" else {"frontend_dir": "."}
+    kept = ["backend"] if backend != "none" else ["frontend"]
+    project_dir = generate(
+        tmp_path / "demo", backend=backend, frontend=frontend, kept=kept, **where
+    )
+
+    texts = {
+        name: (project_dir / name).read_text()
+        for name in (
+            ".github/workflows/ci.yml",
+            ".github/dependabot.yml",
+            ".pre-commit-config.yaml",
+            "charter.toml",
+            "CLAUDE.md",
+            ".claude/rules/kiln/project.md",
+        )
+    }
+    for name, text in texts.items():
+        assert not re.search(r"(?<![\w.-])(backend|frontend)/", text), name
+    assert "at the root" in texts[".claude/rules/kiln/project.md"]
+    tomllib.loads(texts["charter.toml"])
+    ci = yaml.safe_load(texts[".github/workflows/ci.yml"])
+    yaml.safe_load(texts[".pre-commit-config.yaml"])
+    directories = [
+        job.get("with", {}).get("directory") for job in ci["jobs"].values() if "with" in job
+    ]
+    assert "backend" not in directories and "frontend" not in directories
+    assert yaml.safe_load(texts[".github/dependabot.yml"])["updates"][0]["directories"] == ["/"]
+    assert (
+        yaml.safe_load((project_dir / ".copier-answers.yml").read_text())[next(iter(where))] == "."
+    )
 
 
 @pytest.mark.parametrize(("backend", "frontend"), PODMAN_STACKS)

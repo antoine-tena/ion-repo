@@ -1,12 +1,13 @@
+{%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
 ---
 paths:
-  - "frontend/**"
+  - "{{ fp }}**"
 ---
 <!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten. -->
 # Frontend: Dash
 
-`frontend/app.py`: entry point; `frontend/dashboard/`: layout, callbacks and constants;
-`frontend/tests/`: tests. Run: `kiln dev` (or `uv run python app.py`); check: `kiln check`.
+`{{ fp }}app.py`: entry point; `{{ fp }}dashboard/`: layout, callbacks and constants;
+`{{ fp }}tests/`: tests. Run: `kiln dev` (or `uv run python app.py`); check: `kiln check`.
 
 - **[LAYOUT]** The layout is a function (`build_layout`), given to `app.layout`: it is evaluated
   at each page load, never frozen at start.

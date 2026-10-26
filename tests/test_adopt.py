@@ -74,6 +74,36 @@ def test_a_stack_in_its_folders_gets_its_rules_but_its_code_stays_its_own(repo: 
     assert answers(repo)["frontend"] == "nuxt"
 
 
+def test_a_vite_app_at_the_root_gets_its_stack_there(tmp_path: Path, repo: Path) -> None:
+    # Issue #59: a course's Vite app at the root got the common part only (T-166).
+    (repo / "vite.config.ts").write_text("export default {}\n")
+    (repo / "package.json").write_text('{"dependencies": {"react": "19"}}')
+    commit(repo, "vite")
+    template = tmp_path / "kiln"
+    subprocess.run(["git", "clone", "-q", "--no-tags", TEMPLATE_DIR, str(template)], check=True)
+
+    adopt.adopt_project(repo, template=str(template))
+
+    assert (answers(repo)["frontend"], answers(repo)["frontend_dir"]) == ("vite-react", ".")
+    assert "frontend" in answers(repo)["kept"]
+    assert not (repo / "frontend").exists()
+    assert (repo / ".claude/rules/kiln/vite-react.md").is_file()
+    ci = yaml.safe_load((repo / ".github/workflows/ci.yml").read_text())
+    assert ci["jobs"]["frontend"]["with"]["directory"] == "."
+    stack = detect_stack(repo)
+    assert (stack.frontend, stack.frontend_dir, stack.pnpm_dir) == ("vite-react", ".", ".")
+
+    commit(repo, "adopt kiln")
+    (template / "template/.editorconfig").write_text("root = true\n# newer\n")
+    commit(template, "template moves on")
+    update.apply_template(repo)
+
+    assert (repo / ".editorconfig").read_text() == "root = true\n# newer\n"
+    assert not (repo / "frontend").exists()
+    assert answers(repo)["frontend_dir"] == "."
+    assert yaml.safe_load((repo / ".github/workflows/ci.yml").read_text()) == ci
+
+
 def test_kiln_update_replays_the_template_and_spares_what_the_repo_keeps(
     tmp_path: Path, repo: Path
 ) -> None:

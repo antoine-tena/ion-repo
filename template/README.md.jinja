@@ -1,5 +1,6 @@
-{%- set python_dirs = (['backend'] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + (['frontend'] if frontend in ['streamlit', 'dash'] else []) -%}
-{%- set installed = python_dirs + (['backend'] if backend == 'java' else []) + (['frontend'] if frontend in ['nuxt', 'next', 'astro', 'vite-react'] else []) -%}
+{%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
+{%- set python_dirs = ([bd] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + ([fd] if frontend in ['streamlit', 'dash'] else []) -%}
+{%- set installed = python_dirs + ([bd] if backend == 'java' else []) + ([fd] if frontend in ['nuxt', 'next', 'astro', 'vite-react'] else []) -%}
 {%- set front_url = {'nuxt': 'http://localhost:3000', 'next': 'http://localhost:3000', 'astro': 'http://localhost:4321', 'vite-react': 'http://localhost:5173', 'streamlit': 'http://localhost:8501', 'dash': 'http://localhost:8050'}.get(frontend) -%}
 {%- set open_url = front_url or ('http://localhost:2718' if backend == 'data' else 'http://localhost:8000/api/docs') -%}
 {%- set js_front = frontend in ['nuxt', 'next', 'astro', 'vite-react'] -%}
@@ -25,10 +26,10 @@ kiln dev
 ```
 
 {% if backend == 'cli' and not front_url -%}
-Puis lancer l'outil : `cd backend && uv run {{ name }} --help`, ou l'installer sur le poste par
-`uv tool install --editable backend`.
+Puis lancer l'outil : `cd {{ bd }} && uv run {{ name }} --help`, ou l'installer sur le poste par
+`uv tool install --editable {{ bd }}`.
 {%- elif backend == 'java' and not front_url -%}
-Puis vérifier le backend : `cd backend && ./mvnw verify`.
+Puis vérifier le backend : `cd {{ bd }} && ./mvnw verify`.
 {%- else -%}
 Puis ouvrir {{ open_url }}.
 {%- endif %}
@@ -42,10 +43,10 @@ Puis ouvrir {{ open_url }}.
 {% endif -%}
 ## Organisation
 {% if back_text %}
-- `backend/` : {{ back_text }}.
+- `{{ bdir }}` : {{ back_text }}.
 {%- endif %}
 {%- if front_text %}
-- `frontend/` : {{ front_text }}.
+- `{{ fdir }}` : {{ front_text }}.
 {%- endif %}
 - [`CLAUDE.md`](CLAUDE.md) et [`.claude/rules/kiln/`](.claude/rules/kiln/) : la charte du code
   et la façon de travailler, pour les humains comme pour les agents.
@@ -69,7 +70,7 @@ paramètre (équipe, frameworks, podman…) : `kiln set <clé>=<valeur>`, sur un
 
 Prérequis : ceux du démarrage rapide{% if podman %}, plus [podman](https://podman.io/){% endif %}.
 `kiln install` installe les dépendances ({{ installed | join(', ') }})
-{%- if backend in ['django', 'fastapi'] %}, crée `backend/.env`{% endif %}
+{%- if backend in ['django', 'fastapi'] %}, crée `{{ bp }}.env`{% endif %}
 {%- if backend == 'django' %}, applique les migrations{% endif %} et active les garde-fous du
 commit (pre-commit, dont le refus de commiter sur `main` ou `develop`). On peut la relancer sans
 risque.
@@ -77,12 +78,12 @@ risque.
 ## Lancer le projet
 {% if backend == 'cli' and not front_url %}
 ```sh
-cd backend && uv run {{ name }} --help
-uv tool install --editable backend   # depuis la racine : la commande sur tout le poste
+cd {{ bd }} && uv run {{ name }} --help
+uv tool install --editable {{ bd }}   # depuis la racine : la commande sur tout le poste
 ```
 {%- elif backend == 'java' and not front_url %}
 ```sh
-cd backend && ./mvnw -q package -DskipTests && java -jar target/{{ name }}-0.1.0.jar
+cd {{ bd }} && ./mvnw -q package -DskipTests && java -jar target/{{ name }}-0.1.0.jar
 ```
 {%- else %}
 ```sh
@@ -97,9 +98,9 @@ kiln dev
 {%- elif backend == 'data' %}
 - Notebooks marimo : http://localhost:2718.
 {%- elif backend == 'cli' and front_url %}
-- Outil en ligne de commande : `cd backend && uv run {{ name }} --help`.
+- Outil en ligne de commande : `cd {{ bd }} && uv run {{ name }} --help`.
 {%- elif backend == 'java' and front_url %}
-- API Java : son jar, reconstruit à chaque lancement ; réglages locaux dans `backend/.env`.
+- API Java : son jar, reconstruit à chaque lancement ; réglages locaux dans `{{ bp }}.env`.
 {%- endif %}
 {%- if front_url %}
 - Frontend : {{ front_url }}
@@ -137,7 +138,7 @@ Ruff, mypy et pytest pour chaque projet Python
 
 Le front appelle l'API par `useApi()`, typé par `openapi.json`. Après tout changement d'une route
 ou d'un schéma du backend, `kiln contract` exporte `openapi.json` depuis le code Django, puis
-régénère `frontend/app/types/api.d.ts`. Les deux fichiers se commitent avec le changement ; la CI
+régénère `{{ fp }}app/types/api.d.ts`. Les deux fichiers se commitent avec le changement ; la CI
 échoue s'ils ont dérivé du code.
 
 {% endif -%}
@@ -182,10 +183,10 @@ kiln dev
 ```
 
 {% if backend == 'cli' and not front_url -%}
-Then run the tool: `cd backend && uv run {{ name }} --help`, or install it on the machine with
-`uv tool install --editable backend`.
+Then run the tool: `cd {{ bd }} && uv run {{ name }} --help`, or install it on the machine with
+`uv tool install --editable {{ bd }}`.
 {%- elif backend == 'java' and not front_url -%}
-Then check the backend: `cd backend && ./mvnw verify`.
+Then check the backend: `cd {{ bd }} && ./mvnw verify`.
 {%- else -%}
 Then open {{ open_url }}.
 {%- endif %}
@@ -199,10 +200,10 @@ Then open {{ open_url }}.
 {% endif -%}
 ## Layout
 {% if back_text %}
-- `backend/`: {{ back_text }}.
+- `{{ bdir }}`: {{ back_text }}.
 {%- endif %}
 {%- if front_text %}
-- `frontend/`: {{ front_text }}.
+- `{{ fdir }}`: {{ front_text }}.
 {%- endif %}
 - [`CLAUDE.md`](CLAUDE.md) and [`.claude/rules/kiln/`](.claude/rules/kiln/): the code charter
   and the way of working, for humans and agents alike.
@@ -226,19 +227,19 @@ change a setting (team, frameworks, podman…): `kiln set <key>=<value>`, on a b
 
 Requirements: those of the quick start{% if podman %}, plus [podman](https://podman.io/){% endif %}.
 `kiln install` installs the dependencies ({{ installed | join(', ') }})
-{%- if backend in ['django', 'fastapi'] %}, creates `backend/.env`{% endif %}
+{%- if backend in ['django', 'fastapi'] %}, creates `{{ bp }}.env`{% endif %}
 {%- if backend == 'django' %}, applies the migrations{% endif %} and turns on the commit guards
 (pre-commit, which also refuses commits on `main` and `develop`). It can be run again safely.
 
 ## Run the project
 {% if backend == 'cli' and not front_url %}
 ```sh
-cd backend && uv run {{ name }} --help
-uv tool install --editable backend   # from the root: the command on the whole machine
+cd {{ bd }} && uv run {{ name }} --help
+uv tool install --editable {{ bd }}   # from the root: the command on the whole machine
 ```
 {%- elif backend == 'java' and not front_url %}
 ```sh
-cd backend && ./mvnw -q package -DskipTests && java -jar target/{{ name }}-0.1.0.jar
+cd {{ bd }} && ./mvnw -q package -DskipTests && java -jar target/{{ name }}-0.1.0.jar
 ```
 {%- else %}
 ```sh
@@ -253,9 +254,9 @@ kiln dev
 {%- elif backend == 'data' %}
 - marimo notebooks: http://localhost:2718.
 {%- elif backend == 'cli' and front_url %}
-- Command-line tool: `cd backend && uv run {{ name }} --help`.
+- Command-line tool: `cd {{ bd }} && uv run {{ name }} --help`.
 {%- elif backend == 'java' and front_url %}
-- Java API: its jar, rebuilt at each start; local settings in `backend/.env`.
+- Java API: its jar, rebuilt at each start; local settings in `{{ bp }}.env`.
 {%- endif %}
 {%- if front_url %}
 - Frontend: {{ front_url }}
@@ -293,7 +294,7 @@ Ruff, mypy and pytest for each Python project
 
 The front calls the API through `useApi()`, typed by `openapi.json`. After any change to a route
 or a schema of the backend, `kiln contract` exports `openapi.json` from the Django code, then
-regenerates `frontend/app/types/api.d.ts`. Both files are committed with the change; CI fails
+regenerates `{{ fp }}app/types/api.d.ts`. Both files are committed with the change; CI fails
 when they drift from the code.
 
 {% endif -%}

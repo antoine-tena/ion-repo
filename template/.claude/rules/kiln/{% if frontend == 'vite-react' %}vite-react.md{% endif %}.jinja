@@ -1,14 +1,15 @@
+{%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
 {%- set level = {'spark': 0, 'ember': 1, 'flame': 2, 'blaze': 3}[size] -%}
 ---
 paths:
-  - "frontend/**"
+  - "{{ fp }}**"
 ---
 <!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten. -->
 # Frontend: Vite and React 19
 
-`frontend/src/`: the app (`App.tsx`, entry `main.tsx`), its components, its API client
-(`lib/`), its constants (`constants.ts`); `frontend/index.html` is the page Vite serves. Read
-`frontend/AGENTS.md` first. Run: `kiln dev`; check: `kiln check` (ESLint, `tsc`); tests:
+`{{ fp }}src/`: the app (`App.tsx`, entry `main.tsx`), its components, its API client
+(`lib/`), its constants (`constants.ts`); `{{ fp }}index.html` is the page Vite serves. Read
+`{{ fp }}AGENTS.md` first. Run: `kiln dev`; check: `kiln check` (ESLint, `tsc`); tests:
 `pnpm test` (Vitest).
 
 ## Code

@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 from kiln.shell import run, step
-from kiln.stack import BACKEND_DIR, FRONTEND_DIR, Stack
+from kiln.stack import Stack
 
 SCHEMA_FILE = "openapi.json"
 EXPORT_COMMAND = [
@@ -30,5 +30,5 @@ def generate_api_contract(root: Path, stack: Stack) -> None:
         return
     step("API contract: openapi.json and frontend types")
     export_env = {"DJANGO_SECRET_KEY": EXPORT_SECRET_KEY, **os.environ}
-    run(EXPORT_COMMAND, root / BACKEND_DIR, env=export_env)
-    run(GENERATE_COMMAND, root / FRONTEND_DIR)
+    run(EXPORT_COMMAND, root / stack.backend_dir, env=export_env)
+    run(GENERATE_COMMAND, root / stack.frontend_dir)

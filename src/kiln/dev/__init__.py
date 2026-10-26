@@ -18,6 +18,7 @@ from kiln.dev.backing import start_backing_services, stop_backing_services
 from kiln.dev.foreground import run_foreground, service_prefix
 from kiln.dev.processes import dev_processes, node_installs, read_env_file, runs_beyond_front
 from kiln.shell import KilnError, run, step
+from kiln.stack import load_stack
 
 ACTIONS = ("status", "logs", "stop")
 
@@ -60,12 +61,13 @@ def _start(root: Path, *, foreground: bool, only: list[str] | None, ask: menu.As
             "nothing to run: no server of the stack, no dev script in package.json,"
             " no Procfile.dev (`name: command`, one per line)"
         )
-    commands = menu.select(every, background.state_dir(root), only, ask)
+    front_dir = load_stack(root).frontend_dir
+    commands = menu.select(every, background.state_dir(root), only, ask, front_dir)
     background.check_ports_free(root, commands)
     for install in node_installs(root, commands):
         step(f"{install.directory}/: dependencies missing or older than the lock")
         run(list(install.argv), root / install.directory)
-    if runs_beyond_front(commands):
+    if runs_beyond_front(commands, front_dir):
         start_backing_services(root)
     step(" · ".join(f"{command.label} ({command.directory}/)" for command in commands))
     if foreground:
