@@ -20,7 +20,7 @@ entries before v0.4.0 quote kiln's former French names.
 
 ## v0.4.6 — 2026-10-24
 - `kiln adopt` brings an existing repo to the level of `kiln new`: `CLAUDE.md`, the Claude rules, the size's charter, pre-commit hooks, the CI calling kiln's workflows and the backlog, for the stack it finds in `backend/` and `frontend/`. Nothing the repo has is overwritten: those files, and its code folders, are kept under `kept` in `.copier-answers.yml`, and `kiln update` then keeps the repo current like a generated one (#59).
-- **After updating**: in a repo adopted before 0.4.6, run `kiln adopt` again on a work branch to lay the rest of the template; until then `kiln update` only moves its workflows' tag.
+- A repo adopted before 0.4.6 is completed by running `kiln adopt` again on a work branch, to lay the rest of the template; until then `kiln update` only moves its workflows' tag, and says so.
 - A Vite + React front, for `kiln new --frontend vite-react` and for adoption: Vite 8, React 19, Tailwind, Vitest, strict `tsc`, its Claude rules and CI.
 - A Streamlit or Dash front deploys to your own server with `deploy=vps`: its image behind Caddy (websockets included), switched and rolled back by `scripts/ops/deploy-frontend.sh`, no database to run (#43, thanks @darnak69).
 - Data projects tie committed trained models to their code: a manifest per model (code hash, seed, dataset, metrics), tests that fail when the code moved on or the metrics drop, and the grid rule `MODEL-TRACED` (#44, thanks @darnak69).

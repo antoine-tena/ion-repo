@@ -79,7 +79,8 @@ def update_project(
             # What follows reads these files (pnpm-workspace.yaml, pyproject.toml): stopped here.
             ui.note(
                 f"conflicts left by the template in {', '.join(conflicted)}: resolve them "
-                "(both sides often hold), then kiln update --no-template for the dependencies"
+                "(both sides often hold), commit, then kiln update --no-template for the "
+                "dependencies (it needs a clean tree)"
             )
             report_changes(root)
             return
