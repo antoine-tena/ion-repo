@@ -19,7 +19,7 @@ from pathlib import Path, PurePosixPath
 from kiln import ui
 from kiln.charter.waivers import Waivers
 from kiln.charter.waivers import load as load_waivers
-from kiln.grid import detectors, forge
+from kiln.grid import checks, detectors, forge
 from kiln.grid.facts import Repo, read_repo
 from kiln.grid.model import PILLARS, Rule, load_rules
 
@@ -130,6 +130,7 @@ class Report:
     misfired: tuple[str, ...] = ()  # rules waived again and again: they may not fit
     advice: tuple[Finding, ...] = ()  # gaps of unscored rules, shown apart
     not_utf8: tuple[str, ...] = ()  # texts read in another encoding: `path (cp1252)`
+    reverted: tuple[str, ...] = ()  # rules whose converter `kiln fix` had to undo
     schema: int = SCHEMA
     checked: str = field(default_factory=lambda: datetime.date.today().isoformat())
 
@@ -146,10 +147,11 @@ class Report:
         )[:TOP_GAPS]
 
     def roadmap(self) -> list[Finding]:
-        """What no converter closes, for Claude: every rule weighs the same in the score, so
-        the sure gaps first, then the smallest (fewest places to open), to confirm last."""
+        """What no converter closes, for Claude (a converter `kiln fix` had to undo included):
+        every rule weighs the same in the score, so the sure gaps first, then the smallest
+        (fewest places to open), to confirm last."""
         return sorted(
-            (found for found in self.gaps if not found.by_script),
+            (found for found in self.gaps if not found.by_script or found.rule in self.reverted),
             key=lambda found: (found.confirm, len(found.locations) or 1, found.rule),
         )
 
@@ -183,6 +185,7 @@ def score_repo(root: Path, rules: list[Rule] | None = None) -> Report:
         misfired=tuple(_misfired(waivers)),
         advice=tuple(advice),
         not_utf8=tuple(f"{name} ({encoding})" for name, encoding in sorted(repo.encodings.items())),
+        reverted=tuple(checks.reverted(root)),
     )
 
 

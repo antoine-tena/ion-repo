@@ -39,7 +39,8 @@ folder or a module.
   (format, closed lists, validation), `facts.py` (what a repo is made of), `detectors.py`
   (declarative detectors, Python checks), `forge.py` (the GitHub settings read through `gh`,
   cached a day), `fixers/` (`kiln fix` converters: `ci.py`, `python.py`,
-  `containers.py`, `resolve.py` for SHAs and digests online), `fix.py` (`kiln fix`), `show.py`
+  `containers.py`, `resolve.py` for SHAs and digests online), `fix.py` (`kiln fix`), `checks.py` (the repo's checks that judge
+  each converter: found, timed out, told apart, a reverted converter's log kept), `show.py`
   (`kiln grid`), `score.py` (`kiln score`, a repo scored against the grid), `gap_report.py` (what
   the grid doesn't cover, reported to kiln with the user's consent, T-38), `roadmap.py`
   (`kiln score --roadmap`, `--rule`, `--write`: what needs judgment, for Claude); every rule has a

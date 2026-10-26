@@ -13,6 +13,7 @@ import re
 from pathlib import Path
 
 from kiln import ui
+from kiln.grid import checks
 from kiln.grid.score import Finding, Report
 from kiln.shell import KilnError
 
@@ -33,6 +34,7 @@ def show_roadmap(report: Report) -> None:
         print(ui.paint(f"  Nothing that needs judgment{rest}.", ui.STONE))
         return
     print(ui.paint("  Sure gaps first, then the smallest; each one +1 rule met.", ui.STONE))
+    logs = checks.reverted(Path(report.root)) if report.reverted else {}
     for number, found in enumerate(items, 1):
         mark = ui.paint("  to confirm", ui.FIRE) if found.confirm else ""
         print(f"\n  {number}. {ui.paint(found.rule, ui.EMBER, bold=True)}  {found.title}{mark}")
@@ -43,6 +45,8 @@ def show_roadmap(report: Report) -> None:
             print(ui.paint(f"     … and {more} more (kiln score --rule {found.rule})", ui.STONE))
         if found.detail:
             print(ui.paint(f"     {found.detail}", ui.STONE))
+        if log := logs.get(found.rule):
+            print(ui.paint(f"     kiln fix's converter broke a check, undone: {log}", ui.STONE))
         print(ui.paint(f"     done when: kiln score --rule {found.rule}", ui.STONE))
     print(ui.paint("\n  One at a time with Claude Code: /kiln:modernize", ui.STONE))
     print(ui.paint(f"  A false positive: {FALSE_POSITIVE.format(rule='<ID>')}", ui.STONE))

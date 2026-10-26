@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from kiln.grid import detectors, fix
+from kiln.grid import checks, detectors, fix, roadmap, score
 from kiln.grid.facts import Repo, read_repo
 from kiln.grid.fixers import FIXERS, ci, containers, python, resolve
 from kiln.grid.model import load_rules
@@ -179,49 +179,123 @@ def test_one_commit_per_rule_on_a_work_branch(tmp_path: Path) -> None:
     assert "Source: https://pypi.org/project/typing/" in log and fix.UNVERIFIED in log
 
 
+def commands(root: Path) -> list[tuple[str, ...]]:
+    return [check.argv for check in checks.find(root)]
+
+
 def test_the_checks_type_the_files_the_mypy_config_names(tmp_path: Path) -> None:
     root = make(tmp_path, {"pyproject.toml": '[tool.mypy]\nfiles = ["src"]\n', "uv.lock": ""})
-    assert ["uv", "run", "mypy"] in fix.check_commands(root)
+    assert ("uv", "run", "mypy") in commands(root)
 
     (root / "pyproject.toml").write_text("[tool.mypy]\nstrict = true\n")
-    assert ["uv", "run", "mypy", "."] in fix.check_commands(root)
+    assert ("uv", "run", "mypy", ".") in commands(root)
 
 
-def test_checks_red_before_the_fix_are_named_not_taken_for_no_tests(
+def test_checks_are_found_one_folder_down(tmp_path: Path) -> None:
+    # Most repos keep their code in backend/ and frontend/: every commit was "unverified" (T-159).
+    root = make(
+        tmp_path,
+        {
+            "backend/pyproject.toml": "[tool.ruff]\n",
+            "backend/uv.lock": "",
+            "backend/manage.py": "",
+            "frontend/package.json": '{"scripts": {"lint": "x", "typecheck": "y", "dev": "z"}}',
+            "frontend/yarn.lock": "",
+            "node_modules/x/package.json": '{"scripts": {"test": "x"}}',
+        },
+    )
+
+    assert [str(check) for check in checks.find(root)] == [
+        "uv run ruff check (in backend/)",
+        "uv run python manage.py test (in backend/)",
+        "yarn run lint (in frontend/)",
+        "yarn run typecheck (in frontend/)",
+    ]
+
+
+def test_bun_and_npm_are_told_apart_by_their_lock(tmp_path: Path) -> None:
+    root = make(tmp_path, {"package.json": '{"scripts": {"test": "x"}}', "bun.lock": ""})
+    assert commands(root) == [("bun", "run", "test")]
+    (root / "bun.lock").unlink()
+    assert commands(root) == [("npm", "run", "test")]
+
+
+def test_a_check_is_red_missing_or_timed_out_and_says_so(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = make(tmp_path, {"README.md": "# a\n"})
+    red = checks.run(root, checks.Check(("sh", "-c", "echo boom; exit 1")))
+    assert (red.status, red.log, red.reason) == (
+        "red",
+        "boom\n",
+        "`sh -c echo boom; exit 1` was red before the fix",
+    )
+    missing = checks.run(root, checks.Check(("yarn-not-here", "test")))
+    assert missing.reason == "yarn-not-here missing (install it)"
+    assert checks.Result(checks.Check(("yarn",)), "missing").reason.startswith(
+        "yarn missing (corepack"
+    )
+    monkeypatch.setattr(checks, "CHECK_TIMEOUT", 0.2)
+    slow = checks.run(root, checks.Check(("sh", "-c", "echo waiting; sleep 5")))
+    assert slow.status == "timeout" and "timed out after 0.2 s" in slow.reason
+
+
+def test_checks_red_before_the_fix_are_named_and_the_green_ones_judge(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     root = make(tmp_path, CONVERTED["TS-EXPECT-ERROR"])
-    monkeypatch.setattr(fix, "check_commands", lambda root: [["true"], ["mypy", "."]])
-    monkeypatch.setattr(fix, "run_checks", lambda root, commands: commands != [["mypy", "."]])
+    found = [checks.Check(("true",)), checks.Check(("false",)), checks.Check(("no-such-tool",))]
+    monkeypatch.setattr(checks, "find", lambda root: found)
 
     fix.fix(root, only="TS-EXPECT-ERROR")
 
     log = git(root, "log", "--format=%b", "main..")
-    assert "unverified: `mypy .` was red before the fix" in log
-    assert fix.UNVERIFIED not in log
-    assert "`mypy .` was red before the fix" in capsys.readouterr().out
+    assert "Checked: true" in log and "unverified" not in log
+    out = capsys.readouterr().out
+    assert "not judging: `false` was red before the fix" in out
+    assert "not judging: no-such-tool missing" in out
 
 
-def test_a_converter_that_turns_the_checks_red_is_undone(
+def test_no_green_check_leaves_every_commit_unverified_with_why(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     root = make(tmp_path, CONVERTED["TS-EXPECT-ERROR"])
-    monkeypatch.setattr(fix, "check_commands", lambda root: [["true"]])
-    calls = iter([True, False])
-    monkeypatch.setattr(fix, "run_checks", lambda root, commands: next(calls))
+    monkeypatch.setattr(checks, "find", lambda root: [checks.Check(("false",))])
+
+    fix.fix(root, only="TS-EXPECT-ERROR")
+
+    log = git(root, "log", "--format=%b", "main..")
+    assert "unverified: `false` was red before the fix" in log
+    assert fix.UNVERIFIED not in log
+
+
+def test_a_converter_that_turns_the_checks_red_is_undone_and_handed_to_claude(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    root = make(tmp_path, CONVERTED["TS-EXPECT-ERROR"])
+    # Green before the fix, red once a converter wrote its first file.
+    breaks = checks.Check(("sh", "-c", "git diff --quiet HEAD || { echo 'tsc: TS2578'; exit 1; }"))
+    monkeypatch.setattr(checks, "find", lambda root: [breaks])
 
     outcomes = fix.fix(root, only="TS-EXPECT-ERROR")
 
     assert [(found.rule, found.status) for found in outcomes] == [("TS-EXPECT-ERROR", "reverted")]
     assert "@ts-ignore" in (root / "a.ts").read_text()
     assert git(root, "log", "--oneline", "main..") == ""
+    log = checks.reverted(root)["TS-EXPECT-ERROR"]
+    assert "tsc: TS2578" in log.read_text()
+    report = score.score_repo(root)
+    assert "TS-EXPECT-ERROR" in [found.rule for found in report.roadmap()]
+    capsys.readouterr()
+    roadmap.show_roadmap(report)
+    assert f"kiln fix's converter broke a check, undone: {log}" in capsys.readouterr().out
 
 
 def test_a_kiln_repo_is_checked_whole_before_and_after(tmp_path: Path) -> None:
     # `kiln check` alone looks at the branch's changes: a converter touching a file with older
     # debt (a Dockerfile the charter bans) would be blamed for it and undone.
     root = make(tmp_path, {".copier-answers.yml": "_commit: v0.4.5\n"})
-    assert fix.check_commands(root) == [["kiln", "check", "--all"]]
+    assert commands(root) == [("kiln", "check", "--all")]
 
 
 def test_a_dry_run_writes_nothing(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:

@@ -1,27 +1,25 @@
 """`kiln fix`: every gap a script can close, closed on a work branch, with proof.
 
-The repo's own checks run before and after each converter: one that turns them red is undone
-and reported, never left in a commit. One commit per rule, its message giving the why and the
-source. `--dry-run` shows the plan and the diff on a throwaway worktree, the repo untouched.
+The repo's own checks (`checks`) run before and after each converter: one that turns them red is
+undone and reported, never left in a commit, its log kept for `kiln score --roadmap`. One commit
+per rule, its message giving the why and the source. `--dry-run` shows the plan and the diff on a
+throwaway worktree, the repo untouched.
 """
 
 import datetime
-import os
-import shutil
 import subprocess
 import tempfile
-import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
 from kiln import ui
-from kiln.grid import score
+from kiln.grid import checks, score
 from kiln.grid.facts import read_repo
 from kiln.grid.fixers import FIXERS
 from kiln.grid.model import Rule, load_rules
 from kiln.shell import KilnError
 
-UNVERIFIED = "unverified: no tests"
+UNVERIFIED = "unverified: no check found"
 
 
 @dataclass(frozen=True)
@@ -39,49 +37,6 @@ def git(root: Path, *arguments: str, check: bool = True) -> str:
     if check and done.returncode != 0:
         raise KilnError(f"git {' '.join(arguments)}: {done.stderr.strip() or done.stdout.strip()}")
     return done.stdout
-
-
-def check_commands(root: Path) -> list[list[str]]:
-    """The repo's own checks: `kiln check --all` in a kiln repo, otherwise the tests, lint and
-    types its manifests declare. The whole repo, before and after alike: `kiln check` alone
-    looks at the branch's changes, and would blame a converter for the older debt of a file it
-    touched (a Dockerfile the charter bans), then undo it."""
-    if (root / ".copier-answers.yml").exists():
-        return [["kiln", "check", "--all"]]
-    commands: list[list[str]] = []
-    pyproject = root / "pyproject.toml"
-    if pyproject.exists():
-        try:
-            project = tomllib.loads(pyproject.read_text(encoding="utf-8"))
-        except tomllib.TOMLDecodeError:
-            project = {}
-        runner = ["uv", "run"] if (root / "uv.lock").exists() else []
-        tools = project.get("tool", {})
-        if "ruff" in tools:
-            commands.append([*runner, "ruff", "check"])
-        if "mypy" in tools:
-            # The files its config names, which `mypy` alone checks: `.` would read the rest too.
-            commands.append([*runner, "mypy", *([] if tools["mypy"].get("files") else ["."])])
-        if "pytest" in tools or (root / "tests").is_dir():
-            commands.append([*runner, "pytest", "-q"])
-    package = root / "package.json"
-    if package.exists():
-        manager = "pnpm" if (root / "pnpm-lock.yaml").exists() else "npm"
-        text = package.read_text(encoding="utf-8")
-        commands += [[manager, "run", name] for name in ("lint", "test") if f'"{name}"' in text]
-    return commands
-
-
-def run_checks(root: Path, commands: list[list[str]]) -> bool:
-    for command in commands:
-        if shutil.which(command[0]) is None:
-            return False
-        # No bytecode written: `git add --all` would commit it in a repo that does not ignore it.
-        environment = {**os.environ, "PYTHONDONTWRITEBYTECODE": "1"}
-        done = subprocess.run(command, cwd=root, env=environment, capture_output=True, check=False)
-        if done.returncode != 0:
-            return False
-    return True
 
 
 def plan(root: Path, only: str | None = None) -> list[Rule]:
@@ -124,22 +79,25 @@ def fix(root: Path, *, dry_run: bool = False, only: str | None = None) -> list[O
         return _dry_run(root, rules)
     branch = f"kiln/fix-{datetime.date.today().isoformat()}"
     git(root, "switch", "-c", branch)
-    commands = check_commands(root)
-    red = next((command for command in commands if not run_checks(root, [command])), None)
-    # Why the checks cannot judge the converters; empty when they can.
-    if not commands:
+    found = checks.find(root)
+    ui.step(f"{len(found)} check(s) of the repo, run once before the first converter")
+    results = [checks.run(root, check) for check in found]
+    judges = [result.check for result in results if result.ok]
+    unusable = [result.reason for result in results if not result.ok]
+    # Why the checks cannot judge the converters; empty when some can.
+    if not found:
         unverified = UNVERIFIED
-    elif red:
-        unverified = f"unverified: `{' '.join(red)}` was red before the fix"
+    elif not judges:
+        unverified = f"unverified: {'; '.join(unusable)}"
     else:
         unverified = ""
-    outcomes = [_apply(root, rule, commands, unverified) for rule in rules]
+    outcomes = [_apply(root, rule, judges, unverified) for rule in rules]
     after = score.score_repo(root).score
-    _summary(outcomes, before, after, branch, unverified)
+    _summary(outcomes, before, after, branch, unverified, unusable if judges else [])
     return outcomes
 
 
-def _apply(root: Path, rule: Rule, commands: list[list[str]], unverified: str) -> Outcome:
+def _apply(root: Path, rule: Rule, judges: list[checks.Check], unverified: str) -> Outcome:
     """`unverified` says why the checks cannot judge this converter; empty when they can."""
     fixer = FIXERS[rule.fixer]
     ui.step(f"{rule.id}: {fixer.summary}")
@@ -152,14 +110,18 @@ def _apply(root: Path, rule: Rule, commands: list[list[str]], unverified: str) -
     _stage(root, changed)
     if not git(root, "diff", "--cached", "--name-only"):
         return Outcome(rule.id, "unchanged", note="nothing to change")
-    if not unverified and not run_checks(root, commands):
+    failure = None if unverified else checks.first_failure(root, judges)
+    if failure is not None:
         git(root, "reset", "-q", "--hard")
         git(root, "clean", "-fdq")
-        return Outcome(rule.id, "reverted", tuple(changed), "the checks turned red: undone")
+        log = checks.keep_log(root, rule.id, failure)
+        where = f", log for Claude in {log} (kiln score --roadmap)" if log else ""
+        note = f"`{failure.check}` turned red: undone{where}"
+        return Outcome(rule.id, "reverted", tuple(changed), note)
+    checks.forget_log(root, rule.id)
     source = rule.sources[0].url if rule.sources else ""
     body = f"{rule.why}\n\nSource: {source}\nRule: kiln grid {rule.id}"
-    if unverified:
-        body += f"\n\n{unverified}"
+    body += f"\n\n{unverified}" if unverified else f"\n\nChecked: {', '.join(map(str, judges))}"
     git(root, "commit", "-q", "-m", f"fix({rule.id}): {fixer.summary}", "-m", body)
     return Outcome(rule.id, "fixed", tuple(changed), unverified)
 
@@ -200,7 +162,12 @@ def _dry_run(root: Path, rules: list[Rule]) -> list[Outcome]:
 
 
 def _summary(
-    outcomes: list[Outcome], before: int | None, after: int | None, branch: str, unverified: str
+    outcomes: list[Outcome],
+    before: int | None,
+    after: int | None,
+    branch: str,
+    unverified: str,
+    unusable: list[str],
 ) -> None:
     lines = [
         f"{found.rule}: {found.status}{f' ({found.note})' if found.note else ''}"
@@ -209,4 +176,5 @@ def _summary(
     lines.append(f"score: {before} → {after} (kiln score for what is left to judgment)")
     if unverified:
         lines.append(f"{unverified}: read each commit before merging")
+    lines += [f"not judging: {reason}" for reason in unusable]
     ui.panel(f"kiln fix on {branch}", lines)
