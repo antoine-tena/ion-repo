@@ -129,6 +129,7 @@ class Report:
     uncovered: tuple[str, ...] = ()
     misfired: tuple[str, ...] = ()  # rules waived again and again: they may not fit
     advice: tuple[Finding, ...] = ()  # gaps of unscored rules, shown apart
+    not_utf8: tuple[str, ...] = ()  # texts read in another encoding: `path (cp1252)`
     schema: int = SCHEMA
     checked: str = field(default_factory=lambda: datetime.date.today().isoformat())
 
@@ -181,6 +182,7 @@ def score_repo(root: Path, rules: list[Rule] | None = None) -> Report:
         uncovered=tuple(_uncovered(repo, rules)),
         misfired=tuple(_misfired(waivers)),
         advice=tuple(advice),
+        not_utf8=tuple(f"{name} ({encoding})" for name, encoding in sorted(repo.encodings.items())),
     )
 
 
@@ -335,6 +337,14 @@ def show(report: Report, *, every: bool = False) -> None:
     counted = [found for found in report.findings if found.status in (PASSED, FAILED)]
     passed = sum(found.status == PASSED for found in counted)
     print(ui.paint(f"  {passed} of {len(counted)} rules met", ui.STONE))
+    if report.not_utf8:
+        shown = report.not_utf8 if every else report.not_utf8[:SHOWN_LOCATIONS]
+        more = (
+            f" and {len(report.not_utf8) - len(shown)} more"
+            if len(shown) < len(report.not_utf8)
+            else ""
+        )
+        print(ui.paint(f"  not UTF-8, read all the same: {', '.join(shown)}{more}", ui.STONE))
     if top := report.top_gaps():
         print(f"\n  {ui.paint('Close first', ui.FIRE, bold=True)}")
         for found in top:

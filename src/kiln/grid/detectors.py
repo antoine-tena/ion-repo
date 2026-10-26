@@ -111,6 +111,8 @@ def _regex(detector: Mapping[str, object], repo: Repo) -> Outcome:
     within = str(detector.get("within", ""))
     locations: list[str] = []
     for name in files:
+        if not repo.is_code(name):
+            continue
         text = repo.text(name)
         for found in _matches(pattern, text, within if name.endswith(".py") else ""):
             if wants_match:
@@ -170,7 +172,7 @@ def _key(kind: str, detector: Mapping[str, object], repo: Repo) -> Outcome:
     failing: list[str] = []
     for name in files:
         try:
-            data = _parse(kind, (repo.root / name).read_text(encoding="utf-8"))
+            data = _parse(kind, repo.text(name))
         except OSError, ValueError, yaml.YAMLError:
             failing.append(name)
             continue
@@ -240,7 +242,7 @@ def lockfiles(repo: Repo) -> Outcome:
 def _pinned_requirements(repo: Repo, name: str) -> bool:
     """Every requirement of the file is `==` (an `-r` include or an option line aside)."""
     try:
-        lines = (repo.root / name).read_text(encoding="utf-8").splitlines()
+        lines = repo.text(name).splitlines()
     except OSError, UnicodeDecodeError:
         return True
     wanted = [line.split("#")[0].strip() for line in lines]
@@ -252,7 +254,7 @@ def _has_deps(repo: Repo, manifest: str) -> bool:
     if PurePosixPath(manifest).name != "pyproject.toml":
         return True
     try:
-        project = tomllib.loads((repo.root / manifest).read_text(encoding="utf-8"))
+        project = tomllib.loads(repo.text(manifest))
     except OSError, tomllib.TOMLDecodeError:
         return True
     return bool(project.get("project", {}).get("dependencies")) or bool(
@@ -272,7 +274,7 @@ def non_root_containers(repo: Repo) -> Outcome:
     failing = []
     for name in files:
         try:
-            lines = (repo.root / name).read_text(encoding="utf-8").splitlines()
+            lines = repo.text(name).splitlines()
         except OSError, UnicodeDecodeError:
             continue
         users = [line.split()[1] for line in lines if re.match(r"\s*USER\s+\S", line, re.I)]
@@ -319,7 +321,7 @@ def workflow_permissions(repo: Repo) -> Outcome:
     failing = []
     for name in files:
         try:
-            workflow = yaml.safe_load((repo.root / name).read_text(encoding="utf-8"))
+            workflow = yaml.safe_load(repo.text(name))
         except OSError, UnicodeDecodeError, yaml.YAMLError:
             continue
         if not isinstance(workflow, dict) or "permissions" in workflow:
@@ -446,7 +448,7 @@ def hardened_compose(repo: Repo) -> Outcome:
     failing = []
     for name in files:
         try:
-            compose = yaml.safe_load((repo.root / name).read_text(encoding="utf-8"))
+            compose = yaml.safe_load(repo.text(name))
         except OSError, UnicodeDecodeError, yaml.YAMLError:
             continue
         services = compose.get("services") if isinstance(compose, dict) else None

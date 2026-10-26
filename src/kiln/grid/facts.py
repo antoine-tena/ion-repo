@@ -1,6 +1,7 @@
 """What a repo is made of, read from its tracked files in milliseconds: the facts a rule's
 `applies` asks for (`django`, `github-actions`…). Any repo, made by kiln or not."""
 
+import codecs
 import functools
 import glob
 import json
@@ -27,6 +28,20 @@ KNOWN_FACTS = (
 # A coding agent's folder: the repo is worked with one (on disk, even when git ignores it).
 AGENT_FOLDERS = (".claude", ".cursor", ".codex", ".gemini")
 IGNORED_PARTS = frozenset({".git", "node_modules", ".venv", "__pycache__", "dist", ".nuxt"})
+# A NUL byte in the first 8 KB: a binary file, never text (git's own test).
+BINARY_PROBE = 8192
+# A source with a line longer than this: minified or generated, which code rules leave aside
+# (prose, Markdown or HTML, has long lines of its own).
+MINIFIED_LINE = 1000
+MINIFIABLE = frozenset({".js", ".mjs", ".cjs", ".jsx", ".ts", ".tsx", ".css", ".py"})
+# A text that is not UTF-8: its byte order mark first, then the legacy encodings of Windows and
+# of Western Europe (latin-1 decodes anything, so it always ends the search).
+BOMS = (
+    (codecs.BOM_UTF8, "utf-8-sig"),
+    (codecs.BOM_UTF16_LE, "utf-16"),
+    (codecs.BOM_UTF16_BE, "utf-16"),
+)
+LEGACY_ENCODINGS = ("cp1252", "latin-1")
 
 
 @dataclass(frozen=True)
@@ -38,6 +53,9 @@ class Repo:
     dependencies: frozenset[str] = frozenset()
     # Read once per run: a later read (after `kiln fix` writes) takes a new `read_repo`.
     texts: dict[str, str] = field(default_factory=dict, compare=False, hash=False, repr=False)
+    # What reading found: binary files, and texts that are not UTF-8 with their encoding.
+    binaries: set[str] = field(default_factory=set, compare=False, hash=False, repr=False)
+    encodings: dict[str, str] = field(default_factory=dict, compare=False, hash=False, repr=False)
 
     def matching(self, *patterns: str) -> list[str]:
         """Tracked files matching any of the glob `patterns` (`**` crosses folders)."""
@@ -45,13 +63,47 @@ class Repo:
         return [name for name in self.files if any(regex.match(name) for regex in compiled)]
 
     def text(self, name: str) -> str:
-        """A tracked file's text, read once for every rule; "" when it cannot be read."""
+        """A tracked file's text, read once for every rule; "" when it cannot be read or is
+        binary. A text that is not UTF-8 is decoded all the same, never read as empty (an empty
+        text passes every rule that looks for a pattern), and its encoding kept."""
         if name not in self.texts:
-            try:
-                self.texts[name] = (self.root / name).read_text(encoding="utf-8")
-            except OSError, UnicodeDecodeError:
-                self.texts[name] = ""
+            self.texts[name] = self._decode(name)
         return self.texts[name]
+
+    def is_code(self, name: str) -> bool:
+        """Text a code rule reads: neither binary nor minified."""
+        text = self.text(name)
+        if name in self.binaries:
+            return False
+        if PurePosixPath(name).suffix not in MINIFIABLE:
+            return True
+        return all(len(line) <= MINIFIED_LINE for line in text.splitlines())
+
+    def _decode(self, name: str) -> str:
+        try:
+            data = (self.root / name).read_bytes()
+        except OSError:
+            return ""
+        for bom, encoding in BOMS:
+            if data.startswith(bom):
+                if encoding != "utf-8-sig":
+                    self.encodings[name] = encoding
+                return data.decode(encoding, errors="replace")
+        if b"\0" in data[:BINARY_PROBE]:
+            self.binaries.add(name)
+            return ""
+        try:
+            return data.decode("utf-8")
+        except UnicodeDecodeError:
+            pass
+        for encoding in LEGACY_ENCODINGS:
+            try:
+                text = data.decode(encoding)
+            except UnicodeDecodeError:
+                continue
+            self.encodings[name] = encoding
+            return text
+        return ""
 
 
 @functools.cache
