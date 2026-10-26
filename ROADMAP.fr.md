@@ -29,7 +29,7 @@ arrêtée dès que sa candidate est taguée. Ce qui est déjà sorti est dans le
 | v0.5.0 | N'importe quel repo Django ou Nuxt, créé par kiln ou non, noté face à la grille en quelques secondes, puis mis à niveau par script partout où un script le peut. Lancement public le mercredi 11 novembre 2026, si la v0.5.0 tient sa barre ; sinon une semaine plus tard. | novembre 2026 |
 | v0.6.0 | Claude Code comble seul les écarts qu'un script laisse, chacun prouvé par la note. | décembre 2026 |
 | v0.7.0 | Tous les repos d'une organisation (une université, un réseau d'associations, une entreprise de 50 personnes) notés sans les cloner, leurs écarts classés d'un repo à l'autre. | printemps 2027 |
-| v0.8.0 | Chaque stack courante notée et corrigée par script : Go, Rust, Java, Kotlin, .NET, PHP, Ruby, Elixir, applications mobiles, C et C++. | printemps 2027 |
+| v0.8.0 | Chaque stack courante notée et corrigée par script : Java et Kotlin, C# et .NET, PHP, C et C++, Go, Rust, Ruby, applications mobiles, jeux, R et Elixir, chacune avec ses frameworks les plus utilisés. | printemps 2027 |
 | v0.9.0 | N'importe quelle CI, n'importe quelle machine, n'importe quelle taille : les autres systèmes de CI, ARM, les réseaux coupés d'internet, les monorepos et le million de fichiers. | mi-2027 |
 | v1.0.0 | La promesse de stabilité. Le format des règles se fige une fois qu'il a tenu sur les stacks qui font environ 95 % des repos, et chacun peut publier des paquets de règles pour le reste. Semver strict ensuite. | mi-2027 |
 
@@ -148,7 +148,7 @@ anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 
 </details>
 
-<details><summary><b>v0.7.x</b> · 21 releases</summary>
+<details><summary><b>v0.7.x</b> · 23 releases</summary>
 
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
@@ -156,23 +156,25 @@ anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 | v0.7.1 | Compliance views | What a company has to show: Scorecard, ASVS, SLSA, CIS, WCAG, the Cyber Resilience Act and the Accessibility Act, each control covered or honestly listed as not checkable. | 1 ticket |
 | v0.7.2 | Delivery measured, the organisation's settings read | DORA's four keys from the forge, the bus factor and knowledge islands, two-factor authentication and base permissions, for organisation profiles. | 1 ticket |
 | v0.7.3 | The charter and the grid, one engine | Decision 4, before the format freezes: shared detectors first, then the charter as the grid's rules in strict or ratchet regime, its IDs kept as aliases; rule files checked by a published schema. ⚠ breaking: `charter.toml` lists grid rule IDs with their regime, converted by `kiln update`. | 1 ticket |
-| v0.7.4 | Go repos, read | The road to v0.8.0: every common stack scored and fixed by script as Django is at v0.5.0, stack by stack (decision 1) in the order the corpus measures (B01; until it does, this order is a guess). Two releases a stack, about what Django and Nuxt each took once the engine is set aside: first what its repos are made of, read, so that the rules spanning stacks see it; then its pack, counted once ten corpus repos of it were checked (B24). Each stack's rules are written from the corpus when its turn comes. | 1 ticket |
-| v0.7.5 | The Go pack | Go's own rules with their examples and converters, from a tidy `go.mod` to no `panic` in a library, counted once ten corpus repos of Go were checked (B24). | 1 ticket |
-| v0.7.6 | Rust repos, read | Cargo, clippy, the edition and `unsafe` read, `Cargo.lock` held to the rules that span stacks. | 1 ticket |
-| v0.7.7 | The Rust pack | Rust's own rules, from clippy with warnings as errors to a declared MSRV, counted once ten corpus repos of Rust were checked (B24). | 1 ticket |
-| v0.7.8 | Java and Kotlin repos, read | Maven and Gradle read with their wrappers, Spring Boot, Quarkus and Micronaut recognised: kiln's own frozen Java template held to its stack's rules at last. | 1 ticket |
-| v0.7.9 | The Java and Kotlin pack | A supported LTS, a verified wrapper, locked dependencies and a bug finder in the build, then Spring Boot's own rules, counted once ten corpus repos of Java and Kotlin were checked (B24). | 2 tickets |
-| v0.7.10 | C# and .NET repos, read | Projects, solutions and central package management read, with nullable references and the supported .NET lines. | 1 ticket |
-| v0.7.11 | The C# pack | NuGetAudit, lock files, warnings as errors and a pinned SDK, then the rules of ASP.NET Core and Blazor, counted once ten corpus repos of C# were checked (B24). | 2 tickets |
-| v0.7.12 | PHP repos, read | Composer, Laravel, Symfony and WordPress read, with their analysers, formatters, tests and auditor. | 1 ticket |
-| v0.7.13 | The PHP pack | Strict types, `composer audit` in CI, a supported PHP and no `phpinfo()` left, then the rules of Laravel, Symfony and WordPress, counted once ten corpus repos of PHP were checked (B24). | 2 tickets |
-| v0.7.14 | Ruby repos, read | Bundler and Rails read, with RuboCop, Sorbet or RBS, RSpec or Minitest and bundler-audit. | 1 ticket |
-| v0.7.15 | The Ruby pack | Brakeman and bundler-audit in CI, RuboCop configured, a supported Ruby and no `permit!`, counted once ten corpus repos of Ruby were checked (B24). | 1 ticket |
-| v0.7.16 | Elixir repos, read and packed | A smaller ecosystem, read and packed in one release: mix and Phoenix, with Credo, Dialyzer, Sobelow and mix_audit as its rules. | 1 ticket |
-| v0.7.17 | iOS, Android and Flutter repos, read | SwiftPM, CocoaPods, the Android manifest and Flutter's pubspec read; App Transport Security and exported components checked. | 1 ticket |
-| v0.7.18 | The mobile pack | What the stores require and what an app bundle gives away: the privacy manifest, the target SDK, no server secret in the app, signing keys out of git, counted once ten corpus repos of apps were checked (B24). | 1 ticket |
-| v0.7.19 | C and C++ repos, read | CMake, Meson, Bazel, Conan and vcpkg read, with clang-format, clang-tidy, sanitizers and fuzzing. | 1 ticket |
-| v0.7.20 | The C and C++ pack | Warnings as errors, sanitizers in CI, clang-tidy, fuzzing for parsers and managed dependencies, counted once ten corpus repos of C and C++ were checked (B24). | 1 ticket |
+| v0.7.4 | Java and Kotlin repos, read | The road to v0.8.0: every common stack scored and fixed by script as Django is at v0.5.0, stack by stack (decision 1) in the order the corpus measures (B01; until it does, the order of the 2025 surveys, Stack Overflow's and GitHub's Octoverse). Two releases a stack, about what Django and Nuxt each took once the engine is set aside: first what its repos are made of, read, so that the rules spanning stacks see it; then its pack, counted once ten corpus repos of it were checked (B24). Each stack's rules are written from the corpus when its turn comes. First Java and Kotlin: Maven and Gradle read with their wrappers, Spring Boot, Quarkus and Micronaut recognised: kiln's own frozen Java template held to its stack's rules at last. | 1 ticket |
+| v0.7.5 | The Java and Kotlin pack | A supported LTS, a verified wrapper, locked dependencies and a bug finder in the build, then Spring Boot's own rules, counted once ten corpus repos of Java and Kotlin were checked (B24). | 2 tickets |
+| v0.7.6 | C# and .NET repos, read | Projects, solutions and central package management read, with nullable references and the supported .NET lines. | 1 ticket |
+| v0.7.7 | The C# pack | NuGetAudit, lock files, warnings as errors and a pinned SDK, then the rules of ASP.NET Core and Blazor, counted once ten corpus repos of C# were checked (B24). | 2 tickets |
+| v0.7.8 | PHP repos, read | Composer, Laravel, Symfony and WordPress read, with their analysers, formatters, tests and auditor. | 1 ticket |
+| v0.7.9 | The PHP pack | Strict types, `composer audit` in CI, a supported PHP and no `phpinfo()` left, then the rules of Laravel, Symfony and WordPress, counted once ten corpus repos of PHP were checked (B24). | 2 tickets |
+| v0.7.10 | C and C++ repos, read | CMake, Meson, Bazel, Conan and vcpkg read, with clang-format, clang-tidy, sanitizers and fuzzing. | 1 ticket |
+| v0.7.11 | The C and C++ pack | Warnings as errors, sanitizers in CI, clang-tidy, fuzzing for parsers and managed dependencies, counted once ten corpus repos of C and C++ were checked (B24). | 1 ticket |
+| v0.7.12 | Go repos, read | go.mod, go.sum and the toolchain read, with golangci-lint, govulncheck, race tests and wrapped errors, `go.sum` held to the rules that span stacks. | 1 ticket |
+| v0.7.13 | The Go pack | Go's own rules with their examples and converters, from a tidy `go.mod` to no `panic` in a library, counted once ten corpus repos of Go were checked (B24). | 1 ticket |
+| v0.7.14 | Rust repos, read | Cargo, clippy, the edition and `unsafe` read, `Cargo.lock` held to the rules that span stacks. | 1 ticket |
+| v0.7.15 | The Rust pack | Rust's own rules, from clippy with warnings as errors to a declared MSRV, counted once ten corpus repos of Rust were checked (B24). | 1 ticket |
+| v0.7.16 | Ruby repos, read | Bundler and Rails read, with RuboCop, Sorbet or RBS, RSpec or Minitest and bundler-audit. | 1 ticket |
+| v0.7.17 | The Ruby pack | Brakeman and bundler-audit in CI, RuboCop configured, a supported Ruby and no `permit!`, counted once ten corpus repos of Ruby were checked (B24). | 1 ticket |
+| v0.7.18 | iOS, Android and Flutter repos, read | SwiftPM, CocoaPods, the Android manifest and Flutter's pubspec read; App Transport Security and exported components checked. | 1 ticket |
+| v0.7.19 | The mobile pack | What the stores require and what an app bundle gives away: the privacy manifest, the target SDK, no server secret in the app, signing keys out of git, counted once ten corpus repos of apps were checked (B24). | 1 ticket |
+| v0.7.20 | Game repos, read and packed | Unity, Godot, Unreal and Roblox repos read on top of the C# and C++ packs, with Lua and Luau: the engine's version pinned, assets in Git LFS, caches and builds out of git, no store or signing credential committed. | 1 ticket |
+| v0.7.21 | R repos, read and packed | R packages and analyses read and packed in one release: DESCRIPTION and renv, lintr, testthat and R CMD check, beyond the notebooks the data science release (v0.6.58) reads. | 1 ticket |
+| v0.7.22 | Elixir repos, read and packed | A smaller ecosystem, read and packed in one release: mix and Phoenix, with Credo, Dialyzer, Sobelow and mix_audit as its rules. | 1 ticket |
 
 </details>
 
