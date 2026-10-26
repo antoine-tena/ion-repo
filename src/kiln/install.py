@@ -17,6 +17,7 @@ from kiln.shell import KilnError, require_tools, run, step
 from kiln.stack import (
     MAVEN_WRAPPER,
     PNPM_LENIENT_BUILDS,
+    ROOT_DIR,
     Stack,
     answers_if_any,
     load_stack,
@@ -97,7 +98,7 @@ def install_project(root: Path) -> None:
     apply_statusline_settings(root)
     ensure_trailers(ensure_statusline(config))
     command_name = answers_if_any(root).get("name", "<command>")
-    ui.success(f"Ready. Run the project: {_launch_hint(stack, command_name)}")
+    ui.success(f"Ready. {launch_hint(stack, command_name)}")
 
 
 def install_git_hooks(root: Path) -> None:
@@ -145,12 +146,20 @@ def _json_file(path: Path) -> dict[str, object]:
     return content if isinstance(content, dict) else {}
 
 
-def _launch_hint(stack: Stack, command_name: object) -> str:
+def launch_hint(stack: Stack, command_name: object) -> str:
+    """What to run first: the dev servers, the build, the tool, or only the checks of a repo
+    adopted without a stack of kiln."""
     if stack.dev_commands():
-        return "kiln dev"
+        return "Run the project: kiln dev"
     if stack.maven_dir is not None:
-        return f"cd {stack.maven_dir} && {MAVEN_WRAPPER} verify"
-    return f"cd backend && uv run {command_name} --help"
+        return f"Run the project: {_in(stack.maven_dir, f'{MAVEN_WRAPPER} verify')}"
+    if stack.backend == "cli":
+        return f"Run the project: {_in(stack.backend_dir, f'uv run {command_name} --help')}"
+    return "Check the project: kiln check"
+
+
+def _in(directory: str, command: str) -> str:
+    return command if directory == ROOT_DIR else f"cd {directory} && {command}"
 
 
 def _require_stack_tools(stack: Stack, config: UserConfig) -> None:
