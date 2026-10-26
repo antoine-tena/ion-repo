@@ -26,6 +26,6 @@ Talk to the user in their language.
 
 ## Sum up
 
-Stack found, files laid, files kept, size, debt found and what was done about it. A framework
-found outside `backend/` and `frontend/` (a Vite app at the root) gets the common part only: say
-so. From now on `kiln update` keeps the repo current, sparing what it keeps.
+Stack found (and where: a framework at the root has kiln's files follow it there), files laid,
+files kept, size, debt found and what was done about it. Two frameworks at the root: one is
+taken, the other gets the common part only; say so. From now on `kiln update` keeps the repo current, sparing what it keeps.

@@ -1,7 +1,8 @@
 """`kiln adopt`: brings under kiln a repo it did not generate, to the level of `kiln new`.
 
 The template is rendered with the answers kiln infers from the repo (its stack, from the marker
-files of `backend/` and `frontend/`; its size; its owner, from the `origin` remote), and every
+files of `backend/` and `frontend/`, or of the root, where `backend_dir` or `frontend_dir`
+records it; its size; its owner, from the `origin` remote), and every
 file the repo does not have yet is laid: `CLAUDE.md`, `.claude/rules/kiln/`, the size's
 `charter.toml`, the pre-commit hooks, the CI calling kiln's workflows, `docs/backlog/`… Nothing
 the repo already has is overwritten: those files, and the stack's code folders (`backend/`,
