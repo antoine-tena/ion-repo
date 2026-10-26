@@ -19,12 +19,20 @@ DIGEST = "sha256:" + "a" * 64
 RULES = {rule.id: rule for rule in load_rules()}
 
 
+IMAGE_BUILDS = checks.image_builds
+
+
 @pytest.fixture(autouse=True)
 def offline(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(resolve, "commit_of", lambda repo, ref: SHA)
     monkeypatch.setattr(resolve, "exact_version", lambda repo, sha: "v4.2.2")
     monkeypatch.setattr(resolve, "latest_release", lambda repo, major=None: "v4.2.0")
     monkeypatch.setattr(resolve, "image_digest", lambda image: DIGEST)
+    # podman starts every service hardened; tests below say otherwise when they need to.
+    monkeypatch.setattr(containers, "_podman_ready", lambda: True)
+    monkeypatch.setattr(containers, "_starts", lambda root, name, text, services: set(services))
+    # No image is built here: the test that needs a build gives its own.
+    monkeypatch.setattr(checks, "image_builds", lambda root, changed: [])
 
 
 def git(root: Path, *arguments: str) -> str:
@@ -74,6 +82,9 @@ CONVERTED = {
     "IMAGES-BY-DIGEST": {"Dockerfile": "FROM node:24 AS build\nFROM build\n"},
     "CURRENT-DEBIAN": {"Dockerfile": f"FROM python:3.12-slim-bookworm@{DIGEST}\n"},
     "NON-ROOT-CONTAINERS": {"Dockerfile": 'FROM python:3.14-slim\nCOPY . .\nCMD ["app"]\n'},
+    "HARDENED-CONTAINERS": {
+        "compose.yaml": "services:\n  app:\n    build: .\n  db:\n    image: postgres\n"
+    },
     "SUPPORTED-RUNTIMES": {
         ".nvmrc": "18\n",
         "package.json": '{"engines": {"node": ">=16"}}',
@@ -94,6 +105,44 @@ def test_every_converter_named_by_a_rule_has_a_case() -> None:
         "DEAD-CODE",
         "UNUSED-DEPENDENCIES",
     }
+
+
+def test_a_service_is_hardened_under_its_own_keys_and_comments_stay() -> None:
+    text = (
+        "# the stack\nname: shop\nservices:\n  web:\n    image: nginx  # front\n"
+        "    read_only: true\n  worker:\n      build: .\nvolumes:\n  data: {}\n"
+    )
+    assert containers.harden_text(text, ["web", "worker"]) == (
+        "# the stack\nname: shop\nservices:\n  web:\n"
+        "    cap_drop: [ALL]\n    security_opt: [no-new-privileges:true]\n    tmpfs: [/tmp]\n"
+        "    image: nginx  # front\n    read_only: true\n  worker:\n"
+        "      read_only: true\n      cap_drop: [ALL]\n"
+        "      security_opt: [no-new-privileges:true]\n      tmpfs: [/tmp]\n"
+        "      build: .\nvolumes:\n  data: {}\n"
+    )
+
+
+def test_a_service_that_does_not_start_hardened_is_left_as_it_was(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    compose = "services:\n  app:\n    build: .\n  web:\n    image: nginx\n"
+    root = make(tmp_path, {"compose.yaml": compose})
+    monkeypatch.setattr(containers, "_starts", lambda root, name, text, services: {"app"})
+
+    assert containers.harden_compose(read_repo(root)) == ["compose.yaml"]
+    text = (root / "compose.yaml").read_text()
+    assert text.startswith("services:\n  app:\n    read_only: true\n")
+    assert text.endswith("  web:\n    image: nginx\n")
+    assert "compose.yaml (web)" in capsys.readouterr().out
+
+
+def test_hardening_is_never_guessed_without_podman(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = make(tmp_path, CONVERTED["HARDENED-CONTAINERS"])
+    monkeypatch.setattr(containers, "_podman_ready", lambda: False)
+    with pytest.raises(KilnError, match="podman and podman-compose are needed"):
+        containers.harden_compose(read_repo(root))
 
 
 def test_pinned_actions_keep_their_exact_version_as_a_comment(tmp_path: Path) -> None:
@@ -155,6 +204,36 @@ def test_an_old_runtime_on_an_old_debian_moves_both_at_once(
     root = make(tmp_path, {"Dockerfile": f"FROM python:3.8-buster@{DIGEST}\n"})
     convert(read_repo(root))
     assert (root / "Dockerfile").read_text() == f"FROM python:3.13-trixie@{DIGEST}\n"
+
+
+def test_requirements_alone_become_a_uv_project_or_are_restored(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # T-159: pyproject.toml and uv.lock from requirements.txt, which stays as their export.
+    root = make(tmp_path, {"requirements.txt": "flask\n", "requirements-dev.txt": "pytest\n"})
+    ran: list[list[str]] = []
+
+    resolvable = True
+
+    def uv(command: list[str], cwd: Path) -> bool:
+        ran.append(command)
+        if command[1] == "init":
+            (cwd / "pyproject.toml").write_text("[project]\n")
+        return not (command[1] == "add" and not resolvable)
+
+    monkeypatch.setattr(python, "_uv", uv)
+    assert python._uv_project(read_repo(root)) == [
+        "pyproject.toml",
+        "requirements.txt",
+        "requirements-dev.txt",
+    ]
+    assert [command[1] for command in ran] == ["init", "add", "add", "export", "export"]
+
+    (root / "pyproject.toml").unlink()
+    resolvable = False
+    assert python._uv_project(read_repo(root)) == []
+    assert not (root / "pyproject.toml").exists()
+    assert (root / "requirements.txt").read_text() == "flask\n"
 
 
 def test_black_line_length_is_carried_over_to_ruff(tmp_path: Path) -> None:
@@ -291,6 +370,35 @@ def test_a_converter_that_turns_the_checks_red_is_undone_and_handed_to_claude(
     assert f"kiln fix's converter broke a check, undone: {log}" in capsys.readouterr().out
 
 
+@pytest.mark.parametrize(("built_before", "status"), [(True, "reverted"), (False, "fixed")])
+def test_an_image_a_converter_touched_is_built(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, built_before: bool, status: str
+) -> None:
+    # T-159: a converter that breaks the image is undone; an image red before cannot judge.
+    root = make(tmp_path, CONVERTED["NON-ROOT-CONTAINERS"])
+    monkeypatch.setattr(checks, "find", lambda root: [checks.Check(("true",))])
+    build = checks.Check(("sh", "-c", "echo 'useradd: not found'; exit 1"))
+    monkeypatch.setattr(checks, "image_builds", lambda root, changed: [build])
+    monkeypatch.setattr(fix, "_built_before", lambda root, check: built_before)
+
+    outcomes = fix.fix(root, only="NON-ROOT-CONTAINERS")
+
+    assert [found.status for found in outcomes] == [status]
+    if built_before:
+        assert "useradd: not found" in checks.reverted(root)["NON-ROOT-CONTAINERS"].read_text()
+    else:
+        assert "was red before the fix" in git(root, "log", "--format=%b", "-1")
+
+
+def test_only_container_files_are_built(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(checks.shutil, "which", lambda name: f"/usr/bin/{name}")
+    builds = IMAGE_BUILDS(tmp_path, ["api/Dockerfile", "web/app.Dockerfile", "README.md"])
+    assert [build.argv[-3:] for build in builds] == [
+        ("-f", "api/Dockerfile", "api"),
+        ("-f", "web/app.Dockerfile", "web"),
+    ]
+
+
 def test_a_kiln_repo_is_checked_whole_before_and_after(tmp_path: Path) -> None:
     # `kiln check` alone looks at the branch's changes: a converter touching a file with older
     # debt (a Dockerfile the charter bans) would be blamed for it and undone.
@@ -349,3 +457,30 @@ def test_files_the_repo_ignores_are_still_committed(tmp_path: Path) -> None:
 def test_docker_hub_images_are_asked_of_its_registry(name: str, expected: tuple[str, str]) -> None:
     """`docker.io/library/node` named in full answers at registry-1.docker.io, not docker.io."""
     assert resolve.registry_path(name) == expected
+
+
+def test_kiln_update_converts_in_place_and_spares_frozen_files(tmp_path: Path) -> None:
+    """`kiln update`'s pass (T-159): the converters run in the tree, nothing committed, and a
+    frozen file comes out as it went in."""
+    frozen = ".github/workflows/deploy.yml"
+    unpinned = "jobs:\n  a:\n    steps:\n      - uses: actions/checkout@v4\n"
+    root = make(tmp_path, {WORKFLOW: unpinned, frozen: unpinned, "README.md": "# a\n"})
+    head = git(root, "rev-parse", "HEAD")
+    assert "PINNED-ACTIONS" in fix.convert_in_place(root, [frozen])
+    assert f"actions/checkout@{SHA}" in (root / WORKFLOW).read_text()
+    assert (root / frozen).read_text() == unpinned
+    assert git(root, "rev-parse", "HEAD") == head
+    assert git(root, "branch", "--show-current").strip() == "main"
+
+
+def test_kiln_update_names_a_converter_that_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    def offline(repo: str, ref: str) -> str:
+        raise KilnError("GitHub unreachable")
+
+    monkeypatch.setattr(resolve, "commit_of", offline)
+    unpinned = "jobs:\n  a:\n    steps:\n      - uses: actions/checkout@v4\n"
+    root = make(tmp_path, {WORKFLOW: unpinned, "README.md": "# a\n"})
+    assert "PINNED-ACTIONS" not in fix.convert_in_place(root, [])
+    assert "PINNED-ACTIONS left for kiln fix: GitHub unreachable" in capsys.readouterr().out

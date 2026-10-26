@@ -43,6 +43,8 @@ NODE_SCRIPTS = ("lint", "typecheck", "test")
 MANIFESTS = ("pyproject.toml", "package.json", "manage.py")
 SKIPPED_FOLDERS = frozenset({"node_modules", "dist", "build", "venv"})
 LOGS = Path("kiln") / "fix"
+# The tag of the images `kiln fix` builds to prove a converter: overwritten at each build.
+BUILT_IMAGE = "localhost/kiln-fix-check:latest"
 
 GREEN, RED, MISSING, TIMEOUT = "green", "red", "missing", "timeout"
 
@@ -156,6 +158,33 @@ def run(root: Path, check: Check) -> Result:
     if done.returncode != 0:
         return Result(check, RED, (done.stdout + done.stderr)[-LOG_TAIL:])
     return Result(check, GREEN)
+
+
+def image_builds(root: Path, changed: list[str]) -> list[Check]:
+    """A build of each container file among `changed`, by podman or docker, from its folder;
+    none without either."""
+    builder = shutil.which("podman") or shutil.which("docker")
+    if builder is None:
+        return []
+    names = {"Dockerfile", "Containerfile"}
+    return [
+        Check(
+            (
+                Path(builder).name,
+                "build",
+                "--quiet",
+                "-t",
+                BUILT_IMAGE,
+                "-f",
+                name,
+                str(Path(name).parent),
+            ),
+        )
+        for name in changed
+        if Path(name).name in names
+        or Path(name).name.startswith(("Dockerfile.", "Containerfile."))
+        or name.endswith(".Dockerfile")
+    ]
 
 
 def first_failure(root: Path, checks: list[Check]) -> Result | None:
