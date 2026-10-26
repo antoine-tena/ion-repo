@@ -7,6 +7,7 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 entries before v0.4.0 quote kiln's former French names.
 
 ## v0.4.7 — 2026-10-26
+<!-- readme: unchanged: a fix, no new command nor option -->
 - `kiln install` and `kiln check` no longer fail with `ERR_PNPM_NO_LOCKFILE` in a repo whose front has no `pnpm-lock.yaml`: pnpm installs without `--frozen-lockfile` and creates the lockfile, to commit.
 
 ## v0.4.6 — 2026-10-24
