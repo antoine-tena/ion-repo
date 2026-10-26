@@ -75,6 +75,14 @@ def update_project(
         show_release_notes(root, previous, template_commit(root))
         report_frozen_drift(root, _template_source(root), previous, template_commit(root))
         mention_newer_release()
+        if conflicted := conflicted_files(root):
+            # What follows reads these files (pnpm-workspace.yaml, pyproject.toml): stopped here.
+            ui.note(
+                f"conflicts left by the template in {', '.join(conflicted)}: resolve them "
+                "(both sides often hold), then kiln update --no-template for the dependencies"
+            )
+            report_changes(root)
+            return
     stack = load_stack(root)
     if should_update_deps:
         update_dependencies(root, stack, allow_major=allow_major)

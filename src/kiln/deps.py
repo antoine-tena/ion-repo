@@ -16,7 +16,7 @@ from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
 from packaging.version import Version
 
-from kiln.shell import run, step
+from kiln.shell import KilnError, run, step
 from kiln.stack import PNPM_LENIENT_BUILDS, Stack
 
 PNPM_WORKSPACE = "pnpm-workspace.yaml"
@@ -107,7 +107,12 @@ def _major(version: str) -> int:
 
 def _ignored_pnpm_dependencies(project_dir: Path) -> set[str]:
     workspace_path = project_dir / PNPM_WORKSPACE
-    workspace = yaml.safe_load(workspace_path.read_text()) if workspace_path.exists() else {}
+    try:
+        workspace = yaml.safe_load(workspace_path.read_text()) if workspace_path.exists() else {}
+    except yaml.YAMLError as error:
+        mark = getattr(error, "problem_mark", None)
+        where = f" (line {mark.line + 1})" if mark else ""
+        raise KilnError(f"{workspace_path}: not valid YAML{where}, a conflict left?") from error
     update_config = (workspace or {}).get("updateConfig", {}) or {}
     return set(update_config.get("ignoreDependencies", []) or [])
 

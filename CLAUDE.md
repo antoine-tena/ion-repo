@@ -97,7 +97,7 @@ folder or a module.
   their tag (before each candidate).
 - `tests/`: `test_template.py` (the template rendered for each stack), `test_cli.py` (the
   command: welcome, errors, summary, output outside a terminal, old names), `test_questions.py`
-  (`kiln new`'s questions), `test_new.py` (what `kiln new` says at the end), `test_contract.py` (`kiln contract`'s export, a dirty tree named), `test_pause.py` (`kiln pause`'s proposed names), `test_grid.py` (the
+  (`kiln new`'s questions), `test_new.py` (what `kiln new` says at the end), `test_contract.py` (`kiln contract`'s export, a dirty tree named), `test_pause.py` (`kiln pause`'s proposed names), `test_update_conflicts.py` (`kiln update` stopped by a template's conflict), `test_grid.py` (the
   grid), `test_score.py` (`kiln score`), `test_gap_report.py` (reports of the grid's gaps), `test_forge.py` (GitHub settings through a
   fake `gh`),
   `test_fix.py` (`kiln fix` and its conversions), `test_adopted.py` (adopted repos),
