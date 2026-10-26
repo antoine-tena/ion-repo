@@ -12,6 +12,7 @@ from kiln import ui
 from kiln.adopted_names import HOOKS_FILE
 from kiln.config import UserConfig, ensure_system, load_config
 from kiln.dev.backing import start_backing_services
+from kiln.dev.processes import LOCK_MANAGERS, NODE_INSTALLS, package_manager
 from kiln.shell import KilnError, require_tools, run, step
 from kiln.stack import (
     MAVEN_WRAPPER,
@@ -88,8 +89,9 @@ def install_project(root: Path) -> None:
         step("backend: migrations")
         run(["uv", "run", "python", "manage.py", "migrate"], root / stack.backend_dir)
     if stack.pnpm_dir is not None:
-        step(f"{stack.pnpm_dir}: pnpm dependencies")
-        run(pnpm_install_command(root / stack.pnpm_dir), root / stack.pnpm_dir)
+        command = pnpm_install_command(root / stack.pnpm_dir)
+        step(f"{stack.pnpm_dir}: {command[0]} dependencies")
+        run(command, root / stack.pnpm_dir)
     step("git guards (pre-commit) and status line")
     install_git_hooks(root)
     apply_statusline_settings(root)
@@ -206,10 +208,14 @@ def moved_from(venv: Path) -> Path | None:
 
 
 def pnpm_install_command(directory: Path) -> list[str]:
-    """Frozen to the lockfile when there is one; without it (a repo that never committed one),
-    `--frozen-lockfile` fails with ERR_PNPM_NO_LOCKFILE: a plain install creates it."""
+    """Frozen to the lockfile when there is one, by the package manager that wrote it: an
+    adopted npm repo keeps its package-lock.json, where pnpm would add a pnpm-lock.yaml and
+    leave the tree dirty. Without any lock (a repo that never committed one), `--frozen-lockfile`
+    fails with ERR_PNPM_NO_LOCKFILE: a plain pnpm install creates it."""
     if (directory / PNPM_LOCKFILE).is_file():
         return ["pnpm", "install", "--frozen-lockfile", PNPM_LENIENT_BUILDS]
+    if any((directory / lock).is_file() for lock, _ in LOCK_MANAGERS):
+        return list(NODE_INSTALLS[package_manager(directory)][0])
     return ["pnpm", "install", PNPM_LENIENT_BUILDS]
 
 
