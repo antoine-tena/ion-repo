@@ -598,10 +598,11 @@ def test_fixes_only_means_nothing_added_nor_broken() -> None:
     assert not is_fixes_only([])
 
 
+@pytest.mark.parametrize("flag", ["--version", "-V", "-v"])
 def test_version_flag_prints_the_installed_version(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    flag: str, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    monkeypatch.setattr(sys, "argv", ["kiln", "--version"])
+    monkeypatch.setattr(sys, "argv", ["kiln", flag])
     with pytest.raises(SystemExit) as exit_request:
         cli.main()
 

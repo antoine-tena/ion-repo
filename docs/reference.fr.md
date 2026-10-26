@@ -144,7 +144,10 @@ session pose la question, ni dans `kiln doctor`, ni pour un outil installé depu
 `new`, `install`, `update` et `status` s'ouvrent sur une bannière : un four en pixel art, la
 version de kiln, la commande, le projet (envergure, stack) et son dossier. Hors terminal ou avec
 `NO_COLOR`, une seule ligne de texte à la place. `kiln` seul (ou `kiln --help`) ouvre l'écran
-d'accueil : commandes par section et exemples ; les étapes, succès, erreurs et le tableau de
+d'accueil : commandes par section et exemples ; `kiln <commande> --help` (ou `-h`) montre
+les options d'une commande de la même façon (bannière, usage court
+`kiln new [options] [directory]`, arguments, options) ; `kiln --version` (ou `-V`, `-v`) donne
+la version ; les étapes, succès, erreurs et le tableau de
 `status` suivent la même palette pierre et feu, sans couleur hors terminal.
 Chaque commande externe (`uv sync`, `pnpm install`, contrôles…) tourne derrière une roue animée
 qui montre sa dernière ligne, puis laisse `✓ commande  durée` ; sa sortie complète n'apparaît
