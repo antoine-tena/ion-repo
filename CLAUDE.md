@@ -116,8 +116,11 @@ repo kiln didn't create, T-131). **The detailed measurements are not public** (s
 a site in production, vulnerabilities of a third-party project not yet reported to its team):
 they live in the **private** repo `antoine-tena/kiln-private` (`~/code/kiln-private`,
 `mesures-repos-entrainement.md`), never in kiln, not on a branch, not in a commit. Write only
-aggregate figures in the public repo, nothing that identifies the university project. Always
-measure on a local copy, never in the repo itself.
+aggregate figures in the public repo about the association's repo, never its name; the
+university repo is not cited at all, not even in aggregate (antoine, 26 October 2026). Always
+measure on a local copy, never in the repo itself. kiln may also train on antoine's small repos
+(sweep, a course project: up to 100, in their own sessions) and on a copy of annway
+(`annway-copie`, for the Java pack), never on annway itself.
 
 ## In every change
 
