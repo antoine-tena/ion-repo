@@ -127,6 +127,31 @@ def test_a_backend_change_runs_the_backend_checks_not_the_frontend_ones(tmp_path
     assert {command.directory for command in commands} == {"backend"}
 
 
+def test_an_npm_front_is_checked_by_npm_and_only_with_its_own_scripts(tmp_path: Path) -> None:
+    stack = Stack(backend="aucun", frontend="vite-react", has_podman=False, frontend_dir=".")
+    (tmp_path / "package.json").write_text('{"scripts": {"lint": "eslint ."}}')
+    (tmp_path / "package-lock.json").write_text("{}")
+
+    commands = _check_commands(tmp_path, stack)
+
+    # pnpm would install over package-lock.json, add a pnpm-lock.yaml, then find no typecheck.
+    assert [command.argv for command in commands] == [("npm", "run", "lint"), ("charter",)]
+
+
+def test_a_python_tool_the_repo_lacks_is_skipped_not_spawned(tmp_path: Path) -> None:
+    stack = Stack(backend="django", frontend="aucun", has_podman=False)
+    venv_bin = tmp_path / "backend" / ".venv" / "bin"
+    venv_bin.mkdir(parents=True)
+    (venv_bin / "ruff").touch()
+    (tmp_path / "backend" / "pyproject.toml").write_text('[dependency-groups]\ndev = ["ruff"]\n')
+
+    labels = [command.label for command in _check_commands(tmp_path, stack)]
+
+    assert labels == ["backend ruff", "backend format", "charter"]
+    (tmp_path / "backend" / "pyproject.toml").write_text('dev = ["ruff", "mypy"]\n')
+    assert "backend mypy" in [command.label for command in _check_commands(tmp_path, stack)]
+
+
 def test_backend_tests_take_the_databases_of_the_ci_job(tmp_path: Path) -> None:
     assert _ci_django_job(tmp_path, "backend") is None  # no ci.yml: the compose's databases
     workflows = tmp_path / ".github" / "workflows"

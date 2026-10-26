@@ -115,15 +115,7 @@ def procfile_commands(root: Path, directory: str) -> list[Command]:
 
 def package_script_commands(root: Path, directory: str) -> list[Command]:
     """The scripts of a folder's `package.json` that keep running, run by its package manager."""
-    path = root / directory / PACKAGE_FILE
-    if not path.is_file():
-        return []
-    try:
-        scripts = json.loads(path.read_text(encoding="utf-8")).get("scripts")
-    except json.JSONDecodeError, AttributeError:
-        return []
-    if not isinstance(scripts, dict):
-        return []
+    scripts = package_scripts(root / directory)
     names = [
         name for name in scripts if name in DEV_SCRIPTS or name.startswith(DEV_SCRIPT_PREFIXES)
     ] or [name for name in scripts if name == FALLBACK_SCRIPT]
@@ -133,6 +125,15 @@ def package_script_commands(root: Path, directory: str) -> list[Command]:
         Command(prefix + name.replace(":", "-"), directory, (manager, "run", name))
         for name in names
     ]
+
+
+def package_scripts(folder: Path) -> dict[str, object]:
+    """The `scripts` of a folder's `package.json`; none when it is missing or unreadable."""
+    try:
+        scripts = json.loads((folder / PACKAGE_FILE).read_text(encoding="utf-8")).get("scripts")
+    except OSError, json.JSONDecodeError, AttributeError:
+        return {}
+    return scripts if isinstance(scripts, dict) else {}
 
 
 def node_installs(root: Path, commands: list[Command]) -> list[Command]:

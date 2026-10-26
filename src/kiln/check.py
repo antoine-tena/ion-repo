@@ -24,6 +24,7 @@ from kiln.ci.jobs import RELAYS, Plan, plan_job
 from kiln.ci.services import remove_orphan_containers, running_services
 from kiln.ci.workflow import CI_WORKFLOW, load_jobs
 from kiln.dev.backing import start_backing_services
+from kiln.dev.processes import PACKAGE_FILE, package_scripts, through_lock_manager
 from kiln.install import (
     ensure_env_file,
     moved_from,
@@ -115,8 +116,32 @@ def _check_commands(
             continue
         if command.label == f"{typed_directory} mypy":
             command = Command(command.label, ".", ("charter", "types"))
-        commands.append(command)
+        elif missing := _missing_from_repo(root, command):
+            ui.note(f"{command.label}: {missing}, check skipped")
+            continue
+        commands.append(through_lock_manager(root, command))
     return commands
+
+
+def _missing_from_repo(root: Path, command: Command) -> str | None:
+    """What an adopted repo lacks for a check of its stack: a front script its package.json
+    does not declare, a Python tool neither its venv nor its pyproject.toml has. Said instead of
+    failing on `Command "lint" not found` or `Failed to spawn: mypy`."""
+    folder = root / command.directory
+    match command.argv:
+        case ("pnpm", script) if script not in package_scripts(folder):
+            return f"no `{script}` script in {_shown(command.directory, PACKAGE_FILE)}"
+        case ("uv", "run", tool, *_) if (folder / ".venv").is_dir() and not (
+            folder / ".venv" / "bin" / tool
+        ).exists():
+            pyproject = folder / "pyproject.toml"
+            if not (pyproject.is_file() and tool in pyproject.read_text(encoding="utf-8")):
+                return f"{tool} is not in {_shown(command.directory, 'pyproject.toml')}"
+    return None
+
+
+def _shown(directory: str, name: str) -> str:
+    return name if directory == "." else f"{directory}/{name}"
 
 
 def _touches(changed: list[str] | None, directory: str) -> bool:
