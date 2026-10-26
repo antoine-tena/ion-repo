@@ -34,6 +34,7 @@ from kiln.stack import (
     FRONTEND_MARKERS,
     NO_FRAMEWORK,
     PODMAN_MARKERS,
+    ROOT_DIR,
     VITE_REACT,
     Stack,
     detect_stack,
@@ -114,6 +115,11 @@ def adoption_answers(root: Path, size: str, stack: Stack) -> dict[str, object]:
         # Not empty, so that a repo without a stack is accepted; the real list comes after.
         "kept": [ANSWERS_FILE],
     }
+    # Code at the root (a Vite app, a `manage.py` there): the template's paths follow it.
+    if stack.backend_dir != BACKEND_DIR:
+        answers["backend_dir"] = stack.backend_dir
+    if stack.frontend_dir != FRONTEND_DIR:
+        answers["frontend_dir"] = stack.frontend_dir
     if owner := _remote_owner(root):
         answers["owner"] = owner
     return answers
@@ -121,7 +127,9 @@ def adoption_answers(root: Path, size: str, stack: Stack) -> dict[str, object]:
 
 def kept_paths(root: Path, rendered: Path, stack: Stack) -> list[str]:
     """What the repo keeps as its own: the files of the template it already has, its code
-    folders, and the template's compose file when it has its own."""
+    folders (the template's `backend/` or `frontend/` too when its code lives at the root: the
+    template's sample code is never laid beside the repo's), and the template's compose file
+    when it has its own."""
     folders = [
         directory
         for directory, name in ((BACKEND_DIR, stack.backend), (FRONTEND_DIR, stack.frontend))
@@ -170,10 +178,16 @@ def _say_stack(root: Path, stack: Stack) -> None:
     ]
     if found:
         ui.note(f"stack: {' + '.join(found)}")
+    for name, directory in (
+        (stack.backend, stack.backend_dir),
+        (stack.frontend, stack.frontend_dir),
+    ):
+        if directory == ROOT_DIR:
+            ui.note(f"{name} at the root: kiln's files follow it there")
     if elsewhere:
         ui.note(
-            f"{', '.join(elsewhere)} at the root: kiln's files for it expect {BACKEND_DIR}/ or "
-            f"{FRONTEND_DIR}/; the common part only"
+            f"{', '.join(elsewhere)} at the root too: one framework only at the root, "
+            "the common part for the other"
         )
     elif not found:
         ui.note("no stack of kiln found: the common part only (CI, hooks, rules, charter)")

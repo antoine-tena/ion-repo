@@ -27,12 +27,19 @@ import subprocess
 from pathlib import Path
 from typing import IO
 
-from kiln.stack import BACKEND_DIR, FRONTEND_DIR, PNPM_LENIENT_BUILDS, Command, load_stack
+from kiln.stack import (
+    BACKEND_DIR,
+    FRONTEND_DIR,
+    PNPM_LENIENT_BUILDS,
+    ROOT_DIR,
+    Command,
+    load_stack,
+)
 
 ENV_FILE = ".env"
 DEV_ENV_FILE = ".env.dev"
 PROCFILE = "Procfile.dev"
-PROCFILE_DIRS = (BACKEND_DIR, FRONTEND_DIR, ".")
+PROCFILE_DIRS = (BACKEND_DIR, FRONTEND_DIR, ROOT_DIR)
 _PROCFILE_LINE = re.compile(r"^([A-Za-z0-9_-]+):\s*(\S.*)$")
 PACKAGE_FILE = "package.json"
 DEV_SCRIPTS = ("dev", "server", "serve", "watch")
@@ -59,21 +66,23 @@ NPM_WITHOUT_LOCK = ("npm", "install")
 
 def dev_processes(root: Path) -> list[Command]:
     """The stack's servers, then the processes of the `Procfile.dev`s; a same name replaces."""
-    by_label = {command.label: command for command in load_stack(root).dev_commands()}
+    stack = load_stack(root)
+    by_label = {command.label: command for command in stack.dev_commands()}
     served = {command.directory for command in by_label.values()}
-    for directory in PROCFILE_DIRS:
+    directories = list(dict.fromkeys((stack.backend_dir, stack.frontend_dir, *PROCFILE_DIRS)))
+    for directory in directories:
         if directory not in served:
             for command in package_script_commands(root, directory):
                 by_label.setdefault(command.label, command)
-    for directory in PROCFILE_DIRS:
+    for directory in directories:
         for command in procfile_commands(root, directory):
             by_label[command.label] = command
     return list(by_label.values())
 
 
-def runs_beyond_front(commands: list[Command]) -> bool:
+def runs_beyond_front(commands: list[Command], front_dir: str = FRONTEND_DIR) -> bool:
     """Whether a process outside the front runs: the local stack, databases and `.env.dev`."""
-    return any(command.directory != FRONTEND_DIR for command in commands)
+    return any(command.directory != front_dir for command in commands)
 
 
 def procfile_commands(root: Path, directory: str) -> list[Command]:

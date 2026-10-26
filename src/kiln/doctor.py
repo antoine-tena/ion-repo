@@ -23,7 +23,7 @@ from kiln.install import (
     pnpm_behind,
 )
 from kiln.shell import INSTALL_HINTS, KilnError
-from kiln.stack import ANSWERS_FILE, BACKEND_DIR, Stack, load_stack, read_answers
+from kiln.stack import ANSWERS_FILE, Stack, load_stack, read_answers
 from kiln.versions import installed_version, latest_release, release_version, upgrade_command
 
 PROBE_TIMEOUT = 5
@@ -206,7 +206,7 @@ def repo_findings(root: Path, stack: Stack | None) -> list[Finding]:
     if stack.pnpm_dir is not None:
         findings.append(_pnpm(root / stack.pnpm_dir, f"{stack.pnpm_dir} (pnpm)"))
     if stack.has_api:
-        env_file = root / BACKEND_DIR / ".env"
+        env_file = root / stack.backend_dir / ".env"
         findings.append(
             Finding(Level.OK, "backend/.env", "present")
             if env_file.exists()

@@ -14,7 +14,6 @@ from kiln.config import UserConfig, ensure_system, load_config
 from kiln.dev.backing import start_backing_services
 from kiln.shell import KilnError, require_tools, run, step
 from kiln.stack import (
-    BACKEND_DIR,
     MAVEN_WRAPPER,
     PNPM_LENIENT_BUILDS,
     Stack,
@@ -83,11 +82,11 @@ def install_project(root: Path) -> None:
         run([MAVEN_WRAPPER, "-B", "-q", "-DskipTests", "package"], root / stack.maven_dir)
     if stack.has_api:
         step("backend: .env")
-        ensure_env_file(root / BACKEND_DIR)
+        ensure_env_file(root / stack.backend_dir)
     if stack.backend == "django":
         start_backing_services(root)
         step("backend: migrations")
-        run(["uv", "run", "python", "manage.py", "migrate"], root / BACKEND_DIR)
+        run(["uv", "run", "python", "manage.py", "migrate"], root / stack.backend_dir)
     if stack.pnpm_dir is not None:
         step(f"{stack.pnpm_dir}: pnpm dependencies")
         run(pnpm_install_command(root / stack.pnpm_dir), root / stack.pnpm_dir)

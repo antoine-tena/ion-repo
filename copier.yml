@@ -113,6 +113,19 @@ kept:
   default: "[]"
   when: "{{ kept | length > 0 }}"
 
+# Where the backend and the front live: `backend/` and `frontend/` in a repo kiln generated, the
+# root (`.`) in a repo adopted with its code there. Written by `kiln adopt`, never asked; kept in
+# the answers only when it differs.
+backend_dir:
+  type: str
+  default: backend
+  when: "{{ (backend_dir | default('backend')) != 'backend' }}"
+
+frontend_dir:
+  type: str
+  default: frontend
+  when: "{{ (frontend_dir | default('frontend')) != 'frontend' }}"
+
 # The project type only advises: it preselects the backend and the frontend below, which stay
 # free. Table of advice: kiln's README, "What you get".
 project_type:

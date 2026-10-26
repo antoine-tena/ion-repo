@@ -1,12 +1,13 @@
+{%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
 {%- set level = {'spark': 0, 'ember': 1, 'flame': 2, 'blaze': 3}[size] -%}
 ---
 paths:
-  - "backend/**"
+  - "{{ bp }}**"
 ---
 <!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten. -->
 # Backend: FastAPI
 
-`backend/app/`: entry point (`main.py`), settings (`settings.py`), health probes (`health.py`);
+`{{ bp }}app/`: entry point (`main.py`), settings (`settings.py`), health probes (`health.py`);
 one module per domain. Run: `kiln dev` (or `uv run uvicorn app.main:app --reload`); check:
 `kiln check`.
 

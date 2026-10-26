@@ -23,7 +23,7 @@ from kiln import ui
 from kiln.dev.foreground import PREFIX_COLORS, service_prefix, stop_all
 from kiln.dev.processes import runs_beyond_front, signal_group, spawn
 from kiln.shell import KilnError, capture, spinner_line
-from kiln.stack import Command
+from kiln.stack import Command, load_stack
 
 STATE_DIR = "kiln-dev"
 # Port each stack's server listens on, to know when it is ready and where to open it.
@@ -156,7 +156,7 @@ def start(root: Path, commands: list[Command]) -> None:
     for stale in folder.glob("*.json"):
         stale.unlink()
     env = {**os.environ, "PYTHONUNBUFFERED": "1"}
-    full_stack = runs_beyond_front(commands)
+    full_stack = runs_beyond_front(commands, load_stack(root).frontend_dir)
     processes = []
     for command in commands:
         with (folder / f"{command.label}.log").open("w", encoding="utf-8") as output:

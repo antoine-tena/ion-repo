@@ -1,11 +1,12 @@
+{%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
 # Rules of this repo checked by kiln's `charter` command: after each edit (Claude Code hook),
 # before each commit (pre-commit) and in CI. Bans hold everywhere. Ratchets: the existing debt
 # is a ceiling that only goes down. Floors: a value that only goes up. Values: `charter --detail`.
 # kiln keeps this file current (`kiln update`); budgets and floors are the project's to lower
 # and raise, and its own rules can be added here.
-{%- set python_files = (['backend/*.py', 'backend/**/*.py'] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + (['frontend/*.py', 'frontend/**/*.py'] if frontend in ['streamlit', 'dash'] else []) %}
-{%- set java_files = ['backend/src/**/*.java'] if backend == 'java' else [] %}
-{%- set front_files = {'nuxt': ['frontend/app/**'], 'next': ['frontend/app/**', 'frontend/components/**', 'frontend/lib/**'], 'astro': ['frontend/src/**'], 'vite-react': ['frontend/src/**']}.get(frontend, []) %}
+{%- set python_files = ([(bp ~ '*.py'), (bp ~ '**/*.py')] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + ([(fp ~ '*.py'), (fp ~ '**/*.py')] if frontend in ['streamlit', 'dash'] else []) %}
+{%- set java_files = [(bp ~ 'src/**/*.java')] if backend == 'java' else [] %}
+{%- set front_files = {'nuxt': [(fp ~ 'app/**')], 'next': [(fp ~ 'app/**'), (fp ~ 'components/**'), (fp ~ 'lib/**')], 'astro': [(fp ~ 'src/**')], 'vite-react': [(fp ~ 'src/**')]}.get(frontend, []) %}
 
 size = "{{ size }}"
 exclude = ["/migrations/", "/notebooks/"]
@@ -60,10 +61,10 @@ budget = 0
 id = "VIEW-15"
 {%- if backend == 'django' %}
 decorator = '\s*@\w*(api|router)\.(get|post|put|patch|delete)'
-files = ["backend/**/api.py", "backend/**/api/*.py"]
+files = ["{{ bp }}**/api.py", "{{ bp }}**/api/*.py"]
 {%- else %}
 decorator = '\s*@\w*(app|router)\.(get|post|put|patch|delete)'
-files = ["backend/app/**/*.py"]
+files = ["{{ bp }}app/**/*.py"]
 {%- endif %}
 budget = 0
 
@@ -72,10 +73,10 @@ budget = 0
 rule = "occurrences"
 id = "CLOCK"
 {%- if backend == 'django' %}
-files = ["backend/tests/*.py", "backend/**/tests/*.py"]
+files = ["{{ bp }}tests/*.py", "{{ bp }}**/tests/*.py"]
 pattern = "timezone.now()"
 {%- else %}
-files = ["backend/tests/*.py", "backend/tests/**/*.py"]
+files = ["{{ bp }}tests/*.py", "{{ bp }}tests/**/*.py"]
 pattern = "datetime.now("
 {%- endif %}
 budget = 0
@@ -86,42 +87,42 @@ budget = 0
 [ratchets.console-logging]
 rule = "occurrences"
 id = "LOGGING"
-files = ["backend/src/main/**/*.java"]
+files = ["{{ bp }}src/main/**/*.java"]
 pattern = "System.out.print"
 budget = 0
 
 [ratchets.error-logging]
 rule = "occurrences"
 id = "LOGGING"
-files = ["backend/src/main/**/*.java"]
+files = ["{{ bp }}src/main/**/*.java"]
 pattern = "System.err.print"
 budget = 0
 
 [ratchets.stack-traces]
 rule = "occurrences"
 id = "LOGGING"
-files = ["backend/src/**/*.java"]
+files = ["{{ bp }}src/**/*.java"]
 pattern = "printStackTrace("
 budget = 0
 
 [ratchets.clock-instant]
 rule = "occurrences"
 id = "CLOCK"
-files = ["backend/src/**/*.java"]
+files = ["{{ bp }}src/**/*.java"]
 pattern = "Instant.now()"
 budget = 0
 
 [ratchets.clock-date]
 rule = "occurrences"
 id = "CLOCK"
-files = ["backend/src/**/*.java"]
+files = ["{{ bp }}src/**/*.java"]
 pattern = "LocalDate.now()"
 budget = 0
 
 [ratchets.constant-time-java]
 rule = "occurrences"
 id = "CONSTANT-TIME"
-files = ["backend/src/main/**/*.java"]
+files = ["{{ bp }}src/main/**/*.java"]
 pattern = "Token.equals("
 budget = 0
 {%- endif %}
@@ -153,13 +154,13 @@ budget = 0
 # Read by the django.yml workflow (`charter types`, `charter coverage`); other Python projects run
 # mypy and pytest --cov-fail-under directly (python.yml workflow, `kiln check`).
 [types]
-directory = "backend"
+directory = "{{ bd }}"
 packages = ["config", "tests"]
 budget = 0
 env = { DJANGO_SECRET_KEY = "charter-types" }
 
 [coverage]
-report = "backend/coverage.xml"
+report = "{{ bp }}coverage.xml"
 floors = { TOTAL = 80 }
 # The generated base is 100 % covered: only suggest raising the floor beyond that.
 margin = 25
