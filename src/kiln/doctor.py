@@ -217,6 +217,8 @@ def repo_findings(root: Path, stack: Stack | None) -> list[Finding]:
 
 def _template(root: Path) -> Finding:
     if not (root / ANSWERS_FILE).exists():
+        if _is_kiln_source(root):
+            return Finding(Level.OK, "template", "kiln's own repo (the template's source)")
         if charter_path(root) is not None:
             return Finding(Level.OK, "template", "adopted repo (charter without template)")
         return Finding(Level.WARN, "template", "not a kiln repo", "kiln new, or kiln adopt")
@@ -234,6 +236,17 @@ def _template(root: Path) -> Finding:
             "kiln update, on a branch (skill /kiln:update)",
         )
     return Finding(Level.OK, "template", f"{commit} (up to date)")
+
+
+def _is_kiln_source(root: Path) -> bool:
+    """kiln's checkout renders the template rather than being rendered by it."""
+    pyproject = root / "pyproject.toml"
+    return (
+        (root / "copier.yml").is_file()
+        and (root / "template").is_dir()
+        and pyproject.is_file()
+        and 'name = "kiln-cli"' in pyproject.read_text(encoding="utf-8")
+    )
 
 
 def _hook(root: Path) -> Finding:

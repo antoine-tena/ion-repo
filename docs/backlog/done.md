@@ -3,6 +3,7 @@
 The closed tickets of kiln, most recent first, one line each:
 `- **YYYY-MM-DD** · T-NN · Title — what was done (branch) · opened YYYY-MM-DD`.
 
+- **2026-10-26** · T-362 · `kiln doctor` calls kiln's own repo "not a kiln repo" — kiln's checkout (its `copier.yml`, `template/` and the `kiln-cli` package) reported as the template's source; a stranger's repo still warned (fix/doctor-kiln-repo) · opened 2026-10-26
 - **2026-10-26** · T-361 · `kiln ci` speaks French in one reason — the reason of a job with services of its own in English, the one French string left in what the user reads (the others convert old files) (fix/ci-english) · opened 2026-10-26
 - **2026-10-24** · T-38 · What the grid does not know, reported with consent — `kiln score` names the known packages no rule covers and the rules waived again and again; in a terminal it offers to tell kiln with the exact lines that leave, one issue per gap or a 👍, a prefilled link without `gh`, "never" per repo; closes #42 (feat/grid-gaps) · opened 2026-10-16
 - **2026-10-24** · T-156 · Committed trained models tied to the code that made them — `pipeline/models.py` in the data stack writes a manifest (code hash, seed, dataset, metrics), `tests/test_models.py` fails on stale code or lower metrics, grid rule `MODEL-TRACED` (trial); closes #44 (feat/traced-models) · opened 2026-10-20
