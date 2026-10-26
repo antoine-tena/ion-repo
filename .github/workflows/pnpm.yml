@@ -52,7 +52,7 @@ jobs:
           cache-dependency-path: ${{ inputs.directory }}/pnpm-lock.yaml
 
       - name: Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --config.strict-dep-builds=false
 
       - name: Scripts
         env:
