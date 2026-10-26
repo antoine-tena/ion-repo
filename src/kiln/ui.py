@@ -10,6 +10,8 @@ import shutil
 import sys
 import threading
 import time
+from collections.abc import Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import TextIO
 
@@ -87,16 +89,34 @@ class StepRecord:
 
 # Steps of the running command, for the final recap.
 _steps: list[StepRecord] = []
+# Spinner told of each step meanwhile, for work whose output goes elsewhere (`update --all`).
+_step_watchers: list[Spinner] = []
 
 
 def step(title: str) -> None:
     """Start of a step: a fire diamond and the title in bold; the previous step closes."""
     _close_last_step()
     _steps.append(StepRecord(title))
+    for watcher in _step_watchers:
+        watcher.show(title)
     if is_styled():
         print(f"\n{paint('◆', FIRE)} {paint(title, bold=True)}", flush=True)
     else:
         print(f"\n==> {title}", flush=True)
+
+
+@contextmanager
+def steps_elsewhere(spinner: Spinner | None) -> Iterator[None]:
+    """Steps whose output goes to a log: their title shown by `spinner`, if any, and left out of
+    the final recap."""
+    kept = len(_steps)
+    if spinner is not None:
+        _step_watchers.append(spinner)
+    try:
+        yield
+    finally:
+        _step_watchers.clear()
+        del _steps[kept:]
 
 
 def success(message: str) -> None:
@@ -143,16 +163,22 @@ class Spinner:
     """Animated line during an external command: fire wheel, command, last line of its output
     in grey. At the end, a fixed line: ✓ or ✗, the command and its duration."""
 
-    def __init__(self, label: str) -> None:
+    def __init__(self, label: str, stream: TextIO | None = None) -> None:
         self.label = label
+        # sys.stdout by default, read at call time; the terminal while stdout goes to a log.
+        self._stream = stream
         self.detail = ""
         self.started = time.monotonic()
         self._stopped = threading.Event()
         self._lock = threading.Lock()
         self._thread = threading.Thread(target=self._spin, daemon=True)
 
+    @property
+    def stream(self) -> TextIO:
+        return self._stream or sys.stdout
+
     def start(self) -> None:
-        sys.stdout.write("\033[?25l")  # cursor hidden during the animation
+        self.stream.write("\033[?25l")  # cursor hidden during the animation
         self._thread.start()
 
     def stop(self) -> None:
@@ -161,8 +187,8 @@ class Spinner:
             return
         self._stopped.set()
         self._thread.join()
-        sys.stdout.write("\r\033[2K\033[?25h")
-        sys.stdout.flush()
+        self.stream.write("\r\033[2K\033[?25h")
+        self.stream.flush()
 
     def show(self, line: str) -> None:
         if line.strip():
@@ -174,15 +200,20 @@ class Spinner:
         self.stop()
         if not succeeded and _steps:
             _steps[-1].failed = True
-        mark = paint("✓", MOSS) if succeeded else paint("✗", EMBER, bold=True)
-        elapsed = paint(format_duration(time.monotonic() - self.started), STONE_DARK)
+        stream = self.stream
+        mark = (
+            paint("✓", MOSS, stream=stream)
+            if succeeded
+            else paint("✗", EMBER, bold=True, stream=stream)
+        )
+        elapsed = paint(format_duration(time.monotonic() - self.started), STONE_DARK, stream=stream)
         label = _fit(self.label, _columns() - 16)
-        print(f"  {mark} {paint(label, STONE)}  {elapsed}", flush=True)
+        print(f"  {mark} {paint(label, STONE, stream=stream)}  {elapsed}", file=stream, flush=True)
         if not succeeded:
-            margin = paint("│", EMBER)
+            margin = paint("│", EMBER, stream=stream)
             for line in output.rstrip().splitlines():
-                print(f"    {margin} {line}")
-            sys.stdout.flush()
+                print(f"    {margin} {line}", file=stream)
+            stream.flush()
 
     def _spin(self) -> None:
         frame = 0
@@ -191,12 +222,13 @@ class Spinner:
                 detail = self.detail
             label = _fit(self.label, _columns() // 2)
             room = _columns() - len(label) - 8
-            wheel = paint(SPINNER_FRAMES[frame % len(SPINNER_FRAMES)], FIRE)
-            text = paint(label, STONE_LIGHT)
+            stream = self.stream
+            wheel = paint(SPINNER_FRAMES[frame % len(SPINNER_FRAMES)], FIRE, stream=stream)
+            text = paint(label, STONE_LIGHT, stream=stream)
             if detail and room > 10:
-                text += paint(f"  {_fit(detail, room)}", STONE_DARK)
-            sys.stdout.write(f"\r\033[2K  {wheel} {text}")
-            sys.stdout.flush()
+                text += paint(f"  {_fit(detail, room)}", STONE_DARK, stream=stream)
+            stream.write(f"\r\033[2K  {wheel} {text}")
+            stream.flush()
             frame += 1
 
 

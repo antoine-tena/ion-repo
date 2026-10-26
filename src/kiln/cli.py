@@ -476,6 +476,11 @@ def _add_update_command(commands: argparse._SubParsersAction[argparse.ArgumentPa
         action="store_true",
         help="play the update on a throwaway clone first, the repo left untouched",
     )
+    update_parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="with --all: every command's output shown, not one line per repo",
+    )
 
 
 def _new_project_request(arguments: argparse.Namespace) -> new.NewProjectRequest:
@@ -771,7 +776,12 @@ def _dispatch_fleet(arguments: argparse.Namespace) -> None:
     if arguments.command == "status":
         fleet.show_status(code_dir)
     else:
-        fleet.update_all(code_dir, allow_major=arguments.major, rehearse=arguments.rehearse)
+        fleet.update_all(
+            code_dir,
+            allow_major=arguments.major,
+            rehearse=arguments.rehearse,
+            verbose=arguments.verbose,
+        )
 
 
 def show_home(parser: argparse.ArgumentParser) -> None:

@@ -7,8 +7,11 @@ checks: the branch is pushed without merging, to be taken up by hand.
 """
 
 import datetime
+import functools
 import subprocess
+import time
 from collections import Counter
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -17,7 +20,7 @@ from kiln.charter.config import CHARTER_FILE, LEGACY_CHARTER_FILE
 from kiln.charter.waivers import Waivers, load
 from kiln.check import run_checks
 from kiln.install import install_project
-from kiln.shell import KilnError, capture, require_tools, run, step
+from kiln.shell import KilnError, capture, output_to, require_tools, run, step
 from kiln.stack import ANSWERS_FILE, answers_if_any, load_stack, read_answers
 from kiln.update import conflicted_files, update_project
 from kiln.versions import is_beta, latest_release, release_version
@@ -38,6 +41,10 @@ MAX_FILES_PER_COMMIT = 10
 # pre-commit refuses to run while its changed configuration is not committed.
 FIRST_COMMITTED = ".pre-commit-config.yaml"
 COMMIT_ATTEMPTS = 2
+# What each repo's update wrote, one log per repo and per run: the terminal gets one line each.
+LOGS_DIR = Path.home() / ".cache" / "kiln" / "update-all"
+# Outcomes with nothing left to do by hand.
+DONE_OUTCOMES = ("merged into ", "already up to date", "rehearsal: ")
 
 
 @dataclass(frozen=True)
@@ -174,24 +181,70 @@ def _waiver_count(waivers: Waivers) -> str:
     return f"{len(waivers.actives)}{' !' if waivers.errors else ''}"
 
 
-def update_all(code_dir: Path, *, allow_major: bool, rehearse: bool = False) -> None:
+def update_all(
+    code_dir: Path, *, allow_major: bool, rehearse: bool = False, verbose: bool = False
+) -> None:
     """Every repo updated and merged; with `rehearse`, each update played on a clone, nothing
-    touched (before a promotion or an `update --all`)."""
+    touched (before a promotion or an `update --all`). One line per repo, its output in a log;
+    `verbose`: everything shown as it runs."""
     require_tools("git", "uv")
     # Generated repos replay the template; adopted ones only move kiln's workflows' tag.
     roots = [repo.root for repo in find_repos(code_dir)] + find_adopted(code_dir)
-    results = [
-        (
-            root,
-            rehearse_one(root, allow_major=allow_major)
-            if rehearse
-            else update_one(root, allow_major=allow_major),
-        )
-        for root in roots
-    ]
-    step("Summary")
-    for root, outcome in results:
-        print(f"{root.relative_to(code_dir)!s:<30} {outcome}")
+
+    def work(root: Path) -> str:
+        if rehearse:
+            return rehearse_one(root, allow_major=allow_major)
+        return update_one(root, allow_major=allow_major)
+
+    if verbose:
+        results = [(root, work(root)) for root in roots]
+        step("Summary")
+        for root, outcome in results:
+            print(f"{root.relative_to(code_dir)!s:<30} {outcome}")
+        return
+    started = time.monotonic()
+    logs = LOGS_DIR / datetime.datetime.now().strftime("%Y-%m-%d-%H%M%S")
+    logs.mkdir(parents=True, exist_ok=True)
+    ui.note(f"\none line per repo, its full output in {logs} (--verbose: shown here)\n")
+    width = max((len(str(root.relative_to(code_dir))) for root in roots), default=0)
+    left = 0
+    for root in roots:
+        name = str(root.relative_to(code_dir))
+        log = logs / f"{name.replace('/', '-')}.log"
+        outcome = run_logged(f"{name:<{width}}", log, functools.partial(work, root))
+        if not outcome.startswith(DONE_OUTCOMES):
+            left += 1
+            print(ui.paint(f"    log: {log}", ui.STONE_DARK), flush=True)
+    total = ui.format_duration(time.monotonic() - started)
+    if left:
+        ui.note(f"\n{left} of {len(roots)} repos to finish by hand ({total}): each log says why")
+    else:
+        ui.success(f"{len(roots)} repos updated in {total}")
+
+
+def run_logged(label: str, log: Path, work: Callable[[], str]) -> str:
+    """Runs `work` with its output in `log`, a spinner on the terminal naming the current step,
+    then one line: ✓ or ✗, the label, the outcome and the duration."""
+    started = time.monotonic()
+    with output_to(log) as terminal:
+        spinner = ui.Spinner(label, stream=terminal) if ui.is_styled(terminal) else None
+        if spinner is not None:
+            spinner.start()
+        try:
+            with ui.steps_elsewhere(spinner):
+                outcome = work()
+        finally:
+            if spinner is not None:
+                spinner.stop()
+    is_done = outcome.startswith(DONE_OUTCOMES)
+    mark = ui.paint("✓", ui.MOSS) if is_done else ui.paint("✗", ui.EMBER, bold=True)
+    first, *rest = outcome.splitlines() or [""]
+    elapsed = ui.paint(ui.format_duration(time.monotonic() - started), ui.STONE_DARK)
+    shown = first if is_done else ui.paint(first, ui.FIRE)
+    print(f"  {mark} {ui.paint(label, bold=True)}  {shown}  {elapsed}", flush=True)
+    for line in rest:
+        print(f"    {line.strip()}", flush=True)
+    return outcome
 
 
 def rehearse_one(root: Path, *, allow_major: bool) -> str:
