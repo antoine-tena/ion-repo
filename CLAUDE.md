@@ -33,7 +33,8 @@ folder or a module.
   release log, tool version), `frozen.py` (files frozen by `kiln-waivers.toml`, spared by
   `update`), `renames.py` (pre-0.4.0 names and their English names), `banner.py` (banner,
   welcome screen), `ui.py` (stone-and-fire palette, steps, spinner, summary, success, errors),
-  `shell.py`, `config.py` (`~/.config/kiln/config.toml`).
+  `shell.py`, `config.py` (`~/.config/kiln/config.toml`), `trailers.py` (`kiln set ai_trailers`:
+  whether Claude's commits say Claude helped, Claude Code's `attribution`).
 - `src/kiln/grid/`: the grid (T-123): `rules/<theme>/<ID>.toml` one rule per file, `model.py`
   (format, closed lists, validation), `facts.py` (what a repo is made of), `detectors.py`
   (declarative detectors, Python checks), `fixers/` (`kiln fix` converters: `ci.py`, `python.py`,

@@ -28,8 +28,10 @@ Each one, against the repo's habits:
 - **Subject**: Conventional Commits `type(scope): summary` (`!` for a breaking change), in the
   language of the history, under 72 characters, saying what changes rather than how; no
   `wip`, `test`, `oops`, `fix typo`, `update`, `.` or a bare file name.
-- **Body and trailers**: no `Co-Authored-By: Claude`, no `Claude-Session:`, no
-  « Generated with » line; a breaking change says it (`BREAKING CHANGE:`).
+- **Body and trailers**: no `Claude-Session:`, no « Generated with » line; a
+  `Co-Authored-By: Claude` only on a machine set to disclose it (`kiln set ai_trailers`,
+  `disclose` by default; the branch guard refuses it under `never`); a breaking change says it
+  (`BREAKING CHANGE:`).
 - **Author**: the user's usual identity on this repo (`git config user.name/email`, the
   history), never a placeholder or a machine address; an outside contributor keeps their own.
 - **Shape**: small and atomic, one purpose each, only the files of the task. To fold in:

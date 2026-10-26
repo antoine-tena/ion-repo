@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -8,10 +9,18 @@ import pytest
 HOOK = Path(__file__).resolve().parent.parent / "plugins/kiln/hooks/branch_guard.py"
 
 
-def run_hook(command: str, cwd: Path) -> subprocess.CompletedProcess[str]:
+def run_hook(command: str, cwd: Path, trailers: str = "never") -> subprocess.CompletedProcess[str]:
+    """The machine's `ai_trailers` in a throwaway config folder."""
+    config = cwd.parent / f"config-{trailers}"
+    (config / "kiln").mkdir(parents=True, exist_ok=True)
+    (config / "kiln/config.toml").write_text(f'ai_trailers = "{trailers}"\n')
     payload = json.dumps({"tool_input": {"command": command}, "cwd": str(cwd)})
     return subprocess.run(
-        [sys.executable, str(HOOK)], input=payload, capture_output=True, text=True
+        [sys.executable, str(HOOK)],
+        input=payload,
+        capture_output=True,
+        text=True,
+        env={**os.environ, "XDG_CONFIG_HOME": str(config)},
     )
 
 
@@ -29,6 +38,13 @@ def test_claude_signature_is_refused(repo: Path, message: str) -> None:
     result = run_hook(f'git commit -m "feat: x" -m "{message}"', repo)
     assert result.returncode == 2
     assert "Co-Authored-By" in result.stderr
+
+
+def test_disclosure_passes_where_the_machine_chose_it(repo: Path) -> None:
+    disclosed = 'git commit -m "feat: x" -m "Co-Authored-By: Claude <noreply@anthropic.com>"'
+    assert run_hook(disclosed, repo, trailers="disclose").returncode == 0
+    session = 'git commit -m "feat: x" -m "Claude-Session: abc"'
+    assert run_hook(session, repo, trailers="disclose").returncode == 2
 
 
 def test_claude_signature_in_message_file_is_refused(repo: Path) -> None:

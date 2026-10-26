@@ -22,6 +22,7 @@ from kiln.stack import (
     load_stack,
 )
 from kiln.statusline import apply_statusline_settings, ensure_statusline
+from kiln.trailers import ensure_trailers
 from kiln.versions import PYPI_NAME
 
 CLAUDE_DIR = Path.home() / ".claude"
@@ -93,7 +94,7 @@ def install_project(root: Path) -> None:
     step("git guards (pre-commit) and status line")
     install_git_hooks(root)
     apply_statusline_settings(root)
-    ensure_statusline(config)
+    ensure_trailers(ensure_statusline(config))
     command_name = answers_if_any(root).get("name", "<command>")
     ui.success(f"Ready. Run the project: {_launch_hint(stack, command_name)}")
 
@@ -124,7 +125,7 @@ def install_machine() -> None:
         if not kiln_plugin_enabled():
             step(f"{BASE_PLUGIN} plugin, for every Claude session")
             run(["claude", "plugin", "install", BASE_PLUGIN, "--scope", "user"], Path.cwd())
-    ensure_statusline(config)
+    ensure_trailers(ensure_statusline(config))
     ui.success("kiln is set up on this machine. Check it: kiln doctor")
 
 
