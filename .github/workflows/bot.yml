@@ -1,0 +1,77 @@
+name: kiln-bot
+
+# "Dependabot for your methods" (T-59): on a schedule of the caller, `kiln bot` runs `kiln update`
+# (a kiln repo) then `kiln fix` on the branch `kiln/bot`, started again from the default branch,
+# and one pull request is kept up to date with the score before and after and the why of each
+# commit; closed when nothing is left to propose. A pull request opened with `GITHUB_TOKEN` does
+# not start the repo's CI: pass a fine-grained token (contents and pull requests: write) as the
+# `token` secret, or an app's.
+on:
+  workflow_call:
+    inputs:
+      update:
+        description: In a kiln repo, run kiln update before kiln fix
+        type: boolean
+        default: true
+    secrets:
+      token:
+        description: Token that pushes and opens the pull request, so that it starts the CI
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  bot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      # kiln at the exact version of this workflow, installed as a tool (removed at once).
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          repository: antoine-tena/kiln
+          ref: ${{ job.workflow_sha || 'develop' }}
+          path: .kiln
+      - uses: ./.kiln/actions/charter
+        with:
+          ref: ${{ job.workflow_sha || 'develop' }}
+      - name: Remove kiln from the project directory
+        run: rm -rf .kiln
+
+      - name: kiln bot
+        env:
+          UPDATE: ${{ inputs.update }}
+        run: |
+          git config user.name "kiln-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          options=()
+          [ "$UPDATE" = "true" ] || options+=(--no-update)
+          kiln bot "${options[@]}" --body "$RUNNER_TEMP/body.md"
+
+      - name: Pull request
+        env:
+          GH_TOKEN: ${{ secrets.token || github.token }}
+          BASE: ${{ github.event.repository.default_branch }}
+        run: |
+          open="$(gh pr list --head kiln/bot --state open --json number --jq '.[0].number // empty')"
+          if [ ! -s "$RUNNER_TEMP/body.md" ]; then
+            if [ -n "$open" ]; then
+              gh pr close "$open" --delete-branch --comment "kiln-bot: nothing left to propose."
+            fi
+            exit 0
+          fi
+          git push --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" kiln/bot
+          if [ -n "$open" ]; then
+            gh pr edit "$open" --body-file "$RUNNER_TEMP/body.md"
+          else
+            gh pr create --head kiln/bot --base "$BASE" --title "kiln-bot: the grid's fixes" \
+              --body-file "$RUNNER_TEMP/body.md"
+          fi

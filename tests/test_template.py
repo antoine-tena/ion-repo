@@ -480,3 +480,21 @@ def test_no_deployment_cites_no_deploy_workflow(tmp_path: Path) -> None:
 
     assert "deploy.yml" not in (project_dir / ".github/workflows/ci.yml").read_text()
     assert not (project_dir / "scripts").exists()
+
+
+@pytest.mark.parametrize(("bot", "cron"), [("weekly", "0 6 * * 1"), ("monthly", "0 6 1 * *")])
+def test_kiln_bot_runs_on_its_schedule_and_is_off_by_default(
+    tmp_path: Path, bot: str, cron: str
+) -> None:
+    """T-59: off by default (a private repo pays its minutes), the answer kept only when set."""
+    default = generate(tmp_path / "default")
+    assert not (default / ".github/workflows/kiln-bot.yml").exists()
+    assert "update_bot" not in (default / ".copier-answers.yml").read_text()
+
+    project = generate(tmp_path / bot, update_bot=bot)
+    workflow = yaml.safe_load((project / ".github/workflows/kiln-bot.yml").read_text())
+    assert workflow[True]["schedule"] == [{"cron": cron}]
+    job = workflow["jobs"]["bot"]
+    assert job["uses"].startswith("antoine-tena/kiln/.github/workflows/bot.yml@")
+    assert job["secrets"] == {"token": "${{ secrets.KILN_BOT_TOKEN }}"}
+    assert f"update_bot: {bot}" in (project / ".copier-answers.yml").read_text()
