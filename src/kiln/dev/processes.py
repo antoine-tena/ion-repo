@@ -27,7 +27,7 @@ import subprocess
 from pathlib import Path
 from typing import IO
 
-from kiln.stack import BACKEND_DIR, FRONTEND_DIR, Command, load_stack
+from kiln.stack import BACKEND_DIR, FRONTEND_DIR, PNPM_LENIENT_BUILDS, Command, load_stack
 
 ENV_FILE = ".env"
 DEV_ENV_FILE = ".env.dev"
@@ -49,7 +49,7 @@ LOCK_MANAGERS = (
 )
 # Install from the lock, by package manager, and the file it writes once done.
 NODE_INSTALLS = {
-    "pnpm": (("pnpm", "install", "--frozen-lockfile"), ".modules.yaml"),
+    "pnpm": (("pnpm", "install", "--frozen-lockfile", PNPM_LENIENT_BUILDS), ".modules.yaml"),
     "yarn": (("yarn", "install", "--frozen-lockfile"), ".yarn-integrity"),
     "bun": (("bun", "install", "--frozen-lockfile"), ""),
     "npm": (("npm", "ci"), ".package-lock.json"),

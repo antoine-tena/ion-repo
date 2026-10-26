@@ -13,7 +13,14 @@ from kiln.adopted_names import HOOKS_FILE
 from kiln.config import UserConfig, ensure_system, load_config
 from kiln.dev.backing import start_backing_services
 from kiln.shell import KilnError, require_tools, run, step
-from kiln.stack import BACKEND_DIR, MAVEN_WRAPPER, Stack, answers_if_any, load_stack
+from kiln.stack import (
+    BACKEND_DIR,
+    MAVEN_WRAPPER,
+    PNPM_LENIENT_BUILDS,
+    Stack,
+    answers_if_any,
+    load_stack,
+)
 from kiln.statusline import apply_statusline_settings, ensure_statusline
 from kiln.versions import PYPI_NAME
 
@@ -202,8 +209,8 @@ def pnpm_install_command(directory: Path) -> list[str]:
     """Frozen to the lockfile when there is one; without it (a repo that never committed one),
     `--frozen-lockfile` fails with ERR_PNPM_NO_LOCKFILE: a plain install creates it."""
     if (directory / PNPM_LOCKFILE).is_file():
-        return ["pnpm", "install", "--frozen-lockfile"]
-    return ["pnpm", "install"]
+        return ["pnpm", "install", "--frozen-lockfile", PNPM_LENIENT_BUILDS]
+    return ["pnpm", "install", PNPM_LENIENT_BUILDS]
 
 
 def pnpm_behind(directory: Path) -> bool:
