@@ -195,7 +195,9 @@ def build_parser() -> argparse.ArgumentParser:
     completion_parser = commands.add_parser(
         "completion", help="shell completion script (eval it in ~/.bashrc)"
     )
-    completion_parser.add_argument("shell", choices=["bash"], help="target shell")
+    completion_parser.add_argument(
+        "shell", nargs="?", default="bash", choices=["bash"], help="target shell (default: bash)"
+    )
     for choice in commands._choices_actions:
         commands.choices[choice.dest].description = choice.help
     return parser
@@ -337,7 +339,9 @@ def _add_pause_command(commands: argparse._SubParsersAction[argparse.ArgumentPar
     pause_parser = commands.add_parser(
         "pause", help="keep this Claude Code session's place, listed at the next start"
     )
-    pause_parser.add_argument("name", help="the session in a few words")
+    pause_parser.add_argument(
+        "name", nargs="?", default="", help="the session in a few words (none: names proposed)"
+    )
     pause_parser.add_argument("--next", default="", help="the next step")
 
 
