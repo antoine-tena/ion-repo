@@ -60,7 +60,6 @@ Candidate Tue 27 Oct. The score and the fixes reach what they miss today: GitHub
 the root as well as in `backend/` and `frontend/`, compose services, loose requirements, files read
 as empty.
 - T-159 · What T-126 to T-128 left: compose hardening, pyproject from requirements, `kiln update` (M)
-- T-172 · The checks of `kiln fix` told apart, timed out, their log kept for Claude (S)
 - T-173 · More converters: the CI and the supply chain (M)
 
 ### v0.4.11 · Never lets it rot, kiln first
@@ -936,7 +935,7 @@ keeps it from being written.
 - [ ] In a kiln repo, `kiln update` runs the same converters after the template.
 - [ ] Images: a converter commit that touches a `Dockerfile` builds it when podman or docker is
   there (today: left to the repo's CI).
-- [ ] The repo's checks found beyond its root: `check_commands` reads only the root manifests,
+- [x] The repo's checks found beyond its root (done with T-172, `grid/checks.py`): `check_commands` read only the root manifests,
   so a repo with `backend/` and `frontend/` (most of the training fleet, 20 October 2026) gets
   every commit marked "unverified" although it has tests; look one folder down, and run a
   Django project's tests through `manage.py` when its settings start without secrets.
@@ -987,24 +986,6 @@ existing branch, and a crash leaves the user on a half-done branch.
   one line).
 - [ ] A branch name already taken gets a suffix (`kiln/fix-2026-10-24-2`), or the existing
   branch is updated when it holds only `kiln fix` commits (what kiln-bot needs, T-59).
-
-### T-172 · The checks of `kiln fix` told apart, timed out, their log kept for Claude
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-24
-- **Effort**: S · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
-
-`run_checks` answers yes or no: no check found, a tool missing and a repo already red before
-the run all end up as "unverified", and a reverted converter vanishes without a trace. Goes with
-the last box of T-159 (checks found beyond the root).
-- [ ] Three cases told apart in the summary: no check found, tool missing (which one, how to
-  install it), already red before `kiln fix` (which command).
-- [ ] A timeout on each check (a `pytest` waiting for an absent database hangs `kiln fix` today).
-- [ ] The output of the check that failed is kept: a reverted converter becomes an entry of
-  `kiln score --roadmap`, with the log, for Claude to finish by hand.
-- [ ] `yarn` and `bun` recognised besides `npm` and `pnpm`; `typecheck` run when `package.json`
-  declares it.
 
 ### T-173 · More converters: the CI and the supply chain
 - **Type**: improvement
