@@ -12,6 +12,7 @@ kiln donne à Claude Code de quoi construire des repos de qualité production, r
 
 [![PyPI](https://img.shields.io/pypi/v/kiln-cli.svg?color=c2551f)](https://pypi.org/project/kiln-cli/)
 [![CI](https://github.com/antoine-tena/kiln/actions/workflows/kiln.yml/badge.svg?branch=develop)](https://github.com/antoine-tena/kiln/actions/workflows/kiln.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/antoine-tena/kiln/badge)](https://scorecard.dev/viewer/?uri=github.com/antoine-tena/kiln)
 [![Licence : MIT](https://img.shields.io/badge/licence-MIT-4c4c4c.svg)](LICENSE)
 
 [**Référence**](docs/reference.fr.md) · [Journal des versions](CHANGELOG.md) · [Contribuer](CONTRIBUTING.md) · [English](README.md)

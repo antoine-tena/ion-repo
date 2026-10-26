@@ -12,6 +12,7 @@ Make Claude Code build production-grade repos, bring yours up to that grade, and
 
 [![PyPI](https://img.shields.io/pypi/v/kiln-cli.svg?color=c2551f)](https://pypi.org/project/kiln-cli/)
 [![CI](https://github.com/antoine-tena/kiln/actions/workflows/kiln.yml/badge.svg?branch=develop)](https://github.com/antoine-tena/kiln/actions/workflows/kiln.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/antoine-tena/kiln/badge)](https://scorecard.dev/viewer/?uri=github.com/antoine-tena/kiln)
 [![License: MIT](https://img.shields.io/badge/license-MIT-4c4c4c.svg)](LICENSE)
 
 [**Reference**](docs/reference.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Français](README.fr.md)

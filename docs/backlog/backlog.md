@@ -65,7 +65,6 @@ Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other 
 commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before
 anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03).
 - T-59 · kiln-bot: the grid's fixes as a weekly pull request (L)
-- T-90 · kiln passes its own grid: zizmor, provenance and Scorecard left (M)
 - T-344 · `/kiln:pause`: a session named and its place kept, listed at the next start (S)
 
 ### v0.5.0 · Public launch: the proof and the page
@@ -939,30 +938,6 @@ From the kiln score ideas of 24 October 2026:
   generated and scored at each candidate; a template change that lowers any of them fails (T-130's
   matrix).
 - [ ] **T07** kiln, its generated repos and the reference repo at 100, visibly (T-90, T-130, T-134).
-
-### T-90 · kiln passes its own grid: pinned actions, least privilege, provenance, Scorecard
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-16
-- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: growth review, 16 October 2026; rewritten 17 October 2026: a tool that rewrites
-  other people's repos must pass its own grid, visibly
-
-- [x] Third-party actions pinned by SHA in kiln's workflows and actions, their exact version in
-  a comment, moved by Dependabot (composite actions included); `permissions: contents: read` on
-  every workflow that sets none (23 October 2026, branch `chore/modernize-score`).
-- [ ] zizmor in kiln's CI.
-- [ ] Build provenance attested on each GitHub Release (`actions/attest-build-provenance`);
-  PyPI keeps its token (antoine's preference for a key over a manual setting, 16 October 2026).
-- [ ] The OpenSSF Scorecard workflow and its badge.
-- [x] `kiln score` on kiln itself in its CI: 100 on every rule (32 of 32, from 77), the release
-  CI fails below; the grid's Python rules no longer flag the examples kept in strings (23 October
-  2026, branch `chore/modernize-score`).
-
-From the kiln score ideas of 24 October 2026:
-- [x] **P14** kiln's own score at 100 gates its release (done on the branch `chore/modernize-score`,
-  24 October 2026). (T-90)
-- [ ] **S07** Signed releases and data bundles (Sigstore, PyPI attestations; T-90's provenance).
 
 ### T-59 · kiln-bot: the grid's fixes as a weekly pull request
 - **Type**: improvement

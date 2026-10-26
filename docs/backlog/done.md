@@ -3,6 +3,7 @@
 The closed tickets of kiln, most recent first, one line each:
 `- **YYYY-MM-DD** · T-NN · Title — what was done (branch) · opened YYYY-MM-DD`.
 
+- **2026-10-26** · T-90 · kiln passes its own grid: pinned actions, least privilege, provenance, Scorecard — zizmor clean (online audits too) and run in kiln.yml, Sigstore build provenance on each release's packages attached to the GitHub Release, OpenSSF Scorecard weekly with its badge; PyPI's own attestations wait for trusted publishing (token kept by choice) (chore/own-grid) · opened 2026-10-16
 - **2026-10-26** · T-187 · `kiln fix` shows the points each commit won — each commit body, outcome and summary line gives the points it won (Score: a → b (+n)), with T-170 (feat/fix-proof) · opened 2026-10-25
 - **2026-10-26** · T-170 · `kiln fix` proves each commit: its rule closed, no other rule broken — each commit proven: detector again (fixed/partial), whole grid compared (another rule turned red = undone), any converter error caught, idempotence test over every converter (found two bugs), red commits set aside on their own branch for Claude, points per rule (feat/fix-proof) · opened 2026-10-24
 - **2026-10-26** · T-171 · `kiln fix` works in a throwaway worktree, never in the user's tree — converters run in a throwaway worktree of the last commit (node_modules linked, .env copied), the user's tree never touched, a dirty one included; a branch of kiln fix commits taken over, any other suffixed (feat/fix-worktree) · opened 2026-10-24

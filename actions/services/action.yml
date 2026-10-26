@@ -24,7 +24,7 @@ runs:
       env:
         DATABASE: ${{ inputs.base || inputs.database }}
         IMAGE: ${{ inputs.postgres }}
-      run: |
+      run: | # zizmor: ignore[github-env] the URL of a service started here
         podman run -d --name ci-postgres -p 5432:5432 \
           -e POSTGRES_USER="$DATABASE" -e POSTGRES_PASSWORD="${DATABASE}_password" \
           -e POSTGRES_DB="$DATABASE" "$IMAGE"
@@ -41,7 +41,7 @@ runs:
       shell: bash
       env:
         IMAGE: ${{ inputs.redis }}
-      run: |
+      run: | # zizmor: ignore[github-env] the URL of a service started here
         podman run -d --name ci-redis -p 6379:6379 "$IMAGE"
         for _ in $(seq 1 30); do
           podman exec ci-redis redis-cli ping >/dev/null 2>&1 && break

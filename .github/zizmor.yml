@@ -1,0 +1,6 @@
+# zizmor (kiln.yml): what kiln's design makes a false positive, each with why.
+rules:
+  # A reusable workflow called from another repo must name kiln's actions in full: `./` would
+  # point into the caller's checkout.
+  self-repository:
+    disable: true
