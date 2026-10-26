@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-340.**
+**Next free: T-342.**
 
 ---
 
@@ -29,11 +29,13 @@ that reaches it, so the work leading to it carries the minor before: every commo
 and v0.8.0 is the release where the last one is scored. Each stack gets two releases, about what
 Django and Nuxt each took once the engine is set aside, and its pack holds the rules of its most
 used frameworks as well as its language's (framework coverage review of 26 October 2026: Spring
-Boot, ASP.NET Core, Laravel, Rails; the Node back ends a release of their own). From v0.5.4 on,
-releases carry no date: at this pace v0.6.0 lands in early December 2026, v0.7.0 in mid-April 2027,
-v0.8.0 at the end of May, v0.9.0 and v1.0.0 in June 2027. These are consequences of the plan rather
-than promises, and each release the launch adds pushes them by two days. The public view of this
-plan is [`ROADMAP.md`](../../ROADMAP.md), drawn from this section by `scripts/roadmap.py`.
+Boot, ASP.NET Core, Laravel, Rails; the Node back ends a release of their own). The stacks come in
+the order of the 2025 surveys until the corpus measures its own, and games and R have a release each
+(stack coverage review of the same day). From v0.5.4 on, releases carry no date: at this pace v0.6.0
+lands in early December 2026, v0.7.0 in mid-April 2027, v0.8.0 at the start of June, v0.9.0 and
+v1.0.0 in mid-June 2027. These are consequences of the plan rather than promises, and each release
+the launch adds pushes them by two days. The public view of this plan is
+[`ROADMAP.md`](../../ROADMAP.md), drawn from this section by `scripts/roadmap.py`.
 
 ### Shipped: v0.4.0 to v0.4.5
 - v0.4.0 · kiln speaks English: promoted on Mon 19 Oct, the milestone decided by antoine
@@ -614,94 +616,107 @@ in strict or ratchet regime, its IDs kept as aliases; rule files checked by a pu
 ⚠ breaking: `charter.toml` lists grid rule IDs with their regime, converted by `kiln update`.
 - T-307 · The charter and the grid, one engine (M)
 
-### v0.7.4 · Go repos, read
+### v0.7.4 · Java and Kotlin repos, read
 The road to v0.8.0: every common stack scored and fixed by script as Django is at v0.5.0, stack by
-stack (decision 1) in the order the corpus measures (B01; until it does, this order is a guess). Two
-releases a stack, about what Django and Nuxt each took once the engine is set aside: first what its
-repos are made of, read, so that the rules spanning stacks see it; then its pack, counted once ten
-corpus repos of it were checked (B24). Each stack's rules are written from the corpus when its turn
-comes.
-- T-308 · Go read: modules, toolchains, race tests, errors (L)
-
-### v0.7.5 · The Go pack
-Go's own rules with their examples and converters, from a tidy `go.mod` to no `panic` in a library,
-counted once ten corpus repos of Go were checked (B24).
-- T-309 · The Go pack (L)
-
-### v0.7.6 · Rust repos, read
-Cargo, clippy, the edition and `unsafe` read, `Cargo.lock` held to the rules that span stacks.
-- T-320 · Rust read: Cargo, clippy, editions, `unsafe`, locks (L)
-
-### v0.7.7 · The Rust pack
-Rust's own rules, from clippy with warnings as errors to a declared MSRV, counted once ten corpus
-repos of Rust were checked (B24).
-- T-321 · The Rust pack (L)
-
-### v0.7.8 · Java and Kotlin repos, read
-Maven and Gradle read with their wrappers, Spring Boot, Quarkus and Micronaut recognised: kiln's own
-frozen Java template held to its stack's rules at last.
+stack (decision 1) in the order the corpus measures (B01; until it does, the order of the 2025
+surveys, Stack Overflow's and GitHub's Octoverse). Two releases a stack, about what Django and Nuxt
+each took once the engine is set aside: first what its repos are made of, read, so that the rules
+spanning stacks see it; then its pack, counted once ten corpus repos of it were checked (B24). Each
+stack's rules are written from the corpus when its turn comes. First Java and Kotlin: Maven and
+Gradle read with their wrappers, Spring Boot, Quarkus and Micronaut recognised: kiln's own frozen
+Java template held to its stack's rules at last.
 - T-310 · Java and Kotlin read: Maven, Gradle, Spring Boot, the LTS lines (L)
 
-### v0.7.9 · The Java and Kotlin pack
+### v0.7.5 · The Java and Kotlin pack
 A supported LTS, a verified wrapper, locked dependencies and a bug finder in the build, then Spring
 Boot's own rules, counted once ten corpus repos of Java and Kotlin were checked (B24).
 - T-311 · The Java and Kotlin pack (L)
 - T-337 · The Spring Boot pack (M)
 
-### v0.7.10 · C# and .NET repos, read
+### v0.7.6 · C# and .NET repos, read
 Projects, solutions and central package management read, with nullable references and the supported
 .NET lines.
 - T-322 · C# and .NET read: projects, central packages, nullable, supported lines (L)
 
-### v0.7.11 · The C# pack
+### v0.7.7 · The C# pack
 NuGetAudit, lock files, warnings as errors and a pinned SDK, then the rules of ASP.NET Core and
 Blazor, counted once ten corpus repos of C# were checked (B24).
 - T-323 · The C# pack (L)
 - T-338 · The ASP.NET Core and Blazor pack (M)
 
-### v0.7.12 · PHP repos, read
+### v0.7.8 · PHP repos, read
 Composer, Laravel, Symfony and WordPress read, with their analysers, formatters, tests and auditor.
 - T-312 · PHP read: Composer, Laravel, Symfony, WordPress (L)
 
-### v0.7.13 · The PHP pack
+### v0.7.9 · The PHP pack
 Strict types, `composer audit` in CI, a supported PHP and no `phpinfo()` left, then the rules of
 Laravel, Symfony and WordPress, counted once ten corpus repos of PHP were checked (B24).
 - T-313 · The PHP pack (L)
 - T-339 · The Laravel, Symfony and WordPress pack (M)
 
-### v0.7.14 · Ruby repos, read
+### v0.7.10 · C and C++ repos, read
+CMake, Meson, Bazel, Conan and vcpkg read, with clang-format, clang-tidy, sanitizers and fuzzing.
+- T-327 · C and C++ read: CMake, Meson, Bazel, Conan, vcpkg (L)
+
+### v0.7.11 · The C and C++ pack
+Warnings as errors, sanitizers in CI, clang-tidy, fuzzing for parsers and managed dependencies,
+counted once ten corpus repos of C and C++ were checked (B24).
+- T-328 · The C and C++ pack (L)
+
+### v0.7.12 · Go repos, read
+go.mod, go.sum and the toolchain read, with golangci-lint, govulncheck, race tests and wrapped
+errors, `go.sum` held to the rules that span stacks.
+- T-308 · Go read: modules, toolchains, race tests, errors (L)
+
+### v0.7.13 · The Go pack
+Go's own rules with their examples and converters, from a tidy `go.mod` to no `panic` in a library,
+counted once ten corpus repos of Go were checked (B24).
+- T-309 · The Go pack (L)
+
+### v0.7.14 · Rust repos, read
+Cargo, clippy, the edition and `unsafe` read, `Cargo.lock` held to the rules that span stacks.
+- T-320 · Rust read: Cargo, clippy, editions, `unsafe`, locks (L)
+
+### v0.7.15 · The Rust pack
+Rust's own rules, from clippy with warnings as errors to a declared MSRV, counted once ten corpus
+repos of Rust were checked (B24).
+- T-321 · The Rust pack (L)
+
+### v0.7.16 · Ruby repos, read
 Bundler and Rails read, with RuboCop, Sorbet or RBS, RSpec or Minitest and bundler-audit.
 - T-324 · Ruby read: Bundler, Rails, RuboCop, bundler-audit (L)
 
-### v0.7.15 · The Ruby pack
+### v0.7.17 · The Ruby pack
 Brakeman and bundler-audit in CI, RuboCop configured, a supported Ruby and no `permit!`, counted
 once ten corpus repos of Ruby were checked (B24).
 - T-325 · The Ruby pack (L)
 
-### v0.7.16 · Elixir repos, read and packed
-A smaller ecosystem, read and packed in one release: mix and Phoenix, with Credo, Dialyzer, Sobelow
-and mix_audit as its rules.
-- T-326 · Elixir read and its pack: mix, Phoenix, Credo, Sobelow (L)
-
-### v0.7.17 · iOS, Android and Flutter repos, read
+### v0.7.18 · iOS, Android and Flutter repos, read
 SwiftPM, CocoaPods, the Android manifest and Flutter's pubspec read; App Transport Security and
 exported components checked.
 - T-314 · iOS, Android and Flutter read: SwiftPM, the manifest, pubspec (L)
 
-### v0.7.18 · The mobile pack
+### v0.7.19 · The mobile pack
 What the stores require and what an app bundle gives away: the privacy manifest, the target SDK, no
 server secret in the app, signing keys out of git, counted once ten corpus repos of apps were
 checked (B24).
 - T-315 · The mobile pack (L)
 
-### v0.7.19 · C and C++ repos, read
-CMake, Meson, Bazel, Conan and vcpkg read, with clang-format, clang-tidy, sanitizers and fuzzing.
-- T-327 · C and C++ read: CMake, Meson, Bazel, Conan, vcpkg (L)
+### v0.7.20 · Game repos, read and packed
+Unity, Godot, Unreal and Roblox repos read on top of the C# and C++ packs, with Lua and Luau: the
+engine's version pinned, assets in Git LFS, caches and builds out of git, no store or signing
+credential committed.
+- T-340 · Game repos: Unity, Godot, Unreal, Roblox, Lua (L)
 
-### v0.7.20 · The C and C++ pack
-Warnings as errors, sanitizers in CI, clang-tidy, fuzzing for parsers and managed dependencies,
-counted once ten corpus repos of C and C++ were checked (B24).
-- T-328 · The C and C++ pack (L)
+### v0.7.21 · R repos, read and packed
+R packages and analyses read and packed in one release: DESCRIPTION and renv, lintr, testthat and R
+CMD check, beyond the notebooks the data science release (v0.6.58) reads.
+- T-341 · R read and its pack: renv, lintr, testthat, R CMD check (L)
+
+### v0.7.22 · Elixir repos, read and packed
+A smaller ecosystem, read and packed in one release: mix and Phoenix, with Credo, Dialyzer, Sobelow
+and mix_audit as its rules.
+- T-326 · Elixir read and its pack: mix, Phoenix, Credo, Sobelow (L)
 
 ### v0.8.0 · Every common stack scored
 Milestone decided by antoine (25 October 2026), reached here: every common stack scored and fixed by
@@ -2652,7 +2667,7 @@ rules, pinned and cached, never downloaded without asking; the faster checkers m
 ones they would replace.
 
 - [ ] **B15** Shell and PowerShell as real code: shellcheck, shfmt, `set -euo pipefail`, bats;
-  PSScriptAnalyzer.
+  PSScriptAnalyzer and Pester.
 - [ ] **E02** The default run is L0 to L3 plus the L4 tools shipped as wheels: offline, nothing of
   the repo executed. `--online` adds L6, `--history` L5, `--deep` L7 in a sandbox.
 - [ ] **F01** A `tool` detector kind: run a tool with machine output (JSON, SARIF), map each result
@@ -3036,8 +3051,9 @@ rule ships with its passing and failing examples.
   verify, then run. L1 · fix J · adopt (review in READMEs).
 - [ ] **SU23** `CHECKSUMS-FOR-DOWNLOADS`: binaries fetched in Dockerfiles and CI checked against a
   SHA-256. L1≈ · fix S (online) · trial.
-- [ ] **SU29** `VENDORED-JS-VULNERABILITIES`: front-end libraries copied into static folders matched
-  against retire.js's signatures. L1 · fix J · adopt.
+- [ ] **SU29** `VENDORED-JS-VULNERABILITIES`: front-end libraries copied into static folders
+  (jQuery, Bootstrap, Moment and the rest) matched against retire.js's signatures. L1 · fix J ·
+  adopt.
 - [ ] **SU34** `NO-HTTP-INDEXES`: package indexes and registries over HTTPS only (`.npmrc`,
   `pip.conf`, `uv.toml`, Maven's `settings.xml`). L1 · fix S · adopt.
 - [ ] **SU35** `NO-TOKENS-IN-NPMRC`: no auth token in a committed `.npmrc` or `.pypirc`. L1 · fix J
@@ -5625,10 +5641,11 @@ rule ships with its passing and failing examples.
   what it assumed.
 - [ ] **AS44** `EXTENSION-PERMISSIONS`: browser extensions ask for the fewest permissions and hosts.
   L1 · fix J · trial.
-- [ ] **FP39** Unity · `UNITY-REPO`: `.meta` files committed with their assets, `Library/`, `Temp/`
-  and builds ignored, large binaries in Git LFS. L0 · fix S · adopt.
-- [ ] **FP40** Godot · `GODOT-REPO`: `.godot/` ignored, no signing credentials in
-  `export_presets.cfg`. L0 · fix S · adopt.
+- [ ] **D17** Static and docs sites read: Hugo (modules at a version), Jekyll (`Gemfile.lock`),
+  MkDocs, Docusaurus, Eleventy, Gatsby, Sphinx; the site built in CI, its links checked, its theme
+  pinned rather than copied.
+- [ ] **FP43** Solidity · `SOLIDITY-CHECKED`: Foundry or Hardhat tests and Slither in CI, the
+  compiler version pinned exactly (`pragma solidity 0.8.28;`, not `^`). L1 · fix S · trial.
 
 ### T-301 · GitLab too: its CI, its forge, its reports
 - **Type**: improvement
@@ -5942,130 +5959,6 @@ rule IDs with their regime, converted by `kiln update`.
   grid, `charter.toml` listing rule IDs with their regime and budget, the charter's IDs kept as
   aliases.
 
-### T-308 · Go read: modules, toolchains, race tests, errors
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-25
-- **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: kiln score ideas of 24 October 2026 (Every ecosystem, Mature tools as detectors,
-  Concurrency, Errors and logs, Supply chain), made a ticket on 25 October 2026 at antoine's
-  request; one stack per ticket from the same day (Rust in T-320)
-
-Planned in v0.7.4, "Go repos, read": The road to v0.8.0: every common stack scored and fixed by
-script as Django is at v0.5.0, stack by stack (decision 1) in the order the corpus measures (B01;
-until it does, this order is a guess). Two releases a stack, about what Django and Nuxt each took
-once the engine is set aside: first what its repos are made of, read, so that the rules spanning
-stacks see it; then its pack, counted once ten corpus repos of it were checked (B24). Each stack's
-rules are written from the corpus when its turn comes.
-
-Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
-converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
-rule ships with its passing and failing examples.
-
-- [ ] **B06** Go: go.mod and go.sum, the `go` and `toolchain` directives, golangci-lint, gofmt,
-  govulncheck, `go vet`, `-race` in CI, vendoring. Gin, Echo, Fiber and chi recognised.
-- [ ] **F10** govulncheck for Go (reachable vulnerabilities only); cargo-deny, `composer audit` and
-  bundler-audit come with their stacks (T-320, T-312, T-324).
-- [ ] **CC09** `GO-RACE`: `go test -race` in CI. L1 · fix S · adopt.
-- [ ] **EL12** `GO-ERROR-WRAPPING`: `fmt.Errorf("…: %w", err)`. L2 · fix J · trial.
-- [ ] **SU33** `LOCKS-COMMITTED`: `go.sum` committed (`Cargo.lock` comes with Rust, T-320). L0 · fix
-  J · adopt.
-- [ ] The rules that span stacks (`TESTS-PRESENT`, `TESTS-IN-CI`, `LINT-IN-CI`,
-  `LOCKED-DEPENDENCIES`, `DEPENDENCY-UPDATES`, `VULNERABILITY-AUDIT`, `SUPPORTED-RUNTIMES`) read Go
-  repos too, each with a passing and a failing example from Go.
-
-### T-309 · The Go pack
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-25
-- **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: kiln score ideas of 24 October 2026 (Stack packs), made a ticket on 25 October 2026 at
-  antoine's request; one stack per ticket from the same day (Rust in T-321)
-
-Planned in v0.7.5, "The Go pack": Go's own rules with their examples and converters, from a tidy
-`go.mod` to no `panic` in a library, counted once ten corpus repos of Go were checked (B24).
-
-One pack per ecosystem, each with its facts, rules and examples; they enter in the order the corpus
-measures (Part I). Rules already listed in a theme (`GO-RACE`, `LOCKS-COMMITTED`,
-`GRADLE-WRAPPER-VERIFIED`, `CSHARP-NULLABLE`, `PHPSTAN-LEVEL`…) aren't repeated.
-
-Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
-converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
-rule ships with its passing and failing examples.
-
-- [ ] **SP01** Go · `GO-MOD-TIDY`: `go mod tidy` would change nothing. L4 · fix S · adopt.
-- [ ] **SP02** Go · `GO-LINT`: `go vet` and golangci-lint (its v2 config) in CI. L1 · fix S · adopt.
-- [ ] **SP03** Go · `GOVULNCHECK`: govulncheck in CI, which reports only the vulnerable code a
-  program reaches. L1 · fix S · adopt.
-- [ ] **SP04** Go · `GO-TOOLCHAIN-SUPPORTED`: the `go` directive and `toolchain` on one of the two
-  supported releases. L1 · fix S · adopt.
-- [ ] **SP05** Go · `GO-CONTEXT-FIRST`: `context.Context` as first parameter, never stored in a
-  struct. L2 · fix J · trial.
-- [ ] **SP06** Go · `GO-NO-PANIC-IN-LIBS`: no `panic` on a library's ordinary paths. L2 · fix J ·
-  trial.
-- [ ] Ten corpus repos of Go scored and their findings checked before the pack counts (B24), each
-  false alarm fixed in the engine.
-- [ ] **FP28** Go · `GO-HTTP-TIMEOUTS`: an `http.Server` with `ReadHeaderTimeout`, never a bare
-  `http.ListenAndServe` in a server (gosec G112, G114). L2 · fix J · adopt.
-
-### T-320 · Rust read: Cargo, clippy, editions, `unsafe`, locks
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-25
-- **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-308 on 25 October 2026, one stack per ticket (kiln score ideas of 24
-  October 2026: Every ecosystem, Mature tools as detectors, Concurrency, Supply chain)
-
-Planned in v0.7.6, "Rust repos, read": Cargo, clippy, the edition and `unsafe` read, `Cargo.lock`
-held to the rules that span stacks.
-
-Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
-converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
-rule ships with its passing and failing examples.
-
-- [ ] **B07** Rust: Cargo.lock committed, clippy, rustfmt, cargo-deny or cargo-audit,
-  `rust-version`, the edition, `unsafe` justified, cargo-semver-checks for libraries. Axum and Actix
-  Web recognised.
-- [ ] **F10** (Rust's part) cargo-deny for Rust.
-- [ ] **CC11** `RUST-NO-STATIC-MUT`: no `static mut`. L2 · fix J · adopt.
-- [ ] **SU33** (Rust's part) `LOCKS-COMMITTED`: `Cargo.lock` committed. L0 · fix J · adopt.
-- [ ] The rules that span stacks (`TESTS-PRESENT`, `TESTS-IN-CI`, `LINT-IN-CI`,
-  `LOCKED-DEPENDENCIES`, `DEPENDENCY-UPDATES`, `VULNERABILITY-AUDIT`, `SUPPORTED-RUNTIMES`) read
-  Rust repos too, each with a passing and a failing example from Rust.
-
-### T-321 · The Rust pack
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-25
-- **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-309 on 25 October 2026, one stack per ticket (kiln score ideas of 24
-  October 2026: Stack packs)
-
-Planned in v0.7.7, "The Rust pack": Rust's own rules, from clippy with warnings as errors to a
-declared MSRV, counted once ten corpus repos of Rust were checked (B24).
-
-One pack per ecosystem, each with its facts, rules and examples; they enter in the order the corpus
-measures (Part I). Rules already listed in a theme (`GO-RACE`, `LOCKS-COMMITTED`,
-`GRADLE-WRAPPER-VERIFIED`, `CSHARP-NULLABLE`, `PHPSTAN-LEVEL`…) aren't repeated.
-
-Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
-converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
-rule ships with its passing and failing examples.
-
-- [ ] **SP07** Rust · `CLIPPY-CLEAN`: clippy with warnings as errors in CI, a `[lints]` table in
-  `Cargo.toml`. L1 · fix S · adopt.
-- [ ] **SP08** Rust · `CARGO-DENY`: cargo-deny (advisories, licences, bans, sources) or cargo-audit
-  in CI. L1 · fix S · adopt.
-- [ ] **SP09** Rust · `RUST-EDITION-CURRENT`: edition 2024 (stable since Rust 1.85, February 2025).
-  L1 · fix J · trial.
-- [ ] **SP10** Rust · `RUST-MSRV`: `rust-version` declared and tested. L1 · fix S · trial.
-- [ ] **SP11** Rust · `UNSAFE-JUSTIFIED`: every `unsafe` block with a `// SAFETY:` comment (clippy's
-  `undocumented_unsafe_blocks`). L2 · fix J · adopt.
-- [ ] **SP12** Rust · `NO-UNWRAP-IN-LIBS`: `unwrap` and `expect` counted in library code (clippy's
-  `unwrap_used`). L2 · ratchet · trial.
-- [ ] Ten corpus repos of Rust scored and their findings checked before the pack counts (B24), each
-  false alarm fixed in the engine.
-
 ### T-310 · Java and Kotlin read: Maven, Gradle, Spring Boot, the LTS lines
 - **Type**: improvement
 - **Status**: todo
@@ -6075,18 +5968,23 @@ rule ships with its passing and failing examples.
   Supply chain), made a ticket on 25 October 2026 at antoine's request; one stack per ticket from
   the same day (.NET in T-322)
 
-Planned in v0.7.8, "Java and Kotlin repos, read": Maven and Gradle read with their wrappers, Spring
-Boot, Quarkus and Micronaut recognised: kiln's own frozen Java template held to its stack's rules at
-last.
+Planned in v0.7.4, "Java and Kotlin repos, read": The road to v0.8.0: every common stack scored and
+fixed by script as Django is at v0.5.0, stack by stack (decision 1) in the order the corpus measures
+(B01; until it does, the order of the 2025 surveys, Stack Overflow's and GitHub's Octoverse). Two
+releases a stack, about what Django and Nuxt each took once the engine is set aside: first what its
+repos are made of, read, so that the rules spanning stacks see it; then its pack, counted once ten
+corpus repos of it were checked (B24). Each stack's rules are written from the corpus when its turn
+comes. First Java and Kotlin: Maven and Gradle read with their wrappers, Spring Boot, Quarkus and
+Micronaut recognised: kiln's own frozen Java template held to its stack's rules at last.
 
 Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
 converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
 rule ships with its passing and failing examples.
 
-- [ ] **B08** Java and Kotlin: Maven (wrapper and checksum), Gradle (wrapper validation, version
-  catalogs, locking, verification metadata), Spring Boot, Quarkus, Micronaut, Ktor; Checkstyle,
-  SpotBugs, Error Prone, Spotless, ktlint, detekt; JUnit 5; Java's LTS lines. kiln's own frozen Java
-  template would finally be scored.
+- [ ] **B08** Java and Kotlin: Maven (wrapper and checksum), Gradle in its Groovy and Kotlin DSLs
+  (wrapper validation, version catalogs, locking, verification metadata), Spring Boot, Quarkus,
+  Micronaut, Ktor; Checkstyle, SpotBugs, Error Prone, Spotless, ktlint, detekt; JUnit 5; Java's LTS
+  lines. kiln's own frozen Java template would finally be scored.
 - [ ] **AT27** `KOTLIN-EXPLICIT-API`: explicit API mode for Kotlin libraries. L1 · fix S · trial.
 - [ ] **AT28** `JAVA-NULLNESS`: JSpecify annotations checked by NullAway. L1 · fix J · assess.
 - [ ] **SU24** `GRADLE-WRAPPER-VERIFIED`: `distributionSha256Sum` set and the wrapper validated in
@@ -6103,7 +6001,7 @@ rule ships with its passing and failing examples.
 - **Origin**: kiln score ideas of 24 October 2026 (Stack packs), made a ticket on 25 October 2026 at
   antoine's request; one stack per ticket from the same day (C# in T-323)
 
-Planned in v0.7.9, "The Java and Kotlin pack": A supported LTS, a verified wrapper, locked
+Planned in v0.7.5, "The Java and Kotlin pack": A supported LTS, a verified wrapper, locked
 dependencies and a bug finder in the build, then Spring Boot's own rules, counted once ten corpus
 repos of Java and Kotlin were checked (B24).
 
@@ -6135,7 +6033,7 @@ rule ships with its passing and failing examples.
   frameworks of the 2025 surveys checked against the plan; the pack of its language held only the
   language's rules
 
-Planned in v0.7.9, "The Java and Kotlin pack": A supported LTS, a verified wrapper, locked
+Planned in v0.7.5, "The Java and Kotlin pack": A supported LTS, a verified wrapper, locked
 dependencies and a bug finder in the build, then Spring Boot's own rules, counted once ten corpus
 repos of Java and Kotlin were checked (B24).
 
@@ -6172,7 +6070,7 @@ rule ships with its passing and failing examples.
 - **Origin**: split from T-310 on 25 October 2026, one stack per ticket (kiln score ideas of 24
   October 2026: Every ecosystem, API, contracts and typing, Supply chain)
 
-Planned in v0.7.10, "C# and .NET repos, read": Projects, solutions and central package management
+Planned in v0.7.6, "C# and .NET repos, read": Projects, solutions and central package management
 read, with nullable references and the supported .NET lines.
 
 Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
@@ -6182,7 +6080,8 @@ rule ships with its passing and failing examples.
 - [ ] **B09** C# and .NET: .csproj, .sln and .slnx, central package management,
   `packages.lock.json`, `<Nullable>enable`, analyzers, `dotnet format`, `global.json`, supported
   .NET lines. ASP.NET Core (`Program.cs`, minimal APIs or controllers), Blazor Server and
-  WebAssembly, EF Core, user secrets.
+  WebAssembly, EF Core, user secrets. Visual Basic and F# projects read alike; WPF, WinForms and
+  .NET MAUI recognised.
 - [ ] **AT25** `CSHARP-NULLABLE`: `<Nullable>enable</Nullable>` in every project. L1 · fix S ·
   adopt.
 - [ ] The rules that span stacks (`TESTS-PRESENT`, `TESTS-IN-CI`, `LINT-IN-CI`,
@@ -6197,7 +6096,7 @@ rule ships with its passing and failing examples.
 - **Origin**: split from T-311 on 25 October 2026, one stack per ticket (kiln score ideas of 24
   October 2026: Stack packs)
 
-Planned in v0.7.11, "The C# pack": NuGetAudit, lock files, warnings as errors and a pinned SDK, then
+Planned in v0.7.7, "The C# pack": NuGetAudit, lock files, warnings as errors and a pinned SDK, then
 the rules of ASP.NET Core and Blazor, counted once ten corpus repos of C# were checked (B24).
 
 One pack per ecosystem, each with its facts, rules and examples; they enter in the order the corpus
@@ -6230,7 +6129,7 @@ rule ships with its passing and failing examples.
   frameworks of the 2025 surveys checked against the plan; the pack of its language held only the
   language's rules
 
-Planned in v0.7.11, "The C# pack": NuGetAudit, lock files, warnings as errors and a pinned SDK, then
+Planned in v0.7.7, "The C# pack": NuGetAudit, lock files, warnings as errors and a pinned SDK, then
 the rules of ASP.NET Core and Blazor, counted once ten corpus repos of C# were checked (B24).
 
 Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
@@ -6267,7 +6166,7 @@ rule ships with its passing and failing examples.
   a ticket on 25 October 2026 at antoine's request; one stack per ticket from the same day (Ruby in
   T-324)
 
-Planned in v0.7.12, "PHP repos, read": Composer, Laravel, Symfony and WordPress read, with their
+Planned in v0.7.8, "PHP repos, read": Composer, Laravel, Symfony and WordPress read, with their
 analysers, formatters, tests and auditor.
 
 Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
@@ -6291,7 +6190,7 @@ rule ships with its passing and failing examples.
 - **Origin**: kiln score ideas of 24 October 2026 (Stack packs), made a ticket on 25 October 2026 at
   antoine's request; one stack per ticket from the same day (Ruby in T-325, Elixir in T-326)
 
-Planned in v0.7.13, "The PHP pack": Strict types, `composer audit` in CI, a supported PHP and no
+Planned in v0.7.9, "The PHP pack": Strict types, `composer audit` in CI, a supported PHP and no
 `phpinfo()` left, then the rules of Laravel, Symfony and WordPress, counted once ten corpus repos of
 PHP were checked (B24).
 
@@ -6320,7 +6219,7 @@ rule ships with its passing and failing examples.
   frameworks of the 2025 surveys checked against the plan; the pack of its language held only the
   language's rules
 
-Planned in v0.7.13, "The PHP pack": Strict types, `composer audit` in CI, a supported PHP and no
+Planned in v0.7.9, "The PHP pack": Strict types, `composer audit` in CI, a supported PHP and no
 `phpinfo()` left, then the rules of Laravel, Symfony and WordPress, counted once ten corpus repos of
 PHP were checked (B24).
 
@@ -6352,6 +6251,179 @@ rule ships with its passing and failing examples.
 - [ ] Ten corpus repos of Laravel, Symfony and WordPress scored and their findings checked before
   the pack counts (B24), each false alarm fixed in the engine.
 
+### T-327 · C and C++ read: CMake, Meson, Bazel, Conan, vcpkg
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-25
+- **Effort**: L · **Owner**: — · **Due**: —
+- **Origin**: split from T-314 on 25 October 2026, one stack per ticket (kiln score ideas of 24
+  October 2026: Every ecosystem)
+
+Planned in v0.7.10, "C and C++ repos, read": CMake, Meson, Bazel, Conan and vcpkg read, with
+clang-format, clang-tidy, sanitizers and fuzzing.
+
+Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
+converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
+rule ships with its passing and failing examples.
+
+- [ ] **B13** C and C++: CMake, Meson, Bazel, Conan and vcpkg manifests, clang-format, clang-tidy,
+  sanitizers and fuzzing in CI, warnings as errors. Firmware too: PlatformIO, Arduino, ESP-IDF and
+  Zephyr projects, their board and toolchain pinned.
+- [ ] The rules that span stacks (`TESTS-PRESENT`, `TESTS-IN-CI`, `LINT-IN-CI`,
+  `LOCKED-DEPENDENCIES`, `DEPENDENCY-UPDATES`, `VULNERABILITY-AUDIT`, `SUPPORTED-RUNTIMES`) read C
+  and C++ repos too, each with a passing and a failing example from C and C++.
+
+### T-328 · The C and C++ pack
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-25
+- **Effort**: L · **Owner**: — · **Due**: —
+- **Origin**: split from T-315 on 25 October 2026, one stack per ticket (kiln score ideas of 24
+  October 2026: Stack packs)
+
+Planned in v0.7.11, "The C and C++ pack": Warnings as errors, sanitizers in CI, clang-tidy, fuzzing
+for parsers and managed dependencies, counted once ten corpus repos of C and C++ were checked (B24).
+
+One pack per ecosystem, each with its facts, rules and examples; they enter in the order the corpus
+measures (Part I). Rules already listed in a theme (`GO-RACE`, `LOCKS-COMMITTED`,
+`GRADLE-WRAPPER-VERIFIED`, `CSHARP-NULLABLE`, `PHPSTAN-LEVEL`…) aren't repeated.
+
+Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
+converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
+rule ships with its passing and failing examples.
+
+- [ ] **SP35** C and C++ · `COMPILER-WARNINGS`: `-Wall -Wextra -Werror` (or `/W4 /WX`) in the build.
+  L1 · fix S · trial.
+- [ ] **SP36** C and C++ · `SANITIZERS-IN-CI`: AddressSanitizer and UndefinedBehaviorSanitizer
+  builds in CI. L1 · fix S · trial.
+- [ ] **SP37** C and C++ · `CLANG-TIDY`: configured and run. L1 · fix S · trial.
+- [ ] **SP38** C and C++ · `FUZZING`: libFuzzer harnesses or OSS-Fuzz for parsers (Scorecard's
+  Fuzzing). L1 · fix J · assess.
+- [ ] **SP39** C and C++ · `MANAGED-DEPENDENCIES`: vcpkg or Conan manifests rather than copied
+  sources. L1 · fix J · trial.
+- [ ] Ten corpus repos of C and C++ scored and their findings checked before the pack counts (B24),
+  each false alarm fixed in the engine.
+
+### T-308 · Go read: modules, toolchains, race tests, errors
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-25
+- **Effort**: L · **Owner**: — · **Due**: —
+- **Origin**: kiln score ideas of 24 October 2026 (Every ecosystem, Mature tools as detectors,
+  Concurrency, Errors and logs, Supply chain), made a ticket on 25 October 2026 at antoine's
+  request; one stack per ticket from the same day (Rust in T-320)
+
+Planned in v0.7.12, "Go repos, read": go.mod, go.sum and the toolchain read, with golangci-lint,
+govulncheck, race tests and wrapped errors, `go.sum` held to the rules that span stacks.
+
+Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
+converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
+rule ships with its passing and failing examples.
+
+- [ ] **B06** Go: go.mod and go.sum, the `go` and `toolchain` directives, golangci-lint, gofmt,
+  govulncheck, `go vet`, `-race` in CI, vendoring. Gin, Echo, Fiber and chi recognised.
+- [ ] **F10** govulncheck for Go (reachable vulnerabilities only); cargo-deny, `composer audit` and
+  bundler-audit come with their stacks (T-320, T-312, T-324).
+- [ ] **CC09** `GO-RACE`: `go test -race` in CI. L1 · fix S · adopt.
+- [ ] **EL12** `GO-ERROR-WRAPPING`: `fmt.Errorf("…: %w", err)`. L2 · fix J · trial.
+- [ ] **SU33** `LOCKS-COMMITTED`: `go.sum` committed (`Cargo.lock` comes with Rust, T-320). L0 · fix
+  J · adopt.
+- [ ] The rules that span stacks (`TESTS-PRESENT`, `TESTS-IN-CI`, `LINT-IN-CI`,
+  `LOCKED-DEPENDENCIES`, `DEPENDENCY-UPDATES`, `VULNERABILITY-AUDIT`, `SUPPORTED-RUNTIMES`) read Go
+  repos too, each with a passing and a failing example from Go.
+
+### T-309 · The Go pack
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-25
+- **Effort**: L · **Owner**: — · **Due**: —
+- **Origin**: kiln score ideas of 24 October 2026 (Stack packs), made a ticket on 25 October 2026 at
+  antoine's request; one stack per ticket from the same day (Rust in T-321)
+
+Planned in v0.7.13, "The Go pack": Go's own rules with their examples and converters, from a tidy
+`go.mod` to no `panic` in a library, counted once ten corpus repos of Go were checked (B24).
+
+One pack per ecosystem, each with its facts, rules and examples; they enter in the order the corpus
+measures (Part I). Rules already listed in a theme (`GO-RACE`, `LOCKS-COMMITTED`,
+`GRADLE-WRAPPER-VERIFIED`, `CSHARP-NULLABLE`, `PHPSTAN-LEVEL`…) aren't repeated.
+
+Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
+converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
+rule ships with its passing and failing examples.
+
+- [ ] **SP01** Go · `GO-MOD-TIDY`: `go mod tidy` would change nothing. L4 · fix S · adopt.
+- [ ] **SP02** Go · `GO-LINT`: `go vet` and golangci-lint (its v2 config) in CI. L1 · fix S · adopt.
+- [ ] **SP03** Go · `GOVULNCHECK`: govulncheck in CI, which reports only the vulnerable code a
+  program reaches. L1 · fix S · adopt.
+- [ ] **SP04** Go · `GO-TOOLCHAIN-SUPPORTED`: the `go` directive and `toolchain` on one of the two
+  supported releases. L1 · fix S · adopt.
+- [ ] **SP05** Go · `GO-CONTEXT-FIRST`: `context.Context` as first parameter, never stored in a
+  struct. L2 · fix J · trial.
+- [ ] **SP06** Go · `GO-NO-PANIC-IN-LIBS`: no `panic` on a library's ordinary paths. L2 · fix J ·
+  trial.
+- [ ] Ten corpus repos of Go scored and their findings checked before the pack counts (B24), each
+  false alarm fixed in the engine.
+- [ ] **FP28** Go · `GO-HTTP-TIMEOUTS`: an `http.Server` with `ReadHeaderTimeout`, never a bare
+  `http.ListenAndServe` in a server (gosec G112, G114). L2 · fix J · adopt.
+
+### T-320 · Rust read: Cargo, clippy, editions, `unsafe`, locks
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-25
+- **Effort**: L · **Owner**: — · **Due**: —
+- **Origin**: split from T-308 on 25 October 2026, one stack per ticket (kiln score ideas of 24
+  October 2026: Every ecosystem, Mature tools as detectors, Concurrency, Supply chain)
+
+Planned in v0.7.14, "Rust repos, read": Cargo, clippy, the edition and `unsafe` read, `Cargo.lock`
+held to the rules that span stacks.
+
+Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
+converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
+rule ships with its passing and failing examples.
+
+- [ ] **B07** Rust: Cargo.lock committed, clippy, rustfmt, cargo-deny or cargo-audit,
+  `rust-version`, the edition, `unsafe` justified, cargo-semver-checks for libraries. Axum and Actix
+  Web recognised.
+- [ ] **F10** (Rust's part) cargo-deny for Rust.
+- [ ] **CC11** `RUST-NO-STATIC-MUT`: no `static mut`. L2 · fix J · adopt.
+- [ ] **SU33** (Rust's part) `LOCKS-COMMITTED`: `Cargo.lock` committed. L0 · fix J · adopt.
+- [ ] The rules that span stacks (`TESTS-PRESENT`, `TESTS-IN-CI`, `LINT-IN-CI`,
+  `LOCKED-DEPENDENCIES`, `DEPENDENCY-UPDATES`, `VULNERABILITY-AUDIT`, `SUPPORTED-RUNTIMES`) read
+  Rust repos too, each with a passing and a failing example from Rust.
+
+### T-321 · The Rust pack
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-25
+- **Effort**: L · **Owner**: — · **Due**: —
+- **Origin**: split from T-309 on 25 October 2026, one stack per ticket (kiln score ideas of 24
+  October 2026: Stack packs)
+
+Planned in v0.7.15, "The Rust pack": Rust's own rules, from clippy with warnings as errors to a
+declared MSRV, counted once ten corpus repos of Rust were checked (B24).
+
+One pack per ecosystem, each with its facts, rules and examples; they enter in the order the corpus
+measures (Part I). Rules already listed in a theme (`GO-RACE`, `LOCKS-COMMITTED`,
+`GRADLE-WRAPPER-VERIFIED`, `CSHARP-NULLABLE`, `PHPSTAN-LEVEL`…) aren't repeated.
+
+Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
+converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
+rule ships with its passing and failing examples.
+
+- [ ] **SP07** Rust · `CLIPPY-CLEAN`: clippy with warnings as errors in CI, a `[lints]` table in
+  `Cargo.toml`. L1 · fix S · adopt.
+- [ ] **SP08** Rust · `CARGO-DENY`: cargo-deny (advisories, licences, bans, sources) or cargo-audit
+  in CI. L1 · fix S · adopt.
+- [ ] **SP09** Rust · `RUST-EDITION-CURRENT`: edition 2024 (stable since Rust 1.85, February 2025).
+  L1 · fix J · trial.
+- [ ] **SP10** Rust · `RUST-MSRV`: `rust-version` declared and tested. L1 · fix S · trial.
+- [ ] **SP11** Rust · `UNSAFE-JUSTIFIED`: every `unsafe` block with a `// SAFETY:` comment (clippy's
+  `undocumented_unsafe_blocks`). L2 · fix J · adopt.
+- [ ] **SP12** Rust · `NO-UNWRAP-IN-LIBS`: `unwrap` and `expect` counted in library code (clippy's
+  `unwrap_used`). L2 · ratchet · trial.
+- [ ] Ten corpus repos of Rust scored and their findings checked before the pack counts (B24), each
+  false alarm fixed in the engine.
+
 ### T-324 · Ruby read: Bundler, Rails, RuboCop, bundler-audit
 - **Type**: improvement
 - **Status**: todo
@@ -6360,7 +6432,7 @@ rule ships with its passing and failing examples.
 - **Origin**: split from T-312 on 25 October 2026, one stack per ticket (kiln score ideas of 24
   October 2026: Every ecosystem, API, contracts and typing)
 
-Planned in v0.7.14, "Ruby repos, read": Bundler and Rails read, with RuboCop, Sorbet or RBS, RSpec
+Planned in v0.7.16, "Ruby repos, read": Bundler and Rails read, with RuboCop, Sorbet or RBS, RSpec
 or Minitest and bundler-audit.
 
 Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
@@ -6382,7 +6454,7 @@ rule ships with its passing and failing examples.
 - **Origin**: split from T-313 on 25 October 2026, one stack per ticket (kiln score ideas of 24
   October 2026: Stack packs)
 
-Planned in v0.7.15, "The Ruby pack": Brakeman and bundler-audit in CI, RuboCop configured, a
+Planned in v0.7.17, "The Ruby pack": Brakeman and bundler-audit in CI, RuboCop configured, a
 supported Ruby and no `permit!`, counted once ten corpus repos of Ruby were checked (B24).
 
 One pack per ecosystem, each with its facts, rules and examples; they enter in the order the corpus
@@ -6405,36 +6477,6 @@ rule ships with its passing and failing examples.
 - [ ] **AS01** (Rails' part) `SECRETS`: `config/master.key` and `config/credentials/*.key` never
   committed. L0 · fix J · adopt.
 
-### T-326 · Elixir read and its pack: mix, Phoenix, Credo, Sobelow
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-25
-- **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-313 and T-314 on 25 October 2026, one stack per ticket (kiln score ideas
-  of 24 October 2026: Every ecosystem, Stack packs)
-
-Planned in v0.7.16, "Elixir repos, read and packed": A smaller ecosystem, read and packed in one
-release: mix and Phoenix, with Credo, Dialyzer, Sobelow and mix_audit as its rules.
-
-One pack per ecosystem, each with its facts, rules and examples; they enter in the order the corpus
-measures (Part I). Rules already listed in a theme (`GO-RACE`, `LOCKS-COMMITTED`,
-`GRADLE-WRAPPER-VERIFIED`, `CSHARP-NULLABLE`, `PHPSTAN-LEVEL`…) aren't repeated.
-
-Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
-converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
-rule ships with its passing and failing examples.
-
-- [ ] **B12** (Elixir's part) Elixir: mix, Phoenix, Credo, Dialyzer, Sobelow.
-- [ ] **SP40** Elixir · `MIX-AUDIT`: mix_audit or `mix hex.audit` in CI, `mix.lock` committed. L1 ·
-  fix S · adopt.
-- [ ] **SP41** Elixir · `CREDO-AND-DIALYZER`: both configured. L1 · fix S · trial.
-- [ ] **SP42** Elixir · `SOBELOW`: Sobelow for Phoenix apps. L1 · fix S · adopt.
-- [ ] The rules that span stacks (`TESTS-PRESENT`, `TESTS-IN-CI`, `LINT-IN-CI`,
-  `LOCKED-DEPENDENCIES`, `DEPENDENCY-UPDATES`, `VULNERABILITY-AUDIT`, `SUPPORTED-RUNTIMES`) read
-  Elixir repos too, each with a passing and a failing example from Elixir.
-- [ ] Ten corpus repos of Elixir scored and their findings checked before the pack counts (B24),
-  each false alarm fixed in the engine.
-
 ### T-314 · iOS, Android and Flutter read: SwiftPM, the manifest, pubspec
 - **Type**: improvement
 - **Status**: todo
@@ -6444,7 +6486,7 @@ rule ships with its passing and failing examples.
   ticket on 25 October 2026 at antoine's request; one stack per ticket from the same day (Elixir in
   T-326, C and C++ in T-327, the long tail in T-329)
 
-Planned in v0.7.17, "iOS, Android and Flutter repos, read": SwiftPM, CocoaPods, the Android manifest
+Planned in v0.7.18, "iOS, Android and Flutter repos, read": SwiftPM, CocoaPods, the Android manifest
 and Flutter's pubspec read; App Transport Security and exported components checked.
 
 Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
@@ -6453,7 +6495,7 @@ rule ships with its passing and failing examples.
 
 - [ ] **B12** Swift (SwiftPM, CocoaPods, SwiftLint), Android (manifest, R8), Dart and Flutter
   (pubspec, analysis_options); React Native and Expo (`app.json`, `app.config.*`, `eas.json`);
-  Elixir's part is in T-326.
+  Kotlin Multiplatform, Ionic and Capacitor, .NET MAUI's mobile targets; Elixir's part is in T-326.
 - [ ] **AS41** `ANDROID-MANIFEST`: not debuggable, no cleartext traffic, backups off, every
   component's `exported` explicit. L1 · fix S · adopt.
 - [ ] **AS42** `IOS-ATS`: App Transport Security left on. L1 · fix J · adopt.
@@ -6470,7 +6512,7 @@ rule ships with its passing and failing examples.
 - **Origin**: kiln score ideas of 24 October 2026 (Stack packs), made a ticket on 25 October 2026 at
   antoine's request; one stack per ticket from the same day (C and C++ in T-328)
 
-Planned in v0.7.18, "The mobile pack": What the stores require and what an app bundle gives away:
+Planned in v0.7.19, "The mobile pack": What the stores require and what an app bundle gives away:
 the privacy manifest, the target SDK, no server secret in the app, signing keys out of git, counted
 once ten corpus repos of apps were checked (B24).
 
@@ -6499,37 +6541,18 @@ rule ships with its passing and failing examples.
 - [ ] **AS36** (Expo's part) `NO-SECRETS-IN-FRONT`: `EXPO_PUBLIC_*` variables too, compiled into the
   app. L2 · fix J · adopt.
 
-### T-327 · C and C++ read: CMake, Meson, Bazel, Conan, vcpkg
+### T-340 · Game repos: Unity, Godot, Unreal, Roblox, Lua
 - **Type**: improvement
 - **Status**: todo
-- **Opened**: 2026-10-25
+- **Opened**: 2026-10-26
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-314 on 25 October 2026, one stack per ticket (kiln score ideas of 24
-  October 2026: Every ecosystem)
+- **Origin**: stack coverage review of 26 October 2026, at antoine's request ("sois sûr que kiln
+  couvre bien tout"): Lua at 9 % of the 2025 Stack Overflow survey and game repos had two boxes in
+  T-300, nothing that read them
 
-Planned in v0.7.19, "C and C++ repos, read": CMake, Meson, Bazel, Conan and vcpkg read, with
-clang-format, clang-tidy, sanitizers and fuzzing.
-
-Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
-converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
-rule ships with its passing and failing examples.
-
-- [ ] **B13** C and C++: CMake, Meson, Bazel, Conan and vcpkg manifests, clang-format, clang-tidy,
-  sanitizers and fuzzing in CI, warnings as errors.
-- [ ] The rules that span stacks (`TESTS-PRESENT`, `TESTS-IN-CI`, `LINT-IN-CI`,
-  `LOCKED-DEPENDENCIES`, `DEPENDENCY-UPDATES`, `VULNERABILITY-AUDIT`, `SUPPORTED-RUNTIMES`) read C
-  and C++ repos too, each with a passing and a failing example from C and C++.
-
-### T-328 · The C and C++ pack
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-25
-- **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-315 on 25 October 2026, one stack per ticket (kiln score ideas of 24
-  October 2026: Stack packs)
-
-Planned in v0.7.20, "The C and C++ pack": Warnings as errors, sanitizers in CI, clang-tidy, fuzzing
-for parsers and managed dependencies, counted once ten corpus repos of C and C++ were checked (B24).
+Planned in v0.7.20, "Game repos, read and packed": Unity, Godot, Unreal and Roblox repos read on top
+of the C# and C++ packs, with Lua and Luau: the engine's version pinned, assets in Git LFS, caches
+and builds out of git, no store or signing credential committed.
 
 One pack per ecosystem, each with its facts, rules and examples; they enter in the order the corpus
 measures (Part I). Rules already listed in a theme (`GO-RACE`, `LOCKS-COMMITTED`,
@@ -6539,16 +6562,96 @@ Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `
 converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
 rule ships with its passing and failing examples.
 
-- [ ] **SP35** C and C++ · `COMPILER-WARNINGS`: `-Wall -Wextra -Werror` (or `/W4 /WX`) in the build.
-  L1 · fix S · trial.
-- [ ] **SP36** C and C++ · `SANITIZERS-IN-CI`: AddressSanitizer and UndefinedBehaviorSanitizer
-  builds in CI. L1 · fix S · trial.
-- [ ] **SP37** C and C++ · `CLANG-TIDY`: configured and run. L1 · fix S · trial.
-- [ ] **SP38** C and C++ · `FUZZING`: libFuzzer harnesses or OSS-Fuzz for parsers (Scorecard's
-  Fuzzing). L1 · fix J · assess.
-- [ ] **SP39** C and C++ · `MANAGED-DEPENDENCIES`: vcpkg or Conan manifests rather than copied
-  sources. L1 · fix J · trial.
-- [ ] Ten corpus repos of C and C++ scored and their findings checked before the pack counts (B24),
+- [ ] **B14** (Lua's part) Game repos read: Unity (`ProjectSettings/ProjectVersion.txt`,
+  `Packages/manifest.json` and its lock), Godot (`project.godot`, GDScript with gdtoolkit's gdlint
+  and gdformat, its C# projects), Unreal (`.uproject`, `.uplugin`, `Source/`, `Config/`), Roblox
+  (Rojo's `default.project.json`, Wally, Rokit or Aftman), LÖVE; Lua and Luau with selene or
+  luacheck, StyLua, Luau's type checker, busted, LuaRocks' rockspecs.
+- [ ] **FP39** Unity · `UNITY-REPO`: `.meta` files committed with their assets, `Library/`, `Temp/`
+  and builds ignored, large binaries in Git LFS. L0 · fix S · adopt.
+- [ ] **FP40** Godot · `GODOT-REPO`: `.godot/` ignored, no signing credentials in
+  `export_presets.cfg`. L0 · fix S · adopt.
+- [ ] **SP43** Games · `ENGINE-VERSION-PINNED`: the engine's version recorded in the repo (Unity's
+  `ProjectVersion.txt`, Godot's `config/features`, Unreal's `EngineAssociation`) and the same in
+  CI. L0 · fix J · adopt.
+- [ ] **FP41** Unreal · `UNREAL-REPO`: `Binaries/`, `Intermediate/`, `Saved/` and
+  `DerivedDataCache/` ignored, `.uasset` and `.umap` in Git LFS. L0 · fix S · adopt.
+- [ ] **FP42** Roblox · `LUAU-STRICT`: `--!strict` in Luau modules, selene and StyLua in CI. L1 ·
+  fix S · trial.
+- [ ] **SP44** Lua · `LUA-LINT`: selene or luacheck and StyLua in CI. L1 · fix S · trial.
+- [ ] **AS01** (games' part) `SECRETS`: no keystore, `.p12`, Steamworks or store credential
+  committed. L0 · fix J · adopt.
+- [ ] The rules that span stacks (`TESTS-PRESENT`, `TESTS-IN-CI`, `LINT-IN-CI`,
+  `LOCKED-DEPENDENCIES`, `DEPENDENCY-UPDATES`, `VULNERABILITY-AUDIT`, `SUPPORTED-RUNTIMES`) read
+  game repos too, each with a passing and a failing example from Unity, Godot or Lua.
+- [ ] Ten corpus repos of games scored and their findings checked before the pack counts (B24),
+  each false alarm fixed in the engine.
+
+### T-341 · R read and its pack: renv, lintr, testthat, R CMD check
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: L · **Owner**: — · **Due**: —
+- **Origin**: stack coverage review of 26 October 2026, at antoine's request ("sois sûr que kiln
+  couvre bien tout"): R, at 5 % of the 2025 Stack Overflow survey and common in coursework and
+  research, was only a data pack of B14
+
+Planned in v0.7.21, "R repos, read and packed": R packages and analyses read and packed in one
+release: DESCRIPTION and renv, lintr, testthat and R CMD check, beyond the notebooks the data
+science release (v0.6.58) reads.
+
+One pack per ecosystem, each with its facts, rules and examples; they enter in the order the corpus
+measures (Part I). Rules already listed in a theme (`GO-RACE`, `LOCKS-COMMITTED`,
+`GRADLE-WRAPPER-VERIFIED`, `CSHARP-NULLABLE`, `PHPSTAN-LEVEL`…) aren't repeated.
+
+Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
+converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
+rule ships with its passing and failing examples.
+
+- [ ] **B14** (R's part) R: `DESCRIPTION` and `NAMESPACE`, `renv.lock`, lintr, styler, testthat,
+  `R CMD check` in CI (r-lib/actions), Shiny apps; R Markdown and Quarto stay read as notebooks
+  (T-292).
+- [ ] **SP45** R · `RENV-LOCKED`: `renv.lock` committed for an analysis or an app, restored in CI.
+  L0 · fix S · adopt.
+- [ ] **SP46** R · `R-CMD-CHECK`: a package passes `R CMD check` in CI without error or warning. L1
+  · fix S · adopt.
+- [ ] **SP47** R · `LINTR`: lintr configured and run. L1 · fix S · trial.
+- [ ] **SP48** R · `NO-SETWD`: no `setwd()` or absolute path in a script; the project's root
+  (`here`) instead. L2 · fix J · adopt.
+- [ ] The rules that span stacks (`TESTS-PRESENT`, `TESTS-IN-CI`, `LINT-IN-CI`,
+  `LOCKED-DEPENDENCIES`, `DEPENDENCY-UPDATES`, `VULNERABILITY-AUDIT`, `SUPPORTED-RUNTIMES`) read R
+  repos too, each with a passing and a failing example from R.
+- [ ] Ten corpus repos of R scored and their findings checked before the pack counts (B24), each
+  false alarm fixed in the engine.
+
+### T-326 · Elixir read and its pack: mix, Phoenix, Credo, Sobelow
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-25
+- **Effort**: L · **Owner**: — · **Due**: —
+- **Origin**: split from T-313 and T-314 on 25 October 2026, one stack per ticket (kiln score ideas
+  of 24 October 2026: Every ecosystem, Stack packs)
+
+Planned in v0.7.22, "Elixir repos, read and packed": A smaller ecosystem, read and packed in one
+release: mix and Phoenix, with Credo, Dialyzer, Sobelow and mix_audit as its rules.
+
+One pack per ecosystem, each with its facts, rules and examples; they enter in the order the corpus
+measures (Part I). Rules already listed in a theme (`GO-RACE`, `LOCKS-COMMITTED`,
+`GRADLE-WRAPPER-VERIFIED`, `CSHARP-NULLABLE`, `PHPSTAN-LEVEL`…) aren't repeated.
+
+Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
+converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
+rule ships with its passing and failing examples.
+
+- [ ] **B12** (Elixir's part) Elixir: mix, Phoenix, Credo, Dialyzer, Sobelow.
+- [ ] **SP40** Elixir · `MIX-AUDIT`: mix_audit or `mix hex.audit` in CI, `mix.lock` committed. L1 ·
+  fix S · adopt.
+- [ ] **SP41** Elixir · `CREDO-AND-DIALYZER`: both configured. L1 · fix S · trial.
+- [ ] **SP42** Elixir · `SOBELOW`: Sobelow for Phoenix apps. L1 · fix S · adopt.
+- [ ] The rules that span stacks (`TESTS-PRESENT`, `TESTS-IN-CI`, `LINT-IN-CI`,
+  `LOCKED-DEPENDENCIES`, `DEPENDENCY-UPDATES`, `VULNERABILITY-AUDIT`, `SUPPORTED-RUNTIMES`) read
+  Elixir repos too, each with a passing and a failing example from Elixir.
+- [ ] Ten corpus repos of Elixir scored and their findings checked before the pack counts (B24),
   each false alarm fixed in the engine.
 
 ### T-329 · The long tail as data packs
@@ -6569,8 +6672,9 @@ Below the stacks that make 95 % of the corpus's repos: each language's facts as 
 locks, tools), read by the rules that span stacks, and a pack of its own only once the corpus or a
 community pack (T-69) asks for one.
 
-- [ ] **B14** The long tail as data packs: Scala, Haskell, OCaml, Clojure, Erlang, F#, Julia, R
-  (DESCRIPTION, renv, lintr, testthat), Perl, Lua, Zig, Nim, Fortran (fpm), MATLAB.
+- [ ] **B14** The long tail as data packs: Scala (sbt, Mill), Haskell, OCaml, Clojure, Erlang, F#,
+  Julia, Perl, Zig, Nim, Fortran (fpm), MATLAB, Solidity (its rules in T-300); R has its release
+  (T-341), Lua comes with the games (T-340).
 
 ### T-330 · Every common stack scored, measured: the corpus's 95 %
 - **Type**: task
