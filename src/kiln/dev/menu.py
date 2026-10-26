@@ -20,6 +20,7 @@ from kiln.stack import FRONTEND_DIR, Command
 MENU_THRESHOLD = 3
 # Not a `.json`: the background takes those for the records of its processes.
 SELECTION_FILE = "last-selection"
+COMPOSE_CHOICE_FILE = "compose-choice"
 
 type Ask = Callable[[str], str]
 
@@ -96,6 +97,27 @@ def _ask_each(labels: list[str], default: list[str], ask: Ask) -> list[str]:
         if picked and all(part.isdigit() and 1 <= int(part) <= len(labels) for part in picked):
             return [label for number, label in enumerate(labels, start=1) if str(number) in picked]
         print(f"Numbers from 1 to {len(labels)}, such as: {numbers}.")
+
+
+def prefers_containers(compose: str, services: list[str], state: Path, ask: Ask) -> bool:
+    """A repo whose compose file runs the project too: its services in podman, or its
+    package.json scripts on the machine; the last answer is the default."""
+    try:
+        last = (state / COMPOSE_CHOICE_FILE).read_text(encoding="utf-8").strip()
+    except OSError:
+        last = "containers"
+    default = "c" if last == "containers" else "m"
+    print(f"\n{ui.paint(f'{compose} runs {", ".join(services)} too.', bold=True)}")
+    print(f"  {ui.paint('c', ui.FIRE)}  in podman, as compose.yaml says (kiln dev --containers)")
+    print(f"  {ui.paint('m', ui.FIRE)}  package.json's scripts on the machine")
+    while True:
+        reply = ask(f"Choice [{default}]: ").strip().lower() or default
+        if reply in ("c", "m"):
+            state.mkdir(parents=True, exist_ok=True)
+            choice = "containers" if reply == "c" else "machine"
+            (state / COMPOSE_CHOICE_FILE).write_text(choice, encoding="utf-8")
+            return reply == "c"
+        print("c or m.")
 
 
 def wants_logs(ask: Ask) -> bool:
