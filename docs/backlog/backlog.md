@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-360.**
+**Next free: T-361.**
 
 ---
 
@@ -37,7 +37,7 @@ v1.0.0 in mid-June 2027. These are consequences of the plan rather than promises
 the launch adds pushes them by two days. The public view of this plan is
 [`ROADMAP.md`](../../ROADMAP.md), drawn from this section by `scripts/roadmap.py`.
 
-### Shipped: v0.4.0 to v0.4.6
+### Shipped: v0.4.0 to v0.4.9
 - v0.4.0 · kiln speaks English: promoted on Mon 19 Oct, the milestone decided by antoine
   (⚠ breaking, all converted by `kiln update`).
 - v0.4.1 · The grid, as data: `kiln grid`, 105 drafts from the reference repo.
@@ -47,12 +47,15 @@ the launch adds pushes them by two days. The public view of this plan is
   closed), promoted on Wed 21 Oct.
 - v0.4.5 · Cheaper sessions, CI only at the release: promoted on Fri 23 Oct, with the outside
   fixes #54 to #56 (thanks @NathanBarrachin). Its planned theme slipped: T-90's rest moved to
-  v0.4.8, T-130's proof to v0.5.0, T-160 to v0.6.23.
+  v0.4.11, T-130's proof to v0.5.0, T-160 to v0.6.23.
 - v0.4.6 · Every issue closed, adoption at full strength: promoted on Mon 26 Oct (urgent, on
   antoine's request: no repo of the code folder runs candidates since they all follow `beta`),
   `kiln adopt` at the level of `kiln new`, #42 to #44 and #58 to #60.
+- v0.4.7 to v0.4.9 · pnpm 11 in repos kiln did not make: promoted on Mon 26 Oct, three fixes
+  outside the plan (a front without a lockfile, build scripts `allowBuilds` does not list, in
+  `kiln install` then in `kiln ci` and the workflows); the planned releases moved by three numbers.
 
-### v0.4.7 · Every gap seen, wherever the code lives
+### v0.4.10 · Every gap seen, wherever the code lives
 Candidate Tue 27 Oct. The score and the fixes reach what they miss today: GitHub settings, code at
 the root as well as in `backend/` and `frontend/`, compose services, loose requirements, files read
 as empty.
@@ -66,7 +69,7 @@ as empty.
 - T-342 · Not using an agent is not a fault: agent files out of the score (S)
 - T-343 · Two habits for every repo: reproduce first, a direct link for every online step (XS)
 
-### v0.4.8 · Never lets it rot, kiln first
+### v0.4.11 · Never lets it rot, kiln first
 Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other people's repos: each
 commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before
 anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03).
@@ -89,6 +92,7 @@ public ones, kiln's own repos at 100) and the page that shows it, the potential 
 - T-33 · One promise everywhere: tagline, About, PyPI, social preview (S)
 - T-119 · GitHub Sponsors and `FUNDING.yml` (XS)
 - T-188 · The potential on every run, the frozen templates scored, an honest comparison (M)
+- T-360 · The plan renumbered: a minor every ten releases or so (S)
 - T-345 · The licence: `MIT OR Apache-2.0`, the template's output free of attribution (S)
 - T-346 · "The kiln standard": the grid's public name (S)
 - T-347 · A mascot and a logo, still and animated (S) — once antoine has chosen the mascot; not a
@@ -805,7 +809,7 @@ packs (T-69). From here, strict semver: breaking → major, `feat` → minor.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-26
-- **Effort**: S · **Owner**: — · **Due**: before the v0.4.7 candidate (Tue 27 Oct)
+- **Effort**: S · **Owner**: — · **Due**: before the v0.4.10 candidate (Tue 27 Oct)
 - **Origin**: antoine's answers of 26 October 2026 (Q42: a developer without Claude must not be
   marked down), decisions 10 and 16 of 26 October
 
@@ -847,15 +851,32 @@ evidence: ETH Zurich finds context files don't raise success and cost 20 to 23 %
 
 Apache-2.0 brings a patent grant MIT lacks; offered side by side with MIT, as uv does
 (https://docs.astral.sh/uv/reference/policies/license/), it keeps MIT's reach (GPLv2 projects
-can take MIT code, not Apache-2.0 code). The cheapest moment is before the launch, while two
-outside contributors have code in kiln.
-- [ ] Both contributors (@NathanBarrachin, @HarshRajSinghania) asked on an issue to license their
-  past contributions under the pair; without both answers, their code stays MIT, which the pair
+can take MIT code, not Apache-2.0 code). The cheapest moment is before the launch, while few
+outside contributors have code in kiln. antoine said yes to the pair (26 October, follow-up).
+- [ ] The outside authors of kiln's history (@NathanBarrachin, @darnak69, @HarshRajSinghania,
+  @SakarPaisen; antoine counts none, so maybe people he knows) asked for their ok to license
+  their past contributions under the pair; without it, their code stays MIT, which the pair
   allows.
 - [ ] `LICENSE-MIT`, `LICENSE-APACHE`, `license = "MIT OR Apache-2.0"` in `pyproject.toml` (PEP
   639), the READMEs' licence lines, `CONTRIBUTING.md` (contributions under the same terms).
 - [ ] What `kiln new` and `kiln adopt` lay in a repo is the user's: the template's files under
   MIT-0 (no notice to keep), said in the README, so a generated repo carries no kiln licence.
+
+### T-360 · The plan renumbered: a minor every ten releases or so
+- **Type**: task
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: S · **Owner**: — · **Due**: before the v0.5.0 candidate (Sun 1 Nov)
+- **Origin**: antoine's yes to decision 23 of 26 October 2026 (Q58: "I don't want too many p in
+  vN.m.p")
+
+Long runs of patches (v0.5.17, v0.6.23) are what antoine does not want; uv and ruff move the minor
+every few weeks, each minor a themed group holding its breaking changes.
+- [ ] `## 🚀 Releases` regrouped into minors of about ten releases, each named for its theme, the
+  launch staying v0.5.0; the big milestones (Claude alone, teams, every stack, any CI, 1.0) keep
+  their order and get their new numbers.
+- [ ] `ROADMAP.md`'s two hand-written milestone tables, `.claude/rules/releases.md`, the vision's
+  dates and the tickets' "Planned in" lines follow; `scripts/roadmap.py` rerun.
 
 ### T-346 · "The kiln standard": the grid's public name
 - **Type**: improvement
@@ -866,7 +887,7 @@ outside contributors have code in kiln.
   decision 5
 
 "Grid" says nothing to a stranger; "standard" says what v1.0 promises, the standard others build
-on.
+on. `kiln score` keeps its name: it scores a repo against the standard (Q113).
 - [ ] Every text a user reads says "the kiln standard": READMEs, reference, `kiln score`'s report,
   the rule pages, ROADMAP.md, the launch texts.
 - [ ] `kiln standard [RULE-ID]`, with `kiln grid` kept as an alias (cited by older docs and
@@ -1494,7 +1515,7 @@ is GitHub's or kiln's doing.
 - **Origin**: kiln score ideas of 24 October 2026 (One model of the repo, History, forge and
   registries, Trust, privacy and safety), made a ticket on 25 October 2026 at antoine's request
 
-Planned in v0.4.7, "Every gap seen, wherever the code lives": Candidate Tue 27 Oct. The score and
+Planned in v0.4.10, "Every gap seen, wherever the code lives": Candidate Tue 27 Oct. The score and
 the fixes reach what they miss today: GitHub settings, code at the root as well as in `backend/` and
 `frontend/`, compose services, loose requirements, files read as empty.
 
@@ -1519,7 +1540,7 @@ the fixes reach what they miss today: GitHub settings, code at the root as well 
 - **Origin**: kiln score ideas of 24 October 2026 (One measure drives every command), made a ticket
   on 25 October 2026 at antoine's request
 
-Planned in v0.4.8, "Never lets it rot, kiln first": Candidate Thu 29 Oct. kiln-bot runs kiln's
+Planned in v0.4.11, "Never lets it rot, kiln first": Candidate Thu 29 Oct. kiln-bot runs kiln's
 workflows with write access in other people's repos: each commit it brings is proven first, and
 kiln's own workflows pass zizmor and carry provenance before anyone runs them. kiln-bot on a test
 repo is a box of the launch gate (T-03).
@@ -7607,7 +7628,9 @@ reason. T-342 to T-358 come from here; "Q" numbers are the file's.
    promise. Draft tagline: "Make any repo production-grade: score it, raise it, keep it there".
    antoine wants the best README in the world.
 5. The Ubuntu image goes from public texts (too abstract). The grid is called **the kiln
-   standard** wherever a user reads it (T-346).
+   standard** wherever a user reads it (T-346). The standard is the grid, not the score:
+   `kiln score` keeps its name, beside `kiln check` and `kiln ci` (Q113, antoine is fine with
+   the three).
 6. The score: a number out of 100 in Lighthouse's bands (0-49 red, 50-89 orange, 90-100 green;
    the cap at 49 lands in red by construction), no letter; colourful in the terminal, a Markdown
    page of Mermaid charts on request (T-352).
@@ -7658,9 +7681,9 @@ reason. T-342 to T-358 come from here; "Q" numbers are the file's.
     launch: "not yet, report it".
 
 **Plan to 1.0.**
-23. Numbering (Q58): antoine wants small patch numbers. Proposed to him (milestones are his): a
-    minor every ten releases or so, each a themed milestone holding its breaking changes, as uv
-    and ruff do. Until he says yes, the plan's numbers stand.
+23. Numbering (Q58): antoine wants small patch numbers. antoine said yes the same day to a minor
+    every ten releases or so, each a themed milestone holding its breaking changes, as uv and
+    ruff do; the plan is renumbered by T-360.
 24. The best on every stack (Q59, unchanged); someone antoine knows waits for GitLab; the
     compressor uses proven tools only (vulture, knip), Q62.
 
@@ -7678,10 +7701,14 @@ reason. T-342 to T-358 come from here; "Q" numbers are the file's.
 **Community and money.**
 28. Free forever; Sponsors still to open (T-119); no maintainer rights to anyone; Discussions are
     enabled, their categories in T-58. Licence `MIT OR Apache-2.0` (T-345): antoine asked for
-    Apache-2.0 as "the best"; the pair keeps Apache's patent grant and MIT's reach, as uv does.
+    Apache-2.0 as "the best"; the pair keeps Apache's patent grant and MIT's reach, as uv does;
+    he said yes to it.
 29. Contact: security through GitHub's private reporting (SECURITY.md has it); companies through
     antoine's GitHub and LinkedIn. A kiln page on the association's site is declined (it would
-    name it): GitHub Pages, with the docs site after the launch.
+    name it): GitHub Pages, with the docs site after the launch. The site is static (docs, rule
+    pages, the leaderboard drawn at build): Pages serves it from the repo, built by a workflow,
+    with no other account; Vercel, antoine's first idea, only if a server part comes (T-348's
+    collector).
 30. antoine can take about 50 issues or PRs a day; each is answered in its own language.
 
 **Way of working.**
@@ -7971,7 +7998,7 @@ Every idea is a box of a ticket listed under its release in [🚀 Releases](#-re
 
 | Releases | From these ideas | Why then |
 |---|---|---|
-| v0.4.7 to v0.5.0, before the launch | what their tickets already do (T-158's GitHub settings, T-159's containers run on a copy, kiln-bot, the study as the first corpus, kiln's repos at 100) and three small ones: the two silent passes (A30, A31) and the potential line (I07) | the launch's releases are full: a new idea there would push the gate |
+| v0.4.10 to v0.5.0, before the launch | what their tickets already do (T-158's GitHub settings, T-159's containers run on a copy, kiln-bot, the study as the first corpus, kiln's repos at 100) and three small ones: the two silent passes (A30, A31) and the potential line (I07) | the launch's releases are full: a new idea there would push the gate |
 | v0.5.4 to v0.5.16 | what strangers meet first (K), the false alarms (A, E, H), the badge (L), speed, updates, `kiln fix`, rules that test themselves (G), the outputs where people look (L), the exact rules and the AI rules (Part III), the roadmap as context packs (O), tests at the lowest cost | the launch brings repos nobody here has seen, and v0.6.0 needs the roadmap and the tests |
 | v0.6.0 | O: the unattended run's scope guard, its labels and its costs | the milestone |
 | v0.6.1 to v0.6.11 | slimming, the grid's weekly watch, the repo model (A), rule format v2 (E, G), the syntax engine, mature tools (F), the cache (J) | the engine every later rule stands on |

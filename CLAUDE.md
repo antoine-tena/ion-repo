@@ -143,10 +143,10 @@ measure on a local copy, never in the repo itself. kiln may also train on antoin
 
 ## Releases
 
-0.x: every release bumps the patch, features and breaking changes included; the minor only moves
-for a milestone decided by antoine (`kiln version cut --minor`): Claude may propose one when a
-group of tickets forms a milestone, never decide it. One release every two days. The plan and
-the milestones: `docs/backlog/backlog.md` (`## 🚀 Releases`, `## 🧭 Vision`), shown by
+0.x: every release bumps the patch, features and breaking changes included; the minor moves about
+every ten releases (`kiln version cut --minor`), at a themed milestone holding its breaking
+changes, as uv and ruff do (antoine, 26 October 2026; the plan renumbered by T-360). One release
+every two days. The plan and the milestones: `docs/backlog/backlog.md` (`## 🚀 Releases`, `## 🧭 Vision`), shown by
 `ROADMAP.md`; the public launch: T-03. Candidates, promotion and channels:
 `.claude/rules/releases.md`, to read before `/kiln:release`.
 

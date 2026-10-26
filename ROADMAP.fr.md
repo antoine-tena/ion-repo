@@ -49,14 +49,14 @@ anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
-| v0.4.7 | Every gap seen, wherever the code lives | Candidate Tue 27 Oct. The score and the fixes reach what they miss today: GitHub settings, code at the root as well as in `backend/` and `frontend/`, compose services, loose requirements, files read as empty. | 9 tickets |
-| v0.4.8 | Never lets it rot, kiln first | Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other people's repos: each commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03). | 6 tickets |
+| v0.4.10 | Every gap seen, wherever the code lives | Candidate Tue 27 Oct. The score and the fixes reach what they miss today: GitHub settings, code at the root as well as in `backend/` and `frontend/`, compose services, loose requirements, files read as empty. | 9 tickets |
+| v0.4.11 | Never lets it rot, kiln first | Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other people's repos: each commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03). | 6 tickets |
 
 ### v0.5.x · 18 releases
 
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
-| v0.5.0 | Public launch: the proof and the page | Candidate Sun 1 Nov, promoted Tue 3 Nov. Milestone decided by antoine (16 October 2026), its content defined on 17 October: the version the launch waits for (T-03). The proof (two real repos, a hundred public ones, kiln's own repos at 100) and the page that shows it, the potential line as its demo. | 11 tickets |
+| v0.5.0 | Public launch: the proof and the page | Candidate Sun 1 Nov, promoted Tue 3 Nov. Milestone decided by antoine (16 October 2026), its content defined on 17 October: the version the launch waits for (T-03). The proof (two real repos, a hundred public ones, kiln's own repos at 100) and the page that shows it, the potential line as its demo. | 12 tickets |
 | v0.5.1 | Launch week: the rehearsal, and the bugs already known | Candidate Tue 3 Nov. Fixes only from here to the launch; the week absorbs up to three slipped releases. | 6 tickets |
 | v0.5.2 | Launch week: what the rehearsal found | Candidate Thu 5 Nov: the fixes of T-142, nothing else. | fixes as they come |
 | v0.5.3 | Launch day | Candidate Sat 7 Nov, promoted on Mon 9 Nov by the next candidate: the version strangers install. Gate checked on Mon 9 Nov at 20:00; nothing is promoted on launch day. | 1 ticket |
