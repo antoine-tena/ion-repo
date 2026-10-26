@@ -22,7 +22,10 @@ KNOWN_FACTS = (
     "vue",
     "github-actions",
     "containers",
+    "agent",
 )
+# A coding agent's folder: the repo is worked with one (on disk, even when git ignores it).
+AGENT_FOLDERS = (".claude", ".cursor", ".codex", ".gemini")
 IGNORED_PARTS = frozenset({".git", "node_modules", ".venv", "__pycache__", "dist", ".nuxt"})
 
 
@@ -110,6 +113,8 @@ def detect_facts(root: Path, files: tuple[str, ...]) -> set[str]:
         for name in names
     ):
         facts.add("containers")
+    if any((root / folder).is_dir() for folder in AGENT_FOLDERS):
+        facts.add("agent")
     return facts
 
 

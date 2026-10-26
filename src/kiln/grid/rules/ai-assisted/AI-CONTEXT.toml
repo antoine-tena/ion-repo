@@ -3,11 +3,14 @@ title = "The repo has instructions for coding agents (CLAUDE.md or AGENTS.md)"
 pillar = "readability"
 theme = "ai-assisted"
 scope = { kind = "universal" }
-level = "adopt"
+level = "assess"
 regime = "strict"
 profiles = ["solo", "association", "company", "university", "enterprise"]
 why = "An agent that reads the repo's own rules first follows them; one that guesses repeats the same mistakes."
-applies = []
+# Coding without an agent is no fault, and context files don't raise success (ETH Zurich, 2026):
+# out of the score, advised to a repo that uses an agent.
+applies = ["agent"]
+advice = true
 detectable = "script"
 fixable = "judgment"
 fixer = ""

@@ -92,6 +92,8 @@ class Rule:
     detectable: str = "script"  # script, approximate (the script flags, Claude confirms), judgment
     fixable: str = "judgment"  # script (a converter can), judgment
     settings: Mapping[str, str] = field(default_factory=dict)
+    # An unscored rule whose gap `kiln score` still shows, as advice, to the repos it applies to.
+    advice: bool = False
     path: Path = Path()
 
     @property
@@ -137,6 +139,7 @@ def load_rule(path: Path) -> Rule:
             detectable=str(data.get("detectable", "script")),
             fixable=str(data.get("fixable", "script" if data.get("fixer") else "judgment")),
             settings={str(key): str(value) for key, value in data.get("settings", {}).items()},
+            advice=bool(data.get("advice", False)),
             path=path,
         )
     except (KeyError, TypeError) as error:
@@ -186,6 +189,8 @@ def problems(rules: list[Rule], today: datetime.date | None = None) -> list[str]
             for source in rule.sources
             if source.kind not in SOURCE_KINDS
         ]
+        if rule.advice and (rule.is_scored or not rule.detector or not rule.applies):
+            found.append(f"{where}: advice is for an unscored rule with a detector and facts")
         if rule.is_scored and not rule.detector:
             found.append(f"{where}: an adopt rule is scored, it needs a detector")
         if rule.is_scored and not any(

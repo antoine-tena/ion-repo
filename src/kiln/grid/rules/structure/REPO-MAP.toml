@@ -1,5 +1,5 @@
 id = "REPO-MAP"
-title = "The root instructions hold a map of the repo: where each thing lives"
+title = "The repo's docs hold a map of it: where each thing lives"
 pillar = "readability"
 theme = "structure"
 scope = { kind = "universal" }
@@ -15,8 +15,9 @@ since = "0.4.1"
 
 [detector]
 kind = "regex"
-files = ["CLAUDE.md", "AGENTS.md"]
-pattern = '''(?im)^#+\s.*\b(map|layout|structure|carte|arborescence)\b'''
+# A map is a human practice first (matklad's ARCHITECTURE.md, 2021), an agent's file next.
+files = ["README.md", "CONTRIBUTING.md", "ARCHITECTURE.md", "docs/ARCHITECTURE.md", "CLAUDE.md", "AGENTS.md"]
+pattern = '''(?im)^#+\s.*\b(map|layout|structure|architecture|organi[sz]ation|carte|arborescence)\b'''
 expect = "match"
 
 [[sources]]
@@ -28,3 +29,8 @@ checked = 2026-10-20
 url = "https://agents.md/"
 kind = "adoption"
 checked = 2026-10-20
+
+[[sources]]
+url = "https://matklad.github.io/2021/02/06/ARCHITECTURE.md.html"
+kind = "blog"
+checked = 2026-10-26

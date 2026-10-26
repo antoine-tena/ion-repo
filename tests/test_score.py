@@ -61,6 +61,32 @@ def test_gaps_lower_the_score_and_the_cheapest_come_first(tmp_path: Path) -> Non
     assert report.top_gaps()[0].rule in gaps
 
 
+def test_coding_without_an_agent_is_no_fault(tmp_path: Path) -> None:
+    # A map in the README is a map; no agent file, no agent folder: nothing to say (T-342).
+    files = {k: v for k, v in GOOD.items() if k != "AGENTS.md"}
+    report = score.score_repo(make(tmp_path, {**files, "README.md": "# a\n\n## Layout\n"}))
+
+    assert report.score == 100
+    assert "AI-CONTEXT" not in statuses(report)
+    assert report.advice == ()
+
+
+def test_a_repo_worked_with_an_agent_is_advised_its_instructions(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    files = {k: v for k, v in GOOD.items() if k != "AGENTS.md"}
+    files |= {"README.md": "# a\n\n## Layout\n", ".claude/settings.json": "{}"}
+    report = score.score_repo(make(tmp_path, files))
+
+    assert report.score == 100
+    assert [found.rule for found in report.advice] == ["AI-CONTEXT"]
+    score.show(report)
+    out = capsys.readouterr().out
+    assert "Advice (out of the score)" in out
+    stacks = next(line for line in out.splitlines() if "stacks:" in line)
+    assert "agent" not in stacks
+
+
 def test_the_same_repo_gets_the_same_score_and_nothing_is_written(tmp_path: Path) -> None:
     root = make(tmp_path, {"app.py": "try:\n    pass\nexcept:\n    pass\n"})
     before = sorted(path.name for path in root.rglob("*"))
