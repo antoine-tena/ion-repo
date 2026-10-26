@@ -141,6 +141,13 @@ CASES: dict[str, dict[str, dict[str, str]]] = {
         "pass": {WORKFLOW: "jobs:\n  a:\n    steps:\n      - run: pnpm lint\n"},
         "fail": {WORKFLOW: "jobs:\n  a:\n    steps:\n      - run: echo hi\n"},
     },
+    "MODEL-TRACED": {
+        "pass": {
+            "data/models/model.joblib": "weights",
+            "data/models/model.joblib.manifest.json": '{"code_sha256": "ab", "metrics": {}}',
+        },
+        "fail": {"data/models/model.joblib": "weights"},
+    },
     "TESTS-PRESENT": {
         "pass": {"backend/tests/test_api.py": "def test_a(): ...\n"},
         "fail": {"app.py": "print(1)\n"},

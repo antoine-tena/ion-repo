@@ -15,7 +15,7 @@ since = "0.4.2"
 
 [detector]
 kind = "file"
-paths = ["**/test_*.py", "**/*_test.py", "**/tests/**/*.py", "**/*.spec.ts", "**/*.test.ts", "**/*.spec.js", "**/*.test.js", "**/*_test.go", "**/src/test/**",
+paths = ["**/test_*.py", "**/*_test.py", "**/tests/**/*.py", "**/*.spec.ts", "**/*.test.ts", "**/*.spec.tsx", "**/*.test.tsx", "**/*.spec.js", "**/*.test.js", "**/*_test.go", "**/src/test/**",
     "**/*Test.java", "**/*Tests.java", "**/*Test.cs", "**/*Tests.cs", "**/*Test.php", "**/tests/**/*.php",
 ]
 

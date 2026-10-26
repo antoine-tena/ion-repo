@@ -1,6 +1,6 @@
 {% from "macros.jinja" import db_port -%}
 {%- set base = name | replace('-', '_') -%}
-{%- set front_port = {'nuxt': 3000, 'next': 3000, 'astro': 4321, 'streamlit': 8501, 'dash': 8050}.get(frontend) -%}
+{%- set front_port = {'nuxt': 3000, 'next': 3000, 'astro': 4321, 'vite-react': 4173, 'streamlit': 8501, 'dash': 8050}.get(frontend) -%}
 # The project's stack under podman: `kiln dev --containers` (podman-compose up --build); `kiln dev`
 # starts only its database and runs the code on the machine.
 # Images built from the root of the repo (`.containerignore`); never docker.
@@ -101,6 +101,11 @@ services:
     tmpfs:
       - /tmp
       - /srv/frontend/.astro:mode=1777
+{%- elif frontend == 'vite-react' %}
+    # vite preview bundles its config into node_modules/.vite-temp/: writable like /tmp.
+    tmpfs:
+      - /tmp
+      - /srv/frontend/node_modules/.vite-temp:mode=1777
 {%- endif %}
 {%- if backend in ['django', 'fastapi'] %}
     environment:
@@ -112,7 +117,7 @@ services:
     ports:
       - "{{ front_port }}:{{ front_port }}"
     healthcheck:
-{%- if frontend in ['nuxt', 'next', 'astro'] %}
+{%- if frontend in ['nuxt', 'next', 'astro', 'vite-react'] %}
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:{{ front_port }}/').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
 {%- else %}
       test: ["CMD", "python", "-c", "import urllib.request as r; r.urlopen('http://127.0.0.1:{{ front_port }}/{{ '_stcore/health' if frontend == 'streamlit' else '' }}', timeout=5)"]

@@ -2,6 +2,8 @@
   "host": "{{ vps_host }}",
   "remotePath": "/opt/{{ name }}",
   "branch": "{{ deploy_branch }}",
+{%- if backend == 'django' %}
   "apiUrl": "https://{{ api_domain }}",
+{%- endif %}
   "siteUrl": "{{ site_url }}"
 }

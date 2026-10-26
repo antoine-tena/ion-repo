@@ -23,6 +23,8 @@ full before starting; it takes precedence over what follows.
    database rebuild only if the `rebuild` argument is given. Then `scripts/ops/smoke-test.sh`
    (or `smoke.sh`) if it exists.
 3. **Frontend**: `scripts/ops/deploy-frontend.sh`, with no untracked file in the frontend directory.
+   A Streamlit or Dash front without an API deploys only this way, to the VPS (its image, no
+   database), and runs the smoke test itself.
 4. Summarize: deployed commit, result of the health probe
    (`curl -s -o /dev/null -w '%{http_code}' $KILN_API_HEALTH`) and of the smoke test. If
    something is wrong: skill `/vps:prod-logs`.

@@ -19,7 +19,7 @@ from kiln.deps import lock_dependencies, sync_dependencies, update_dependencies
 from kiln.frozen import frozen_files, report_frozen_drift
 from kiln.rules import write_unverified_rules
 from kiln.shell import KilnError, capture, quiet_git, require_tools, run, step
-from kiln.stack import ANSWERS_FILE, load_stack, read_answers
+from kiln.stack import ANSWERS_FILE, kept_of, load_stack, read_answers
 from kiln.template import DEFAULT_TEMPLATE_SOURCE, template_revision
 from kiln.versions import (
     follows_candidates,
@@ -56,6 +56,10 @@ def update_project(
         from kiln.adopted import update_adopted
 
         update_adopted(root)
+        ui.note(
+            "adopted before kiln 0.4.6: kiln adopt lays the rest of the template, "
+            "then kiln update serves it in full"
+        )
         if should_check:
             check_project(root)
         return
@@ -115,8 +119,8 @@ def is_adopted(root: Path) -> bool:
 
 def apply_template(root: Path, answers: Mapping[str, object] | None = None) -> None:
     """Template applied again (latest revision, answers possibly changed), without overwriting
-    local changes: conflicts are marked in the files. Frozen files (`kiln-waivers.toml`) are
-    left as they are."""
+    local changes: conflicts are marked in the files. Frozen files (`kiln-waivers.toml`) and
+    what an adopted repo keeps as its own (`kept`) are left as they are."""
     previous_answers = migrations.raw_answers(root)
     try:
         with quiet_git():
@@ -126,7 +130,7 @@ def apply_template(root: Path, answers: Mapping[str, object] | None = None) -> N
                 data=migrations.answers_for_update(root, answers or {}),
                 vcs_ref=template_revision(_template_source(root)),
                 use_prereleases=follows_candidates(),
-                exclude=frozen_files(root),
+                exclude=[*frozen_files(root), *kept_of(root)],
                 defaults=True,
                 skip_answered=True,
                 overwrite=True,

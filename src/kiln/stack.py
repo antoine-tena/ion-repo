@@ -9,6 +9,7 @@ folders, development servers, checks. The commands (`install`, `dev`, `check`, `
 do not know the frameworks, only a `Stack`.
 """
 
+import json
 from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
@@ -29,8 +30,9 @@ MAVEN_BACKENDS = frozenset({"java"})
 # Maven goes through the project's wrapper: version and SHA-256 sum pinned in `.mvn/wrapper/`.
 MAVEN_WRAPPER = "./mvnw"
 PYTHON_FRONTENDS = frozenset({"streamlit", "dash"})
-PNPM_FRONTENDS = frozenset({"nuxt", "next", "astro"})
+PNPM_FRONTENDS = frozenset({"nuxt", "next", "astro", "vite-react"})
 NO_FRAMEWORK = "none"
+VITE_REACT = "vite-react"
 
 # Projects generated before frameworks could be chosen: Django and Nuxt, the only stack then.
 LEGACY_BACKEND = "django"
@@ -45,9 +47,16 @@ BACKEND_MARKERS: tuple[tuple[str, str], ...] = (
 )
 FRONTEND_MARKERS: tuple[tuple[str, str], ...] = (
     ("nuxt.config.ts", "nuxt"),
+    ("nuxt.config.js", "nuxt"),
+    ("nuxt.config.mjs", "nuxt"),
     ("next.config.ts", "next"),
     ("next.config.mjs", "next"),
+    ("next.config.js", "next"),
     ("astro.config.mjs", "astro"),
+    ("astro.config.ts", "astro"),
+    # A Vite app is taken for React only when its package.json depends on it (`detect_stack`).
+    ("vite.config.ts", VITE_REACT),
+    ("vite.config.js", VITE_REACT),
 )
 PODMAN_MARKERS = ("compose.yml", "docker-compose.yml", "config/local/compose.yml")
 
@@ -67,6 +76,7 @@ FRONTEND_DEV_COMMANDS: Mapping[str, tuple[str, ...]] = {
     "nuxt": ("pnpm", "dev"),
     "next": ("pnpm", "dev"),
     "astro": ("pnpm", "dev"),
+    VITE_REACT: ("pnpm", "dev"),
     "streamlit": ("uv", "run", "streamlit", "run", "app.py"),
     "dash": ("uv", "run", "python", "app.py"),
 }
@@ -74,6 +84,7 @@ PNPM_CHECK_SCRIPTS: Mapping[str, tuple[str, ...]] = {
     "nuxt": ("lint", "typecheck"),
     "next": ("lint", "typecheck"),
     "astro": ("lint", "typecheck"),
+    VITE_REACT: ("lint", "typecheck"),
 }
 # Build and install outputs of a framework, removed when switching away from it (`kiln set`).
 # Never data nor .env: only what the tool regenerates. The lock is one: it is not in the
@@ -98,6 +109,7 @@ BUILD_ARTIFACTS: Mapping[str, tuple[str, ...]] = {
     "nuxt": ("pnpm-lock.yaml", "node_modules", ".nuxt", ".output", ".data"),
     "next": ("pnpm-lock.yaml", "node_modules", ".next", "next-env.d.ts", "tsconfig.tsbuildinfo"),
     "astro": ("pnpm-lock.yaml", "node_modules", ".astro", "dist"),
+    VITE_REACT: ("pnpm-lock.yaml", "node_modules", "dist"),
 }
 PYTHON_CHECKS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("ruff", ("uv", "run", "ruff", "check", ".")),
@@ -185,6 +197,14 @@ def read_answers(root: Path) -> dict[str, object]:
     return renames.answers(loaded) if isinstance(loaded, dict) else {}
 
 
+def kept_of(root: Path) -> list[str]:
+    """What a repo adopted by `kiln adopt` keeps as its own (`kept`): never written by kiln."""
+    if not (root / ANSWERS_FILE).exists():
+        return []
+    kept = read_answers(root).get("kept") or []
+    return [str(path) for path in kept] if isinstance(kept, list) else []
+
+
 def answers_if_any(root: Path) -> dict[str, object]:
     """Copier answers; for an adopted repo, the size declared in its charter."""
     if (root / ANSWERS_FILE).exists():
@@ -201,15 +221,27 @@ def stack_from_answers(answers: Mapping[str, object]) -> Stack:
     )
 
 
+def uses_react(directory: Path) -> bool:
+    """A Vite app of React (and not of Vue or Svelte): its package.json depends on react."""
+    try:
+        package = json.loads((directory / "package.json").read_text(encoding="utf-8"))
+    except OSError, ValueError:
+        return False
+    return any("react" in (package.get(key) or {}) for key in ("dependencies", "devDependencies"))
+
+
 def _first_marker(directory: Path, markers: tuple[tuple[str, str], ...]) -> str:
     return next((name for marker, name in markers if (directory / marker).exists()), NO_FRAMEWORK)
 
 
 def detect_stack(root: Path) -> Stack:
     """Stack of an adopted repo, inferred from its marker files."""
+    frontend = _first_marker(root / FRONTEND_DIR, FRONTEND_MARKERS)
+    if frontend == VITE_REACT and not uses_react(root / FRONTEND_DIR):
+        frontend = NO_FRAMEWORK
     return Stack(
         backend=_first_marker(root / BACKEND_DIR, BACKEND_MARKERS),
-        frontend=_first_marker(root / FRONTEND_DIR, FRONTEND_MARKERS),
+        frontend=frontend,
         has_podman=any((root / marker).exists() for marker in PODMAN_MARKERS),
     )
 

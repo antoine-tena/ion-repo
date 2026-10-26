@@ -1,0 +1,23 @@
+import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vitest/config';
+{%- if backend in ['django', 'fastapi'] %}
+
+// Origin of the backend in development, target of the '/api' relay below.
+const DEFAULT_BACKEND_ORIGIN = 'http://localhost:8000';
+const backendOrigin = process.env.BACKEND_URL ?? DEFAULT_BACKEND_ORIGIN;
+{%- endif %}
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+{%- if backend in ['django', 'fastapi'] %}
+  server: {
+    proxy: { '/api': backendOrigin },
+  },
+  // The container serves the build with vite preview, relayed the same way.
+  preview: {
+    proxy: { '/api': backendOrigin },
+  },
+{%- endif %}
+});

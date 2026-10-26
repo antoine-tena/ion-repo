@@ -104,6 +104,15 @@ team:
   help: GitHub logins of the team (reviewers), as a YAML list
   default: "[{{ owner }}]"
 
+# A repo brought under kiln by `kiln adopt`: the files it already had, which the template would
+# have written (README.md, its own CI…), and its own code folders; neither backend nor frontend
+# is then needed. kiln never writes them, at adoption nor at `kiln update`. Never asked: only
+# `kiln adopt` answers it, and a repo that `kiln new` generated does not record it.
+kept:
+  type: yaml
+  default: "[]"
+  when: "{{ kept | length > 0 }}"
+
 # The project type only advises: it preselects the backend and the frontend below, which stay
 # free. Table of advice: kiln's README, "What you get".
 project_type:
@@ -142,13 +151,14 @@ frontend:
     "Nuxt + Vue (web app)": nuxt
     "Next.js + React (web app)": next
     "Astro (content site, static)": astro
+    "Vite + React (single-page app)": vite-react
     "Streamlit (Python dashboard)": streamlit
     "Dash (Python dashboard, interactive)": dash
     "None": none
   default: >-
     {% if project_type == 'app' %}nuxt{% elif project_type == 'site' %}astro{% elif project_type == 'dashboard' %}streamlit{% else %}none{% endif %}
   validator: >-
-    {% if backend == 'none' and frontend == 'none' %}A backend or a frontend is needed.{% endif %}
+    {% if backend == 'none' and frontend == 'none' and not kept %}A backend or a frontend is needed.{% endif %}
 
 podman:
   type: bool
@@ -195,8 +205,9 @@ compact_window:
     {% if compact_window < 100000 or compact_window > 1000000 %}Between 100000 and 1000000.{% endif %}
 
 # Production on a server of one's own: `vps` adds config/vps/ (Caddy, production stack, switch
-# with rollback, tested backups), scripts/ops/ and docs/operations/. Django backend only, served
-# by podman. Later with `kiln set deploy=vps`.
+# with rollback, tested backups), scripts/ops/ and docs/operations/. For a Django backend, or a
+# Streamlit or Dash front without an API (its own image, no database), served by podman. Later
+# with `kiln set deploy=vps`.
 deploy:
   type: str
   help: Production deployment?
@@ -204,9 +215,9 @@ deploy:
     "None for now": none
     "VPS (podman, Caddy, backups)": vps
   default: none
-  when: "{{ backend == 'django' }}"
+  when: "{{ backend == 'django' or (backend in ['none', 'data', 'cli'] and frontend in ['streamlit', 'dash']) }}"
   validator: >-
-    {% if deploy == 'vps' and backend != 'django' %}The VPS deployment is made for the Django backend.{% elif deploy == 'vps' and not podman %}The VPS deployment needs containers: podman=true.{% endif %}
+    {% if deploy == 'vps' and backend != 'django' and frontend not in ['streamlit', 'dash'] %}The VPS deployment is made for a Django backend, or a Streamlit or Dash front.{% elif deploy == 'vps' and not podman %}The VPS deployment needs containers: podman=true.{% endif %}
 
 vps_host:
   type: str
@@ -218,7 +229,7 @@ api_domain:
   type: str
   help: Public domain of the API (Caddy gets its TLS certificate)
   default: "api.{{ name }}.example.com"
-  when: "{{ deploy == 'vps' }}"
+  when: "{{ deploy == 'vps' and backend == 'django' }}"
 
 site_url:
   type: str

@@ -48,7 +48,7 @@ jobs:
     with:
       directory: backend
 {%- endif %}
-{%- if frontend in ['nuxt', 'next', 'astro'] %}
+{%- if frontend in ['nuxt', 'next', 'astro', 'vite-react'] %}
 
   frontend:
     uses: antoine-tena/kiln/.github/workflows/pnpm.yml@{{ kiln_pin }}
@@ -56,6 +56,9 @@ jobs:
       scripts: |
         lint
         typecheck
+{%- if frontend == 'vite-react' %}
+        test
+{%- endif %}
         build
 {%- elif frontend in ['streamlit', 'dash'] %}
 
@@ -81,7 +84,7 @@ jobs:
     uses: antoine-tena/kiln/.github/workflows/secrets.yml@{{ kiln_pin }}
 
 {%- set uv_dirs = (['backend'] if backend not in ['none', 'java'] else []) + (['frontend'] if frontend in ['streamlit', 'dash'] else []) %}
-{%- set pnpm_dir = 'frontend' if frontend in ['nuxt', 'next', 'astro'] else '' %}
+{%- set pnpm_dir = 'frontend' if frontend in ['nuxt', 'next', 'astro', 'vite-react'] else '' %}
 {%- if uv_dirs or pnpm_dir or backend == 'java' %}
 
   security:

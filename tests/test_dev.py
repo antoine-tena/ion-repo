@@ -1,5 +1,6 @@
 """`kiln dev`: the Procfile.dev, the background (`-d`, status, logs, stop) and its arguments."""
 
+import os
 import socket
 import subprocess
 import time
@@ -11,7 +12,14 @@ import pytest
 from kiln import cli
 from kiln.dev import background, run_dev
 from kiln.dev.menu import select
-from kiln.dev.processes import dev_processes, procfile_commands, runs_beyond_front, spawn
+from kiln.dev.processes import (
+    dev_processes,
+    node_installs,
+    package_script_commands,
+    procfile_commands,
+    runs_beyond_front,
+    spawn,
+)
 from kiln.shell import KilnError
 from kiln.stack import Command
 
@@ -46,6 +54,45 @@ def test_a_procfile_line_runs_in_its_folder_and_replaces_a_server_of_the_same_na
         ("django", "uv run python manage.py runserver 8001"),
         ("worker", "uv run watchfiles 'celery -A core worker'"),
     ]
+
+
+def test_a_folder_the_stack_does_not_serve_runs_its_package_dev_scripts(tmp_path: Path) -> None:
+    (tmp_path / "package.json").write_text(
+        '{"scripts": {"dev": "vite", "server": "node --watch server/index.ts",'
+        ' "build": "vite build", "start": "node dist/server.js"}}',
+        encoding="utf-8",
+    )
+    (tmp_path / "pnpm-lock.yaml").touch()
+    (tmp_path / "Procfile.dev").write_text("server: node --watch api.ts\n", encoding="utf-8")
+
+    assert [(command.label, command.argv) for command in dev_processes(tmp_path)] == [
+        ("dev", ("pnpm", "run", "dev")),
+        ("server", ("sh", "-c", "node --watch api.ts")),
+    ]
+
+
+def test_start_runs_only_without_a_dev_script_and_a_served_folder_keeps_its_server(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "backend").mkdir()
+    (tmp_path / "backend/package.json").write_text(
+        '{"scripts": {"start": "node index.js"}}', encoding="utf-8"
+    )
+    (tmp_path / "frontend").mkdir()
+    (tmp_path / "frontend/nuxt.config.ts").touch()
+    (tmp_path / "frontend/package.json").write_text(
+        '{"scripts": {"dev": "nuxt dev"}}', encoding="utf-8"
+    )
+
+    assert [(command.label, command.argv) for command in dev_processes(tmp_path)] == [
+        ("nuxt", ("pnpm", "dev")),
+        ("backend-start", ("npm", "run", "start")),
+    ]
+
+
+def test_nothing_to_run_says_what_kiln_looks_for(project: Path) -> None:
+    with pytest.raises(KilnError, match=r"package\.json.*Procfile\.dev"):
+        run_dev(project)
 
 
 def test_detached_processes_are_read_then_stopped(
@@ -193,3 +240,61 @@ def test_a_server_is_seen_on_either_loopback(family: socket.AddressFamily, host:
     with server:
         server.listen()
         assert background._listens(server.getsockname()[1])
+
+
+def test_a_taken_port_stops_the_start_and_names_who_holds_it(
+    project: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Another process on the server's port would answer its readiness check (#60).
+    with socket.socket() as holder:
+        holder.bind(("127.0.0.1", 0))
+        holder.listen()
+        port = holder.getsockname()[1]
+        monkeypatch.setitem(background.DEV_PORTS, "nuxt", port)
+        (project / "backend/Procfile.dev").write_text("nuxt: sleep 60\n", encoding="utf-8")
+
+        with pytest.raises(KilnError, match=rf"port {port} \(nuxt\) is taken by "):
+            run_dev(project)
+
+    assert background.running(project) == []
+
+
+def test_a_port_held_by_another_worktree_points_to_its_kiln_dev_stop(
+    project: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    other = project / ".git/worktrees/feature"
+    (other / background.STATE_DIR).mkdir(parents=True)
+    (other / "gitdir").write_text("/code/repo-feature/.git\n", encoding="utf-8")
+    with socket.socket() as holder:
+        holder.bind(("127.0.0.1", 0))
+        holder.listen()
+        port = holder.getsockname()[1]
+        record = f'{{"pid": {os.getpid()}, "port": {port}}}'
+        (other / background.STATE_DIR / "nuxt.json").write_text(record, encoding="utf-8")
+        monkeypatch.setitem(background.DEV_PORTS, "nuxt", port)
+        (project / "backend/Procfile.dev").write_text("nuxt: sleep 60\n", encoding="utf-8")
+
+        with pytest.raises(KilnError, match=r"kiln dev of /code/repo-feature: `kiln dev stop`"):
+            run_dev(project)
+
+
+def test_a_fresh_clone_installs_its_node_dependencies_from_the_lock(tmp_path: Path) -> None:
+    # Without node_modules/, `npm run dev` stops on `vite: not found` (#59).
+    (tmp_path / "package.json").write_text('{"scripts": {"dev": "vite"}}', encoding="utf-8")
+    (tmp_path / "package-lock.json").write_text("{}", encoding="utf-8")
+    commands = package_script_commands(tmp_path, ".")
+
+    assert [install.argv for install in node_installs(tmp_path, commands)] == [("npm", "ci")]
+
+    installed = tmp_path / "node_modules/.package-lock.json"
+    installed.parent.mkdir()
+    installed.write_text("{}", encoding="utf-8")
+    assert node_installs(tmp_path, commands) == []
+
+    lock_time = installed.stat().st_mtime + 10
+    os.utime(tmp_path / "package-lock.json", (lock_time, lock_time))
+    assert [install.argv for install in node_installs(tmp_path, commands)] == [("npm", "ci")]
+
+
+def test_a_folder_without_package_json_installs_nothing(tmp_path: Path) -> None:
+    assert node_installs(tmp_path, [Command("worker", ".", ("sleep", "1"))]) == []

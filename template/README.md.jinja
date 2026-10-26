@@ -1,11 +1,11 @@
 {%- set python_dirs = (['backend'] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + (['frontend'] if frontend in ['streamlit', 'dash'] else []) -%}
-{%- set installed = python_dirs + (['backend'] if backend == 'java' else []) + (['frontend'] if frontend in ['nuxt', 'next', 'astro'] else []) -%}
-{%- set front_url = {'nuxt': 'http://localhost:3000', 'next': 'http://localhost:3000', 'astro': 'http://localhost:4321', 'streamlit': 'http://localhost:8501', 'dash': 'http://localhost:8050'}.get(frontend) -%}
+{%- set installed = python_dirs + (['backend'] if backend == 'java' else []) + (['frontend'] if frontend in ['nuxt', 'next', 'astro', 'vite-react'] else []) -%}
+{%- set front_url = {'nuxt': 'http://localhost:3000', 'next': 'http://localhost:3000', 'astro': 'http://localhost:4321', 'vite-react': 'http://localhost:5173', 'streamlit': 'http://localhost:8501', 'dash': 'http://localhost:8050'}.get(frontend) -%}
 {%- set open_url = front_url or ('http://localhost:2718' if backend == 'data' else 'http://localhost:8000/api/docs') -%}
-{%- set js_front = frontend in ['nuxt', 'next', 'astro'] -%}
+{%- set js_front = frontend in ['nuxt', 'next', 'astro', 'vite-react'] -%}
 {%- if language_docs == 'fr' -%}
 {%- set back_text = {'django': "l'API, en Django + Django Ninja", 'fastapi': "l'API, en FastAPI", 'data': "la chaîne de données (polars ou NumPy, Plotly) et les notebooks marimo", 'cli': "l'outil en ligne de commande `" ~ name ~ "`", 'java': "le backend Java 25 (Maven, sans framework)"}.get(backend) -%}
-{%- set front_text = {'nuxt': "l'interface, en Nuxt 4 + Vue 3", 'next': "l'interface, en Next.js 16 + React 19", 'astro': "le site, en Astro 7", 'streamlit': "le tableau de bord, en Streamlit", 'dash': "le tableau de bord, en Dash"}.get(frontend) -%}
+{%- set front_text = {'nuxt': "l'interface, en Nuxt 4 + Vue 3", 'next': "l'interface, en Next.js 16 + React 19", 'astro': "le site, en Astro 7", 'vite-react': "l'interface, en Vite + React 19", 'streamlit': "le tableau de bord, en Streamlit", 'dash': "le tableau de bord, en Dash"}.get(frontend) -%}
 # {{ title }}
 
 {{ description }}
@@ -54,8 +54,8 @@ Puis ouvrir {{ open_url }}.
 - `compose.yaml` et les `Containerfile` : la pile en conteneurs podman.
 {%- endif %}
 {%- if deploy == 'vps' %}
-- `config/vps/` et `scripts/ops/` : la production sur `{{ vps_host }}` (pile, Caddy, bascule,
-  sauvegardes) ; procédure dans [`docs/operations/production.md`](docs/operations/production.md).
+- `config/vps/` et `scripts/ops/` : la production sur `{{ vps_host }}` (pile, Caddy, bascule{{ ',' if backend == 'django' }}
+  {{ 'sauvegardes' if backend == 'django' else '' }}) ; procédure dans [`docs/operations/production.md`](docs/operations/production.md).
 {%- endif %}
 {%- if frontend_deploy == 'vercel' %}
 - `scripts/ops/deploy-frontend.sh` : déploiement du front sur Vercel, d'un commit poussé sur
@@ -130,7 +130,7 @@ kiln check
 Ruff, mypy et pytest pour chaque projet Python
 {%- endif %}
 {%- if frontend in ['nuxt', 'next'] %}, ESLint et le contrôle des types côté frontend
-{%- elif frontend == 'astro' %}, `astro check` côté frontend{% endif %}, puis la charte (`charter`).
+{%- elif frontend == 'astro' %}, `astro check` côté frontend{%- elif frontend == 'vite-react' %}, ESLint et `tsc` côté frontend{% endif %}, puis la charte (`charter`).
 
 {% if backend == 'django' and frontend == 'nuxt' -%}
 ## Contrat d'API
@@ -162,7 +162,7 @@ priorité), `done.md` (ceux qui sont faits), `rejected.md` (ce qui a été refus
    demander un avis. On ne commite jamais directement sur `main` ou `develop`.
 {%- else -%}
 {%- set back_text = {'django': 'the API, in Django + Django Ninja', 'fastapi': 'the API, in FastAPI', 'data': 'the data chain (polars or NumPy, Plotly) and the marimo notebooks', 'cli': 'the command-line tool `' ~ name ~ '`', 'java': 'the Java 25 backend (Maven, no framework)'}.get(backend) -%}
-{%- set front_text = {'nuxt': 'the interface, in Nuxt 4 + Vue 3', 'next': 'the interface, in Next.js 16 + React 19', 'astro': 'the site, in Astro 7', 'streamlit': 'the dashboard, in Streamlit', 'dash': 'the dashboard, in Dash'}.get(frontend) -%}
+{%- set front_text = {'nuxt': 'the interface, in Nuxt 4 + Vue 3', 'next': 'the interface, in Next.js 16 + React 19', 'astro': 'the site, in Astro 7', 'vite-react': 'the interface, in Vite + React 19', 'streamlit': 'the dashboard, in Streamlit', 'dash': 'the dashboard, in Dash'}.get(frontend) -%}
 # {{ title }}
 
 {{ description }}
@@ -211,8 +211,8 @@ Then open {{ open_url }}.
 - `compose.yaml` and the `Containerfile`s: the stack in podman containers.
 {%- endif %}
 {%- if deploy == 'vps' %}
-- `config/vps/` and `scripts/ops/`: production on `{{ vps_host }}` (stack, Caddy, switch,
-  backups); how-to in [`docs/operations/production.md`](docs/operations/production.md).
+- `config/vps/` and `scripts/ops/`: production on `{{ vps_host }}` (stack, Caddy, switch{{ ',' if backend == 'django' }}
+  {{ 'backups' if backend == 'django' else '' }}); how-to in [`docs/operations/production.md`](docs/operations/production.md).
 {%- endif %}
 {%- if frontend_deploy == 'vercel' %}
 - `scripts/ops/deploy-frontend.sh`: deployment of the front on Vercel, from a commit pushed to
@@ -286,7 +286,7 @@ kiln check
 Ruff, mypy and pytest for each Python project
 {%- endif %}
 {%- if frontend in ['nuxt', 'next'] %}, ESLint and type checks for the frontend
-{%- elif frontend == 'astro' %}, `astro check` for the frontend{% endif %}, then the charter (`charter`).
+{%- elif frontend == 'astro' %}, `astro check` for the frontend{%- elif frontend == 'vite-react' %}, ESLint and `tsc` for the frontend{% endif %}, then the charter (`charter`).
 
 {% if backend == 'django' and frontend == 'nuxt' -%}
 ## API contract

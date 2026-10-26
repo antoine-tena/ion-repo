@@ -18,7 +18,7 @@ un dossier ou un module.
   `.copier-answers.yml`), `template.py`, `deps.py`, `github.py`, `rules.py` (règles non
   vérifiées), `statusline.py`, `versions.py` (tags, journal des versions), `frozen.py` (fichiers figés par `kiln-waivers.toml`, épargnés par `update`), `renames.py` (noms d'avant 0.4.0 et leurs noms anglais), `banner.py` (bannière, écran d'accueil), `ui.py` (palette pierre et feu, étapes,
   roue animée, bilan, succès, erreurs), `shell.py`, `config.py` (`~/.config/kiln/config.toml`).
-- `src/kiln/grid/` : la grille (T-123) : `rules/<thème>/<ID>.toml` une règle par fichier, `model.py` (format, listes fermées, validation), `facts.py` (de quoi est fait un repo), `detectors.py` (détecteurs déclaratifs, contrôles Python), `fixers/` (convertisseurs de `kiln fix` : `ci.py`, `python.py`, `containers.py`, `resolve.py` pour les SHA et empreintes en ligne), `fix.py` (`kiln fix`), `show.py` (`kiln grid`), `score.py` (`kiln score`, note d'un repo face à la grille), `roadmap.py` (`kiln score --roadmap`, `--rule`, `--write` : ce qui demande du jugement, pour Claude) ; chaque règle a un exemple qui passe et un qui échoue dans `tests/test_grid.py`.
+- `src/kiln/grid/` : la grille (T-123) : `rules/<thème>/<ID>.toml` une règle par fichier, `model.py` (format, listes fermées, validation), `facts.py` (de quoi est fait un repo), `detectors.py` (détecteurs déclaratifs, contrôles Python), `fixers/` (convertisseurs de `kiln fix` : `ci.py`, `python.py`, `containers.py`, `resolve.py` pour les SHA et empreintes en ligne), `fix.py` (`kiln fix`), `show.py` (`kiln grid`), `score.py` (`kiln score`, note d'un repo face à la grille), `gap_report.py` (ce que la grille ne couvre pas, signalé à kiln avec l'accord de l'utilisateur, T-38), `roadmap.py` (`kiln score --roadmap`, `--rule`, `--write` : ce qui demande du jugement, pour Claude) ; chaque règle a un exemple qui passe et un qui échoue dans `tests/test_grid.py`.
 - `src/kiln/ci/` : `kiln ci` (CI rejouée sur le poste, verdict en note git) ;
   `src/kiln/charter/` : moteur de `charter` (`bans.py`, `ratchets.py`,
   `python_tools.py`, `waivers.py` : dérogations de `kiln-waivers.toml`).
@@ -54,7 +54,7 @@ un dossier ou un module.
   sans numéro de version, dans un dossier jetable sur le disque) ; `scripts/refresh_images.py` :
   images de base du modèle épinglées au digest de leur tag (avant chaque candidate).
 - `tests/` : `test_template.py` (rendu du modèle pour chaque stack), `test_cli.py` (la commande :
-  accueil, erreurs, bilan, sorties hors terminal, anciens noms), `test_questions.py` (questions de `kiln new`), `test_new.py` (ce que `kiln new` dit à la fin), `test_grid.py` (la grille), `test_score.py` (`kiln score`), `test_fix.py` (`kiln fix` et ses conversions), `test_adopted.py` (repos adoptés), `test_unites.py`,
+  accueil, erreurs, bilan, sorties hors terminal, anciens noms), `test_questions.py` (questions de `kiln new`), `test_new.py` (ce que `kiln new` dit à la fin), `test_grid.py` (la grille), `test_score.py` (`kiln score`), `test_gap_report.py` (signalement des manques de la grille), `test_fix.py` (`kiln fix` et ses conversions), `test_adopted.py` (repos adoptés), `test_unites.py`,
   `test_ci.py`, `test_flotte.py`, `test_waivers.py` (dérogations), `test_waive.py`, `test_charter_file.py` (`charter file`, hook après une édition), `test_shipping.py` (`kiln version cut` et `promote`), `test_rehearsal.py` (`update --rehearse`), `test_e2e.py` (de bout en bout, `-m e2e` : chaque version depuis v0.3.0 par un outil installé, et le repo-témoin `antoine-tena/kiln-rehearsal`, figé à v0.3.3-rc.2, ne jamais le mettre à jour), `test_deployment.py`, `test_statusline.py` (choix du
   poste et rendu du script), `test_plugins.py` (skills cités présents, nommés comme leur dossier), `test_docs.py` (vitrine à jour : capture d'accueil, plugins et workflows cités), `test_branch_guard.py` (hook de garde de branche), `test_adopt.py`,
   `test_reminders.py`, `test_session_start.py` ; `conftest.py` : config git du poste écartée, identité de test.
@@ -167,9 +167,12 @@ publie sur PyPI le paquet `kiln-cli` par `pypi.yml`) :
 Chaque version, correctif compris, finit par `kiln update --all` : les repos générés citent leurs
 workflows au tag exact dont ils partent (`ci.yml`), et `kiln update` le fait avancer. Les
 workflows de kiln prennent leurs actions et la commande `charte` à leur propre commit
-(`job.workflow_sha`). Les dépôts adoptés citent les workflows au tag
-de la dernière version publique (choix d'antoine, 19 octobre 2026, T-04) et ne rejouent pas
-de modèle : `kiln update` y fait seulement avancer ce tag (`adopted.py`, T-146), après avoir vérifié les entrées passées aux workflows. Modules : `versions.py` (tags, canaux, journal, version de
+(`job.workflow_sha`). Un dépôt adopté par `kiln adopt` est au niveau de `kiln new` (choix
+d'antoine, 24 octobre 2026, #59, qui renverse celui du 19 octobre) : le modèle y est rendu sans
+écraser ses fichiers, notés sous `kept` dans `.copier-answers.yml` et que `kiln update` n'écrit
+jamais, puis rejoué par `kiln update` comme ailleurs. Un dépôt adopté avant la 0.4.6 (une charte,
+sans réponses) ne voit que le tag de ses workflows avancé (`adopted.py`, T-146) jusqu'à ce que
+`kiln adopt` le complète. Modules : `versions.py` (tags, canaux, journal, version de
 l'outil), `release.py` (`kiln version`), `shipping.py` (`kiln version cut`, `kiln version promote`).
 
 ## Le README, entièrement à jour

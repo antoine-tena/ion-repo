@@ -29,6 +29,7 @@ Exit code non-zero when a rule is broken.
 
 from __future__ import annotations
 
+import datetime
 import importlib.util
 import subprocess
 import sys
@@ -84,12 +85,13 @@ def unverified_rules(repo: Repo) -> list[str]:
     return [line for line in lines if line and not line.startswith("#")]
 
 
-def waivers_of(repo: Repo) -> Waivers:
-    """Waivers of `kiln-waivers.toml`, checked against the rules and the files of the repo; a
-    rule of the grid counts (a false positive of `kiln score` dismissed on its path)."""
+def waivers_of(repo: Repo, today: datetime.date | None = None) -> Waivers:
+    """Waivers of `kiln-waivers.toml` as of `today`, checked against the rules and the files of
+    the repo; a rule of the grid counts (a false positive of `kiln score` dismissed on its
+    path)."""
     from kiln.grid.model import load_rules
 
-    waivers = load_waivers(repo.root)
+    waivers = load_waivers(repo.root, today)
     known = [
         params["id"]
         for section in RULE_SECTIONS

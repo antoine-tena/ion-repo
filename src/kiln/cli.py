@@ -21,7 +21,7 @@ PROJECT_NAME = re.compile(r"[a-z][a-z0-9-]*")
 SIZES = ("spark", "ember", "flame", "blaze")
 PROJECT_TYPES = ("app", "api", "site", "dashboard", "analysis", "cli")
 BACKENDS = ("django", "fastapi", "data", "cli", "java", "none")
-FRONTENDS = ("nuxt", "next", "astro", "streamlit", "dash", "none")
+FRONTENDS = ("nuxt", "next", "astro", "vite-react", "streamlit", "dash", "none")
 LANGUAGES = ("en", "fr")
 
 
@@ -236,6 +236,11 @@ def _dispatch_score(arguments: argparse.Namespace) -> None:
         print(score.badge(report))
     else:
         score.show(report, every=arguments.all)
+        from kiln.dev.menu import is_interactive
+        from kiln.grid import gap_report
+
+        # Only a person at a terminal says yes: a script or a Claude session is never asked.
+        gap_report.offer(root, report, input if is_interactive() else None)
 
 
 def _add_grid_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
