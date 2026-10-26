@@ -59,4 +59,7 @@ jobs:
       - name: Dependencies
         run: uv sync --locked
       - name: End-to-end tests
+        # Ubuntu 26's /tmp is a tmpfs with a quota: the generated projects go on the disk.
+        env:
+          TMPDIR: ${{ runner.temp }}
         run: uv run pytest -m e2e -n 4 -q
