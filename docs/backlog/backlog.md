@@ -65,7 +65,6 @@ Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other 
 commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before
 anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03).
 - T-59 · kiln-bot: the grid's fixes as a weekly pull request (L)
-- T-344 · `/kiln:pause`: a session named and its place kept, listed at the next start (S)
 
 ### v0.5.0 · Public launch: the proof and the page
 Candidate Sun 1 Nov, promoted Tue 3 Nov. Milestone decided by antoine (16 October 2026), its content
@@ -1312,22 +1311,6 @@ and the page that shows it, the potential line as its demo.
   fix`, the number again.
 
 ## 🟡 Normal
-
-### T-344 · `/kiln:pause`: a session named and its place kept, listed at the next start
-- **Type**: idea
-- **Status**: todo
-- **Opened**: 2026-10-26
-- **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: antoine's answers of 26 October 2026 (Q6: he puts the computer to sleep with several
-  sessions open, then no longer knows which one to resume)
-
-- [ ] First, what Claude Code already gives (`/rename`, the `--resume` picker, its session
-  titles): kiln adds only what they lack (doctrine 14).
-- [ ] `/kiln:pause`, one kiln command (T-163), a few seconds: the session named (repo, branch,
-  task in a few words), where it stopped and the next step written to
-  `~/.local/state/kiln/sessions/<session id>.json`.
-- [ ] At the next session start, in any repo, the paused sessions listed: name, age, next step,
-  `claude --resume <id>`; a resumed or merged one leaves the list.
 
 ### T-364 · Credentials under one `.secrets/` folder, caches hidden from the editor
 - **Type**: improvement

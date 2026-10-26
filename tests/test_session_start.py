@@ -561,3 +561,53 @@ def test_tool_update_moves_an_installed_plugin_to_the_marketplace_version(
         "claude plugin install kiln@kiln --scope user && "
         "claude plugin update kiln@kiln --scope user"
     )
+
+
+# --- sessions kept by /kiln:pause (T-344) -----------------------------------------------------
+
+
+def test_a_paused_session_is_listed_at_the_next_start_then_leaves_the_list(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """`kiln pause` writes the place; the next start lists it; resumed, or its branch deleted,
+    it is gone."""
+    from kiln import pause
+
+    hook = load_hook()
+    paused = sys.modules["paused"]
+    sessions = tmp_path / "sessions"
+    monkeypatch.setattr(pause, "SESSIONS_DIR", sessions)
+    monkeypatch.setattr(paused, "SESSIONS_DIR", sessions)
+    repo = tmp_path / "shop"
+    repo.mkdir()
+    for command in (
+        ["init", "-q", "-b", "feat/cart"],
+        ["commit", "-q", "--allow-empty", "-m", "a"],
+    ):
+        subprocess.run(["git", *command], cwd=repo, check=True)
+    for session, name in (("aaa", "cart: totals"), ("bbb", "cart: coupons")):
+        monkeypatch.setenv(pause.SESSION_VARIABLE, session)
+        pause.pause(repo, name, "merge feat/cart")
+    capsys.readouterr()
+
+    shown = hook.paused_sessions({"source": "startup", "session_id": "new"})
+    assert shown.startswith("Paused sessions (/kiln:pause):")
+    assert "⏸ cart: totals  (shop · feat/cart, 1 min ago)" in shown
+    assert "    next: merge feat/cart\n    claude --resume aaa" in shown
+
+    assert hook.paused_sessions({"source": "resume", "session_id": "aaa"}) == ""
+    assert "cart: totals" not in hook.paused_sessions({"source": "startup", "session_id": "new"})
+
+    subprocess.run(["git", "switch", "-q", "-c", "main"], cwd=repo, check=True)
+    subprocess.run(["git", "branch", "-q", "-D", "feat/cart"], cwd=repo, check=True)
+    assert hook.paused_sessions({"source": "startup", "session_id": "new"}) == ""
+    assert list(sessions.iterdir()) == []
+
+
+def test_pause_needs_a_claude_code_session(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from kiln import pause
+    from kiln.shell import KilnError
+
+    monkeypatch.delenv(pause.SESSION_VARIABLE, raising=False)
+    with pytest.raises(KilnError, match="no Claude Code session"):
+        pause.pause(tmp_path, "x", "")

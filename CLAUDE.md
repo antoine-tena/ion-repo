@@ -20,7 +20,7 @@ folder or a module.
   podman, `menu.py` what to run and the logs offered, `background.py` background, `status`,
   `logs`, `stop`, `foreground.py` `--foreground`, `containers.py` `--containers`), `check.py`,
   `settings.py` (`kiln set`, the settable keys), `machine.py` (`kiln set` outside a repo: machine
-  settings), `waive.py` (`kiln waive`), `update.py`, `contract.py`, `release.py`
+  settings), `waive.py` (`kiln waive`), `pause.py` (`kiln pause`, a session's place kept, T-344), `update.py`, `contract.py`, `release.py`
   (`kiln version`), `shipping.py` (`kiln version cut` and `promote`), `github_ci.py` (GitHub CI's
   verdict on a commit, awaited by `cut` and `promote`), `doctor.py` (machine and repo diagnosis),
   `tool_update.py` (tool update offered after a command typed outside Claude Code), `fleet.py`
@@ -58,8 +58,8 @@ folder or a module.
   `merge`, `release`, `cleanup`, `review` (a branch's commits and diff before the merge, the whole
   repo before a release), `backlog`, `update`, `adopt`, `modernize` (roadmap gaps closed one by
   one), `report` (a kiln defect raised as an issue or a PR), `token` (a service's token in
-  `.<service>/`), `contribution` (an outside contributor's PR), `good-first-issues`; `hooks/`
-  (including `reminders.py`, the spacing of update questions, and `first_prompt.py`, kiln's logo
+  `.<service>/`), `contribution` (an outside contributor's PR), `good-first-issues`, `pause` (the session's place kept, `kiln pause`); `hooks/`
+  (including `reminders.py`, the spacing of update questions, `paused.py`, the sessions `kiln pause` kept, listed at start, and `first_prompt.py`, kiln's logo
   and what's new above the prompt); `scripts/statusline.py`), `django/`, `nuxt/`, `vps/`,
   `stripe/`, `serena/`; `base/`: forwards from the old paths of the hooks and scripts (open
   sessions, status line).

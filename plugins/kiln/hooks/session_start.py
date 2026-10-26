@@ -34,6 +34,7 @@ from pathlib import Path
 from typing import Any, NamedTuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import paused
 import reminders
 
 ANSWERS_FILE = ".copier-answers.yml"
@@ -738,10 +739,26 @@ def main() -> None:
     context = "\n\n".join(
         part for part in (ERROR_ORIGIN, red, found.context if found else "") if part
     )
-    if found:
-        save_notice(payload.get("session_id", ""), found.notice)
+    session_id = payload.get("session_id", "")
+    waiting = paused_sessions(payload)
+    shown = "\n\n".join(part for part in (found.notice if found else "", waiting) if part)
+    if shown:
+        save_notice(session_id, shown)
     hook_output = {"hookEventName": "SessionStart", "additionalContext": context}
     print(json.dumps({"hookSpecificOutput": hook_output}, ensure_ascii=False))
+
+
+def paused_sessions(payload: dict[str, Any]) -> str:
+    """The sessions `/kiln:pause` kept, shown above the first prompt of a new session; a resumed
+    one leaves the list."""
+    try:
+        session_id = payload.get("session_id", "")
+        source = payload.get("source", STARTUP_SOURCE)
+        if source == "resume":
+            paused.forget(session_id)
+        return paused.listing(session_id) if source == STARTUP_SOURCE else ""
+    except Exception:
+        return ""
 
 
 def startup_context(payload: dict[str, Any]) -> tuple[str, Offer | None]:
