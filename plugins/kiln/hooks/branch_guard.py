@@ -4,7 +4,8 @@
 machine set to `kiln set ai_trailers=never`: once pushed to the integration branch, it cannot be
 erased.
 
-Only exception: the commit that concludes a merge in progress (MERGE_HEAD present), for example
+Two exceptions: the commit that creates the repo (no commit anywhere yet), the one `kiln new`
+makes on main; the commit that concludes a merge in progress (MERGE_HEAD present), for example
 after resolving a conflict of `git merge --no-ff`.
 
 A repo where commits go straight to the main branch opts out with
@@ -98,7 +99,13 @@ for target in targets:
         ).returncode
         == 0
     )
-    if branch in PROTECTED_BRANCHES and not is_disabled and not is_merging:
+    is_first = not subprocess.run(
+        ["git", "-C", target, "rev-list", "-n", "1", "--all"],
+        capture_output=True,
+        text=True,
+        timeout=5,
+    ).stdout.strip()
+    if branch in PROTECTED_BRANCHES and not is_disabled and not is_merging and not is_first:
         print(
             f"Commit refused: never commit on {branch}. Create a branch (worktree) first.",
             file=sys.stderr,

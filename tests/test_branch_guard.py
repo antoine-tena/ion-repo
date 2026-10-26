@@ -60,6 +60,20 @@ def test_signature_outside_a_commit_passes(repo: Path) -> None:
     assert run_hook('echo "Co-Authored-By: Claude"', repo).returncode == 0
 
 
+def first_commit(repo: Path) -> None:
+    command = ["git", "-C", str(repo), "commit", "-q", "--allow-empty", "-m", "chore: initial"]
+    subprocess.run(command, check=True)
+
+
 def test_commit_on_develop_is_refused(tmp_path: Path) -> None:
     subprocess.run(["git", "init", "-q", "-b", "develop", str(tmp_path)], check=True)
+    first_commit(tmp_path)
+    assert run_hook('git commit -m "feat: x"', tmp_path).returncode == 2
+
+
+def test_commit_that_creates_the_repo_passes_on_main(tmp_path: Path) -> None:
+    """The first commit, as `kiln new` makes it; the next one on main is refused."""
+    subprocess.run(["git", "init", "-q", "-b", "main", str(tmp_path)], check=True)
+    assert run_hook('git commit -m "chore: initial commit"', tmp_path).returncode == 0
+    first_commit(tmp_path)
     assert run_hook('git commit -m "feat: x"', tmp_path).returncode == 2
