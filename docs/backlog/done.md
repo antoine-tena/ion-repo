@@ -3,6 +3,7 @@
 The closed tickets of kiln, most recent first, one line each:
 `- **YYYY-MM-DD** · T-NN · Title — what was done (branch) · opened YYYY-MM-DD`.
 
+- **2026-10-26** · T-342 · Not using an agent is not a fault: agent files out of the score — `AI-CONTEXT` an `assess` rule shown as advice, out of the score, to a repo worked with an agent (fact `agent`: a `.claude/`, `.cursor/`, `.codex/` or `.gemini/` folder); `REPO-MAP` reads `README.md`, `CONTRIBUTING.md`, `ARCHITECTURE.md` too; kiln stays at 100 (feat/agent-files-unscored) · opened 2026-10-26
 - **2026-10-26** · T-343 · Two habits for every repo: reproduce first, a direct link for every online step — the template's `project.md` gets **[REPRODUCE-FIRST]** and **[DIRECT-LINKS]**; Claude's trailers a machine setting, `kiln set ai_trailers=disclose|never`, asked at the first `kiln install` ("choose for me": disclose), `never` empties Claude Code's `attribution` and the branch guard refuses Claude's co-author trailer; antoine's machine on `never` (feat/two-habits) · opened 2026-10-26
 - **2026-10-26** · T-362 · `kiln doctor` calls kiln's own repo "not a kiln repo" — kiln's checkout (its `copier.yml`, `template/` and the `kiln-cli` package) reported as the template's source; a stranger's repo still warned (fix/doctor-kiln-repo) · opened 2026-10-26
 - **2026-10-26** · T-361 · `kiln ci` speaks French in one reason — the reason of a job with services of its own in English, the one French string left in what the user reads (the others convert old files) (fix/ci-english) · opened 2026-10-26

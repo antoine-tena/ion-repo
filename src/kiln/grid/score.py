@@ -30,6 +30,8 @@ BY_SCRIPT, BY_JUDGMENT = "kiln fix", "by judgment (Claude Code)"
 TOP_GAPS = 3
 SHOWN_LOCATIONS = 3
 NOT_COVERED = ": not covered by the grid yet"
+# Facts that say how the repo is worked rather than what it is made of.
+NOT_STACKS = frozenset({"agent"})
 # Manifests of stacks the grid does not cover yet: named beside the stacks it scores, listed at
 # the end, never counted (T-38).
 UNCOVERED = {
@@ -126,6 +128,7 @@ class Report:
     findings: tuple[Finding, ...]
     uncovered: tuple[str, ...] = ()
     misfired: tuple[str, ...] = ()  # rules waived again and again: they may not fit
+    advice: tuple[Finding, ...] = ()  # gaps of unscored rules, shown apart
     schema: int = SCHEMA
     checked: str = field(default_factory=lambda: datetime.date.today().isoformat())
 
@@ -153,10 +156,17 @@ class Report:
 def score_repo(root: Path, rules: list[Rule] | None = None) -> Report:
     repo = read_repo(root)
     waivers = load_waivers(root)
+    rules = rules if rules is not None else load_rules()
     findings = [
         _finding(rule, repo, waivers)
-        for rule in (rules if rules is not None else load_rules())
+        for rule in rules
         if rule.is_scored and set(rule.applies) <= repo.facts
+    ]
+    advice = [
+        found
+        for rule in rules
+        if rule.advice and set(rule.applies) <= repo.facts
+        if (found := _finding(rule, repo, waivers)).status == FAILED
     ]
     counted = [found for found in findings if found.status in (PASSED, FAILED)]
     return Report(
@@ -168,8 +178,9 @@ def score_repo(root: Path, rules: list[Rule] | None = None) -> Report:
         },
         facts=tuple(sorted(repo.facts)),
         findings=tuple(findings),
-        uncovered=tuple(_uncovered(repo, rules if rules is not None else load_rules())),
+        uncovered=tuple(_uncovered(repo, rules)),
         misfired=tuple(_misfired(waivers)),
+        advice=tuple(advice),
     )
 
 
@@ -312,12 +323,13 @@ def show(report: Report, *, every: bool = False) -> None:
     print(f"\n  {title}  {ui.paint(score, ui.GLOW, bold=True)}")
     pillars = [f"{pillar} {value}" for pillar, value in report.pillars.items() if value is not None]
     print(ui.paint(f"  {'  ·  '.join(pillars)}", ui.STONE_LIGHT))
-    stacks = f"  stacks: {', '.join(report.facts) or 'none found'}"
+    found_stacks = [fact for fact in report.facts if fact not in NOT_STACKS]
+    stacks = f"  stacks: {', '.join(found_stacks) or 'none found'}"
     if languages := _languages(report.uncovered):
         # A visitor's Go or Rust repo: the number holds none of its language's rules yet.
         stacks += f"  ·  not scored yet: {', '.join(languages)}"
     print(ui.paint(stacks, ui.STONE))
-    if report.uncovered and not report.facts:
+    if report.uncovered and not found_stacks:
         only = "  universal rules only: the grid does not know this repo's stack"
         print(ui.paint(only, ui.STONE))
     counted = [found for found in report.findings if found.status in (PASSED, FAILED)]
@@ -328,6 +340,9 @@ def show(report: Report, *, every: bool = False) -> None:
         for found in top:
             print(f"    {ui.paint(found.rule, ui.EMBER, bold=True)}  {found.title}")
     _section("Gaps", report.gaps, ui.EMBER, locations=True, every=every)
+    _section(
+        "Advice (out of the score)", list(report.advice), ui.STONE, locations=True, every=every
+    )
     waived = [found for found in report.findings if found.status == WAIVED]
     _section("Waived (accepted deviations)", waived, ui.STONE, locations=False, every=every)
     if every:

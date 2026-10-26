@@ -83,10 +83,16 @@ CASES: dict[str, dict[str, dict[str, str]]] = {
         "fail": {WORKFLOW: "jobs:\n  a:\n    steps:\n      - run: pytest\n"},
     },
     "REPO-MAP": {
-        "pass": {"CLAUDE.md": "# a\n\n## Repo map\n\n- `src/`: code\n"},
+        "pass": {
+            "CLAUDE.md": "# a\n\n## Repo map\n\n- `src/`: code\n",
+            "ARCHITECTURE.md": "# Architecture\n\n## Code map\n",
+        },
         "fail": {"CLAUDE.md": "# a\n\n## Rules\n"},
     },
-    "AI-CONTEXT": {"pass": {"AGENTS.md": "# a\n"}, "fail": {"README.md": "# a\n"}},
+    "AI-CONTEXT": {
+        "pass": {"AGENTS.md": "# a\n", ".claude/settings.json": "{}"},
+        "fail": {"README.md": "# a\n", ".cursor/rules.md": "# a\n"},
+    },
     "STRICT-TS": {
         "pass": {
             "tsconfig.json": '{"compilerOptions": {"strict": true}}',
