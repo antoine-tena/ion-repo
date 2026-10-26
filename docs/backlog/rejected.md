@@ -14,6 +14,10 @@ language.
 
 ## Declined for now
 
+**2026-10-26**, reopened by antoine's answers (the backlog's decisions of 26 October 2026): T-37
+(Docker accepted beside podman) and T-117 (a VS Code extension) are back in the backlog; T-94
+(Windows without WSL) stays declined, `kiln score` only says what to do there (T-189).
+
 **2026-10-17**, when the backlog was rewritten from the vision of that day (antoine's request):
 kiln keeps a repo up to date with the best practices and easy for Claude to read, Django and
 Nuxt first, small structures first. A ticket below comes back when adopters ask for it (an
@@ -52,8 +56,6 @@ Scoring other stacks is not ruled out: stack packs after the launch (decision 1 
 
 **The comfort of `kiln new` for a newcomer**: the main door is now `kiln score` on the repo
 people already have.
-- T-37 · Docker or podman: the engine the machine has (the grid's container rules are
-  engine-neutral, T-125)
 - T-40 · kiln tells you what is possible, once, at the right moment
 - T-41 · Beginner with nothing to set, expert with everything settable (each finding of
   `kiln score` already says why and the command that fixes or waives it, T-46)
@@ -69,7 +71,6 @@ people already have.
 - T-121 · `kiln uninstall`: the machine left as it was (`uvx kiln-cli score` installs nothing)
 - T-47 · `kiln eject` (the fixes are plain commits on a branch; back if organisations ask)
 - T-94 · Windows without WSL
-- T-117 · A VS Code extension
 
 **Large companies, not at first**: AWS and Moderne serve them; T-39 brings profiles for
 associations, companies of about 50 people and universities.

@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-342.**
+**Next free: T-360.**
 
 ---
 
@@ -63,6 +63,8 @@ as empty.
 - T-172 · The checks of `kiln fix` told apart, timed out, their log kept for Claude (S)
 - T-173 · More converters: the CI and the supply chain (M)
 - T-186 · Binary and non-UTF-8 files read right, GitHub settings read through `gh` (M)
+- T-342 · Not using an agent is not a fault: agent files out of the score (S)
+- T-343 · Two habits for every repo: reproduce first, a direct link for every online step (XS)
 
 ### v0.4.8 · Never lets it rot, kiln first
 Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other people's repos: each
@@ -73,6 +75,7 @@ anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03).
 - T-59 · kiln-bot: the grid's fixes as a weekly pull request (L)
 - T-90 · kiln passes its own grid: zizmor, provenance and Scorecard left (M)
 - T-187 · `kiln fix` shows the points each commit won (S)
+- T-344 · `/kiln:pause`: a session named and its place kept, listed at the next start (S)
 
 ### v0.5.0 · Public launch: the proof and the page
 Candidate Sun 1 Nov, promoted Tue 3 Nov. Milestone decided by antoine (16 October 2026), its content
@@ -86,6 +89,10 @@ public ones, kiln's own repos at 100) and the page that shows it, the potential 
 - T-33 · One promise everywhere: tagline, About, PyPI, social preview (S)
 - T-119 · GitHub Sponsors and `FUNDING.yml` (XS)
 - T-188 · The potential on every run, the frozen templates scored, an honest comparison (M)
+- T-345 · The licence: `MIT OR Apache-2.0`, the template's output free of attribution (S)
+- T-346 · "The kiln standard": the grid's public name (S)
+- T-347 · A mascot and a logo, still and animated (S) — once antoine has chosen the mascot; not a
+  box of the gate
 
 ### v0.5.1 · Launch week: the rehearsal, and the bugs already known
 Candidate Tue 3 Nov. Fixes only from here to the launch; the week absorbs up to three slipped
@@ -94,8 +101,8 @@ releases.
 - T-167 · The branch guard reads the session's folder, not the command's (S)
 - T-168 · A repo from `kiln new` + `gh repo create --push` has no CI workflow on GitHub (S)
 - T-179 · A new Django repo's tests start without warnings (S)
-- T-53 · Readable by Claude, measured: the A/B test (M) — only if the budget allows; its number
-  joins the launch article only if it is net
+- T-53 · Readable by Claude, measured: the A/B test (M) — run once, before the launch (antoine,
+  26 October 2026); its number joins the launch article only if it is net
 - T-145 · A public benchmark: Claude Code with and without kiln (L) — same condition, after T-53
 
 ### v0.5.2 · Launch week: what the rehearsal found
@@ -108,15 +115,18 @@ Gate checked on Mon 9 Nov at 20:00; nothing is promoted on launch day.
 
 ### v0.5.4 · The first week with strangers
 Candidate Mon 9 Nov, promoted after the launch. What the launch brings in (issues, reports, the
-first gap reports of T-38) comes first; these give way to it. From here each promoted release is
+first gap reports of T-38) comes first; these give way to it. From here each milestone is
 announced (T-118).
-- T-118 · Each promoted release announced on Bluesky and dev.to (S)
+- T-118 · Each milestone announced on Bluesky, dev.to, X and Mastodon (S)
 - T-153 · `statusline.ci locale`: a French value left in generated repos (S)
 - T-10 · Interface polish (S)
 - T-99 · `kiln doctor --fix` (S)
 - T-98 · Tab completion for zsh and fish (S) (good first issue)
 - T-116 · An accessible CLI: `NO_COLOR`, `--plain` (S) (good first issue)
 - T-189 · A stranger's first run: no install, never a crash, the next step printed (M)
+- T-348 · Opt-in telemetry: which commands run, and how they end (M)
+- T-349 · A daily digest mail: issues, pull requests, discussions, gap reports (S)
+- T-350 · Launch metrics kept in kiln-private (S) — from launch day: GitHub keeps traffic 14 days
 
 ### v0.5.5 · A score you can trust: the false alarms of real repos, gone
 Strangers' repos hold fixtures, vendored and generated code, templates, READMEs in other languages:
@@ -130,6 +140,8 @@ The image that travels by itself, and anyone's repo scored from its URL: the lau
 become its messengers.
 - T-154 · Show your score: a badge other repos display (S)
 - T-191 · Any repo scored from its URL, a percentile, a Marketplace action (M)
+- T-352 · The score as a page: Markdown and Mermaid charts (S)
+- T-353 · A leaderboard of the best-scored public repos (S)
 
 ### v0.5.7 · Claude pays less per session
 Context length is the cost (measured on 22 October): skills that run one kiln command, a ladder
@@ -149,6 +161,7 @@ benchmarked in CI.
 - T-183 · One hook per Bash call instead of two (S)
 - T-178 · A lighter install: copier's dependencies trimmed, not fetched later (S)
 - T-193 · `kiln score` benchmarked: a startup budget, a lean path, slow candidates stopped (M)
+- T-354 · Fast CI: the generated test suites in parallel (M)
 
 ### v0.5.9 · Updates you take without reading them
 Asked at your pace, applied in one step, proven on real upgrade paths, the score before and after
@@ -157,6 +170,8 @@ shown, Claude told what changed in its rules.
 - T-107 · After an update, Claude is told what changed in its rules (S)
 - T-54 · Every candidate proven on real upgrade paths (M)
 - T-194 · Updates that announce their rules and show the score before and after (M)
+- T-355 · The repo's update offered outside Claude Code too (S)
+- T-356 · Strangers may follow the candidates; kiln's `develop` gets a channel of its own (S)
 
 ### v0.5.10 · `kiln fix`: more gaps closed, faster, from scripts
 The code's own rules get converters, the checks run once with a bisection on red, the options
@@ -176,6 +191,7 @@ With rules that test themselves (v0.5.11) to build on: in the pull request, the 
 GitHub's code scanning, written without a flag; repo-local rules in the grid's format.
 - T-91 · Findings where people look: SARIF in pull requests and code scanning (M)
 - T-197 · Findings in the pull request: locations, fingerprints, annotations, summaries (L)
+- T-117 · A VS Code extension (L), reopened on 26 October 2026
 
 ### v0.5.13 · The grid grows: the exact rules first, three new themes
 T-141 opens here, its other boxes being the theme releases below: the rules a detector decides
@@ -203,6 +219,12 @@ mutants measured by script, Claude on the holes only.
 - T-136 · Test generators that cost no tokens, in the template (M)
 - T-203 · Tests that cost no tokens: properties, mutants, API fuzzing, journeys as rules (M)
 
+### v0.5.17 · Strangers' repos run as they are
+`kiln dev` brings up any adopted repo without a question, on podman or Docker, whichever the
+machine has.
+- T-351 · `kiln dev` runs any repo without being told (L)
+- T-37 · Docker or podman: the engine the machine has (M), reopened on 26 October 2026
+
 ### v0.6.0 · Claude closes the gaps alone
 Milestone decided by antoine (16 October 2026: Claude does the work in the repo), its content
 re-scoped to the vision: the roadmap worked unattended within a budget, each pull request kept to
@@ -217,12 +239,15 @@ proven by types, tests and behaviour, the slimming rules promoted once precise.
 - T-138 · Less code to carry, measured first: the compressor's dry run (M)
 - T-139 · The compressor: removals proven by types, tests and behaviour (L)
 - T-205 · The slimming rules: dead code, unused dependencies, duplication, a dependency budget (M)
+- T-359 · kiln's own engines weighed against existing tools: keep, wrap or replace (M)
 
 ### v0.6.2 · Claude in the team's flow
 A red CI made green on the machine, the roadmap as issues and good first issues, a summary a human
 reads in their language, a file other agents can read too.
 - T-76 · `kiln ci --fix`: a red CI made green by Claude Code, locally (M)
 - T-206 · The roadmap where the team works: issues, good first issues, other agents (M)
+- T-357 · Every agent, or none: the instructions laid for the agent the person uses (L)
+- T-358 · The generated flow follows the evidence: trunk-based, pull requests for teams (L)
 
 ### v0.6.3 · The grid kept current: its sources watched
 Every week the sources are read, the data bundle refreshed, the rules whose sources moved flagged;
@@ -776,6 +801,78 @@ packs (T-69). From here, strict semver: breaking → major, `feat` → minor.
 
 ## 🟠 Important
 
+### T-342 · Not using an agent is not a fault: agent files out of the score
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: S · **Owner**: — · **Due**: before the v0.4.7 candidate (Tue 27 Oct)
+- **Origin**: antoine's answers of 26 October 2026 (Q42: a developer without Claude must not be
+  marked down), decisions 10 and 16 of 26 October
+
+A stranger who codes without an agent must not lose points for it, and the repos known for their
+quality (the calibration, T-132) mostly have no agent file. The vision's market section has the
+evidence: ETH Zurich finds context files don't raise success and cost 20 to 23 % more tokens.
+- [ ] `AI-CONTEXT` out of the score (`assess`), its advice still shown to a repo that uses an
+  agent (a `.claude/`, `.cursor/`, `.codex/` or `.gemini/` folder).
+- [ ] `REPO-MAP` also reads the map from `README.md`, `CONTRIBUTING.md` and `ARCHITECTURE.md`: a
+  map is a human practice first (matklad's ARCHITECTURE.md, 2021).
+- [ ] The rules' examples in `tests/test_grid.py` follow; kiln's own score stays at 100.
+
+### T-343 · Two habits for every repo: reproduce first, a direct link for every online step
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: XS · **Owner**: — · **Due**: —
+- **Origin**: antoine's answers of 26 October 2026 (Q93: which generic parts of his global
+  instructions should every repo get? "find them yourself"), decision 35
+
+- [ ] The template's `project.md` gets **[REPRODUCE-FIRST]** (a bug is reproduced, by a failing
+  test or a command, before it is fixed; a diagnosis, one's own or another session's, is checked
+  on a copy first) and **[DIRECT-LINKS]** (a step asked of a human online comes with its direct
+  link, as precise as possible, never a menu path).
+- [ ] The commit trailer rule ("never `Co-Authored-By: Claude`") is antoine's taste, not the
+  world's way (Q67): it becomes a setting asked at install, "choose for me" meaning disclosure,
+  as the AI policies of several large open-source projects now ask; antoine's machine keeps
+  "never".
+- Not generated, antoine's own: one session at a time, no fleet of subagents, CI only at the
+  release, the language of his replies.
+
+### T-345 · The licence: `MIT OR Apache-2.0`, the template's output free of attribution
+- **Type**: task
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: S · **Owner**: — · **Due**: before the v0.5.0 candidate (Sun 1 Nov)
+- **Origin**: antoine's answers of 26 October 2026 (Q76: "Apache 2.0 then, I want the best licence
+  possible"), decision 28
+
+Apache-2.0 brings a patent grant MIT lacks; offered side by side with MIT, as uv does
+(https://docs.astral.sh/uv/reference/policies/license/), it keeps MIT's reach (GPLv2 projects
+can take MIT code, not Apache-2.0 code). The cheapest moment is before the launch, while two
+outside contributors have code in kiln.
+- [ ] Both contributors (@NathanBarrachin, @HarshRajSinghania) asked on an issue to license their
+  past contributions under the pair; without both answers, their code stays MIT, which the pair
+  allows.
+- [ ] `LICENSE-MIT`, `LICENSE-APACHE`, `license = "MIT OR Apache-2.0"` in `pyproject.toml` (PEP
+  639), the READMEs' licence lines, `CONTRIBUTING.md` (contributions under the same terms).
+- [ ] What `kiln new` and `kiln adopt` lay in a repo is the user's: the template's files under
+  MIT-0 (no notice to keep), said in the README, so a generated repo carries no kiln licence.
+
+### T-346 · "The kiln standard": the grid's public name
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: S · **Owner**: — · **Due**: before the v0.5.0 candidate (Sun 1 Nov)
+- **Origin**: antoine's answers of 26 October 2026 (Q24, Q176: "standard is the clearest"),
+  decision 5
+
+"Grid" says nothing to a stranger; "standard" says what v1.0 promises, the standard others build
+on.
+- [ ] Every text a user reads says "the kiln standard": READMEs, reference, `kiln score`'s report,
+  the rule pages, ROADMAP.md, the launch texts.
+- [ ] `kiln standard [RULE-ID]`, with `kiln grid` kept as an alias (cited by older docs and
+  skills).
+- [ ] The code keeps `grid` (`src/kiln/grid/`), one line in the repo map of `CLAUDE.md` saying so.
+
 ### T-177 · kiln's own docs in English only
 - **Type**: task
 - **Status**: todo
@@ -794,7 +891,8 @@ questions), a feature for French associations and universities (v0.7.0). The Fre
 moved into this file, in English, on 24 Oct.
 - [ ] Bring `docs/reference.md` up to `docs/reference.fr.md`: every section, command, option,
   setting and example the French one has and the English one lacks, written for strangers.
-- [ ] Remove `README.fr.md` and `docs/reference.fr.md`, and the language line linking them from
+- [ ] Remove `README.fr.md`, `docs/reference.fr.md` and `ROADMAP.fr.md` (with `scripts/roadmap.py`'s
+  French output), and the language line linking them from
   `README.md` and `docs/reference.md`; `CONTRIBUTING.md` no longer asks for both languages.
 - [ ] `tests/test_docs.py`: `READMES` and `REFERENCES` down to the English files, the parity test
   between languages removed; `tests/test_plugins.py` follows.
@@ -844,6 +942,9 @@ one call and answers in a few lines. The backlog first: one full read costs abou
 here and 36k in the reference repo, and Claude read it nearly 500 times in three weeks.
 - [ ] `kiln backlog next`, `show T-NN`, `add`, `start`, `done`: one ticket in or out, never the
   whole file; `/kiln:backlog` calls them and nothing else.
+- [ ] The backlog condensed to what Claude needs (antoine, 26 October 2026: "only for Claude,
+  optimize it to the max"): the thesis and appendices whose ideas are all tickets archived, each
+  ticket's why in a few lines; tokens measured before and after.
 - [ ] Then the mechanical skills, one command each (`merge`, `cleanup`, `worktree`, `update`);
   a skill keeps only what needs judgment.
 - [ ] `test_plugins.py`: one shell command per skill at most, the skills that need judgment over
@@ -910,6 +1011,9 @@ strangers' repos until each commit is proven.
   on the `kiln/fix-…` branch. Tree reset, outcome `unchanged (converter bug)`.
 - [ ] A test over every `FIXERS` entry: a second run of the converter changes nothing
   (idempotence).
+- [ ] A converter that turns the repo's own tests red leaves the batch: kept on a branch of its
+  own with its log and handed to Claude (`/kiln:modernize`), never merged red, never dropped
+  silently (decision 21 of 26 October 2026).
 - [ ] The summary gives the points each rule brought, not only the score before and after.
 
 ### T-171 · `kiln fix` works in a throwaway worktree, never in the user's tree
@@ -978,6 +1082,9 @@ without judgment. Each one with its passing and failing case in `tests/test_fix.
 Branch protection or rulesets on the integration branch, secret scanning and push protection,
 Dependabot alerts: read through `gh api` when logged in, left out of the count otherwise (never a
 failure for lack of a token).
+- [ ] Shown in full on the owner's machine only; what leaves it (the badge, a gap report to kiln,
+  the CI summary of a public repo) carries the score and the rule IDs alone, never a setting's
+  detail (antoine's question of 26 October 2026, decision 37).
 
 From the kiln score ideas of 24 October 2026:
 - [ ] **M15** Forge settings read through the CLI already logged in (`gh`, `glab`, `tea`); a token
@@ -1085,9 +1192,9 @@ From the kiln score ideas of 24 October 2026:
 - [ ] Nothing written or pushed in either original.
 - [ ] Results anonymized in `docs/proof/` (no name, no path, nothing that identifies a project);
   the README quotes the before and after.
-- [ ] The university project's team gets what the 17 October measurement found in its repo,
-  privately, before any number about it is published (`urgent.md`); until then, the launch
-  quotes the reference repo only.
+- [ ] The university repo stays a private test (antoine, 26 October 2026: never cited by kiln,
+  not even in aggregate): the launch quotes the reference repo only. One day kiln runs on it and
+  its teacher gets a pull request, by antoine's hand.
 
 ### T-132 · The study: a hundred public Django and Nuxt repos scored
 - **Type**: task
@@ -1102,8 +1209,17 @@ From the kiln score ideas of 24 October 2026:
 - [ ] Shallow clones in a temporary folder, `kiln score --json --offline` and
   `kiln fix --dry-run`, then the aggregate: median per pillar, most-missed practices, what a
   script closes, the distribution as a chart.
-- [ ] `docs/study/2026-11-django-nuxt.md` with the method; aggregate only, no repo scored by
-  name.
+- [ ] **Calibration first** (decision 10 of 26 October): before the hundred, repos known for their
+  quality: uv, ruff, Django, FastAPI, Nuxt, and Django apps such as Zulip, NetBox, Saleor,
+  Paperless-ngx, Healthchecks and Baserow (Django + Nuxt). Every point they lose is a gap their
+  maintainers would recognize, with its source, or a defect of the standard (rule, detector or
+  scope) fixed before the launch.
+- [ ] `docs/study/2026-11-django-nuxt.md` with the method; the reference repos named with their
+  score, the hundred as aggregates, never a list of the worst (decision 11).
+- [ ] A vulnerability found (a secret, a dangerous workflow) is reported privately to its
+  project (its SECURITY.md or GitHub's private reporting), never in the article nor in a public
+  pull request before the fix; the credit in the published advisory is the publicity
+  (decision 12).
 - [ ] The headline the article and Show HN can use, whatever it turns out to be: "the median
   Django repo applies X % of today's reference practices; a script brings it to Y %, without
   AI, in Z seconds".
@@ -1150,6 +1266,10 @@ From the kiln score ideas of 24 October 2026:
   sp-repo-review, OpenRewrite, AWS Transform and Claude Code's `/doctor` do, and what kiln adds
   (from the vision's market table); the r/Python Showcase format asks for it (T-03).
 - [ ] `kiln new` second: "Starting a repo? It starts at 100."
+- [ ] From the decisions of 26 October 2026: `kiln score` first, then `kiln adopt`, then `kiln new`
+  (decision 4); "the kiln standard" (T-346); no Ubuntu image; one line each for `kiln check`,
+  `kiln ci` and `kiln score` (decision 40); the review gap as the sourced why (decision 8); the
+  score in Lighthouse's bands (decision 6); `uvx` first.
 - [ ] The default branch becomes `main` with v0.5.0, so the repo page and `claude plugin
   marketplace add` show what `uvx kiln-cli` installs; pull requests still go to `develop`
   (CONTRIBUTING).
@@ -1172,8 +1292,12 @@ previews), the PyPI summary and the launch titles.
   production-grade repos, bring yours up to that grade, and keep them that way." An old repo to
   bring up counts as much as a new one. In the README, the PyPI summary (`pyproject.toml`), the
   GitHub About and the social preview drawn by `scripts/screenshots.py`.
-- [ ] Decided by Claude (17 October 2026), from the vision's taglines, reworded on 20 October:
-  **"Dependabot for engineering practices."** ("your methods" reads as class methods to an
+- [ ] The promise covers the trio, `kiln score` first (decision 4 of 26 October): antoine loves
+  "Make Claude Code build production-grade repos, and keep them that way" but finds it too much
+  about `kiln new`. Draft: "Make any repo production-grade: score it, raise it, keep it there."
+- [x] Declined by antoine on 26 October 2026 (Q10), as a title and as a tagline: the analogy
+  proposed by Claude on 17 October 2026, reworded on 20 October: **"Dependabot for engineering
+  practices."** ("your methods" reads as class methods to an
   English-speaking developer), then "kiln keeps your repo up to date with the best of the world
   (methods, structure, tools, containers, security, code standards) and easy for Claude to
   read." The analogy explains the job in four words, as "A cat(1) clone with wings" (bat) or "A
@@ -1234,6 +1358,8 @@ From the kiln score ideas of 24 October 2026:
   the study and three of other stacks (Go, Rust, a JavaScript library), their first screen read
   for anything false, `kiln fix --dry-run` then `kiln fix`, kiln-bot on a throwaway repo; the time
   of each step.
+- [ ] First with the people around antoine who already use kiln (about ten, four often), each
+  on a repo of their own; then the runners.
 - [ ] Every stumble fixed in v0.5.1 to v0.5.3, never on the day.
 - [ ] The texts of T-03 checked against each forum's rules.
 
@@ -1249,6 +1375,13 @@ From the kiln score ideas of 24 October 2026:
 
 One launch, everywhere the same afternoon: stars come in a burst, and the launch happens once.
 Nothing is posted on a forum before it (T-118 starts after).
+
+**Awaiting antoine's decision** (26 October 2026, decision 1): Hacker News restricts Show HN from
+new accounts since March 2026 (https://news.ycombinator.com/showlim) and antoine has no HN
+account and no Reddit karma. Proposal: 11 November for the forums that need no history (dev.to,
+Bluesky, X, Mastodon, LinkedIn, the university mail, awesome-claude-code), HN and Reddit on the
+first Wednesday his accounts are accepted, at the latest v0.6.0. Either way, both accounts are
+opened at once and used for real, never about kiln (`urgent.md`).
 
 **The version it waits for: v0.5.0**, and what it has to prove:
 - [ ] `kiln-cli` 0.5.0 or later promoted on PyPI; `uvx kiln-cli score` works from an empty
@@ -1288,11 +1421,14 @@ East Coast in its morning, the West Coast waking up.
 - [ ] 15:30: last check, `uvx kiln-cli score` on a fresh clone of a public repo; README and
   links.
 - [ ] 16:00: Show HN, by antoine: https://news.ycombinator.com/submit (rules:
-  https://news.ycombinator.com/showhn.html). Suggested title: "Show HN: Kiln – Dependabot for
-  your methods, not just your versions". Then antoine's first comment: why, how it works, the
+  https://news.ycombinator.com/showhn.html). The title is antoine's (he
+  declined the Dependabot one on 26 October), `kiln score` first. Then antoine's first comment: why, how it works, the
   method of the study.
-- [ ] 16:05: the study as a dev.to article and a Bluesky thread, posted by Claude (`.devto/`,
-  `.bluesky/`), saying the text is written with Claude where the platform asks.
+- [ ] 16:05: the study as a dev.to article and a thread on Bluesky, X and Mastodon, posted by
+  Claude (`.devto/`, `.bluesky/`, `.x/`, `.mastodon/`), the AI disclosure only where the platform
+  asks (decision 3).
+- [ ] The same day, by antoine: a LinkedIn post written by Claude, and a mail to his university's
+  students; Discussions' categories ready (T-58).
 - [ ] 16:15 to 17:15, a quarter of an hour apart (identical posts at once trip Reddit's spam
   filters), by antoine: https://www.reddit.com/r/ClaudeAI/submit,
   https://www.reddit.com/r/ClaudeCode/submit, https://www.reddit.com/r/django/submit,
@@ -1303,8 +1439,8 @@ East Coast in its morning, the West Coast waking up.
 - [ ] Until midnight: every comment answered by antoine, with facts from the study, never an
   argument over taste; pull requests through `/kiln:contribution`; three good first issues open
   (T-98, T-116, a grid rule to add) by `/kiln:good-first-issues`.
-- [ ] A week later, with the first numbers: Anthropic's plugin directory,
-  https://clau.de/plugin-directory-submission
+- [ ] A week later, with the first numbers: Anthropic's plugin directory, one plugin, `kiln`
+  (decision 27): https://clau.de/plugin-directory-submission
 - [ ] Never: asking for votes, posting from several accounts, the same text twice without a
   canonical URL.
 
@@ -1415,6 +1551,234 @@ and the page that shows it, the potential line as its demo.
 
 ## 🟡 Normal
 
+### T-344 · `/kiln:pause`: a session named and its place kept, listed at the next start
+- **Type**: idea
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: antoine's answers of 26 October 2026 (Q6: he puts the computer to sleep with several
+  sessions open, then no longer knows which one to resume)
+
+- [ ] First, what Claude Code already gives (`/rename`, the `--resume` picker, its session
+  titles): kiln adds only what they lack (doctrine 14).
+- [ ] `/kiln:pause`, one kiln command (T-163), a few seconds: the session named (repo, branch,
+  task in a few words), where it stopped and the next step written to
+  `~/.local/state/kiln/sessions/<session id>.json`.
+- [ ] At the next session start, in any repo, the paused sessions listed: name, age, next step,
+  `claude --resume <id>`; a resumed or merged one leaves the list.
+
+### T-347 · A mascot and a logo, still and animated
+- **Type**: idea
+- **Status**: blocked — waiting for antoine's choice of mascot
+- **Opened**: 2026-10-26
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: antoine's answers of 26 October 2026 (Q28: "a static logo and a dynamic one, I'd love
+  it; maybe a small animal, Claude has its crab"), decision 9
+
+The stone-and-fire palette stays. Claude's proposal: a fire salamander, the creature legend puts
+in the fire of a kiln. Once chosen:
+- [ ] A still logo (SVG, the README, the social preview, the favicon of the docs site) and an
+  animated one (the banner of `kiln new`, the GIFs), drawn by `scripts/screenshots.py` like the
+  other images.
+
+### T-348 · Opt-in telemetry: which commands run, and how they end
+- **Type**: idea
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: antoine's answers of 26 October 2026 (Q96: "yes, we need telemetry!"), reversing
+  S05; decision 19
+
+Which commands strangers run, and where they fail, decides what to merge or drop (T-10). Go chose
+opt-in after its 2023 debate, and HN's readers judge a launch on it: opt-in it is.
+- [ ] Asked once, at install or at the first command, answer "no" by default; `kiln set
+  telemetry=on|off`; `KILN_NO_TELEMETRY=1` and CI (`CI=true`) never send.
+- [ ] Sent: kiln's version, the command, its outcome and duration, the OS family, the stack; never
+  a path, a repo name, a file's content, an identity. A page of the reference lists every field.
+- [ ] An existing service with an EU region and a free tier (to choose with sources), no server
+  of kiln's (decision 20).
+
+### T-349 · A daily digest mail: issues, pull requests, discussions, gap reports
+- **Type**: idea
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: antoine's answers of 26 October 2026 (Q45: "a recap mail would be great; even better,
+  a free agent that only receives PRs and issues and mails me an ultra simple recap"), decision 19
+
+- [ ] A scheduled workflow of kiln's repo (free on a public repo), once a day: what opened, what
+  waits for antoine, the gap reports (T-38), each in one line with its link; nothing sent on an
+  empty day.
+- [ ] Written by script first (no tokens); a model's summary only if the script's is not clear
+  enough, through a free tier (GitHub Models).
+- [ ] The mail account through `/kiln:token` (`.mail/`), the address antoine gives.
+
+### T-350 · Launch metrics kept in kiln-private
+- **Type**: task
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: S · **Owner**: — · **Due**: launch week
+- **Origin**: antoine's answers of 26 October 2026 (Q138: "in kiln-private, that would be
+  incredible"), decision 31
+
+GitHub keeps a repo's traffic (views, clones, referrers) for 14 days only: what the launch week
+brings is lost unless saved.
+- [ ] Once a week from the launch, into `kiln-private`: stars, forks, PyPI downloads, GitHub
+  traffic and referrers, repos showing the badge (T-154), gap reports (T-38), telemetry's counts
+  (T-348).
+- [ ] The launch texts, contacts and the questions file live there too, never in kiln.
+
+### T-351 · `kiln dev` runs any repo without being told
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: L · **Owner**: — · **Due**: —
+- **Origin**: antoine's answers of 26 October 2026 (Q111: "incredible, but its detection must widen
+  so it launches everything without being told"), decision 40
+
+The repos of `kiln adopt` (decision 4) are laid out every way: monorepos, Procfiles, compose
+files, `package.json` scripts, Makefiles, Justfiles, devcontainers.
+- [ ] Detection from existing work first (doctrine 14): Railpack's and Nixpacks' providers, which
+  read how hundreds of stacks start, before any rule of kiln's own.
+- [ ] Measured on the corpus (T-132): the share of repos whose servers come up with no question;
+  each miss a test.
+
+### T-352 · The score as a page: Markdown and Mermaid charts
+- **Type**: idea
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: antoine's answers of 26 October 2026 (Q26: "as visual and colourful as possible: the
+  terminal first, then a button that generates lots of visuals in a .md, in Mermaid"), decision 6
+
+- [ ] `kiln score --report`: a Markdown file of Mermaid charts (pillars, themes, gaps by effort,
+  the score's history from the git notes), rendered as is by GitHub and GitLab.
+- [ ] The terminal shows the number in Lighthouse's bands (0-49 red, 50-89 orange, 90-100 green).
+
+### T-354 · Fast CI: the generated test suites in parallel
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: antoine's answers of 26 October 2026 (Q85: "CI is always the longest, but it matters a
+  lot: as complete and fast as possible"; Q112: the reference repo's `kiln ci`, 25 min 59 s of
+  which pytest 1,497 s), decision 33
+
+- [ ] The Django template runs pytest across cores (pytest-xdist), with the test settings that cost
+  nothing in safety (a fast password hasher, emails in memory); TE19 `PARALLEL-TESTS` promoted.
+- [ ] Measured on a copy of the reference repo, before and after; the job's duration in `kiln ci`'s
+  verdict.
+- [ ] What `kiln ci` does not replay yet, said on 26 October: the end-to-end job (its own
+  services), the `infra` and `sbom` workflows.
+
+### T-355 · The repo's update offered outside Claude Code too
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: antoine's answers of 26 October 2026 (Q94: "I'd like kiln's update offers to happen
+  without Claude Code too"), decision 35
+
+The tool's own update is offered after a command typed in a terminal, but never to a checkout
+like antoine's, which is why he hasn't seen it. The repo's `kiln update` is offered only in a
+Claude session.
+- [ ] A kiln command typed in a terminal, in a repo behind the latest release, ends by offering
+  `kiln update`, at the pace of `update-reminders` (T-45); a yes runs it on a branch and merges it
+  when the checks pass, a conflict sends the user to `/kiln:update`.
+
+### T-356 · Strangers may follow the candidates; kiln's `develop` gets a channel of its own
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: antoine's answers of 26 October 2026 (Q119: "yes, they can use the beta too"; Q131),
+  decision 35
+
+`develop` takes merges checked by linters only (CI runs at the release): a stranger should get
+early releases that passed the whole CI, which the candidates are.
+- [ ] `beta` = the candidates, open to anyone (today's `internal`); kiln's own development, the
+  editable checkout, moves to `edge`; `kiln update` converts the setting.
+- [ ] The reference and `kiln set channel=…`'s help say what each channel gets and risks.
+
+### T-357 · Every agent, or none: the instructions laid for the agent the person uses
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: L · **Owner**: — · **Due**: —
+- **Origin**: antoine's answers of 26 October 2026 (Q22: "anyone using an AI should be able to use
+  it, even without AI: ask at install which AI CLI, CLAUDE.md for Claude, otherwise AGENTS.md";
+  Q72: "yes, with everything"; Q83), decision 26
+
+Being tied to one agent is how kiln could be made useless by an agent's next release (Q190).
+AGENTS.md is read by most agents; Claude Code reads CLAUDE.md, which can import it.
+- [ ] `kiln install` asks once which agent the person uses (Claude Code, Codex, Cursor, Gemini CLI,
+  Copilot, several, none); `kiln new` and `kiln adopt` lay `AGENTS.md` with the rules, and a short
+  `CLAUDE.md` that imports it for Claude Code users.
+- [ ] What only Claude Code has (skills, hooks, the status line) stays in its plugins; the
+  others get the same rules as text.
+- [ ] Without an agent: `kiln score`, `kiln fix` and the roadmap written for a person (the
+  checklist of T-129 in plain words).
+
+### T-358 · The generated flow follows the evidence: trunk-based, pull requests for teams
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: L · **Owner**: — · **Due**: —
+- **Origin**: antoine's answers of 26 October 2026 (Q67: "kiln's skills must match the best way of
+  working in the world: not MY way, THE way"; Q169), decision 25
+
+DORA's research ties trunk-based development (short branches merged within a day) to delivery
+performance, and git-flow's author advises a simpler flow for software delivered continuously,
+which a web app is. The generated repos follow antoine's flow today (`develop`, `main`,
+`release/**`, merges without pull requests, CI at the release only).
+- [ ] New repos: one long-lived branch (`main`), short branches, releases as tags after the whole
+  CI; for team profiles (T-39), a pull request and its CI before each merge.
+- [ ] Repos of the old flow keep it until they choose; the conversion offered by `kiln update`.
+- [ ] kiln's own repo keeps `develop` and `main` while its channels hang on them (T-356).
+
+### T-359 · kiln's own engines weighed against existing tools: keep, wrap or replace
+- **Type**: task
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: antoine's answers of 26 October 2026 (Q5: "kiln must use as many tools as possible
+  that use no tokens, the fastest; invent no tool: go find existing repos on GitHub"), doctrine 14
+
+- [ ] Each engine of kiln's own (`kiln dev`'s process runner, `kiln ci`'s replay, the charter's
+  checks, the grid's detectors, `kiln fix`'s converters) set against the maintained tools doing
+  the same (process-compose, act, ast-grep, Semgrep, OpenRewrite…): speed, precision, licence,
+  upkeep, measured.
+- [ ] Kept only where kiln's is better or nothing exists; otherwise wrapped or replaced, one
+  ticket each.
+
+### T-37 · Docker or podman: the engine the machine has
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: opened on 16 October 2026, declined on 17 October, reopened by antoine's answers of
+  26 October 2026 (Q41: "say podman is highly recommended, but
+  not mandatory"), decision 17
+
+Many strangers on macOS have Docker Desktop or OrbStack: refusing them is friction at the first
+try. The grid's container rules are engine-neutral already (T-125).
+- [ ] `kiln dev`'s backing services and `kiln ci`'s throwaway databases run on podman or Docker,
+  whichever the machine has, podman first; `kiln doctor` says podman is recommended, and why
+  (rootless, no daemon), without failing on Docker.
+
+### T-117 · A VS Code extension
+- **Type**: idea
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: L · **Owner**: — · **Due**: —
+- **Origin**: opened on 16 October 2026, declined on 17 October, reopened by antoine's answers of
+  26 October 2026 (Q100: "oh yes, that could be good, unless it's
+  paid"; Q96: people who can't use a terminal), decision 38
+
+Publishing is free (the VS Code Marketplace and Open VSX, which Cursor and VSCodium read).
+- [ ] The score and the findings in the editor, from `kiln score --json` and the SARIF of T-91: a
+  finding on its line, its why and its fix one click away; no logic of its own.
+
 ### T-174 · More converters: the code
 - **Type**: improvement
 - **Status**: todo
@@ -1519,6 +1883,9 @@ Stage 1, on what the template already has (this ticket's effort):
   languages, then the frameworks of the ticked languages, then databases, JS package manager,
   container engine; three levels per box (know well / a little / want to learn). Filled once,
   used by every `kiln new`, the quick one too; changed by `kiln set profile`.
+- [ ] Asked once at install (`kiln install`), at `kiln new` only if never answered (antoine,
+  26 October 2026, Q53); with the agent the person uses (T-357) and the profile of structure
+  (T-39).
 - [ ] Pre-ticked from the repos of the code directory (`fleet.py`): "3 Django repos, 1 Nuxt".
 - [ ] "Is this to ship or to learn?": ship recommends within what you know well (React, not
   Vue → Next.js); learn picks a "want to learn" box and makes the Claude rules teach (explain
@@ -1621,17 +1988,21 @@ A session opened before an update keeps working by the old rules.
 - [ ] The session-start hook says, once, the rules added or changed by the last update (from
   the release notes and the grid's `since`), in three lines at most.
 
-### T-118 · Each promoted release announced on Bluesky and dev.to
+### T-118 · Each milestone announced on Bluesky, dev.to, X and Mastodon
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
 - **Effort**: S · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: growth review, second batch, 16 October 2026; accounts ready (T-03)
 
-Every release is a reason to be seen again, from the launch on: nothing before it, so the
-launch lands as one wave.
-- [ ] At promotion, a short post written from the release notes (what a user notices, one
-  link), posted from `.bluesky/` and `.devto/`; skipped for a release with nothing visible.
+A milestone is a reason to be seen again, from the launch on: nothing before it, so the launch
+lands as one wave. Only milestones (a new minor) are announced: a post every two days would be
+noise (antoine, 26 October 2026, Q131; decision 41); the patch releases go out with their notes.
+- [ ] At a milestone's promotion, a short post written from the release notes (what a user
+  notices, one link), posted from `.bluesky/`, `.devto/`, `.x/` and `.mastodon/`.
+- [ ] The X and Mastodon accounts opened by antoine in kiln's name (`urgent.md`), their tokens
+  through `/kiln:token`; Mastodon on an instance for open-source projects.
+- [ ] Nothing says "written with Claude" unless the platform asks (decision 3).
 
 ### T-91 · Findings where people look: SARIF in pull requests and code scanning
 - **Type**: improvement
@@ -1929,6 +2300,9 @@ From the kiln score ideas of 24 October 2026:
 
 - [ ] Profiles: solo or association, a company of about 50 people, a university (student
   projects, labs), large companies later; each rule of the grid says which it fits.
+- [ ] More of them (decision 18 of 26 October 2026): student project, teacher, startup, small
+  company, freelance delivery (the score as the delivery's certificate), open-source project,
+  personal project.
 - [ ] The profile read from the repo's answers, otherwise suggested from signals (contributors
   in the last 90 days, a deployment, several services), never imposed: `kiln set profile=…`.
 - [ ] Moving to a bigger profile applies the new rules as ratchets on the existing code, never a
@@ -1984,8 +2358,10 @@ leaving 0.x.
 
 Planned in v0.5.4, "The first week with strangers": Candidate Mon 9 Nov, promoted after the launch.
 What the launch brings in (issues, reports, the first gap reports of T-38) comes first; these give
-way to it. From here each promoted release is announced (T-118).
+way to it. From here each milestone is announced (T-118).
 
+- [ ] On Windows without WSL, `kiln score` says what to do (WSL and its link) instead of a
+  traceback; T-94 stays declined (decision 38 of 26 October 2026).
 - [ ] **A29** Shallow clones, sparse checkouts, partial clones, worktrees, bare repos and submodules
   handled; what wasn't checked out is said, never guessed.
 - [ ] **C20** The integration branch read from the remote's HEAD (main, master, develop, trunk),
@@ -2472,7 +2848,8 @@ read too.
   tagged for `/kiln:good-first-issues`.
 - [ ] **O15** A one-line summary per item for the human, in the user's language when Claude speaks
   to them.
-- [ ] **O16** A roadmap file other agents can read too (AGENTS.md style); kiln stays Claude-first.
+- [ ] **O16** A roadmap file other agents can read too (AGENTS.md style), with T-357 (every
+  agent, decision 26 of 26 October).
 
 ### T-207 · The grid's data dated at each release: end of life, grid diff, consistency, proposals
 - **Type**: improvement
@@ -5153,8 +5530,9 @@ corrections counted as signals.
   reason, or one rule waived across many repos of a fleet, flags the rule for review.
 - [ ] **Q07** A coverage map, themes by ecosystems with the number of scored rules in each cell,
   holes visible (`kiln grid --coverage`).
-- [ ] **S05** No telemetry, ever: only T-38's report, with consent and the exact lines shown, as
-  v0.4.6 does; every later signal (U) goes through it.
+- [ ] **S05** No silent telemetry: T-38's report, with consent and the exact lines shown, as
+  v0.4.6 does, and the opt-in counts of T-348 (antoine reversed "no telemetry, ever" on
+  26 October 2026); every later signal (U) goes through one of the two.
 - [ ] **T02** User effort measured: manual corrections needed per 100 corpus repos for a right score
   (target 0).
 - [ ] **T03** The unclaimed-file rate on the corpus (target under 1 % outside docs and assets).
@@ -5749,6 +6127,20 @@ rule ships with its passing and failing examples.
   · trial.
 
 ## ⚪ Background — long-running work, debt and ideas
+
+### T-353 · A leaderboard of the best-scored public repos
+- **Type**: idea
+- **Status**: todo
+- **Opened**: 2026-10-26
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: antoine's answers of 26 October 2026 (Q99: "I find it cool, to see whether big repos
+  already do this or if it's frowned upon"), decision 38
+
+Public rankings by a quality score exist and are welcome when they celebrate (best-of-python
+ranks projects by a project-quality score; Scorecard publishes every repo's checks); shaming the
+worst is what is frowned upon.
+- [ ] A page of the best-scored public repos by stack, from the corpus and the badges (T-154),
+  top only, a repo removed on its maintainers' request; built after T-191.
 
 ### T-178 · A lighter install: copier's dependencies trimmed, not fetched later
 - **Type**: idea
@@ -6985,10 +7377,12 @@ paths it dropped are in [rejected.md](rejected.md).
 
 **kiln keeps a repo up to date with the best of the world (methods, structure, tools,
 containers, security, code standards) and easy for Claude to read.** Version numbers matter, but
-Dependabot and Renovate already handle them: kiln does the rest. The closest image is a
-**distribution**, like Ubuntu for a computer: it picks the best tools and methods, checks they
-work together, and moves every repo to the next release. The goal: kiln becomes the reference
-tool for this problem, measured by adoption (stars, installs).
+Dependabot and Renovate already handle them: kiln does the rest. It picks the best tools and
+methods, checks they work together, and moves every repo to the next release (the Ubuntu image
+stays out of public texts: too abstract, decision 5 of 26 October). The goal: kiln becomes the
+reference tool for this problem, measured by adoption (stars, installs), and never something
+the next release of an agent makes useless (antoine, 26 October 2026): agent-neutral, scripted,
+sourced.
 
 ### The problem
 
@@ -7030,8 +7424,10 @@ tool for this problem, measured by adoption (stars, installs).
 ### For whom, and where it starts
 
 - **First** small structures without a platform team: associations, companies of about
-  50 people, universities (student projects, labs), freelancers. **Not at first** large
-  companies: AWS and Moderne serve them.
+  50 people, startups, universities (students, teachers, labs), freelancers, and people who
+  build with an agent without knowing how to code: they should code well without knowing it.
+  They come to learn to run a project, or to bring an old repo up (`kiln adopt`). **Not at
+  first** large companies: AWS and Moderne serve them.
 - **Django and Nuxt first**, the reference repo's stacks, brought to the top of the grid; each
   stack counts alone (a Django repo with a React front still gets the Django profile). The
   reference repo is the training ground (its score at every release, T-134); the university repo
@@ -7049,7 +7445,9 @@ style, everyone's favourite tool"), Black, Prettier and Rails won this way; crea
 frozen then abandoned in 2025, shows what happens when the one way stops moving.
 
 1. **One way per profile.** For each stack and size of structure, kiln picks one way and holds
-   it. No options: an association does not need a large company's SLOs.
+   it: an association does not need a large company's SLOs. Where the community is split at
+   equal quality, the other way is accepted, never scored down (podman recommended, Docker
+   accepted: decision 17 of 26 October). kiln's way is the world's best, not its author's.
 2. **The best, not the newest.** A practice enters only once mature (maintained, adopted,
    compatible with the rest of the stack), through four levels: assess, trial, adopt, hold.
 3. **Every rule has its why, source and date.** Sources weigh in this order: official docs and
@@ -7088,6 +7486,10 @@ frozen then abandoned in 2025, shows what happens when the one way stops moving.
     framework), its own rules a thin layer, its mature tools (Brakeman, Sobelow, SpotBugs…) run
     rather than rewritten. A repo loads only its stacks' rules (T-214), and a rule nobody re-read
     for a year leaves the score (T-140): a pack nobody keeps goes quiet rather than wrong.
+14. **No tool invented.** As many tools as possible that spend no tokens, the fastest, and
+    existing ones: where a maintained open-source tool does the job, kiln runs it; kiln's own
+    code is the glue, the standard and what nobody else does (antoine, 26 October 2026: "invent no
+    tool, go find existing repos on GitHub"; T-359).
 
 ### How it works: the script finds, Claude judges
 
@@ -7176,6 +7578,156 @@ that differ); understanding and remembering. The grid takes from it: pin MCP ser
 broad permissions, keep context files short and hand-written, keep repos readable by any agent.
 The background trend is harness engineering (OpenAI, February 2026): a harness improved from
 measurements gains 7 points of success and saves 12 % of tokens.
+
+### Decisions of 26 October 2026
+
+antoine answered 220 questions offline (the file names people and private repos: it lives in
+`kiln-private`). Below, what changes; where he wrote "decide", Claude settled it, with the
+reason. T-342 to T-358 come from here; "Q" numbers are the file's.
+
+**Launch (T-03).**
+1. Hacker News restricts Show HN from new accounts since March 2026
+   (https://news.ycombinator.com/showlim: "take some time to get to know the community",
+   criteria vague on purpose), and antoine has no HN account and no Reddit karma (Q11, Q12).
+   Proposed to him, his call (the date is his): 11 November stays for what needs no history
+   (dev.to, Bluesky, X, Mastodon, LinkedIn, a mail to his university's students,
+   awesome-claude-code); HN and Reddit on the first Wednesday his accounts are accepted, at the
+   latest v0.6.0 (early December, a stronger story); both accounts opened at once and used for
+   real, never about kiln. Moving everything to v1.0 (Q8) is advised against: seven months without
+   strangers' repos to calibrate on, and the name left to whoever ships first.
+2. The HN title stays antoine's (he dislikes "Dependabot for your methods"), `kiln score` first.
+   LinkedIn: a post the day kiln takes off, written by Claude, posted by antoine. About ten
+   people around antoine use kiln, four of them often: T-142 starts with them.
+3. Claude never adds "written with Claude" on its own (Q129: "never"); where a platform asks
+   (dev.to's AI disclosure tier) the true answer is given, or the post is not made. HN stays
+   antoine's words only. The video is silent.
+
+**Promise and README (T-30, T-33).**
+4. `kiln score` first, then `adopt` and `new`, which stand on it (Q20, Q21, Q192): the trio is the
+   promise. Draft tagline: "Make any repo production-grade: score it, raise it, keep it there".
+   antoine wants the best README in the world.
+5. The Ubuntu image goes from public texts (too abstract). The grid is called **the kiln
+   standard** wherever a user reads it (T-346).
+6. The score: a number out of 100 in Lighthouse's bands (0-49 red, 50-89 orange, 90-100 green;
+   the cap at 49 lands in red by construction), no letter; colourful in the terminal, a Markdown
+   page of Mermaid charts on request (T-352).
+7. English only for kiln's own docs: T-177 stands (Q27, "do as you like").
+8. A sourced why for the README: output per developer doubled while reviewers grew 1.5× (CMU and
+   Stanford, in the sources below); "right first costs fewer tokens than refactoring later" only
+   with a measure (T-145), otherwise left out.
+9. A logo, still and animated, and a mascot to discuss (T-347).
+
+**The study (T-131, T-132).**
+10. Calibration before conclusions: a standard that finds nothing well made is worthless
+    (antoine, Q30). Repos known for their quality are scored before the launch; every point they
+    lose is a gap their maintainers would recognize, with its source, or a defect fixed first.
+11. Scores are reproducible by anyone (as with Scorecard or best-of-python): the article names the
+    reference repos and gives the hundred as aggregates, never a list of the worst.
+12. A vulnerability found is reported privately (the project's SECURITY.md, GitHub's private
+    reporting), never as a public PR first; the credit in the published advisory is the
+    publicity antoine wants (Q31). Other PRs: a few, by hand, where CONTRIBUTING welcomes them,
+    never in bulk.
+13. The university repo is never cited by kiln, not even as aggregates (Q34; one day kiln runs on
+    it and a PR goes to its teacher). The association's site is never named (Q35).
+14. T-53 before the launch, run once; T-145 matters.
+
+**The standard and the score.**
+15. The six decisions of 24 October stand, re-read; the cap at 49 too (SSL Labs' logic: a tracked
+    `.env` is an incident, not a style point).
+16. Not using an agent is not a fault (Q42, T-342).
+17. One recommended way per profile, and an accepted other where the community is split at equal
+    quality (Q40, Q41: podman recommended, Docker accepted). Every question kiln asks offers
+    "I don't know: choose for me", the recommended answer.
+18. Tools move from trial to adopt on Claude's call, with sources (Q43). More profiles (T-39):
+    student project, teacher, startup, small company, freelance delivery, open-source project,
+    personal project.
+19. Telemetry: S05 ("no telemetry, ever") reversed by antoine (Q96): opt-in, anonymous,
+    documented (T-348). Gap reports, issues and PRs reach him as a daily mail (T-349).
+
+**kiln fix and kiln-bot (T-59, T-170).**
+20. kiln-bot is a workflow each repo installs (free, no server); a hosted App later if kiln grows,
+    the association's server lending a little meanwhile. It never breaks production: each commit
+    proven (T-170), the PR a proposal the repo's CI judges.
+21. `kiln fix --pr` allowed. A fix that turns the repo's tests red leaves the batch, kept on its own
+    branch with its log and handed to Claude: never merged red, never dropped silently.
+
+**kiln new and adopt (T-169, T-184, T-188).**
+22. Two doors, quick or tailored; the long questionnaire (the machine profile) is asked once at
+    install, and at `kiln new` only if never answered. Three concrete questions replace the
+    sizes. The frozen templates stay offered, marked frozen with their score; FastAPI at the
+    launch: "not yet, report it".
+
+**Plan to 1.0.**
+23. Numbering (Q58): antoine wants small patch numbers. Proposed to him (milestones are his): a
+    minor every ten releases or so, each a themed milestone holding its breaking changes, as uv
+    and ruff do. Until he says yes, the plan's numbers stand.
+24. The best on every stack (Q59, unchanged); someone antoine knows waits for GitLab; the
+    compressor uses proven tools only (vulture, knip), Q62.
+
+**Claude Code, agents, plugins.**
+25. kiln's way is the world's best, not antoine's (Q67): the generated flow follows the evidence
+    (T-358). Its tools too: token-free, the fastest, existing ones first (Q5, doctrine 14,
+    T-359). His own habits (one session, no subagents, CI only at the release) stay his; the
+    first two are not generated (checked).
+26. Every agent, and none (Q22, Q72, T-357); Claude Code first at the launch, where the audience
+    is.
+27. The plugin directory lists one plugin, `kiln`; the stack plugins come with `kiln new` and
+    `kiln adopt`. Serena stays opt-in (it is), context7 stays (current library docs serve "the most
+    up to date"), rtk stays on. Pro plan only.
+
+**Community and money.**
+28. Free forever; Sponsors still to open (T-119); no maintainer rights to anyone; Discussions are
+    enabled, their categories in T-58. Licence `MIT OR Apache-2.0` (T-345): antoine asked for
+    Apache-2.0 as "the best"; the pair keeps Apache's patent grant and MIT's reach, as uv does.
+29. Contact: security through GitHub's private reporting (SECURITY.md has it); companies through
+    antoine's GitHub and LinkedIn. A kiln page on the association's site is declined (it would
+    name it): GitHub Pages, with the docs site after the launch.
+30. antoine can take about 50 issues or PRs a day; each is answered in its own language.
+
+**Way of working.**
+31. The backlog is for Claude alone (Q82, Q214): condensed (T-163). It stays in `docs/backlog/`
+    (ripgrep skips dot-folders by default; contributors and good first issues read it), with
+    `ROADMAP.md` as the human view; launch texts, contacts and metrics go to `kiln-private`
+    (T-350). The plan stays public (contributors, trust, building in public); antoine may still
+    ask for it private (Q138).
+32. Estimates are ceilings: antoine always goes faster (Q84).
+33. CI only at the release stays (nothing slipped through, Q86), as complete and fast as possible
+    (Q85, T-354).
+34. annway stays off limits, its copy `annway-copie` may serve kiln (the Java pack, T-310); kiln
+    trains on sweep and polytech-vision up to 100, in their own sessions (Q91, Q92).
+35. Two habits of antoine's global instructions go to every repo (T-343). The repo's update is
+    offered outside Claude Code too (T-355); strangers may follow the candidates (T-356). A
+    session paused in seconds is found again at the next start (Q6, T-344). The session messages
+    stay as they are (Q7): the logo only comes with an update on offer, as a message that costs
+    no tokens.
+36. The questions file: offered again before big milestones, not every time.
+
+**Security, ideas, commands.**
+37. What `kiln score` reads from GitHub's settings stays on the owner's machine; what leaves it
+    (badge, report to kiln, a public CI summary) carries the score and rule IDs alone (T-158).
+38. Score by URL (T-191); a leaderboard of the best only (T-353); the VS Code extension reopened
+    (T-117, free on the Marketplace and Open VSX); Windows without WSL stays declined (T-94), but
+    `kiln score` says what to do there instead of failing (T-189); a teacher is ready to try the
+    teacher mode (T-87).
+39. A quiet launch: same plan, measure, ask the testers, fix the first minute, launch again at the
+    next milestone. A loud one: the digest, Discussions, a pinned issue of known problems.
+40. `kiln check` (seconds, while coding), `kiln ci` (the whole CI on the machine, before a
+    release) and `kiln score` (the repo against the standard), one line each in the README and
+    `--help` (T-30): antoine did not know the first two apart (Q113). Merging two waits for
+    telemetry (T-10). `kiln dev` must run any repo without being told (Q111, T-351).
+41. Waivers keep their expiry (already by tiers); reminders weekly, security at once (T-45).
+    Announcements: milestones only, on Bluesky, dev.to, X and Mastodon (T-118); no newsletter
+    before 1,000 stars.
+
+**Technical choices** left to "the best in the world" (Q145 to Q180): the standard settles them
+rule by rule with dated sources. Held today: Django Ninja for new apps (DRF scored fairly); Celery
+until Django 6's `django.tasks` has a mature production backend; Tailwind with tokens (Nuxt UI
+weighed as a rule); pnpm; Vitest and Playwright; coverage as a ratchet with profile floors
+(Google's 60, 75, 90 %); mutation tests at the release on critical code; strict types for new code,
+a ratchet for old; 300 lines a file, strict when new, a ratchet when adopted; no `utils` nor
+`helpers`; showcase files (CONTRIBUTING, CODE_OF_CONDUCT, SECURITY) for public repos only, none
+generated today (with the community rules, CM); pre-commit kept; Conventional Commits; semver
+after 1.0; `uvx` first; kiln's CLI in English until 1.0; Django with HTMX as a later frozen template.
 
 ### Risks and open questions
 
@@ -7408,9 +7960,9 @@ with its reason; the ideas below follow them.
    (T-39), company and enterprise ask for CI on every pull request, where integration breaks
    between people.
 
-Ideas that brush a declined ticket carry ⚠ and its number (T-94 Windows without WSL, T-117 an
-editor extension, T-48 devcontainers, T-86 monorepos, T-71 `kiln mcp`): those stay declined
-until someone reopens them.
+Ideas that brush a declined ticket carry ⚠ and its number (T-94 Windows without WSL, T-48
+devcontainers, T-86 monorepos, T-71 `kiln mcp`): those stay declined until someone reopens them,
+as antoine reopened T-117, the editor extension, on 26 October 2026.
 
 #### Order of battle
 
