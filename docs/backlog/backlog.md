@@ -60,7 +60,6 @@ Candidate Tue 27 Oct. The score and the fixes reach what they miss today: GitHub
 the root as well as in `backend/` and `frontend/`, compose services, loose requirements, files read
 as empty.
 - T-159 · What T-126 to T-128 left: compose hardening, pyproject from requirements, `kiln update` (M)
-- T-166 · An adopted repo whose code is not in `backend/` or `frontend/` gets its stack too (M)
 - T-185 · `kiln dev` in an adopted repo with a compose file offers its services (S)
 - T-172 · The checks of `kiln fix` told apart, timed out, their log kept for Claude (S)
 - T-173 · More converters: the CI and the supply chain (M)
@@ -885,19 +884,6 @@ moved into this file, in English, on 24 Oct.
 - T-164 (French docs translated at the candidate) and T-55 (README in Chinese, Japanese,
   Spanish, Portuguese) ruled out by antoine on 24 Oct (`rejected.md`); T-30 keeps no French
   summary.
-
-### T-166 · An adopted repo whose code is not in `backend/` or `frontend/` gets its stack too
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-24
-- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: issue #59 (antoine, 23 October 2026), what v0.4.6 left
-
-`kiln adopt` lays the common part only when the framework lives elsewhere (a Vite app at the
-root, `manage.py` at the root): the template's stack files assume `backend/` and `frontend/`.
-- [ ] Where the backend and the front live recorded in the answers (`frontend_dir = "."`), read
-  by the template (CI, rules, charter, dependabot) and by `kiln check` and `kiln dev`.
-- [ ] Tested for each stack at the root, and for the same repo after `kiln update`.
 
 ### T-185 · `kiln dev` in an adopted repo with a compose file offers its services
 - **Type**: improvement
