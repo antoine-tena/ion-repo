@@ -201,6 +201,36 @@ def test_an_old_runtime_on_an_old_debian_moves_both_at_once(
     assert (root / "Dockerfile").read_text() == f"FROM python:3.13-trixie@{DIGEST}\n"
 
 
+def test_requirements_alone_become_a_uv_project_or_are_restored(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # T-159: pyproject.toml and uv.lock from requirements.txt, which stays as their export.
+    root = make(tmp_path, {"requirements.txt": "flask\n", "requirements-dev.txt": "pytest\n"})
+    ran: list[list[str]] = []
+
+    resolvable = True
+
+    def uv(command: list[str], cwd: Path) -> bool:
+        ran.append(command)
+        if command[1] == "init":
+            (cwd / "pyproject.toml").write_text("[project]\n")
+        return not (command[1] == "add" and not resolvable)
+
+    monkeypatch.setattr(python, "_uv", uv)
+    assert python._uv_project(read_repo(root)) == [
+        "pyproject.toml",
+        "requirements.txt",
+        "requirements-dev.txt",
+    ]
+    assert [command[1] for command in ran] == ["init", "add", "add", "export", "export"]
+
+    (root / "pyproject.toml").unlink()
+    resolvable = False
+    assert python._uv_project(read_repo(root)) == []
+    assert not (root / "pyproject.toml").exists()
+    assert (root / "requirements.txt").read_text() == "flask\n"
+
+
 def test_black_line_length_is_carried_over_to_ruff(tmp_path: Path) -> None:
     root = make(tmp_path, CONVERTED["PYTHON-LINTER"])
     python.add_ruff(read_repo(root))
