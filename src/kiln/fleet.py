@@ -19,6 +19,7 @@ from kiln import adopted, rehearsal, ui
 from kiln.charter.config import CHARTER_FILE, LEGACY_CHARTER_FILE
 from kiln.charter.waivers import Waivers, load
 from kiln.check import run_checks
+from kiln.config import load_config
 from kiln.install import install_project
 from kiln.shell import KilnError, capture, output_to, require_tools, run, step
 from kiln.stack import ANSWERS_FILE, answers_if_any, load_stack, read_answers
@@ -44,7 +45,8 @@ COMMIT_ATTEMPTS = 2
 # What each repo's update wrote, one log per repo and per run: the terminal gets one line each.
 LOGS_DIR = Path.home() / ".cache" / "kiln" / "update-all"
 # Outcomes with nothing left to do by hand.
-DONE_OUTCOMES = ("merged into ", "already up to date", "rehearsal: ")
+DONE_OUTCOMES = ("merged into ", "already up to date", "rehearsal: ", "frozen")
+FROZEN_OUTCOME = "frozen (kiln set frozen_repos): left as it is"
 
 
 @dataclass(frozen=True)
@@ -190,8 +192,11 @@ def update_all(
     require_tools("git", "uv")
     # Generated repos replay the template; adopted ones only move kiln's workflows' tag.
     roots = [repo.root for repo in find_repos(code_dir)] + find_adopted(code_dir)
+    frozen = {code_dir / repo for repo in load_config().frozen_repos}
 
     def work(root: Path) -> str:
+        if root in frozen:
+            return FROZEN_OUTCOME
         if rehearse:
             return rehearse_one(root, allow_major=allow_major)
         return update_one(root, allow_major=allow_major)
@@ -266,13 +271,16 @@ def update_one(root: Path, *, allow_major: bool) -> str:
     worktree = root / WORKTREES_DIR / branch.replace("/", "-")
     try:
         _create_worktree(root, worktree, branch, integration)
-        failed_checks = _update_worktree(worktree, allow_major=allow_major)
+        _update_worktree(worktree, allow_major=allow_major)
+        # Checked only once the update is whole and changed something: the checks read the
+        # conflicted files (pnpm-workspace.yaml), and a repo with nothing to take has no branch.
         conflicted = conflicted_files(worktree)
         if conflicted:
             return f"conflicts to resolve ({', '.join(conflicted)}) in {worktree}"
         if not capture(["git", "status", "--porcelain"], worktree):
             _remove_worktree(root, worktree, branch=branch)
             return "already up to date"
+        failed_checks = run_checks(worktree)
         commit_in_batches(worktree)
         if failed_checks:
             run(["git", "push", "-q", "-u", "origin", branch], worktree)
@@ -293,8 +301,8 @@ def update_one(root: Path, *, allow_major: bool) -> str:
     return f"merged into {integration}"
 
 
-def _update_worktree(worktree: Path, *, allow_major: bool) -> list[str]:
-    """Installs, updates the template and dependencies, then returns the failed checks."""
+def _update_worktree(worktree: Path, *, allow_major: bool) -> None:
+    """Installs, then updates the template and dependencies."""
     install_project(worktree)
     update_project(
         worktree,
@@ -303,7 +311,6 @@ def _update_worktree(worktree: Path, *, allow_major: bool) -> list[str]:
         allow_major=allow_major,
         should_check=False,
     )
-    return run_checks(worktree)
 
 
 def integration_branch(root: Path) -> str:

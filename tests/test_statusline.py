@@ -9,7 +9,7 @@ from typing import Any
 
 import pytest
 
-from kiln.config import UserConfig
+from kiln.config import UserConfig, load_config, save_config
 from kiln.machine import apply_machine, only_machine_keys
 from kiln.shell import KilnError
 from kiln.statusline import (
@@ -60,6 +60,15 @@ def test_machine_keys_set_in_a_repo_go_to_the_machine() -> None:
     assert not only_machine_keys(["team=a"])  # a repo key as well: the repo's
     assert not only_machine_keys(["statusline=band", "name=x"])
     assert not only_machine_keys([])
+
+
+def test_frozen_repos_are_kept_by_the_machine_and_can_be_cleared() -> None:
+    config = apply_machine(UserConfig(), ["frozen_repos=kiln-rehearsal, courses/old"])
+    save_config(config)
+
+    assert load_config().frozen_repos == ("kiln-rehearsal", "courses/old")
+    assert only_machine_keys(["frozen_repos=kiln-rehearsal"])
+    assert apply_machine(config, ["frozen_repos="]).frozen_repos == ()
 
 
 def test_statusline_choice_is_checked() -> None:
