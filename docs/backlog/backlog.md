@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-365.**
+**Next free: T-371.**
 
 ---
 
@@ -116,6 +116,7 @@ announced (T-118).
 - T-348 · Opt-in telemetry: which commands run, and how they end (M)
 - T-349 · A daily digest mail: issues, pull requests, discussions, gap reports (S)
 - T-350 · Launch metrics kept in kiln-private (S) — from launch day: GitHub keeps traffic 14 days
+- T-368 · Recorded demos replayed by a test: an output that changed fails until re-recorded (S)
 
 ### v0.5.5 · A score you can trust: the false alarms of real repos, gone
 Strangers' repos hold fixtures, vendored and generated code, templates, READMEs in other languages:
@@ -197,6 +198,8 @@ agent can read, model calls with limits; plugins and MCP servers scored as a kin
 - T-200 · Repos safe to hand to an agent: permissions, MCP servers, plugins, hooks (L)
 - T-201 · Apps that call a model: keys server-side, current models, validated outputs (L)
 - T-364 · Credentials under one `.secrets/` folder, caches hidden from the editor (M)
+- T-367 · No bulk staging: `git add -A`, `git add .` and `git commit -a` refused (S)
+- T-370 · Worktree cleanup decided by a script: safe, review, protected, undo (M)
 
 ### v0.5.15 · The roadmap Claude reads without exploring
 The input of v0.6.0: each gap a context pack with its recipe and its proof, ordered by points per
@@ -215,6 +218,7 @@ mutants measured by script, Claude on the holes only.
 machine has.
 - T-351 · `kiln dev` runs any repo without being told (L)
 - T-37 · Docker or podman: the engine the machine has (M), reopened on 26 October 2026
+- T-369 · Worktrees ready however they are made: a `WorktreeCreate` hook, a port per worktree (M)
 
 ### v0.6.0 · Claude closes the gaps alone
 Milestone decided by antoine (16 October 2026: Claude does the work in the repo), its content
@@ -223,6 +227,7 @@ its places, the cost of a judgment gap measured, a fix made twice turned into a 
 - T-74 · The roadmap worked unattended: one gap, one pull request (L)
 - T-137 · Claude invents, the script repeats: a fix made twice becomes a converter (M)
 - T-204 · The unattended run kept to its places, its verdicts fed back (S)
+- T-366 · The session's place kept before compaction, a pause offered near the usage limit (M)
 
 ### v0.6.1 · Less code to carry
 The vision's fourth pillar, measured before anything is built: the compressor's dry run, removals
@@ -377,6 +382,7 @@ Tests and score rechecked on the changed files only, on save and in Claude Code'
 milliseconds.
 - T-77 · Tests in seconds after each edit: only those the change touches (M)
 - T-238 · Only what changed: `--changed`, `--watch`, the edit hook (M)
+- T-365 · Claude can't call a task done with new findings: a Stop hook (M)
 
 ### v0.6.27 · The score explained like a senior engineer would
 The denominator, the weakest themes, the effort to 100 in session hours, a verdict in plain words,
@@ -4816,7 +4822,9 @@ rule ships with its passing and failing examples.
 - [ ] **DT10** `GLOSSARY`: a glossary of the domain's words, read by `DOMAIN-VOCABULARY`. L0 · fix J
   · assess.
 - [ ] **AI01** `AI-CONTEXT` (scored): from "a file exists" to its quality: under a size budget, its
-  map's paths existing, its commands running, nothing contradicting the settings. L3.
+  map's paths existing, its commands running, nothing contradicting the settings: a script
+  removed from `package.json` while CLAUDE.md still says `npm test` fails it (as `agentsgen check`
+  does, seen 26 October 2026). L3.
 
 ### T-274 · Set up in one command: pre-commit, editor files, a task runner, tool versions
 - **Type**: improvement
@@ -5896,6 +5904,108 @@ rule ships with its passing and failing examples.
 - [ ] **V05** A teacher's guide: a class's repos scored each week, a rubric per theme.
 - [ ] **CM09** `CITATION`: `CITATION.cff` for research software (the university profile). L0 · fix S
   · trial.
+
+### T-365 · Claude can't call a task done with new findings: a Stop hook
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-27
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: review of similar public projects, 26 October 2026 (`Heyosseus/sloppy`'s finish
+  check)
+
+Planned in v0.6.26, "Only what changed, right after each edit". kiln checks each file after an
+edit (`check_file.py`, `PostToolUse`) but has no `Stop` hook: Claude can say "done" with a
+finding still open.
+- [ ] A `Stop` hook runs the charter (then the grid, with T-238's `--changed`) on the files the
+  session changed and hands Claude the findings at or above a threshold.
+- [ ] Only what the session introduced: a finding the file already had is never reported, so
+  Claude doesn't wander off fixing code nobody asked it to touch.
+- [ ] It blocks once per stop: a false alarm costs one round trip, not the session; if the check
+  can't run (no git, a broken config), Claude carries on.
+- [ ] The threshold is a `kiln set` key; its cost per stop measured and written in the reference.
+
+### T-366 · The session's place kept before compaction, a pause offered near the usage limit
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-27
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: review of similar public projects, 26 October 2026 (`tillmeier/claude-code-guardrails`'s
+  compaction handoff, `asiagenawi/claude-powernap`, `wrg32786/aigent-os`)
+
+Planned in v0.6.0, "Claude closes the gaps alone": an unattended run has to outlive a compaction
+and the 5-hour window. `kiln pause` only runs when someone asks for it.
+- [ ] A `PreCompact` hook writes what `kiln pause` keeps (branch, ticket, where it stopped, next
+  step) and `SessionStart` with the `compact` matcher hands it back to Claude.
+- [ ] Near the end of the usage window (about 90 %, or sooner when the burn rate projects the
+  limit within minutes, read from what the status line already knows), Claude is told to finish
+  its step and run `kiln pause`.
+- [ ] Measured before shipping: the work kept across a compaction, with and without the hook, on
+  one real session.
+
+### T-367 · No bulk staging: `git add -A`, `git add .` and `git commit -a` refused
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-27
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: review of similar public projects, 26 October 2026
+  (`tillmeier/claude-code-guardrails`'s staging guard)
+
+Planned in v0.5.14, "Repos safe to hand to an agent". "Commit only the task's files" is an
+instruction today; the branch guard can make it mechanical.
+- [ ] `branch_guard.py` refuses `git add -A`, `git add --all`, `git add .`, `git commit -a` and
+  `git commit --all`, and says to name the files; with T-167, judged in the repo the command
+  runs in.
+- [ ] A test per form, and the forms that stay allowed (`git add -p`, a named path, `git add -u
+  <path>`).
+
+### T-368 · Recorded demos replayed by a test: an output that changed fails until re-recorded
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-27
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: review of similar public projects, 26 October 2026
+  (`BhodiSea/next-expo-supabase-agent-harness`, whose test runs its tape's commands)
+
+Planned in v0.5.4, "The first week with strangers". `test_docs.py` already fails on a demo that
+types what kiln no longer offers; it doesn't see a demo whose output changed.
+- [ ] The commands of `kiln-new.tape` run in `scripts/demo_shell.sh`'s shell, their output
+  compared with a text kept next to the tape; a difference fails until the GIF is re-recorded
+  and the text refreshed.
+- [ ] `kiln-rescue.tape`'s commands that need no network and no Claude, the same way.
+
+### T-369 · Worktrees ready however they are made: a `WorktreeCreate` hook, a port per worktree
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-27
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: review of similar public projects, 26 October 2026
+  (`tfriedel/claude-worktree-hooks`)
+
+Planned in v0.5.17, "Strangers' repos run as they are". Only `/kiln:worktree` runs
+`prepare-worktree.sh`; a worktree made by `claude --worktree` starts empty, and two `kiln dev` in
+two worktrees ask for the same ports.
+- [ ] A `WorktreeCreate` hook creates the worktree the way `/kiln:worktree` does and prepares it
+  (ignored `.env*` copied, dependencies installed, `.claude/worktree-setup.sh`); `WorktreeRemove`
+  undoes what it laid.
+- [ ] A port offset per worktree, derived from its name, so the same worktree always gets the
+  same ports; `kiln dev` and the copied `.env*` use it.
+
+### T-370 · Worktree cleanup decided by a script: safe, review, protected, undo
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-27
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: review of similar public projects, 26 October 2026 (`sauravpanda/bonsai`)
+
+Planned in v0.5.14, "Repos safe to hand to an agent". `/kiln:cleanup` has Claude put together the
+`git worktree remove` and `git branch -d` commands itself; one wrong flag deletes work that exists
+nowhere else.
+- [ ] A `kiln cleanup` command classifies each worktree and branch: `safe` (merged, clean,
+  pushed), `review`, `protected` (dirty, unpushed commits, locked, current, in use by a session,
+  an open pull request), with the disk space each one frees.
+- [ ] It removes only `safe` ones, keeps what it removed for `kiln cleanup --undo`, and gives
+  `--json` for the skill; `/kiln:cleanup` calls it instead of composing git commands.
+- [ ] Both references and both READMEs updated in the same branch.
 
 ## ⚪ Background — long-running work, debt and ideas
 
