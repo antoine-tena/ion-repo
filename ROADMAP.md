@@ -57,7 +57,7 @@ the backlog it takes (its tickets). Something missing, or wanted sooner?
 | v0.5.1 | Launch week: the rehearsal, and the bugs already known | Candidate Tue 3 Nov. Fixes only from here to the launch; the week absorbs up to three slipped releases. | 6 tickets |
 | v0.5.2 | Launch week: what the rehearsal found | Candidate Thu 5 Nov: the fixes of T-142, nothing else. | fixes as they come |
 | v0.5.3 | Launch day | Candidate Sat 7 Nov, promoted on Mon 9 Nov by the next candidate: the version strangers install. Gate checked on Mon 9 Nov at 20:00; nothing is promoted on launch day. | 1 ticket |
-| v0.5.4 | The first week with strangers | Candidate Mon 9 Nov, promoted after the launch. What the launch brings in (issues, reports, the first gap reports of T-38) comes first; these give way to it. From here each milestone is announced (T-118). | 10 tickets |
+| v0.5.4 | The first week with strangers | Candidate Mon 9 Nov, promoted after the launch. What the launch brings in (issues, reports, the first gap reports of T-38) comes first; these give way to it. From here each milestone is announced (T-118). | 11 tickets |
 | v0.5.5 | A score you can trust: the false alarms of real repos, gone | Strangers' repos hold fixtures, vendored and generated code, templates, READMEs in other languages: each class of false alarm is handled once, in the engine, and stays fixed by a test; the reference repo's score in every note says when the grid moved. | 2 tickets |
 | v0.5.6 | Show your score | The image that travels by itself, and anyone's repo scored from its URL: the launch's visitors become its messengers. | 4 tickets |
 | v0.5.7 | Claude pays less per session | Context length is the cost (measured on 22 October): skills that run one kiln command, a ladder before writing code, context files kept under a budget, the score shown without Claude asking for it. | 3 tickets |
@@ -67,16 +67,16 @@ the backlog it takes (its tickets). Something missing, or wanted sooner?
 | v0.5.11 | Rules that test themselves | Before the grid grows by hundreds of rules: each rule carries its examples, its rung and its message per place, and `kiln grid new`, `test`, `try` and `lint` make a rule in minutes. | 1 ticket |
 | v0.5.12 | Findings where people look | With rules that test themselves (v0.5.11) to build on: in the pull request, the CI's summary and GitHub's code scanning, written without a flag; repo-local rules in the grid's format. | 3 tickets |
 | v0.5.13 | The grid grows: the exact rules first, three new themes | T-141 opens here, its other boxes being the theme releases below: the rules a detector decides exactly today, the first rule of `licensing`, `infrastructure` and `data-science`, and the template held to every new rule by its own test. | 4 tickets |
-| v0.5.14 | Repos safe to hand to an agent | What Claude Code users need first (17 October): narrow permissions, pinned MCP servers, no secret an agent can read, model calls with limits; plugins and MCP servers scored as a kind of their own. | 3 tickets |
+| v0.5.14 | Repos safe to hand to an agent | What Claude Code users need first (17 October): narrow permissions, pinned MCP servers, no secret an agent can read, model calls with limits; plugins and MCP servers scored as a kind of their own. | 5 tickets |
 | v0.5.15 | The roadmap Claude reads without exploring | The input of v0.6.0: each gap a context pack with its recipe and its proof, ordered by points per token, cut into batches that fit a session. | 1 ticket |
 | v0.5.16 | Tests at the lowest token cost | The other half of v0.6.0: generators that cost no tokens in the template, coverage and surviving mutants measured by script, Claude on the holes only. | 3 tickets |
-| v0.5.17 | Strangers' repos run as they are | `kiln dev` brings up any adopted repo without a question, on podman or Docker, whichever the machine has. | 2 tickets |
+| v0.5.17 | Strangers' repos run as they are | `kiln dev` brings up any adopted repo without a question, on podman or Docker, whichever the machine has. | 3 tickets |
 
 <details><summary><b>v0.6.x</b> · 66 releases</summary>
 
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
-| v0.6.0 | Claude closes the gaps alone | Milestone decided by antoine (16 October 2026: Claude does the work in the repo), its content re-scoped to the vision: the roadmap worked unattended within a budget, each pull request kept to its places, the cost of a judgment gap measured, a fix made twice turned into a converter. | 3 tickets |
+| v0.6.0 | Claude closes the gaps alone | Milestone decided by antoine (16 October 2026: Claude does the work in the repo), its content re-scoped to the vision: the roadmap worked unattended within a budget, each pull request kept to its places, the cost of a judgment gap measured, a fix made twice turned into a converter. | 4 tickets |
 | v0.6.1 | Less code to carry | The vision's fourth pillar, measured before anything is built: the compressor's dry run, removals proven by types, tests and behaviour, the slimming rules promoted once precise. | 4 tickets |
 | v0.6.2 | Claude in the team's flow | A red CI made green on the machine, the roadmap as issues and good first issues, a summary a human reads in their language, a file other agents can read too. | 4 tickets |
 | v0.6.3 | The grid kept current: its sources watched | Every week the sources are read, the data bundle refreshed, the rules whose sources moved flagged; each release note carries the grid's diff. | 2 tickets |
@@ -102,7 +102,7 @@ the backlog it takes (its tickets). Something missing, or wanted sooner?
 | v0.6.23 | Tests that prove something | Tests per component that assert, run shuffled and in parallel, without network or sleep, coverage that only rises; a front with no backend gets its smoke test. | 3 tickets |
 | v0.6.24 | Progress, not perfection: no new finding | The score of a change, a comparison with any ref, gates on new findings only, scores kept in git notes and drawn as a curve. | 1 ticket |
 | v0.6.25 | One funnel for every repo, new or old | `kiln adopt` as score, lay, fix, roadmap, its result shown before it runs; baselines for the gradual path; the template a repo started from recognised; `kiln new` as the same funnel run on an empty folder. | 1 ticket |
-| v0.6.26 | Only what changed, right after each edit | Tests and score rechecked on the changed files only, on save and in Claude Code's edit hook, in milliseconds. | 2 tickets |
+| v0.6.26 | Only what changed, right after each edit | Tests and score rechecked on the changed files only, on save and in Claude Code's edit hook, in milliseconds. | 3 tickets |
 | v0.6.27 | The score explained like a senior engineer would | The denominator, the weakest themes, the effort to 100 in session hours, a verdict in plain words, `--explain` with this repo's numbers. | 1 ticket |
 | v0.6.28 | A report you can share | Every format a CI or a tool reads, a one-file HTML report, links to each rule's page and to the line on the forge, nothing personal left in it. | 1 ticket |
 | v0.6.29 | Code that can be attacked | Injection, unsafe deserialization, weak crypto, open redirects, SSRF and the rest, with taint followed inside a function. | 2 tickets |
