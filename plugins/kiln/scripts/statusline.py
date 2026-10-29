@@ -701,7 +701,7 @@ def collect_session(status: Status, d: dict, main: str) -> None:
         fill = min(100.0, 100 * context_tokens / point)
         cold = (d.get("prompt_cache") or {}).get("warm") is False
         level = 3 if cold else context_level(context_tokens)
-        amount = f"{context_tokens / 1000:.0f}k"
+        amount = f"{context_tokens:,}".replace(",", "\u202f")  # exact count, 123 456
         status.session.append([Item("ctx", level, gauge=fill, amount=amount)])
     elif cw.get("used_percentage") is not None:
         pct = float(cw["used_percentage"])
