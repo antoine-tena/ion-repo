@@ -40,8 +40,9 @@ Each one, against the repo's habits:
 
 ## 3. Diff
 
-- No secret or real personal data (`gitleaks git --log-opts=origin/<integration>..<branch>`
-  if installed, otherwise read the diff for keys, tokens, `.env`, e-mails, phone numbers).
+- No secret or real personal data (`git log -p origin/<integration>..<branch> | gitleaks stdin`
+  if installed: a session moved into a worktree refuses `gitleaks git`, which runs git itself;
+  otherwise read the diff for keys, tokens, `.env`, e-mails, phone numbers).
 - No stray file: scratch or debug output, `*.orig`, `*.rej`, `.DS_Store`, a local `.<service>/`
   folder, a large binary, a lockfile changed without its manifest.
 - No leftover: conflict markers, `print` / `console.log` of debugging, commented-out code, a
