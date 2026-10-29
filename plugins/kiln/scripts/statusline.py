@@ -794,7 +794,9 @@ def collect_session(status: Status, d: dict, main: str) -> None:
     lifetime_cmd = f"python3 {shlex.quote(LIFETIME_SCRIPT)}"
     lifetime = cached("lifetime-tokens", LIFETIME_TTL, lifetime_cmd, CACHE)
     if lifetime.isdigit():
-        status.usage.append([Item(f"Σ {human_tokens(int(lifetime))} tok", short="")])
+        # first of the usage groups: those at the end drop first when room runs out
+        total = human_tokens(int(lifetime))
+        status.usage.insert(0, [Item(f"Σ {total} tok", short=f"Σ{total}")])
 
 
 # ---------------------------------------------------------------------------- rendering
