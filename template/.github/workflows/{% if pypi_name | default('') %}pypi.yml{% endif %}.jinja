@@ -2,10 +2,12 @@
 name: PyPI
 
 # Publishes {{ pypi_name }} on PyPI at each release tag `vN` (`/kiln:release`), its version taken
-# from the tag; the command stays `{{ name }}`. Trusted publishing, no token: PyPI trusts this
-# workflow and the `pypi` environment, declared once at https://pypi.org/manage/account/publishing/
-# (a pending publisher creates the project at the first tag). PyPI refuses a reusable workflow as
-# a trusted publisher: this one stays in the repo, written by kiln. Off with `kiln set pypi_name=`.
+# from the tag; the command stays `{{ name }}`. Either a PyPI token in the secret `PYPI_TOKEN` of
+# the `pypi` environment (`/kiln:token`; "Entire account" to create the project at the first tag,
+# scoped to it afterwards), or, without it, trusted publishing: PyPI trusts this workflow and the
+# `pypi` environment, declared once at https://pypi.org/manage/account/publishing/. PyPI refuses a
+# reusable workflow as a trusted publisher: this one stays in the repo, written by kiln. Off with
+# `kiln set pypi_name=`.
 on:
   push:
     tags: [ "v[0-9]*" ]
@@ -42,4 +44,6 @@ jobs:
         with:
           subject-path: {{ bp }}dist/*
       - name: Publish
-        run: uv publish --trusted-publishing always
+        env:
+          UV_PUBLISH_TOKEN: {{ '${{ secrets.PYPI_TOKEN }}' }}
+        run: uv publish --trusted-publishing automatic
