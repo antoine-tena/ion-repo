@@ -313,6 +313,7 @@ def test_the_notice_waits_for_the_first_prompt(
     spec.loader.exec_module(first_prompt)
     monkeypatch.setattr(hook, "NOTICES_DIR", tmp_path)
     monkeypatch.setattr(first_prompt, "NOTICES_DIR", tmp_path)
+    monkeypatch.setattr(first_prompt.place, "PLACES_DIR", tmp_path / "places")
     hook.save_notice("abc", "the logo")
 
     def prompt() -> str:
