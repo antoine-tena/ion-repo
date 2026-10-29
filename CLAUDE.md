@@ -121,7 +121,7 @@ Django + Nuxt reference, the grid's training ground, T-124, T-134; its path is i
 global instructions, never named here) and a university repo (an ordinary repo, the test for a
 repo kiln didn't create, T-131). **The detailed measurements are not public** (security gaps of
 a site in production, vulnerabilities of a third-party project not yet reported to its team):
-they live in the **private** repo `antoine-tena/kiln-private` (`~/code/kiln-private`,
+they live in the **private** repo `antoine-tena/kiln-private` (cloned next to kiln,
 `mesures-repos-entrainement.md`), never in kiln, not on a branch, not in a commit. Write only
 aggregate figures in the public repo about the association's repo, never its name; the
 university repo is not cited at all, not even in aggregate (antoine, 26 October 2026). Always
@@ -169,7 +169,7 @@ push.
 
 antoine's machine runs kiln from this checkout: the tool is installed as editable (channel
 `beta`), and since the plugin catalog is declared as a local folder, open sessions call the hooks
-and the status line **in the main tree** (`~/code/kiln/plugins/…`). What reaches `develop` runs
+and the status line **in the main tree** (its `plugins/…`). What reaches `develop` runs
 at once in his sessions, and a file removed or renamed breaks every session at once (hook not
 found = tool blocked): a plugin path that changes keeps a forward from the old one
 (`plugins/base/`, checked by `test_plugins.py`).

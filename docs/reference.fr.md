@@ -277,7 +277,7 @@ Le travail s'intègre dans `develop` ; `main` ne reçoit que des versions.
 - **Outil** : `uv tool install kiln-cli` prend les versions promues, publiées sur PyPI par le
   workflow `pypi.yml` au tag `vX.Y.Z` ; `uv tool install git+https://github.com/antoine-tena/kiln@<tag>`
   prend aussi les candidates ; `brew install antoine-tena/kiln/kiln` prend les versions promues
-  par le tap Homebrew (https://github.com/antoine-tena/kiln-homebrew), que `pypi.yml` met à jour
+  par le tap Homebrew (https://github.com/antoine-tena/homebrew-kiln), que `pypi.yml` met à jour
   au même tag, et kiln propose alors `brew upgrade kiln` ;
   `kiln status` dit de quelle version part chaque repo (`v0.4.0 → v0.4.2`), la bannière celle
   de l'outil (`v0.4.2 +3 · abc1234` : trois commits après v0.4.2, installé depuis un dossier).

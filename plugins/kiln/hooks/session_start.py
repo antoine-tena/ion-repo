@@ -117,11 +117,15 @@ def is_beta() -> bool:
 
 
 def kiln_checkout() -> Path | None:
-    """kiln's checkout in the code directory (`code_dir`), the source of the beta channel."""
+    """kiln's checkout in the code directory (`code_dir`), the source of the beta channel: at its
+    root or in one of its folders, by its real path (a link left at the old place leads there)."""
     values = machine_settings()
     code_dir = Path(str(values.get("code_dir", values.get("dossier_code", DEFAULT_CODE_DIR))))
-    checkout = code_dir.expanduser() / "kiln"
-    return checkout if (checkout / KILN_PACKAGE_MARKER).is_file() else None
+    code_dir = code_dir.expanduser()
+    for checkout in (code_dir / "kiln", *sorted(code_dir.glob("*/kiln"))):
+        if (checkout / KILN_PACKAGE_MARKER).is_file():
+            return checkout.resolve()
+    return None
 
 
 def run(*command: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
@@ -223,7 +227,9 @@ def is_beta_tool_outdated(install: tuple[str, str] | None) -> bool:
     live), otherwise GitHub's `develop` at its last commit."""
     checkout = kiln_checkout()
     if checkout is not None:
-        return install is None or install[0] != "editable" or Path(install[1]) != checkout
+        if install is None or install[0] != "editable":
+            return True
+        return Path(install[1]).resolve() != checkout
     if install is None or install[0] != "git":
         return True
     heads = run("git", "ls-remote", f"{KILN_GIT_URL}.git", "refs/heads/develop").stdout.split()

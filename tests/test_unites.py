@@ -816,6 +816,19 @@ def test_the_beta_channel_installs_the_checkout_of_the_code_directory(tmp_path: 
     assert beta_install_command(tmp_path) == f"uv tool install --force --editable {tmp_path}/kiln"
 
 
+def test_the_beta_channel_finds_the_checkout_in_a_folder_of_the_code_directory(
+    tmp_path: Path,
+) -> None:
+    from kiln.versions import beta_install_command
+
+    (tmp_path / "tools/kiln/src/kiln").mkdir(parents=True)
+    (tmp_path / "tools/kiln/src/kiln/versions.py").write_text("")
+    expected = f"uv tool install --force --editable {tmp_path}/tools/kiln"
+    assert beta_install_command(tmp_path) == expected
+    (tmp_path / "kiln").symlink_to(tmp_path / "tools/kiln")
+    assert beta_install_command(tmp_path) == expected
+
+
 def test_a_folder_install_is_what_it_was_built_from_not_the_folder_today(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
