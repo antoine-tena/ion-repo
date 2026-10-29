@@ -33,8 +33,21 @@
       },
       "autoUpdate": true
     }
+{%- set own_plugin = (claude_plugin | default(false)) and owner %}
+{#- The repo's own plugin, from its GitHub repo at `main` too: its sessions use the released
+    plugin, the one every other repo gets. #}
+{%- if own_plugin %},
+    "{{ name }}": {
+      "source": {
+        "source": "github",
+        "repo": "{{ owner }}/{{ name }}",
+        "ref": "main"
+      },
+      "autoUpdate": true
+    }
+{%- endif %}
   },
-{%- set plugins = ['kiln@kiln'] + (['django@kiln'] if backend == 'django' else []) + (['nuxt@kiln'] if frontend == 'nuxt' else []) + (['vps@kiln'] if deploy == 'vps' else []) + (['serena@kiln'] if serena else []) %}
+{%- set plugins = ['kiln@kiln'] + ([name ~ '@' ~ name] if own_plugin else []) + (['django@kiln'] if backend == 'django' else []) + (['nuxt@kiln'] if frontend == 'nuxt' else []) + (['vps@kiln'] if deploy == 'vps' else []) + (['serena@kiln'] if serena else []) %}
   "enabledPlugins": {
 {%- for plugin in plugins %}
     "{{ plugin }}": true{{ "," if not loop.last }}

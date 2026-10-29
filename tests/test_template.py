@@ -277,6 +277,31 @@ def test_tool_project_gets_a_command_line_package(tmp_path: Path) -> None:
     assert all(len(line) <= 100 for line in python_lines)
 
 
+def test_tool_project_can_ship_its_claude_code_plugin(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", project_type="cli", claude_plugin=True)
+
+    marketplace = json.loads((project_dir / ".claude-plugin/marketplace.json").read_text())
+    assert [plugin["source"] for plugin in marketplace["plugins"]] == ["./plugins/demo"]
+    manifest = project_dir / "plugins/demo/.claude-plugin/plugin.json"
+    assert json.loads(manifest.read_text())["name"] == "demo"
+    skill = (project_dir / "plugins/demo/skills/run/SKILL.md").read_text()
+    assert skill.startswith("---\nname: run\n")
+    settings = json.loads((project_dir / ".claude/settings.json").read_text())
+    assert settings["extraKnownMarketplaces"]["demo"]["source"]["repo"] == "antoine-tena/demo"
+    assert settings["enabledPlugins"]["demo@demo"] is True
+    assert (project_dir / "backend/tests/test_plugin.py").is_file()
+
+
+def test_tool_project_ships_no_plugin_by_default(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", project_type="cli")
+
+    assert not (project_dir / "plugins").exists()
+    assert not (project_dir / ".claude-plugin").exists()
+    assert not (project_dir / "backend/tests/test_plugin.py").exists()
+    settings = json.loads((project_dir / ".claude/settings.json").read_text())
+    assert list(settings["extraKnownMarketplaces"]) == ["kiln"]
+
+
 def test_java_backend_gets_a_maven_project(tmp_path: Path) -> None:
     project_dir = generate(tmp_path / "demo", name="demo-app", backend="java", frontend="none")
 

@@ -181,6 +181,15 @@ podman:
   validator: >-
     {% if podman and backend in ['cli', 'java'] and frontend == 'none' %}{{ 'A Java backend without a framework' if backend == 'java' else 'A command-line tool' }} alone has nothing to put in podman.{% endif %}
 
+# A command-line tool that also ships its own Claude Code plugin: `plugins/<name>/` (manifest, a
+# first skill), its catalog `.claude-plugin/marketplace.json`, enabled in the repo's own sessions.
+# Later with `kiln set claude_plugin=true`.
+claude_plugin:
+  type: bool
+  help: Ship a Claude Code plugin with the command (skills, hooks)? Later with `kiln set claude_plugin=true`.
+  default: false
+  when: "{{ backend == 'cli' }}"
+
 # Java: the root package of the sources (and their directories under src/main/java).
 java_package:
   type: str

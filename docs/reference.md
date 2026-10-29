@@ -70,6 +70,7 @@ is re-rendered, on a work branch: `chore/kiln-set`, opened by kiln on `main`, `m
 | `backend`, `frontend`, `podman` | The stack (see [What you get](../README.md#what-you-get)) and podman containers. |
 | `language`, `language_comments`, `language_commits`, `language_docs`, `language_tickets`, `language_ui` | The team's language, and per use when they differ. |
 | `owner`, `team` | GitHub account owning the repo, and the team's logins (reviewers). |
+| `claude_plugin` | A command-line tool that ships its own Claude Code plugin: `plugins/<name>/` (manifest, a first `run` skill to replace), its catalog `.claude-plugin/marketplace.json`, a test that Claude Code would load it, and the plugin enabled in the repo's sessions from its GitHub repo at `main`. Elsewhere: `claude plugin marketplace add <owner>/<name>`. |
 | `java_package` | Root package of the Java sources. |
 | `timezone` | Time zone of the project's calendar notions (dates are stored in UTC). |
 | `serena` | Serena for Claude Code (symbol navigation on big codebases). |

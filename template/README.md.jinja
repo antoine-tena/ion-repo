@@ -51,6 +51,10 @@ Puis ouvrir {{ open_url }}.
 - [`CLAUDE.md`](CLAUDE.md) et [`.claude/rules/kiln/`](.claude/rules/kiln/) : la charte du code
   et la façon de travailler, pour les humains comme pour les agents.
 - `.vscode/` : réglages et extensions recommandées, partagés par toute l'équipe.
+{%- if claude_plugin | default(false) %}
+- `plugins/{{ name }}/` et `.claude-plugin/marketplace.json` : le plugin Claude Code de la
+  commande, et le catalogue qui le publie.
+{%- endif %}
 {%- if podman %}
 - `compose.yaml` et les `Containerfile` : la pile en conteneurs podman.
 {%- endif %}
@@ -208,6 +212,10 @@ Then open {{ open_url }}.
 - [`CLAUDE.md`](CLAUDE.md) and [`.claude/rules/kiln/`](.claude/rules/kiln/): the code charter
   and the way of working, for humans and agents alike.
 - `.vscode/`: settings and recommended extensions, shared by the whole team.
+{%- if claude_plugin | default(false) %}
+- `plugins/{{ name }}/` and `.claude-plugin/marketplace.json`: the command's Claude Code
+  plugin, and the catalog that publishes it.
+{%- endif %}
 {%- if podman %}
 - `compose.yaml` and the `Containerfile`s: the stack in podman containers.
 {%- endif %}

@@ -37,6 +37,7 @@ SETTABLE_KEYS = (
     "backend",
     "frontend",
     "podman",
+    "claude_plugin",
     "java_package",
     "timezone",
     "serena",
