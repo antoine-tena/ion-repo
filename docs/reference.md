@@ -50,7 +50,7 @@ option, setting, plugin, skill, hook or workflow is missing here.
 
 When a newer kiln release is out on the machine's channel, a command typed in a terminal ends by offering to install it (GitHub asked at most once a day; after a no, the same release comes back a week later). Not in Claude Code, whose session start asks instead, not in `kiln doctor`, not for a tool installed from a checkout; `KILN_NO_UPDATE_CHECK=1` turns it off.
 
-Release channel of the machine (`kiln set channel=…`): `public` (promoted releases, the default), `internal` (candidates too) or `beta`, for kiln's own development: the tool runs kiln's `develop`, kiln's checkout, in the code directory or one of its folders, installed editable (`uv tool install --force --editable ~/code/kiln`), so a merge into `develop` is live at once, without a release; `kiln update` takes the template at the tool's pushed commit.
+Release channel of the machine (`kiln set channel=…`): `public` (promoted releases, the default), `internal` (candidates too) or `beta`, for kiln's own development: the tool runs kiln's `develop`, kiln's checkout, in the code directory, one of its folders or one level further, installed editable (`uv tool install --force --editable ~/code/kiln`), so a merge into `develop` is live at once, without a release; `kiln update` takes the template at the tool's pushed commit.
 
 
 <p align="center">

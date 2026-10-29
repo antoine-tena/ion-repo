@@ -634,3 +634,12 @@ def test_pause_needs_a_claude_code_session(tmp_path: Path, monkeypatch: pytest.M
     monkeypatch.delenv(pause.SESSION_VARIABLE, raising=False)
     with pytest.raises(KilnError, match="no Claude Code session"):
         pause.pause(tmp_path, "x", "")
+
+
+def test_on_the_beta_channel_the_checkout_may_sit_in_a_tool_folder_of_a_family(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    hook = load_hook()
+    checkout = beta_machine(hook, tmp_path, monkeypatch, place="family/kiln/kiln")
+
+    assert hook.kiln_checkout() == checkout

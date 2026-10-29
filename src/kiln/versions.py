@@ -142,9 +142,14 @@ def beta_install_command(code_dir: Path) -> str:
 
 
 def kiln_checkout(code_dir: Path) -> Path | None:
-    """kiln's checkout in the code directory, at its root or in one of its folders, by its real
-    path: a link left at the old place leads to the same checkout."""
-    for checkout in (code_dir / "kiln", *sorted(code_dir.glob("*/kiln"))):
+    """kiln's checkout in the code directory, at its root, in one of its folders or one level
+    further (a family folder with one folder per tool), by its real path: a link left at the old
+    place leads to the same checkout."""
+    for checkout in (
+        code_dir / "kiln",
+        *sorted(code_dir.glob("*/kiln")),
+        *sorted(code_dir.glob("*/*/kiln")),
+    ):
         if (checkout / "src" / "kiln" / "versions.py").is_file():
             return checkout.resolve()
     return None

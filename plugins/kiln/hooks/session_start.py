@@ -118,11 +118,16 @@ def is_beta() -> bool:
 
 def kiln_checkout() -> Path | None:
     """kiln's checkout in the code directory (`code_dir`), the source of the beta channel: at its
-    root or in one of its folders, by its real path (a link left at the old place leads there)."""
+    root, in one of its folders or one level further (a family folder with one folder per tool),
+    by its real path (a link left at the old place leads there)."""
     values = machine_settings()
     code_dir = Path(str(values.get("code_dir", values.get("dossier_code", DEFAULT_CODE_DIR))))
     code_dir = code_dir.expanduser()
-    for checkout in (code_dir / "kiln", *sorted(code_dir.glob("*/kiln"))):
+    for checkout in (
+        code_dir / "kiln",
+        *sorted(code_dir.glob("*/kiln")),
+        *sorted(code_dir.glob("*/*/kiln")),
+    ):
         if (checkout / KILN_PACKAGE_MARKER).is_file():
             return checkout.resolve()
     return None
