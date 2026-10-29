@@ -115,7 +115,7 @@
 <text x="181.6" y="653.5" textLength="352.8">Versions of kiln: public, candidates, next</text>
 <text x="38.8" y="689.5" textLength="67.2" fill="#f79628" font-weight="bold">EXAMPLES</text>
 <text x="55.6" y="707.5" textLength="8.4" fill="#5f5f5c">$</text>
-<text x="72.4" y="707.5" textLength="394.8">kiln new atelier --size ember --backend fastapi</text>
+<text x="72.4" y="707.5" textLength="394.8">kiln new atelier --size small --backend fastapi</text>
 <text x="55.6" y="725.5" textLength="8.4" fill="#5f5f5c">$</text>
 <text x="72.4" y="725.5" textLength="159.6">kiln update --major</text>
 <text x="55.6" y="743.5" textLength="8.4" fill="#5f5f5c">$</text>

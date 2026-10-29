@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from kiln import migrations
+from kiln import frozen, migrations
 
 LEGACY_CHARTER = """\
 # Notre commentaire.
@@ -72,9 +72,26 @@ def test_legacy_answers_get_their_new_names_and_the_team_of_that_time(tmp_path: 
 
     data = migrations.answers_for_update(tmp_path, {"podman": True})
 
-    assert data["name"] == "myapp" and data["size"] == "flame" and data["frontend"] == "none"
+    assert data["name"] == "myapp" and data["size"] == "medium" and data["frontend"] == "none"
     assert data["language"] == "fr" and data["java_package"] == "fr.myapp" and data["podman"]
     assert "nom" not in data
+
+
+def test_a_size_named_after_the_fire_gets_its_plain_name(tmp_path: Path) -> None:
+    (tmp_path / ".copier-answers.yml").write_text(
+        "_commit: v0.4.9\nname: myapp\nsize: ember\nci_runner: local\n"
+    )
+
+    assert migrations.answers_for_update(tmp_path, {}) == {"size": "small"}
+    assert migrations.answers_for_update(tmp_path, {"size": "large"}) == {"size": "large"}
+
+
+def test_a_template_before_the_plain_sizes_gets_its_fire_names() -> None:
+    answers: dict[str, object] = {"name": "myapp", "size": "small"}
+
+    assert frozen.answers_for("v0.4.9", answers) == {"name": "myapp", "size": "ember"}
+    assert frozen.answers_for("v0.4.10-rc.1", answers) == answers
+    assert frozen.answers_for("v0.3.3", answers) == {"nom": "myapp", "envergure": "ember"}
 
 
 def test_rules_are_cited_by_their_new_identifiers(tmp_path: Path) -> None:

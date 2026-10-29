@@ -171,18 +171,19 @@ Options de `new` : `--size`, `--type`, `--backend`, `--frontend`, `--podman`,
 
 ## Envergure
 
-Deuxième question de `kiln new`, après ce qu'on construit : « How hot does this one burn? ». Quatre crans, nommés d'après
-le feu du four :
+Deuxième question de `kiln new`, après ce qu'on construit : « How big are the stakes? ». Quatre crans,
+du plus petit au plus grand (avant kiln 0.4.10, `spark`, `ember`, `flame` et `blaze`, encore lus
+et convertis par `kiln update`) :
 
 | Cran | Projet |
 |---|---|
-| `spark` | un script, un outil perso, une analyse ponctuelle |
-| `ember` | une petite app ou un site, une ou deux personnes, peu d'enjeu (par défaut) |
-| `flame` | une app en production, de vrais utilisateurs, plusieurs contributeurs |
-| `blaze` | plusieurs équipes ou services, de gros enjeux |
+| `tiny` | un script, un outil perso, une analyse ponctuelle |
+| `small` | une petite app ou un site, une ou deux personnes, peu d'enjeu (par défaut) |
+| `medium` | une app en production, de vrais utilisateurs, plusieurs contributeurs |
+| `large` | plusieurs équipes ou services, de gros enjeux |
 
 L'envergure est écrite dans `.claude/rules/kiln/project.md` et règle les valeurs par défaut des
-questions suivantes : à partir de `flame`, les conteneurs podman sont précochés. Elle se change
+questions suivantes : à partir de `medium`, les conteneurs podman sont précochés. Elle se change
 par `kiln set size=…` et `kiln status` l'affiche.
 
 ## Conseil de stack

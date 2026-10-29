@@ -8,7 +8,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, NoReturn
 
-from kiln import banner, tool_update, ui
+from kiln import banner, renames, tool_update, ui
 from kiln.config import load_config
 from kiln.shell import KilnError, repo_root
 from kiln.versions import installed_version
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 EXIT_FAILURE = 1
 EXIT_INTERRUPTED = 130  # 128 + SIGINT, as shells report it
 PROJECT_NAME = re.compile(r"[a-z][a-z0-9-]*")
-SIZES = ("spark", "ember", "flame", "blaze")
+SIZES = ("tiny", "small", "medium", "large")
 PROJECT_TYPES = ("app", "api", "site", "dashboard", "analysis", "cli")
 BACKENDS = ("django", "fastapi", "data", "cli", "java", "none")
 FRONTENDS = ("nuxt", "next", "astro", "vite-react", "streamlit", "dash", "none")
@@ -35,7 +35,7 @@ COMMAND_GROUPS = (
 )
 FLEET_UPDATE_ROLE = "update every kiln repo, merged straight away"
 EXAMPLES = (
-    "kiln new atelier --size ember --backend fastapi",
+    "kiln new atelier --size small --backend fastapi",
     "kiln update --major",
     "kiln set podman=true",
     "kiln set --global             # this machine's settings",
@@ -132,13 +132,20 @@ def _flag_legacy(old: str, new: str) -> str:
     return new
 
 
+def _size(value: str) -> str:
+    """A size; its name after the fire, before kiln 0.4.10 (`ember`), still read and flagged."""
+    return _flag_legacy(value, renames.SIZES[value]) if value in renames.SIZES else value
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="kiln", description=__doc__)
     parser.add_argument("-V", "-v", "--version", action=_VersionAction)
     commands = parser.add_subparsers(dest="command", parser_class=_KilnParser)
     _add_new_command(commands)
     adopt_parser = commands.add_parser("adopt", help="bring an existing repo under kiln")
-    adopt_parser.add_argument("--size", choices=SIZES, help="size of the project (default: ember)")
+    adopt_parser.add_argument(
+        "--size", type=_size, choices=SIZES, help="size of the project (default: small)"
+    )
     adopt_parser.add_argument("--template", help="template source (path or git URL)")
     install_parser = commands.add_parser("install", help="set up this machine after a clone")
     install_parser.add_argument(
@@ -397,7 +404,7 @@ def _add_new_command(commands: argparse._SubParsersAction[argparse.ArgumentParse
     new_parser.add_argument("--description", help="one sentence about the project")
     new_parser.add_argument("--owner", help="owning GitHub account")
     new_parser.add_argument("--team", help="comma-separated GitHub logins")
-    new_parser.add_argument("--size", choices=SIZES, help="size of the project")
+    new_parser.add_argument("--size", type=_size, choices=SIZES, help="size of the project")
     new_parser.add_argument(
         "--type", dest="project_type", choices=PROJECT_TYPES, help="what you are building"
     )

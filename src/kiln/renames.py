@@ -1,4 +1,5 @@
-"""Names that changed when kiln went English (0.4.0): each old French name → its new name.
+"""Names that changed when kiln went English (0.4.0): each old French name → its new name; and
+the sizes, named after the fire of the kiln until 0.4.10 (`ember` → `small`).
 
 kiln keeps reading the old names wherever a project may still carry them: an adopted repo that
 `kiln update` never converts (its `charte.toml`), a waiver written before 0.4.0, a comment that
@@ -197,7 +198,10 @@ ANSWER_KEYS: Mapping[str, str] = {
     "url_site": "site_url",
     "vps_hote": "vps_host",
 }
+# The sizes before kiln 0.4.10, named after the fire of the kiln.
+SIZES: Mapping[str, str] = {"spark": "tiny", "ember": "small", "flame": "medium", "blaze": "large"}
 ANSWER_VALUES: Mapping[str, Mapping[str, str]] = {
+    "size": SIZES,
     "backend": {"aucun": "none"},
     "frontend": {"aucun": "none"},
     "deploy": {"aucun": "none"},
@@ -216,6 +220,16 @@ def answers(values: Mapping[str, object]) -> dict[str, object]:
         old_values = ANSWER_VALUES.get(name, {})
         renamed[name] = old_values.get(value, value) if isinstance(value, str) else value
     return renamed
+
+
+def fire_size(values: Mapping[str, object]) -> dict[str, object]:
+    """Answers with the size under its name before kiln 0.4.10, to render a template of that
+    time (`small` → `ember`)."""
+    fire = {new: old for old, new in SIZES.items()}
+    size = values.get("size")
+    return (
+        {**values, "size": fire[size]} if isinstance(size, str) and size in fire else dict(values)
+    )
 
 
 def legacy_answers(values: Mapping[str, object]) -> dict[str, object]:

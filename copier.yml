@@ -10,18 +10,17 @@ _min_copier_version: "9.4"
 _skip_if_exists:
   - CLAUDE.md
 
-# First question: the size of the project, four notches named after the fire of the kiln. It
-# chooses how much ceremony the project gets (rules, CI, containers), and changes later with
-# `kiln set size=…`.
+# First question: the size of the project, four notches from tiny to large. It chooses how much
+# ceremony the project gets (rules, CI, containers), and changes later with `kiln set size=…`.
 size:
   type: str
-  help: How hot does this one burn?
+  help: How big are the stakes?
   choices:
-    "Spark: a script, a personal tool, a one-off analysis": spark
-    "Ember: a small app or site, one or two people, low stakes": ember
-    "Flame: an app in production, real users, several contributors": flame
-    "Blaze: several teams or services, high stakes": blaze
-  default: ember
+    "Tiny: a script, a personal tool, a one-off analysis": tiny
+    "Small: a small app or site, one or two people, low stakes": small
+    "Medium: an app in production, real users, several contributors": medium
+    "Large: several teams or services, high stakes": large
+  default: small
 
 name:
   type: str
@@ -176,7 +175,7 @@ frontend:
 podman:
   type: bool
   help: Podman containers (Containerfile, compose.yaml, PostgreSQL)? Later with `kiln set podman=true`.
-  default: "{{ size in ['flame', 'blaze'] and not (backend in ['cli', 'java'] and frontend == 'none') }}"
+  default: "{{ size in ['medium', 'large'] and not (backend in ['cli', 'java'] and frontend == 'none') }}"
   # A command-line tool, or a Java backend without a framework, has no server to put in a
   # container yet; its front, if any, does.
   validator: >-

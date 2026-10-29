@@ -118,7 +118,7 @@ rules go to Django and Nuxt first.
 
 Every repo also gets uv, pnpm and podman (never pip, npm or docker), CI that calls kiln's
 reusable workflows, protected `main` and `develop` branches, a `docs/backlog/` of typed tickets,
-and a size (`spark`, `ember`, `flame` or `blaze`) that sets how much process it carries. A
+and a size (`tiny`, `small`, `medium` or `large`) that sets how much process it carries. A
 Django app can ship to a hardened VPS (Caddy, read-only containers, automatic rollback, tested
 backups), a Nuxt front to Vercel.
 

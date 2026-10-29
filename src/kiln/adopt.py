@@ -47,7 +47,7 @@ from kiln.update import leave_protected_branch
 from kiln.versions import follows_candidates
 
 BACKLOG_DIR = Path("docs") / "backlog"
-DEFAULT_SIZE = "ember"
+DEFAULT_SIZE = "small"
 GITIGNORE = ".gitignore"
 COMPOSE_FILE = "compose.yaml"
 # The project type only preselects the stack: the one that fits what was found.

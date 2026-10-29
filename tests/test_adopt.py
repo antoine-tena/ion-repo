@@ -40,7 +40,7 @@ def answers(root: Path) -> dict[str, Any]:
 
 
 def test_adoption_lays_what_kiln_new_writes_and_keeps_the_repo_s_files(repo: Path) -> None:
-    adopt.adopt_project(repo, size="flame", template=TEMPLATE_DIR)
+    adopt.adopt_project(repo, size="medium", template=TEMPLATE_DIR)
 
     for laid in (
         "CLAUDE.md",
@@ -51,7 +51,7 @@ def test_adoption_lays_what_kiln_new_writes_and_keeps_the_repo_s_files(repo: Pat
         "docs/backlog/backlog.md",
     ):
         assert (repo / laid).is_file(), laid
-    assert 'size = "flame"' in (repo / "charter.toml").read_text()
+    assert 'size = "medium"' in (repo / "charter.toml").read_text()
     assert (repo / "README.md").read_text() == "# Mon outil\n"
     assert (repo / "outil.py").read_text() == "print('ok')\n"
     gitignore = (repo / ".gitignore").read_text()

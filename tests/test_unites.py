@@ -415,7 +415,7 @@ def test_adopted_repo_stack_comes_from_its_files(tmp_path: Path) -> None:
 
 def test_adopted_repo_declares_its_size_in_its_charter(tmp_path: Path) -> None:
     (tmp_path / "charte.toml").write_text('envergure = "flame"\nexclus = []\n')
-    assert answers_if_any(tmp_path) == {"size": "flame"}
+    assert answers_if_any(tmp_path) == {"size": "medium"}
 
 
 def test_logo_draws_two_pixel_rows_per_line(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -431,7 +431,7 @@ def test_project_summary_names_size_and_frameworks(tmp_path: Path) -> None:
         "nom: atelier\nenvergure: ember\nbackend: fastapi\nfrontend: aucun\npodman: true\n"
     )
 
-    assert _project_summary(tmp_path) == "atelier · ember · fastapi, podman"
+    assert _project_summary(tmp_path) == "atelier · small · fastapi, podman"
 
 
 def test_durations_read_the_french_way() -> None:
