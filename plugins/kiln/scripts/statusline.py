@@ -779,8 +779,10 @@ def collect_session(status: Status, d: dict, main: str) -> None:
     if pc.get("hit_ratio") is not None:
         ratio = 100 * float(pc["hit_ratio"])
         warm = pc.get("warm", True)
-        level = 1 if warm and ratio < 70 else 0  # cold: the context's figure turns red
-        status.usage.append([Item(f"cache {ratio:.0f}%" if warm else "cache cold", level)])
+        if not warm:  # cold: the context's figure turns red
+            status.usage.append([Item("cache cold")])
+        elif ratio < 70:  # a healthy cache is not shown
+            status.usage.append([Item(f"cache {ratio:.0f}%", 1)])
     c = d.get("cost") or {}
     if c:
         mins = int((c.get("total_duration_ms") or 0) / 60000)
