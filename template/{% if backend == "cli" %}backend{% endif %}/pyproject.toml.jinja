@@ -1,6 +1,9 @@
 {%- set package = name | replace('-', '_') -%}
 [project]
-name = "{{ name }}"
+{%- if pypi_name | default('') %}
+# The name on PyPI (`.github/workflows/pypi.yml`); the command stays `{{ name }}`.
+{%- endif %}
+name = "{{ pypi_name | default('', true) or name }}"
 version = "0.1.0"
 description = {{ description | tojson }}
 requires-python = ">=3.14"
