@@ -57,10 +57,13 @@ jobs:
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: uv publish --trusted-publishing automatic dist/kiln_cli-*
-      # The token is scoped to kiln-cli: keramos-kiln goes through trusted publishing (its
-      # publisher declared on PyPI for this workflow and the `pypi` environment).
+      # PYPI_TOKEN is scoped to kiln-cli: keramos-kiln has the Keramos family's token
+      # (`KERAMOS_PYPI_TOKEN`, "Entire account" until the project exists), otherwise trusted
+      # publishing if PyPI trusts this workflow.
       - name: Publish keramos-kiln
-        run: uv publish --trusted-publishing always dist/keramos_kiln-*
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.KERAMOS_PYPI_TOKEN }}
+        run: uv publish --trusted-publishing automatic dist/keramos_kiln-*
 
   github-release:
     needs: publish
