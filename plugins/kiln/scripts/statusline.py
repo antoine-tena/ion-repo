@@ -49,6 +49,9 @@ LEGACY_STYLES = {
     "aucune": "none",
     "perso": "custom",
 }
+# tokens of every transcript of the machine, summed in the background (lifetime_tokens.py)
+LIFETIME_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "lifetime_tokens.py")
+LIFETIME_TTL = 300
 TIMES = "\u00d7"  # multiplication sign, between a name and a count (wt, br)
 INTEGRATION = ("main", "master", "develop")
 DAYS = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
@@ -233,6 +236,14 @@ def compaction_point(window: int, project: str, model: str) -> int:
             own = ((settings.get("modelSettings") or {}).get(model) or {}).get("autoCompactWindow")
             point = window_tokens(own or settings.get("autoCompactWindow"))
     return min(point, window) if point and window else point or window
+
+
+def human_tokens(n: int) -> str:
+    """1234 → 1.2k, 9977454502 → 10.0G."""
+    for scale, unit in ((1e9, "G"), (1e6, "M"), (1e3, "k")):
+        if n >= scale:
+            return f"{n / scale:.1f}{unit}"
+    return str(n)
 
 
 def plural(n: int, word: str) -> str:
@@ -780,6 +791,10 @@ def collect_session(status: Status, d: dict, main: str) -> None:
             Item(f"+{c.get('total_lines_added', 0)}/-{c.get('total_lines_removed', 0)}", short="")
         )
         status.usage.append(usage)
+    lifetime_cmd = f"python3 {shlex.quote(LIFETIME_SCRIPT)}"
+    lifetime = cached("lifetime-tokens", LIFETIME_TTL, lifetime_cmd, CACHE)
+    if lifetime.isdigit():
+        status.usage.append([Item(f"Σ {human_tokens(int(lifetime))} tok", short="")])
 
 
 # ---------------------------------------------------------------------------- rendering
