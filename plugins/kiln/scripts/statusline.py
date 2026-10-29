@@ -701,7 +701,7 @@ def collect_session(status: Status, d: dict, main: str) -> None:
         fill = min(100.0, 100 * context_tokens / point)
         cold = (d.get("prompt_cache") or {}).get("warm") is False
         level = 3 if cold else context_level(context_tokens)
-        amount = f"{context_tokens:,}".replace(",", "\u202f")  # exact count, 123 456
+        amount = f"{context_tokens / 1000:.0f}k"
         status.session.append([Item("ctx", level, gauge=fill, amount=amount)])
     elif cw.get("used_percentage") is not None:
         pct = float(cw["used_percentage"])
@@ -795,8 +795,9 @@ def collect_session(status: Status, d: dict, main: str) -> None:
     lifetime = cached("lifetime-tokens", LIFETIME_TTL, lifetime_cmd, CACHE)
     if lifetime.isdigit():
         # first of the usage groups: those at the end drop first when room runs out
-        total = human_tokens(int(lifetime))
-        status.usage.insert(0, [Item(f"Σ {total} tok", short=f"Σ{total}")])
+        exact = f"{int(lifetime):,}".replace(",", "\u202f")  # 9 977 454 502
+        short = human_tokens(int(lifetime))
+        status.usage.insert(0, [Item(f"Σ {exact} tok", short=f"Σ{short}")])
 
 
 # ---------------------------------------------------------------------------- rendering
