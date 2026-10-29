@@ -139,9 +139,11 @@ def run(*command: str, cwd: Path | None = None) -> subprocess.CompletedProcess[s
 
 # --- Tool: kiln installed by uv, from PyPI, from GitHub (commit) or from a directory (checkout) ---
 
-# uv tools that carry kiln: `kiln-cli` (PyPI package name), `kiln` (before PyPI).
-TOOL_NAMES = ("kiln-cli", "kiln")
+# uv tools that carry kiln: `keramos-kiln` (PyPI package name), `kiln-cli` (its first name, still
+# published beside it for the testers), `kiln` (before PyPI).
+TOOL_NAMES = ("keramos-kiln", "kiln-cli", "kiln")
 PYPI_NAME = TOOL_NAMES[0]
+LEGACY_PYPI_NAME = TOOL_NAMES[1]
 
 
 def installed_kiln() -> tuple[str, str] | None:
@@ -152,7 +154,8 @@ def installed_kiln() -> tuple[str, str] | None:
     if not tool_dir:
         return None
     for name in TOOL_NAMES:
-        for metadata in Path(tool_dir, name).glob("lib/python*/site-packages/kiln*.dist-info"):
+        # `kiln_cli-…`, `keramos_kiln-…` or `kiln-…`: no dependency of kiln has kiln in its name.
+        for metadata in Path(tool_dir, name).glob("lib/python*/site-packages/*kiln*.dist-info"):
             direct_url = metadata / "direct_url.json"
             if not direct_url.exists():
                 version = next(
@@ -182,8 +185,16 @@ def recorded_build(site_packages: Path) -> str:
         return ""
 
 
+def installed_pypi_name() -> str:
+    """The PyPI name the tool was installed under, kept by its upgrade: a `kiln-cli` tool stays
+    `kiln-cli`, rather than a second tool carrying the same commands."""
+    tool_dir = run("uv", "tool", "dir").stdout.strip()
+    has_legacy_name = bool(tool_dir) and Path(tool_dir, LEGACY_PYPI_NAME).is_dir()
+    return LEGACY_PYPI_NAME if has_legacy_name else PYPI_NAME
+
+
 def has_legacy_tool() -> bool:
-    """The `kiln` uv tool from before PyPI: to remove before installing `kiln-cli`, which
+    """The `kiln` uv tool from before PyPI: to remove before installing `keramos-kiln`, which
     provides the same command."""
     tool_dir = run("uv", "tool", "dir").stdout.strip()
     return bool(tool_dir) and Path(tool_dir, "kiln").is_dir()
@@ -265,7 +276,7 @@ def tool_update_command(install: tuple[str, str] | None, tag: str) -> str:
     # PyPI only has promoted releases: a candidate (internal channel) comes from GitHub.
     if final and (install is None or install[0] == "pypi"):
         version = tag.removeprefix("v")
-        return f'{legacy}uv tool install --force "{PYPI_NAME}=={version}" && {plugins}'
+        return f'{legacy}uv tool install --force "{installed_pypi_name()}=={version}" && {plugins}'
     # A copy of a checkout is replaced by the release itself: kiln's own work runs with
     # `uv run kiln` in a worktree, never through the installed tool.
     return f'{legacy}uv tool install --force "git+{KILN_GIT_URL}@{tag}" && {plugins}'
@@ -633,8 +644,9 @@ def tool_question(state: reminders.State, current: str | None, tag: str) -> str:
         choices += ', "Uninstall kiln"'
         extra += (
             ' The question text starts with "You have been saying no for a while: do you want '
-            'to uninstall kiln?". If "Uninstall kiln": `uv tool uninstall kiln-cli && claude '
-            f"plugin uninstall kiln@kiln`, then {answer_command('never', TOOL_KEY)}."
+            'to uninstall kiln?". If "Uninstall kiln": '
+            f"`uv tool uninstall {installed_pypi_name()} && claude plugin uninstall kiln@kiln`, "
+            f"then {answer_command('never', TOOL_KEY)}."
         )
     return (
         "The kiln tool installed on this machine is behind the latest release. Before anything "

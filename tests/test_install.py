@@ -33,7 +33,7 @@ def test_a_bare_machine_gets_the_command_the_catalogue_and_the_plugin(
     install.install_machine()
 
     assert machine == [
-        ["uv", "tool", "install", "kiln-cli"],
+        ["uv", "tool", "install", "keramos-kiln"],
         ["claude", "plugin", "marketplace", "add", "antoine-tena/kiln"],
         ["claude", "plugin", "install", "kiln@kiln", "--scope", "user"],
     ]
