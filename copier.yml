@@ -304,6 +304,14 @@ update_bot:
   default: "off"
   when: "{{ (update_bot | default('off')) != 'off' }}"
 
+# Heavy files the repo keeps on purpose (a site's film, a model's weights), by their exact path
+# from the root: pre-commit's 1 MB ceiling lets them through, and only them. Set with
+# `kiln set large_files=frontend/public/film.mp4,…`, never asked; kept in the answers when set.
+large_files:
+  type: yaml
+  default: "[]"
+  when: "{{ large_files | length > 0 }}"
+
 # Claude Code's status line (kiln plugin): settings set as `git config statusline.*` by
 # `kiln install`, `kiln new` and `kiln set`, never by hand.
 statusline_ci:

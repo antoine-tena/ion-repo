@@ -79,6 +79,7 @@ is re-rendered, on a work branch: `chore/kiln-set`, opened by kiln on `main`, `m
 | `ci_runner` | Where the CI of a release branch runs: `local` (`kiln ci`, no GitHub minutes, a private repo's default) or `github` (free for a public repo). |
 | `update_bot` | kiln-bot: `off` (the default: a private repo pays its GitHub minutes), `weekly` or `monthly`; see [kiln-bot](#kiln-bot). |
 | `statusline_ci`, `prod_health_url` | Claude Code's status line: CI state, and production's health probe. |
+| `large_files` | Heavy files the repo keeps on purpose (a site's film), by their exact path from the root, as a list or `a,b`: pre-commit's 1 MB ceiling (`check-added-large-files`) lets them through, and only them. |
 
 ## What a generated repo holds
 

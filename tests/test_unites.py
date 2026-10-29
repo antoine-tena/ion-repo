@@ -253,6 +253,8 @@ def test_team_accepts_a_comma_list() -> None:
     assert parse_assignments(["team=a, b", "podman=true"]) == {"team": ["a", "b"], "podman": True}
     # Names of before kiln 0.4.0 still work.
     assert parse_assignments(["equipe=a", "frontend=aucun"]) == {"team": ["a"], "frontend": "none"}
+    films = {"large_files": ["public/film.mp4", "public/film.webm"]}
+    assert parse_assignments(["large_files=public/film.mp4,public/film.webm"]) == films
 
 
 def test_sentence_with_a_colon_stays_text() -> None:

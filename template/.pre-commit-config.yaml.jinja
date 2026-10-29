@@ -19,6 +19,10 @@ repos:
         args: [--branch, main, --branch, develop]
       - id: check-added-large-files
         args: [--maxkb=1024]
+{%- if large_files | default([]) %}
+        # Heavy files kept on purpose, by their exact path: `kiln set large_files=…`.
+        exclude: '^({{ large_files | map('replace', '.', '\\.') | join('|') }})$'
+{%- endif %}
       - id: check-merge-conflict
       - id: detect-private-key
       - id: end-of-file-fixer
