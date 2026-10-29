@@ -223,11 +223,12 @@ def kept_of(root: Path) -> list[str]:
 
 
 def answers_if_any(root: Path) -> dict[str, object]:
-    """Copier answers; for an adopted repo, the size declared in its charter."""
+    """Copier answers; for an adopted repo, the size declared in its charter (under today's name:
+    `ember` reads `small`)."""
     if (root / ANSWERS_FILE).exists():
         return read_answers(root)
     size = charter.load(root).get("size")
-    return {"size": size} if size else {}
+    return renames.answers({"size": size}) if size else {}
 
 
 def stack_from_answers(answers: Mapping[str, object]) -> Stack:

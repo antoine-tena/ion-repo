@@ -18,6 +18,8 @@ from kiln.versions import release_version
 DIFF_LINES = 40
 # First release whose template speaks English (answer keys included).
 ENGLISH_TEMPLATE = Version("0.4.0")
+# First release whose sizes are plain words (`small`, not `ember`), its candidates included.
+PLAIN_SIZES = Version("0.4.10rc1")
 
 
 def frozen_files(root: Path) -> list[str]:
@@ -54,10 +56,13 @@ def report_frozen_drift(root: Path, source: str, previous: str, current: str) ->
 
 
 def answers_for(ref: str, answers: dict[str, object]) -> dict[str, object]:
-    """The answers as the template at `ref` names them: French before kiln 0.4.0."""
+    """The answers as the template at `ref` names them: French before kiln 0.4.0, the sizes
+    after the fire before 0.4.10."""
     version = release_version(ref)
     if version is not None and version < ENGLISH_TEMPLATE:
         return renames.legacy_answers(answers)
+    if version is not None and version < PLAIN_SIZES:
+        return renames.fire_size(answers)
     return answers
 
 

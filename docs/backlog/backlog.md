@@ -1609,14 +1609,14 @@ in CI minutes (T-59).
 
 Ask only what kiln cannot guess and what really changes the repo, worded the way a senior
 engineer would ask a beginner: who uses it, what happens if it breaks, never "Django or
-FastAPI?". Today: what you build, the size ("How hot does this one burn?"), the language; the
+FastAPI?". Today: what you build, the size ("How big are the stakes?"), the language; the
 description defaults to `"{{ title }}."`, so `CLAUDE.md`, the README and the north star start
 empty for Claude.
 - [ ] "What is it for, in one sentence?" (free text, Enter skips): fills `description`, and the
   north star when `--goal` is not given. The most useful line for Claude per keystroke.
 - [ ] The size deduced from three concrete questions instead of the four notches: who uses it
   (me / people I know / the public), who works on it (alone / two or three / several teams), if
-  it breaks (nothing serious / annoying / money or data lost); kiln then says "→ Flame".
+  it breaks (nothing serious / annoying / money or data lost); kiln then says "→ medium".
   `--size` still answers directly.
 - [ ] Open source or private: chooses `ci_runner` (GitHub, free for a public repo, else `kiln
   ci`), the licence, the contributor files; today deduced from the visibility, private by
@@ -2109,7 +2109,7 @@ From the kiln score ideas of 24 October 2026:
   in the last 90 days, a deployment, several services), never imposed: `kiln set profile=…`.
 - [ ] Moving to a bigger profile applies the new rules as ratchets on the existing code, never a
   wall of errors.
-- [ ] The sizes of `kiln new` (spark, ember, flame, blaze) map onto the profiles.
+- [ ] The sizes of `kiln new` (tiny, small, medium, large) map onto the profiles.
 
 From the kiln score ideas of 24 October 2026:
 - [ ] **A18** Team facts from history: contributors in the last 90 days, commit rhythm, age, last

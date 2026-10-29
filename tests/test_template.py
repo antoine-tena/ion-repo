@@ -136,7 +136,7 @@ def test_stack_advice_follows_project_type(tmp_path: Path) -> None:
     assert (answers["backend"], answers["frontend"]) == ("data", "streamlit")
 
 
-@pytest.mark.parametrize(("size", "has_podman"), [("ember", False), ("flame", True)])
+@pytest.mark.parametrize(("size", "has_podman"), [("small", False), ("medium", True)])
 def test_size_sets_podman_default(tmp_path: Path, size: str, has_podman: bool) -> None:
     project_dir = generate(tmp_path / "demo", size=size)
 
@@ -259,7 +259,7 @@ def test_tool_project_gets_a_command_line_package(tmp_path: Path) -> None:
     # A long description must not overflow into the code (E501 at the first commit).
     long_description = "A tool whose description goes well beyond a hundred characters. " * 3
     project_dir = generate(
-        tmp_path / "demo", project_type="cli", size="flame", description=long_description
+        tmp_path / "demo", project_type="cli", size="medium", description=long_description
     )
 
     answers = yaml.safe_load((project_dir / ".copier-answers.yml").read_text())
@@ -440,15 +440,15 @@ def rule_files(project_dir: Path) -> set[str]:
 
 
 def test_the_size_chooses_the_rules(tmp_path: Path) -> None:
-    spark = generate(tmp_path / "spark", size="spark", backend="cli", frontend="none")
-    blaze = generate(tmp_path / "blaze", size="blaze", podman=True)
+    tiny = generate(tmp_path / "tiny", size="tiny", backend="cli", frontend="none")
+    large = generate(tmp_path / "large", size="large", podman=True)
 
-    assert rule_files(spark) == {"project.md", "charter.md", "python.md", "cli.md"}
-    assert rule_files(blaze) >= {"django.md", "nuxt.md", "production.md", "security.md"}
-    django_rules = (blaze / ".claude/rules/kiln/django.md").read_text()
+    assert rule_files(tiny) == {"project.md", "charter.md", "python.md", "cli.md"}
+    assert rule_files(large) >= {"django.md", "nuxt.md", "production.md", "security.md"}
+    django_rules = (large / ".claude/rules/kiln/django.md").read_text()
     assert "[RLS]" in django_rules and "[OUTBOX]" in django_rules
-    ember_django = generate(tmp_path / "ember", size="ember")
-    assert "[OUTBOX]" not in (ember_django / ".claude/rules/kiln/django.md").read_text()
+    small_django = generate(tmp_path / "small", size="small")
+    assert "[OUTBOX]" not in (small_django / ".claude/rules/kiln/django.md").read_text()
 
 
 def test_rules_load_by_path_and_claude_md_stays_short(tmp_path: Path) -> None:

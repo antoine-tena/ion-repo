@@ -66,7 +66,7 @@ is re-rendered, on a work branch: `chore/kiln-set`, opened by kiln on `main`, `m
 | Key | What it sets |
 |---|---|
 | `name`, `title`, `description` | Short name (packages' prefix), displayed title, one sentence. |
-| `project_type`, `size` | What you build (`app`, `api`, `site`, `dashboard`, `analysis`, `cli`) and how hot it burns (`spark`, `ember`, `flame`, `blaze`): the stack and the rules follow. |
+| `project_type`, `size` | What you build (`app`, `api`, `site`, `dashboard`, `analysis`, `cli`) and how big the stakes are (`tiny`, `small`, `medium`, `large`): the stack and the rules follow. |
 | `backend`, `frontend`, `podman` | The stack (see [What you get](../README.md#what-you-get)) and podman containers. |
 | `language`, `language_comments`, `language_commits`, `language_docs`, `language_tickets`, `language_ui` | The team's language, and per use when they differ. |
 | `owner`, `team` | GitHub account owning the repo, and the team's logins (reviewers). |
@@ -93,7 +93,7 @@ is re-rendered, on a work branch: `chore/kiln-set`, opened by kiln on `main`, `m
   has locked its dependencies; a front with no backend still lacks a test). Dependabot for each
   ecosystem, weekly, after a 7-day cooldown; container images on Debian 13 pinned by digest;
   compose services read-only, every capability dropped, with health checks.
-- **A project size** (`spark` → `ember` → `flame` → `blaze`) that tunes defaults: a weekend
+- **A project size** (`tiny` → `small` → `medium` → `large`) that tunes defaults: a weekend
   script doesn't get the same ceremony as a multi-team service.
 - **Agent-ready instructions:** kiln's rules for Claude in `.claude/rules/kiln/`, with stable
   rule IDs the `charter` engine can check; each stack's rules load only when Claude touches its

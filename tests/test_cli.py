@@ -134,6 +134,15 @@ def test_the_names_of_kiln_0_3_still_work_with_a_warning(
     assert "is now" in capsys.readouterr().err
 
 
+def test_a_size_named_after_the_fire_still_works_with_a_warning(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    arguments = cli.build_parser().parse_args(["adopt", "--size", "ember"])
+
+    assert arguments.size == "small"
+    assert "`ember` is now `small`" in capsys.readouterr().err
+
+
 def test_an_option_of_another_command_is_left_alone() -> None:
     assert cli.modernize(["update", "--statut"]) == ["update", "--statut"]
 

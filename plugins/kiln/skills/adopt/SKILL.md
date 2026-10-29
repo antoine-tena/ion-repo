@@ -9,8 +9,8 @@ Talk to the user in their language.
    skill `/kiln:update`); otherwise say so and stop. A `charter.toml` without answers is a repo
    adopted before kiln 0.4.6: `kiln adopt` completes it. The `kiln` command is installed
    (`kiln --version`); otherwise give `uv tool install kiln-cli` and stop.
-2. Ask for the size with the AskUserQuestion tool: `spark` (script, personal tool), `ember` (small
-   app, low stakes, the default), `flame` (production, real users), `blaze` (several teams, high
+2. Ask for the size with the AskUserQuestion tool: `tiny` (script, personal tool), `small` (small
+   app, low stakes, the default), `medium` (production, real users), `large` (several teams, high
    stakes).
 3. Branch `chore/kiln-adopt` in a worktree (skill `/kiln:worktree`), then
    `kiln adopt --size <size>` in that worktree. It renders the template with the stack it finds

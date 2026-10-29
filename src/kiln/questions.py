@@ -36,14 +36,14 @@ PROJECT_TYPE = Question(
 )
 SIZE = Question(
     "size",
-    "How hot does this one burn?",
+    "How big are the stakes?",
     (
-        ("Spark: a script, a personal tool, a one-off analysis", "spark"),
-        ("Ember: a small app or site, one or two people, low stakes", "ember"),
-        ("Flame: an app in production, real users, several contributors", "flame"),
-        ("Blaze: several teams or services, high stakes", "blaze"),
+        ("Tiny: a script, a personal tool, a one-off analysis", "tiny"),
+        ("Small: a small app or site, one or two people, low stakes", "small"),
+        ("Medium: an app in production, real users, several contributors", "medium"),
+        ("Large: several teams or services, high stakes", "large"),
     ),
-    "ember",
+    "small",
 )
 LANGUAGE = Question(
     "language", "Language of the team?", (("English", "en"), ("Français", "fr")), "en"
