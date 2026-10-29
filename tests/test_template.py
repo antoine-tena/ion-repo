@@ -497,6 +497,23 @@ def test_no_deployment_cites_no_deploy_workflow(tmp_path: Path) -> None:
     assert not (project_dir / "scripts").exists()
 
 
+def test_large_files_kept_on_purpose_pass_the_size_ceiling(tmp_path: Path) -> None:
+    default = generate(tmp_path / "default")
+    hooks = yaml.safe_load((default / ".pre-commit-config.yaml").read_text())["repos"][0]["hooks"]
+    large_files = next(hook for hook in hooks if hook["id"] == "check-added-large-files")
+    assert "exclude" not in large_files
+    assert "large_files" not in (default / ".copier-answers.yml").read_text()
+
+    films = ["frontend/public/film.mp4", "frontend/public/film.webm"]
+    project = generate(tmp_path / "films", large_files=films)
+    hooks = yaml.safe_load((project / ".pre-commit-config.yaml").read_text())["repos"][0]["hooks"]
+    pattern = next(hook for hook in hooks if hook["id"] == "check-added-large-files")["exclude"]
+    assert all(re.match(pattern, film) for film in films)
+    assert not re.match(pattern, "frontend/public/filmXmp4")
+    assert not re.match(pattern, "frontend/public/other.mp4")
+    assert "large_files:" in (project / ".copier-answers.yml").read_text()
+
+
 @pytest.mark.parametrize(("bot", "cron"), [("weekly", "0 6 * * 1"), ("monthly", "0 6 1 * *")])
 def test_kiln_bot_runs_on_its_schedule_and_is_off_by_default(
     tmp_path: Path, bot: str, cron: str

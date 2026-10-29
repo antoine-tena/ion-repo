@@ -52,8 +52,9 @@ SETTABLE_KEYS = (
     "ci_runner",
     "update_bot",
     "prod_health_url",
+    "large_files",
 )
-LIST_KEYS = frozenset({"team"})
+LIST_KEYS = frozenset({"team", "large_files"})
 # The demo of a new project's front (a backend health badge, its typed client): it leans on the
 # template's constants and generated API types, which a front already built has replaced.
 STARTER_FILES = (
@@ -77,7 +78,8 @@ def show_settings(root: Path) -> None:
 
 
 def parse_assignments(assignments: list[str]) -> dict[str, object]:
-    """`key=value` read as YAML (`true`, `[a, b]`); a team can be written `a,b`."""
+    """`key=value` read as YAML (`true`, `[a, b]`); a list (team, large files) can be written
+    `a,b`."""
     parsed: dict[str, object] = {}
     for assignment in assignments:
         old_key, separator, raw_value = assignment.partition("=")
@@ -85,7 +87,7 @@ def parse_assignments(assignments: list[str]) -> dict[str, object]:
         if not separator or key not in SETTABLE_KEYS:
             raise KilnError(f'"{assignment}": expected key=value, keys: {", ".join(SETTABLE_KEYS)}')
         if key in LIST_KEYS and not raw_value.startswith("["):
-            parsed[key] = [login.strip() for login in raw_value.split(",") if login.strip()]
+            parsed[key] = [entry.strip() for entry in raw_value.split(",") if entry.strip()]
         else:
             parsed[key] = _scalar(raw_value)
         if key in PER_USE_LANGUAGES:
