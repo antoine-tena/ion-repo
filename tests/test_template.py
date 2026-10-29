@@ -444,6 +444,13 @@ def test_dependabot_watches_each_folder_of_the_project(
             ), (update["package-ecosystem"], folder)
 
 
+def test_a_solo_project_has_no_codeowners(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", team=["antoine-tena"])
+
+    assert not (project_dir / ".github/CODEOWNERS").exists()
+    assert "## Team" in (project_dir / "README.md").read_text()
+
+
 def test_a_project_without_owner_has_no_codeowners_nor_team(tmp_path: Path) -> None:
     project_dir = tmp_path / "demo"
     copier.run_copy(

@@ -92,7 +92,8 @@ language_ui:
   when: "{{ language_custom }}"
 
 # kiln fills the owner and the team in (machine settings, else the account gh is logged in
-# with); empty, the project has neither CODEOWNERS nor a team in its README.
+# with); empty, the project has no team in its README. CODEOWNERS only from two people: alone,
+# it would only ask the owner to review the bots' pull requests.
 owner:
   type: str
   help: GitHub account or organisation that owns the repository (empty if none)
