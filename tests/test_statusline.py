@@ -191,6 +191,21 @@ def test_no_claude_code_leaves_the_status_line_alone(
     assert not (tmp_path / ".claude").exists()
 
 
+def test_overview_finds_the_repos_two_folders_down(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    script = load_script()
+    for repo in ("annski", "family/kiln/kiln", "family/seal/seal", "_archive/old", "a/b/c/deep"):
+        (tmp_path / repo / ".git").mkdir(parents=True)
+    monkeypatch.setattr(
+        script, "git_state", lambda path: Path(path).relative_to(tmp_path).as_posix()
+    )
+
+    script.scan(str(tmp_path))
+
+    assert json.loads(capsys.readouterr().out) == ["annski", "family/kiln/kiln", "family/seal/seal"]
+
+
 def test_secret_scan_ignores_rendered_examples(tmp_path: Path) -> None:
     script = load_script()
     for name in ("template/.env.example.jinja", ".env.sample", "backend/.env", ".stripe/token"):

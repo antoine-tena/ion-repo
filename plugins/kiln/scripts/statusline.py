@@ -138,7 +138,8 @@ def git_state(path: str) -> dict[str, str | int]:
 
 
 def scan(root: str) -> None:
-    """Prints the git state of each repo under `root` (except `_*` folders and node_modules)."""
+    """Prints the git state of each repo under `root`, down to three folders (a family folder with
+    one folder per tool), except `_*` folders and node_modules."""
     found = []
     for dirpath, dirs, files in os.walk(root):
         if (".git" in dirs or ".git" in files) and dirpath != root:
@@ -146,7 +147,7 @@ def scan(root: str) -> None:
             dirs.clear()
             continue
         depth = dirpath[len(root) :].count(os.sep)
-        dirs[:] = [x for x in dirs if not x.startswith("_") and x != "node_modules" and depth < 2]
+        dirs[:] = [x for x in dirs if not x.startswith("_") and x != "node_modules" and depth < 3]
     found.sort(key=lambda p: os.path.basename(p).lstrip(".").lower())
     print(json.dumps([git_state(p) for p in found]))
 
