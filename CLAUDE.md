@@ -58,7 +58,7 @@ folder or a module.
   old names `base`, `pile-django`, `pile-nuxt`, `vps-podman`); `kiln/` (skills `worktree`,
   `merge`, `release`, `cleanup`, `review` (a branch's commits and diff before the merge, the whole
   repo before a release), `backlog`, `update`, `adopt`, `modernize` (roadmap gaps closed one by
-  one), `report` (a kiln defect raised as an issue or a PR), `token` (a service's token in
+  one), `report` (a kiln defect raised as an issue or a PR), `resize` (a repo moved up or down kiln's sizes), `token` (a service's token in
   `.<service>/`), `contribution` (an outside contributor's PR), `good-first-issues`, `pause` (the session's place kept, `kiln pause`); `hooks/`
   (including `reminders.py`, the spacing of update questions, `paused.py`, the sessions `kiln pause` kept, listed at start, and `first_prompt.py`, kiln's logo
   and what's new above the prompt); `scripts/statusline.py`, `scripts/lifetime_tokens.py`, the tokens of every transcript), `django/`, `nuxt/`, `vps/`,
