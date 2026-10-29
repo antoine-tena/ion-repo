@@ -67,7 +67,7 @@ folder or a module.
 - `.github/workflows/`: reusable workflows called by generated repos (they take their actions
   and the `charter` command at their own commit, `job.workflow_sha`), plus kiln's own
   (`kiln.yml` checks, `kiln score` at 100 and zizmor included, its false positives explained in
-  `.github/zizmor.yml`; `pypi.yml` publishes the `kiln-cli` package at the promoted tag, with
+  `.github/zizmor.yml`; `pypi.yml` publishes `kiln-cli` and `keramos-kiln` at the promoted tag, with
   build provenance, attached to the GitHub Release; `scorecard.yml` the weekly OpenSSF Scorecard);
   `actions/`: composite actions (`charter`, its old name `charte`,
   `services`); `.github/dependabot.yml`: proposed updates (uv, the actions of the workflows and

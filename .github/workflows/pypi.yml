@@ -38,6 +38,14 @@ jobs:
           fi
       - name: Build
         run: uv build
+      # The same code under the Keramos family's name, `keramos-kiln`, which replaces kiln-cli
+      # once the testers have moved: only the distribution's name differs.
+      - name: Build keramos-kiln
+        run: |
+          sed -i 's/^name = "kiln-cli"$/name = "keramos-kiln"/' pyproject.toml
+          grep -q '^name = "keramos-kiln"$' pyproject.toml
+          uv build
+          git checkout -- pyproject.toml
       - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: dist/*
@@ -45,10 +53,14 @@ jobs:
         with:
           name: dist
           path: dist/
-      - name: Publish
+      - name: Publish kiln-cli
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: uv publish --trusted-publishing automatic
+        run: uv publish --trusted-publishing automatic dist/kiln_cli-*
+      # The token is scoped to kiln-cli: keramos-kiln goes through trusted publishing (its
+      # publisher declared on PyPI for this workflow and the `pypi` environment).
+      - name: Publish keramos-kiln
+        run: uv publish --trusted-publishing always dist/keramos_kiln-*
 
   github-release:
     needs: publish

@@ -49,7 +49,7 @@ def test_the_lock_gives_every_runtime_dependency() -> None:
     [
         ("/opt/homebrew/Cellar/kiln/0.4.4/libexec", "v0.4.5", "brew upgrade kiln"),
         ("/opt/homebrew/Cellar/kiln/0.4.4/libexec", "v0.4.5-rc.1", "git+"),
-        ("/home/me/.local/share/uv/tools/kiln-cli", "v0.4.5", "kiln-cli==0.4.5"),
+        ("/home/me/.local/share/uv/tools/keramos-kiln", "v0.4.5", "keramos-kiln==0.4.5"),
     ],
 )
 def test_a_tool_from_the_tap_upgrades_through_brew(
@@ -59,3 +59,21 @@ def test_a_tool_from_the_tap_upgrades_through_brew(
     monkeypatch.setattr(versions, "_installed_distribution", lambda: None)
 
     assert command in versions.upgrade_command(tag)
+
+
+class FakeDistribution:
+    def __init__(self, name: str) -> None:
+        self.metadata = {"Name": name}
+
+    def read_text(self, filename: str) -> str | None:
+        return None
+
+
+@pytest.mark.parametrize("name", ["kiln-cli", "keramos-kiln"])
+def test_a_pypi_tool_upgrades_under_the_name_it_was_installed_with(
+    monkeypatch: pytest.MonkeyPatch, name: str
+) -> None:
+    monkeypatch.setattr(sys, "prefix", f"/home/me/.local/share/uv/tools/{name}")
+    monkeypatch.setattr(versions, "_installed_distribution", lambda: FakeDistribution(name))
+
+    assert versions.upgrade_command("v0.4.5") == f'uv tool install --force "{name}==0.4.5"'

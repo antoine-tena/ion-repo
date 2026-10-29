@@ -48,7 +48,7 @@ pace set by `kiln set update-reminders` (once a week by default, T-45), and kiln
 make the update free.
 
 **Two stages**, through `/kiln:release` (no deployment: the tag publishes, and the promoted tag
-publishes the `kiln-cli` package on PyPI through `pypi.yml`):
+publishes the `kiln-cli` and `keramos-kiln` packages on PyPI through `pypi.yml`):
 1. **Candidate**: branch `release/vX.Y.Z` from `develop`, a `## vX.Y.Z — date` entry at the top
    of `CHANGELOG.md`, `version = "X.Y.Z"` in `pyproject.toml`, the template's image digests
    refreshed (`uv run python scripts/refresh_images.py`), the demos re-recorded if what they show

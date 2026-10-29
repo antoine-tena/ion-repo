@@ -1,5 +1,6 @@
 [project]
-# Sur PyPI, `kiln` est pris : la distribution s'appelle kiln-cli, la commande reste `kiln`.
+# Sur PyPI, `kiln` est pris : la distribution s'appelle kiln-cli, la commande reste `kiln`. `pypi.yml`
+# publie le même code sous `keramos-kiln`, le nom de la famille Keramos, qui la remplacera.
 name = "kiln-cli"
 version = "0.4.9"
 description = "Claude Code's workshop: start every new project, and rescue every old one, like a senior engineer would — even if you're not one."
@@ -34,6 +35,7 @@ Issues = "https://github.com/antoine-tena/kiln/issues"
 kiln = "kiln.cli:main"
 # Même commande sous le nom du paquet, pour que `uvx kiln-cli new` marche sans `--from`.
 kiln-cli = "kiln.cli:main"
+keramos-kiln = "kiln.cli:main"
 charter = "kiln.charter.cli:run"
 # Its name before kiln 0.4.0, still called by adopted repos and older generated ones.
 charte = "kiln.charter.cli:run"

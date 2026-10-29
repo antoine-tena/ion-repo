@@ -198,6 +198,32 @@ def test_a_pypi_install_is_read_from_its_metadata(
     assert hook.is_tool_outdated(("pypi", "v0.4.0"), "v0.4.1", "abc")
 
 
+def test_a_keramos_kiln_install_is_found_and_upgraded_under_its_name(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    hook = load_hook()
+    fake_tool(tmp_path, "keramos-kiln", "keramos_kiln-0.4.0.dist-info", None)
+    uv_tool_dir(hook, tmp_path, monkeypatch)
+
+    assert hook.installed_kiln() == ("pypi", "v0.4.0")
+    assert hook.tool_update_command(("pypi", "v0.4.0"), "v0.4.1").startswith(
+        'uv tool install --force "keramos-kiln==0.4.1" && '
+    )
+
+
+def test_a_tester_s_kiln_cli_tool_stays_kiln_cli(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    hook = load_hook()
+    fake_tool(tmp_path, "kiln-cli", "kiln_cli-0.4.0.dist-info", None)
+    uv_tool_dir(hook, tmp_path, monkeypatch)
+
+    # Not a second tool beside it carrying the same commands.
+    assert hook.tool_update_command(("pypi", "v0.4.0"), "v0.4.1").startswith(
+        'uv tool install --force "kiln-cli==0.4.1" && '
+    )
+
+
 def test_the_old_kiln_tool_is_still_found_and_removed_on_update(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -225,9 +251,11 @@ def test_promoted_versions_come_from_pypi_and_candidates_from_github(
     uv_tool_dir(hook, tmp_path, monkeypatch)
 
     assert hook.tool_update_command(("pypi", "v0.4.0"), "v0.4.1").startswith(
-        'uv tool install --force "kiln-cli==0.4.1" && '
+        'uv tool install --force "keramos-kiln==0.4.1" && '
     )
-    assert hook.tool_update_command(None, "v0.4.1").startswith('uv tool install --force "kiln-cli')
+    assert hook.tool_update_command(None, "v0.4.1").startswith(
+        'uv tool install --force "keramos-kiln'
+    )
     assert '"git+https://github.com/antoine-tena/kiln@v0.5.0-rc.1"' in hook.tool_update_command(
         ("pypi", "v0.4.1"), "v0.5.0-rc.1"
     )
