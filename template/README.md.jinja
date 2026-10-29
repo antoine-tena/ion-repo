@@ -28,6 +28,9 @@ kiln dev
 {% if backend == 'cli' and not front_url -%}
 Puis lancer l'outil : `cd {{ bd }} && uv run {{ name }} --help`, ou l'installer sur le poste par
 `uv tool install --editable {{ bd }}`.
+{%- if pypi_name | default('') %} Sans le dépôt, la version publiée sur PyPI :
+`uv tool install {{ pypi_name }}`.
+{%- endif %}
 {%- elif backend == 'java' and not front_url -%}
 Puis vérifier le backend : `cd {{ bd }} && ./mvnw verify`.
 {%- else -%}
@@ -189,6 +192,9 @@ kiln dev
 {% if backend == 'cli' and not front_url -%}
 Then run the tool: `cd {{ bd }} && uv run {{ name }} --help`, or install it on the machine with
 `uv tool install --editable {{ bd }}`.
+{%- if pypi_name | default('') %} Without the repo, the version published on PyPI:
+`uv tool install {{ pypi_name }}`.
+{%- endif %}
 {%- elif backend == 'java' and not front_url -%}
 Then check the backend: `cd {{ bd }} && ./mvnw verify`.
 {%- else -%}

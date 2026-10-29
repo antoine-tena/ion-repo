@@ -292,6 +292,38 @@ def test_tool_project_can_ship_its_claude_code_plugin(tmp_path: Path) -> None:
     assert (project_dir / "backend/tests/test_plugin.py").is_file()
 
 
+def test_tool_project_can_be_published_on_pypi(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", project_type="cli", pypi_name="keramos-demo")
+
+    pyproject = tomllib.loads((project_dir / "backend/pyproject.toml").read_text())
+    assert pyproject["project"]["name"] == "keramos-demo"
+    assert pyproject["project"]["scripts"] == {"demo": "demo.cli:main"}
+    cli = (project_dir / "backend/demo/cli.py").read_text()
+    assert 'DISTRIBUTION = "keramos-demo"' in cli
+    workflow = yaml.safe_load((project_dir / ".github/workflows/pypi.yml").read_text())
+    job = workflow["jobs"]["publish"]
+    assert workflow[True]["push"]["tags"] == ["v[0-9]*"]
+    assert job["environment"]["url"] == "https://pypi.org/project/keramos-demo/"
+    assert job["permissions"]["id-token"] == "write"
+    assert job["defaults"]["run"]["working-directory"] == "backend"
+    steps = job["steps"]
+    # Every action pinned by its SHA ([PINNED-ACTIONS]).
+    actions = [step["uses"] for step in steps if "uses" in step]
+    assert actions
+    assert all(re.fullmatch(r"[^@]+@[0-9a-f]{40}", action) for action in actions)
+    assert steps[-1]["run"] == "uv publish --trusted-publishing always"
+    assert "`uv tool install keramos-demo`" in (project_dir / "README.md").read_text()
+
+
+def test_tool_project_is_not_published_by_default(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", project_type="cli")
+
+    assert not (project_dir / ".github/workflows/pypi.yml").exists()
+    pyproject = tomllib.loads((project_dir / "backend/pyproject.toml").read_text())
+    assert pyproject["project"]["name"] == "demo"
+    assert 'DISTRIBUTION = "demo"' in (project_dir / "backend/demo/cli.py").read_text()
+
+
 def test_tool_project_ships_no_plugin_by_default(tmp_path: Path) -> None:
     project_dir = generate(tmp_path / "demo", project_type="cli")
 
@@ -419,6 +451,18 @@ def test_a_released_project_scores_100_on_kiln_grid(
     if backend == "none" and frontend in ("nuxt", "next", "astro"):
         expected.add("TESTS-PRESENT")  # a front alone has no test yet (T-160)
     assert {gap.rule for gap in report.gaps} <= expected
+
+
+def test_a_released_tool_published_on_pypi_scores_100_on_kiln_grid(
+    tmp_path: Path, released: tuple[Path, str]
+) -> None:
+    project_dir = generate_released(
+        released, tmp_path / "demo", project_type="cli", pypi_name="keramos-demo"
+    )
+
+    report = score.score_repo(project_dir)
+
+    assert {gap.rule for gap in report.gaps} <= {"LOCKED-DEPENDENCIES"}
 
 
 @pytest.mark.parametrize(("backend", "frontend"), PODMAN_STACKS)

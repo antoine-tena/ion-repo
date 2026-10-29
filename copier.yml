@@ -191,6 +191,17 @@ claude_plugin:
   default: false
   when: "{{ backend == 'cli' }}"
 
+# A command-line tool published on PyPI under this name (`.github/workflows/pypi.yml`, at each
+# release tag `vN`); the command keeps the project's name. Empty: not published. Later with
+# `kiln set pypi_name=<name>`.
+pypi_name:
+  type: str
+  help: Name on PyPI, if the command is published there (empty if not). Later with `kiln set pypi_name=<name>`.
+  default: ""
+  when: "{{ backend == 'cli' }}"
+  validator: >-
+    {% if pypi_name and not (pypi_name | regex_search('^[a-z0-9]+([-_.][a-z0-9]+)*$')) %}A PyPI name: lowercase letters and digits, separated by dashes.{% endif %}
+
 # Java: the root package of the sources (and their directories under src/main/java).
 java_package:
   type: str
