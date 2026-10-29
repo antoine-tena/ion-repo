@@ -33,7 +33,10 @@ def test_vps_brings_server_files_scripts_and_docs(tmp_path: Path) -> None:
     compose = yaml.safe_load((project_dir / "config/vps/compose.yaml").read_text())
     assert set(compose["services"]) == {"db", "backend"}
     assert compose["services"]["backend"]["read_only"] is True
-    assert "api.demo.example.com {" in (project_dir / "config/vps/Caddyfile").read_text()
+    caddyfile = (project_dir / "config/vps/Caddyfile").read_text()
+    assert "api.demo.example.com {" in caddyfile
+    # The health probe names the public host, the only one Django accepts.
+    assert "Host api.demo.example.com" in caddyfile
     for unit in ("backup", "restore-test", "heal"):
         assert (project_dir / f"config/vps/demo-{unit}.timer").is_file()
         service = (project_dir / f"config/vps/demo-{unit}.service").read_text()
