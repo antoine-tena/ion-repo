@@ -680,10 +680,6 @@ def collect_session(status: Status, d: dict, main: str) -> None:
     style = (d.get("output_style") or {}).get("name")
     if style and style != "default":
         head.append(Item(f"style {style}", short=""))
-    name = str(d.get("session_name") or "")
-    if name:
-        name = name if len(name) <= 24 else name[:23] + "…"
-        head.append(Item(f'"{name}"', role="muted", short=""))
     status.session.append(head)
 
     # the context in tokens, coloured by what a message costs, its gauge full at the compaction;
