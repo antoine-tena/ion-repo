@@ -115,7 +115,7 @@ announced (T-118).
 - T-189 · A stranger's first run: no install, never a crash, the next step printed (M)
 - T-348 · Opt-in telemetry: which commands run, and how they end (M)
 - T-349 · A daily digest mail: issues, pull requests, discussions, gap reports (S)
-- T-350 · Launch metrics kept in kiln-private (S) — from launch day: GitHub keeps traffic 14 days
+- T-350 · Launch metrics kept in kiln-measures (S) — from launch day: GitHub keeps traffic 14 days
 - T-368 · Recorded demos replayed by a test: an output that changed fails until re-recorded (S)
 
 ### v0.5.5 · A score you can trust: the false alarms of real repos, gone
@@ -1389,7 +1389,7 @@ opt-in after its 2023 debate, and HN's readers judge a launch on it: opt-in it i
   enough, through a free tier (GitHub Models).
 - [ ] The mail account through `/kiln:token` (`.mail/`), the address antoine gives.
 
-### T-350 · Launch metrics kept in kiln-private
+### T-350 · Launch metrics kept in kiln-measures
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1399,7 +1399,7 @@ opt-in after its 2023 debate, and HN's readers judge a launch on it: opt-in it i
 
 GitHub keeps a repo's traffic (views, clones, referrers) for 14 days only: what the launch week
 brings is lost unless saved.
-- [ ] Once a week from the launch, into `kiln-private`: stars, forks, PyPI downloads, GitHub
+- [ ] Once a week from the launch, into `kiln-measures`: stars, forks, PyPI downloads, GitHub
   traffic and referrers, repos showing the badge (T-154), gap reports (T-38), telemetry's counts
   (T-348).
 - [ ] The launch texts, contacts and the questions file live there too, never in kiln.
@@ -3081,7 +3081,7 @@ moves on that evidence only.
   without showing, for one release, before it counts.
 - [ ] **H02** Labels from Claude in batches (20 places per rule, "to confirm"), spot-checked by
   antoine, stored by fingerprint; only aggregates in public, anything that names a project in
-  `kiln-private`.
+  `kiln-measures`.
 - [ ] **H03** Precision and recall per rule at every candidate; a strict rule under 99 % precision,
   or any drop, stops the candidate (`kiln version cut`).
 - [ ] **H04** Differential tests against reference tools (zizmor, Scorecard, gitleaks, ruff): each
@@ -7488,7 +7488,7 @@ measurements gains 7 points of success and saves 12 % of tokens.
 ### Decisions of 26 October 2026
 
 antoine answered 220 questions offline (the file names people and private repos: it lives in
-`kiln-private`). Below, what changes; where he wrote "decide", Claude settled it, with the
+`kiln-measures`). Below, what changes; where he wrote "decide", Claude settled it, with the
 reason. T-342 to T-358 come from here; "Q" numbers are the file's.
 
 **Launch (T-03).**
@@ -7599,7 +7599,7 @@ reason. T-342 to T-358 come from here; "Q" numbers are the file's.
 **Way of working.**
 31. The backlog is for Claude alone (Q82, Q214): condensed (T-163). It stays in `docs/backlog/`
     (ripgrep skips dot-folders by default; contributors and good first issues read it), with
-    `ROADMAP.md` as the human view; launch texts, contacts and metrics go to `kiln-private`
+    `ROADMAP.md` as the human view; launch texts, contacts and metrics go to `kiln-measures`
     (T-350). The plan stays public (contributors, trust, building in public); antoine may still
     ask for it private (Q138).
 32. Estimates are ceilings: antoine always goes faster (Q84).
