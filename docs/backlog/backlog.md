@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-372.**
+**Next free: T-374.**
 
 ---
 
@@ -797,6 +797,40 @@ packs (T-69). From here, strict semver: breaking → major, `feat` → minor.
 ## 🔴 Critical
 
 ## 🟠 Important
+
+### T-372 · `keramos-kiln` everywhere once it is on PyPI
+- **Type**: task
+- **Status**: blocked — waiting for the first promoted release published under `keramos-kiln`
+- **Opened**: 2026-10-29
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: antoine, 29 October 2026: every tool of the Keramos family on PyPI as
+  `keramos-<tool>`, the `keramos` package installing them
+
+`pypi.yml` publishes the same code under `kiln-cli` and `keramos-kiln`; `kiln install`, the
+upgrade offers and the grid's hint already say `keramos-kiln`, while a `kiln-cli` tool keeps
+upgrading as `kiln-cli` (`installed_pypi_name`). The public pages wait for the package to exist:
+- [ ] `README.md`, `README.fr.md` (badge, `uv tool install`, `uvx keramos-kiln`),
+  `docs/reference.md` and `.fr.md`, `SECURITY.md` (the attested wheel's name),
+  `template/README.md.jinja`, skills `adopt` and `update`, `check_file.py`'s comment.
+- [ ] The Homebrew formula (`scripts/homebrew_formula.py`, `PACKAGE`) from the `keramos-kiln` wheel.
+- [ ] `versions.PYPI_NAME` checked on a machine with no kiln: `kiln install` installs
+  `keramos-kiln`.
+
+### T-373 · `kiln-cli` retired, the testers moved to `keramos-kiln`
+- **Type**: task
+- **Status**: blocked — waiting for T-372 and antoine's go
+- **Opened**: 2026-10-29
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: antoine, 29 October 2026: "on supprimera kiln-cli plus tard pour éviter que mes
+  testeurs aient tout de rompu"
+
+- [ ] The upgrade offer of a `kiln-cli` tool becomes `uv tool uninstall kiln-cli && uv tool
+  install keramos-kiln` (session hook and `versions.upgrade_command`), shipped a few releases
+  before the last `kiln-cli`.
+- [ ] A last `kiln-cli` release whose description points to `keramos-kiln`, then `pypi.yml`
+  builds only `keramos-kiln`, `pyproject.toml` renamed, the `kiln-cli` script removed.
+- [ ] The project left on PyPI (never deleted: a deleted name can be taken again), the PyPI token
+  scoped to `kiln-cli` revoked, `PYPI_TOKEN` removed.
 
 ### T-345 · The licence: `MIT OR Apache-2.0`, the template's output free of attribution
 - **Type**: task

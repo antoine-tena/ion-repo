@@ -16,3 +16,7 @@ status line counts the open boxes ("urgent N").
 - [ ] Open kiln's accounts on X (https://x.com/i/flow/signup) and Mastodon
   (https://fosstodon.org/auth/sign_up), then give their tokens through `/kiln:token` (T-118) —
   antoine
+- [ ] Declare `keramos-kiln`'s trusted publisher on PyPI, before the next promotion (T-372):
+  https://pypi.org/manage/account/publishing/ — "Add a new pending publisher", GitHub, project
+  `keramos-kiln`, owner `antoine-tena`, repository `kiln`, workflow `pypi.yml`, environment
+  `pypi` — antoine
