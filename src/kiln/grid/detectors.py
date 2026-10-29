@@ -498,9 +498,23 @@ def supported_runtimes(repo: Repo, today: str = "") -> Outcome:
 COMPOSE_FILES = ("**/compose.y*ml", "**/compose.*.y*ml", "**/docker-compose*.y*ml")
 
 
+ROOT_USERS = ("", "0", "root")
+
+
+def _has_no_new_privileges(settings: dict) -> bool:
+    return any("no-new-privileges" in str(opt) for opt in settings.get("security_opt") or [])
+
+
+def _runs_unprivileged(settings: dict) -> bool:
+    """A non-root user and no capability added back."""
+    user = str(settings.get("user", "")).split(":")[0]
+    return user not in ROOT_USERS and not settings.get("cap_add")
+
+
 def hardened_compose(repo: Repo) -> Outcome:
     """Each compose service runs with a read-only file system, every capability dropped and
-    no privilege escalation."""
+    no privilege escalation: no-new-privileges, or a non-root user with no capability added
+    back (nothing left to escalate to, where AppArmor refuses no-new-privileges)."""
     files = repo.matching(*COMPOSE_FILES)
     if not files:
         return Outcome(NOT_APPLICABLE)
@@ -517,9 +531,7 @@ def hardened_compose(repo: Repo) -> Outcome:
             hardened = (
                 settings.get("read_only") is True
                 and "ALL" in [str(cap).upper() for cap in settings.get("cap_drop") or []]
-                and any(
-                    "no-new-privileges" in str(opt) for opt in settings.get("security_opt") or []
-                )
+                and (_has_no_new_privileges(settings) or _runs_unprivileged(settings))
             )
             if not hardened:
                 failing.append(f"{name} ({service})")

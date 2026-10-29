@@ -307,6 +307,8 @@ cmd_deploy() {
   [ -f compose.yaml ] && install -m 600 compose.yaml compose.yaml.previous
   install -m 600 "$BUILD/config/vps/compose.yaml" compose.yaml
   if [ "$HAS_DB" = 1 ]; then
+    # The database runs as the image's postgres user (uid 70), owner of its data folder.
+    install -d -o 70 -g 70 -m 700 "$ROOT/postgres"
     compose up -d --no-deps db
     wait_for_db
     migrate_with "$TAG"
