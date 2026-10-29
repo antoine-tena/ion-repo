@@ -118,7 +118,7 @@ $ claude                      # Claude Code le résorbe, avec les règles, skill
 | Un site de contenu (`site`) | — | Astro |
 | Un tableau de bord de données (`dashboard`) | polars, marimo, Plotly | Streamlit |
 | Une analyse de données (`analysis`) | polars, marimo, Plotly | — |
-| Un outil en ligne de commande (`cli`) | Python, installable | — |
+| Un outil en ligne de commande (`cli`) | Python, installable, avec son propre plugin Claude Code si on le veut | — |
 
 Next.js, Vite + React, Dash et Java 25 + Maven sont là aussi, et les tests de kiln génèrent et vérifient chaque
 combinaison. Django et Nuxt sont complets ; les autres stacks sont figées mais entretenues : les

@@ -110,7 +110,7 @@ $ claude                     # Claude Code works it off, with kiln's rules, skil
 | A content site (`site`) | — | Astro |
 | A data dashboard (`dashboard`) | polars, marimo, Plotly | Streamlit |
 | A data analysis (`analysis`) | polars, marimo, Plotly | — |
-| A command-line tool (`cli`) | Python, installable | — |
+| A command-line tool (`cli`) | Python, installable, with its own Claude Code plugin if you want one | — |
 
 Next.js, Vite + React, Dash and Java 25 + Maven are there too, and kiln's tests generate and check every
 combination. Django and Nuxt are complete; the other stacks are frozen but maintained: new grid

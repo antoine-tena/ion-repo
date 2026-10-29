@@ -1,0 +1,14 @@
+{
+  "name": "{{ name }}",
+  "description": {{ ("Claude Code plugin of " ~ name) | tojson }},
+  "owner": {
+    "name": {{ (owner or name) | tojson }}
+  },
+  "plugins": [
+    {
+      "name": "{{ name }}",
+      "source": "./plugins/{{ name }}",
+      "description": {{ description | tojson }}
+    }
+  ]
+}
