@@ -35,7 +35,7 @@ services:
       - ./postgres:/var/lib/postgresql/data:Z
     # Database never exposed: only the backend and the server's scripts reach it.
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:{{ vps_db_port }}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U {{ base }}"]
       interval: 10s
@@ -50,9 +50,11 @@ services:
     env_file:
       - backend/.env
     environment:
-      DATABASE_URL: postgres://{{ base }}:${POSTGRES_PASSWORD}@127.0.0.1:5432/{{ base }}
-    # Host network: the database on 127.0.0.1, the API reached by Caddy on 127.0.0.1:8000.
+      DATABASE_URL: postgres://{{ base }}:${POSTGRES_PASSWORD}@127.0.0.1:{{ vps_db_port }}/{{ base }}
+    # Host network: the database on 127.0.0.1, the API reached by Caddy on 127.0.0.1:{{ vps_port }}, the
+    # port given by `vps_port` (the image's own command listens on 8000, on every interface).
     network_mode: host
+    command: ["gunicorn", "config.wsgi", "--bind", "127.0.0.1:{{ vps_port }}", "--workers", "3", "--access-logfile", "-"]
     # [HARDENED-CONTAINERS]: read-only file system, no capability, no privilege escalation.
     read_only: true
     tmpfs:
@@ -66,7 +68,7 @@ services:
         condition: service_healthy
     healthcheck:
       # Under the public name: Django refuses a host missing from DJANGO_ALLOWED_HOSTS.
-      test: ["CMD", "python", "-c", "import urllib.request as r; r.urlopen(r.Request('http://127.0.0.1:8000/api/ready', headers={'Host': '{{ api_domain }}', 'X-Forwarded-Proto': 'https'}), timeout=5)"]
+      test: ["CMD", "python", "-c", "import urllib.request as r; r.urlopen(r.Request('http://127.0.0.1:{{ vps_port }}/api/ready', headers={'Host': '{{ api_domain }}', 'X-Forwarded-Proto': 'https'}), timeout=5)"]
       interval: 30s
       timeout: 10s
       retries: 3

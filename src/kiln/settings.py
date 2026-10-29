@@ -46,6 +46,8 @@ SETTABLE_KEYS = (
     "deploy",
     "vps_host",
     "api_domain",
+    "vps_port",
+    "vps_db_port",
     "site_url",
     "deploy_branch",
     "frontend_deploy",

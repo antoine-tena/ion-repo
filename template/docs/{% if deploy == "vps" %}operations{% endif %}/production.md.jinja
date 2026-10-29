@@ -10,7 +10,7 @@ Le descripteur du serveur (adresse, branche, URL publiques) est `config/vps/proj
 | Fichier | Rôle |
 |---|---|
 | `config/vps/compose.yaml` | Pile de production : PostgreSQL et le backend (gunicorn), en lecture seule |
-| `config/vps/Caddyfile` | TLS automatique et proxy vers `127.0.0.1:8000` |
+| `config/vps/Caddyfile` | Site Caddy : TLS automatique et proxy vers `127.0.0.1:{{ vps_port }}` |
 | `config/vps/deploy-remote.sh` | Bascule en root : image par commit, migrations, retour arrière automatique |
 | `config/vps/backup.sh` | Sauvegarde quotidienne et d'avant bascule ; copie restic hors du serveur |
 | `config/vps/restore-test.sh` | Restauration de la dernière sauvegarde chaque semaine, chronométrée |
@@ -43,6 +43,14 @@ Puis, dans `/opt/{{ name }}` (créé au besoin), les secrets, jamais versionnés
 Le DNS de `{{ api_domain }}` pointe vers le serveur avant le premier déploiement : Caddy en a
 besoin pour obtenir le certificat.
 
+**Serveur partagé avec d'autres projets.** La pile prend `127.0.0.1:{{ vps_port }}` (l'API) et
+`127.0.0.1:{{ vps_db_port }}` (la base) : deux ports libres sur ce serveur, sinon
+`kiln set vps_port=… vps_db_port=…`. Le site Caddy s'installe dans
+`/etc/caddy/sites/{{ name }}.caddy`, que le Caddyfile du serveur importe. La bascule n'écrit ce
+Caddyfile que s'il est celui de Caddy par défaut ; s'il sert déjà un autre projet, elle s'arrête
+tant qu'il n'a pas la ligne `import /etc/caddy/sites/*.caddy`, et elle vérifie toute la
+configuration avant de recharger Caddy.
+
 ## Déployer
 
 ```sh
@@ -56,7 +64,7 @@ branche locale qui diffère de `origin`. Sur le serveur, la bascule :
 1. reçoit le code en bundle git, construit l'image `{{ name | replace('-', '_') }}_backend:<sha>`
    et vérifie qu'elle porte bien ce commit ;
 2. valide la pile compose, le Caddyfile, les scripts et `manage.py check --deploy` ;
-3. installe scripts, unités systemd et Caddyfile, puis sauvegarde la base ;
+3. installe scripts, unités systemd et site Caddy, puis sauvegarde la base ;
 4. applique les migrations (le backend n'est arrêté que s'il y en a) ;
 5. bascule le backend et attend que `/api/health` rende la nouvelle version ; sinon, retour
    arrière automatique vers la précédente ;
@@ -107,7 +115,7 @@ The server's descriptor (address, branch, public URLs) is `config/vps/project.js
 | File | Role |
 |---|---|
 | `config/vps/compose.yaml` | Production stack: PostgreSQL and the backend (gunicorn), read-only |
-| `config/vps/Caddyfile` | Automatic TLS and proxy to `127.0.0.1:8000` |
+| `config/vps/Caddyfile` | Caddy site: automatic TLS and proxy to `127.0.0.1:{{ vps_port }}` |
 | `config/vps/deploy-remote.sh` | Switch as root: one image per commit, migrations, automatic rollback |
 | `config/vps/backup.sh` | Daily and pre-switch backup; restic copy off the server |
 | `config/vps/restore-test.sh` | Restore of the latest backup every week, timed |
@@ -140,6 +148,14 @@ Then, in `/opt/{{ name }}` (created when needed), the secrets, never versioned (
 The DNS of `{{ api_domain }}` points to the server before the first deployment: Caddy needs it to
 get the certificate.
 
+**A server shared with other projects.** The stack takes `127.0.0.1:{{ vps_port }}` (the API) and
+`127.0.0.1:{{ vps_db_port }}` (the database): two ports free on that server, otherwise
+`kiln set vps_port=… vps_db_port=…`. The Caddy site is installed as
+`/etc/caddy/sites/{{ name }}.caddy`, which the server's Caddyfile imports. The switch writes that
+Caddyfile only when it is Caddy's default one; when it already serves another project, the switch
+stops until it holds the line `import /etc/caddy/sites/*.caddy`, and it checks the whole
+configuration before reloading Caddy.
+
 ## Deploy
 
 ```sh
@@ -153,7 +169,7 @@ branch that differs from `origin`. On the server, the switch:
 1. receives the code as a git bundle, builds the image `{{ name | replace('-', '_') }}_backend:<sha>`
    and checks that it carries that commit;
 2. validates the compose stack, the Caddyfile, the scripts and `manage.py check --deploy`;
-3. installs scripts, systemd units and Caddyfile, then backs up the database;
+3. installs scripts, systemd units and Caddy site, then backs up the database;
 4. applies the migrations (the backend only stops when there are some);
 5. switches the backend and waits for `/api/health` to return the new version; otherwise,
    automatic rollback to the previous one;

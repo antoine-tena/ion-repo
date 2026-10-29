@@ -268,6 +268,20 @@ api_domain:
   default: "api.{{ name }}.example.com"
   when: "{{ deploy == 'vps' and backend == 'django' }}"
 
+# A server shared with other projects keeps its own ports: the stack takes these on 127.0.0.1,
+# free on that server. Later with `kiln set vps_port=… vps_db_port=…`.
+vps_port:
+  type: int
+  help: Port of the API on the server (127.0.0.1; another one if a project already uses it)
+  default: 8000
+  when: "{{ deploy == 'vps' and backend == 'django' }}"
+
+vps_db_port:
+  type: int
+  help: Port of the database on the server (127.0.0.1; another one if a project already uses it)
+  default: 5432
+  when: "{{ deploy == 'vps' and backend == 'django' }}"
+
 site_url:
   type: str
   help: Public address of the site, allowed by CORS and checked by the smoke test
