@@ -178,6 +178,14 @@ install_server_files() {
   install_caddy_site
 }
 
+# `caddy validate` opens the site's log file: run as root, it would create it as root, and Caddy,
+# which runs as the caddy user, could then no longer write it.
+prepare_caddy_log() {
+  install -d -o caddy -g caddy -m 750 /var/log/caddy
+  touch "/var/log/caddy/$NAME-access.log"
+  chown caddy:caddy "/var/log/caddy/$NAME-access.log"
+}
+
 # The server's Caddyfile imports one file per site from /etc/caddy/sites/, so that several projects
 # share the server. kiln writes that Caddyfile only when it is Caddy's default or its own former
 # one (the whole site in the Caddyfile); a Caddyfile someone else wrote is never touched.
@@ -192,6 +200,12 @@ ensure_caddy_import() {
   echo "$CADDY_MAIN now imports /etc/caddy/sites/ (previous one: $CADDY_MAIN.previous)."
 }
 
+# Back to the files Caddy runs with, so that the next deployment installs the site again.
+restore_caddy_files() {
+  if [ -f "$CADDY_SITE.previous" ]; then mv "$CADDY_SITE.previous" "$CADDY_SITE"; else rm -f "$CADDY_SITE"; fi
+  if [ "$CADDY_MAIN_REWRITTEN" = 1 ] && [ -f "$CADDY_MAIN.previous" ]; then cp "$CADDY_MAIN.previous" "$CADDY_MAIN"; fi
+}
+
 # The site of this project, checked with every other site of the server before Caddy reloads; the
 # previous file comes back if the whole configuration does not hold.
 install_caddy_site() {
@@ -201,12 +215,15 @@ install_caddy_site() {
   [ -f "$CADDY_SITE" ] && install -m 644 "$CADDY_SITE" "$CADDY_SITE.previous"
   install -m 644 "$BUILD/config/vps/Caddyfile" "$CADDY_SITE"
   ensure_caddy_import
+  prepare_caddy_log
   if ! caddy validate --adapter caddyfile --config "$CADDY_MAIN" >> "$LOG" 2>&1; then
-    if [ -f "$CADDY_SITE.previous" ]; then mv "$CADDY_SITE.previous" "$CADDY_SITE"; else rm -f "$CADDY_SITE"; fi
-    [ "$CADDY_MAIN_REWRITTEN" = 1 ] && [ -f "$CADDY_MAIN.previous" ] && cp "$CADDY_MAIN.previous" "$CADDY_MAIN"
+    restore_caddy_files
     die "the server's Caddy configuration does not hold with this site: nothing reloaded (log: $LOG)."
   fi
-  systemctl reload caddy
+  if ! systemctl reload caddy; then
+    restore_caddy_files
+    die "Caddy refused this site; the previous files are back, the configuration in service is unchanged (journalctl -u caddy)."
+  fi
   echo "Caddy site $CADDY_SITE installed and reloaded."
 }
 
@@ -225,7 +242,7 @@ build_candidate() {
   [ "$(podman run --rm --entrypoint cat "$TAG" GIT_SHA)" = "$TARGET" ] || die "image $TAG does not carry version $TARGET."
   echo "Image $TAG ready."
   podman-compose -f "$BUILD/config/vps/compose.yaml" config > /dev/null 2>> "$LOG" || die "invalid compose stack."
-  install -d -o caddy -g caddy -m 750 /var/log/caddy
+  prepare_caddy_log
   caddy validate --adapter caddyfile --config "$BUILD/config/vps/Caddyfile" >> "$LOG" 2>&1 || die "invalid Caddyfile."
   local script
   for script in "$BUILD"/config/vps/*.sh; do bash -n "$script"; done
@@ -281,7 +298,8 @@ cmd_deploy() {
 
   install_server_files
   PREV="$(cat DEPLOYED 2> /dev/null || true)"
-  if [ "$HAS_DB" = 1 ]; then
+  # The first deployment has no database yet: nothing to back up.
+  if [ "$HAS_DB" = 1 ] && podman container exists "$NAME-db"; then
     wait_for_db
     "/usr/local/sbin/$NAME-backup" pre-deploy
     BACKUP="$(find /root/backups -maxdepth 1 -name "$NAME-pre-deploy-*.dump" -printf '%T@ %p\n' | sort -rn | head -1 | cut -d' ' -f2-)"
