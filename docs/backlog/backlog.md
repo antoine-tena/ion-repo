@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-374.**
+**Next free: T-382.**
 
 ---
 
@@ -1325,7 +1325,127 @@ and the page that shows it, the potential line as its demo.
 - [ ] **V07** `kiln score` in the README demo's first ten seconds: the number, the potential, `kiln
   fix`, the number again.
 
+### T-374 · Out-of-request work for a project without Celery: [OUT-OF-REQUEST], [OUTBOX], [IDEMPOTENCY]
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-30
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: emberstudio session `feat/auth` (accounts copied from annski), 30 October 2026
+
+`django.md` loads [OUT-OF-REQUEST], [OUTBOX], [RETRIES], [ASYNC-HEALTH] and [IDEMPOTENCY] on
+every Django repo, and they assume Celery, Redis and an `OutboxEvent` table. emberstudio
+(`medium`) has none of them: its account mails (invitation, password reset) could only leave in a
+`threading.Thread`, outside any rule, and [IDEMPOTENCY] stayed unapplied. An agent then either
+breaks the rule silently or builds a whole Celery stack for three mails.
+- [ ] The rules say what a repo without a worker does: a size or a setting (`kiln set
+  worker=celery|none`) chooses between the Outbox chain and a lighter path (a mail sent after
+  `transaction.on_commit`, a thread for a mail whose timing would reveal an account), written
+  as a rule with its limits.
+- [ ] [IDEMPOTENCY] says which routes need it when there is no shared cache (payments,
+  creations), instead of "every mutation".
+- [ ] The Django template offers that path, so the first mail of a project is not improvised.
+
 ## 🟡 Normal
+
+### T-375 · [CLOCK] names freezegun, which [NEW-DEPENDENCY] refuses
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-10-30
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: emberstudio session `feat/auth`, 30 October 2026
+
+`django.md` [CLOCK] asks for `freezegun` (`@freeze_time`), whose last release (1.5.5) dates from
+9 August 2025: more than a year, so [NEW-DEPENDENCY] forbids adding it. The session took
+`time-machine` (3.6.0, 25 October 2026, MIT) instead. The rule names `time-machine`
+(`time_machine.travel(..., tick=False)`), and the grid's check (`charter.toml`, ratchet
+`clock-in-tests`) accepts both.
+
+### T-376 · `kiln check` ran no test on emberstudio, and left a `.env` towards a stopped PostgreSQL
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-10-30
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: emberstudio session `feat/auth`, 30 October 2026
+
+To reproduce first. In a worktree of emberstudio with no `backend/.env`, `DJANGO_SECRET_KEY=…
+DJANGO_DEBUG=True kiln check` printed seven steps (dependencies, ruff, format, mypy, ESLint,
+typecheck, charter) and "All checks pass": no pytest step, though `project.md` says it runs
+pytest. A `backend/.env` existed afterwards, its `DATABASE_URL` towards the compose's
+PostgreSQL (port 54461), which was not started: pytest then failed on every test using the
+database until `podman-compose up -d db`.
+- [ ] Find why pytest was skipped (missing database? missing `.env`?) and make it run, or fail
+  saying why; never "All checks pass" without the tests.
+- [ ] A `.env` that `kiln check` writes comes with the database it names started, or says how.
+
+### T-377 · An agent cannot document a new variable: `.env.example` is under the `.env*` deny
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-10-30
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: emberstudio session `feat/auth`, 30 October 2026 (see also AI02, T-369)
+
+The permission rules deny reading and editing `.env*`; `.env.example` matches, though it holds no
+secret by design ([SECRETS]) and the generated README sends people to it. The session added
+`DJANGO_JWT_SIGNING_KEY` and `DJANGO_FRONTEND_URL` and could neither copy the example to a local
+`.env` (`cp` refused) nor add the two lines to it: they ended up in `production.md` only, and the
+user has to add them by hand.
+- [ ] The deny excludes `*.example` (and `.env.sample`), in kiln's settings and in AI02's check.
+- [ ] OP07 `ENV-EXAMPLE-COMPLETE` would then be reachable by an agent.
+
+### T-378 · `/kiln:merge` from an isolated worktree: leave it before merging, plain commands only
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-10-30
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: emberstudio session `feat/auth`, 30 October 2026 (see also T-167)
+
+A session moved into its worktree by `EnterWorktree` is isolated by Claude Code: it refuses
+`git -C <main tree>`, `cd ..`, a `for` loop, `$(…)` and paths with `[token]` in them ("too
+complex to verify"). `/kiln:merge` step 2 merges "from the main tree", so the merge was refused
+until the session left the worktree, which step 5 only does at the end. About ten commands of
+the session were refused the same way.
+- [ ] `/kiln:merge` (and `/kiln:review`) leave the worktree with `ExitWorktree` (`keep`) before
+  step 2, not at step 5.
+- [ ] kiln's skills and rules write one plain command per call when the session is isolated (no
+  `cd`, loop, command substitution), with the file lists passed as plain arguments.
+
+### T-379 · Django template: `django-stubs-ext`, so `admin.ModelAdmin[Model]` runs
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-30
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: emberstudio session `feat/auth`, 30 October 2026
+
+mypy `strict` with django-stubs wants `admin.ModelAdmin[Invitation]`, which raises `TypeError:
+type 'ModelAdmin' is not subscriptable` at import without `django_stubs_ext.monkeypatch()`. The
+session dropped its admin rather than fight it. The template adds `django-stubs-ext` and calls
+`monkeypatch()` in `settings.py`, so a typed admin works from the first model.
+
+### T-380 · `/kiln:merge` ends by offering `/grog:distill` on the session
+- **Type**: improvement
+- **Status**: blocked — waiting for grog's `/grog:distill` (grog T-01)
+- **Opened**: 2026-10-30
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: antoine, 30 October 2026: at the end of a session, offer a skill that improves the
+  family's tools from what the session went through
+
+A merge is the real end of a piece of work. Step 6 of `/kiln:merge` adds one line: "Run
+`/grog:distill` on this session?", only when grog's plugin is installed, and only after a session
+with something to learn (a refused command, a rule worked around, a fix redone).
+
+### T-381 · A long session fetches the integration branch before building on it
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-30
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: emberstudio session `feat/auth`, 30 October 2026
+
+While the session built its front on `features.noScripts` (no Nuxt JavaScript anywhere),
+another session merged into `develop` a per-route `noScripts` with the opposite default. It only
+showed at the merge, after the pages, the measures and a question to the user had been done on
+the old setup. A rule of the way of working: before a decision that rests on the project's
+setup, and at least before the last commits, `git fetch` and read what the integration branch
+gained (`git log HEAD..origin/<integration>`); merge it into the branch early rather than late.
 
 ### T-371 · `/kiln:token`: a paste prompt in kiln's own style
 - **Type**: improvement
