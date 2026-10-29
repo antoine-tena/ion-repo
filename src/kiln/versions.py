@@ -135,10 +135,19 @@ def beta_install_command(code_dir: Path) -> str:
     """Command that makes the tool kiln's `develop` (`beta` channel): the checkout of the code
     directory installed editable, read live (each merge into `develop` is there at once),
     otherwise GitHub's `develop`."""
-    checkout = code_dir / "kiln"
-    if (checkout / "src" / "kiln" / "versions.py").is_file():
+    checkout = kiln_checkout(code_dir)
+    if checkout is not None:
         return f"uv tool install --force --editable {checkout}"
     return f'uv tool install --force "git+{KILN_GIT_URL}@develop"'
+
+
+def kiln_checkout(code_dir: Path) -> Path | None:
+    """kiln's checkout in the code directory, at its root or in one of its folders, by its real
+    path: a link left at the old place leads to the same checkout."""
+    for checkout in (code_dir / "kiln", *sorted(code_dir.glob("*/kiln"))):
+        if (checkout / "src" / "kiln" / "versions.py").is_file():
+            return checkout.resolve()
+    return None
 
 
 def tool_release_tag() -> str | None:

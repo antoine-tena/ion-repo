@@ -487,9 +487,11 @@ def test_every_start_recalls_that_errors_may_come_from_kiln(
     assert said == hook.ERROR_ORIGIN
 
 
-def beta_machine(hook: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    """A machine on the beta channel, with kiln's checkout in its code directory."""
-    checkout = tmp_path / "code/kiln"
+def beta_machine(
+    hook: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, place: str = "kiln"
+) -> Path:
+    """A machine on the beta channel, with kiln's checkout in its code directory, at `place`."""
+    checkout = tmp_path / "code" / place
     (checkout / "src/kiln").mkdir(parents=True)
     (checkout / "src/kiln/versions.py").write_text("")
     config = tmp_path / "config.toml"
@@ -513,6 +515,27 @@ def test_on_the_beta_channel_the_editable_checkout_is_never_outdated(
 
     assert hook.follows_candidates()
     assert hook.installed_kiln() == ("editable", str(checkout))
+    assert hook.tool_status() == "up to date"
+
+
+def test_on_the_beta_channel_the_checkout_may_sit_in_a_folder_of_the_code_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    hook = load_hook()
+    checkout = beta_machine(hook, tmp_path, monkeypatch, place="tools/kiln")
+    fake_tool(
+        tmp_path / "uv-tools",
+        "kiln-cli",
+        "kiln_cli-0.4.4.dist-info",
+        json.dumps({"url": f"file://{checkout}", "dir_info": {"editable": True}}),
+    )
+    uv_tool_dir(hook, tmp_path / "uv-tools", monkeypatch)
+
+    assert hook.kiln_checkout() == checkout
+    assert hook.tool_status() == "up to date"
+    # A link left at the old place, while open sessions still read their hooks there.
+    (tmp_path / "code/kiln").symlink_to(checkout)
+    assert hook.kiln_checkout() == checkout
     assert hook.tool_status() == "up to date"
 
 
