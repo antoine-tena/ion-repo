@@ -128,11 +128,27 @@ CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_NAME = "sessionid" if DEBUG else "__Host-sessionid"
 CSRF_COOKIE_NAME = "csrftoken" if DEBUG else "__Host-csrftoken"
 
-MAILERS = {
-    "default": {
-        "BACKEND": "django.core.mail.backends.console.EmailBackend",
-    },
-}
+# Mails: printed to the console in development; in production, sent by the SMTP server the
+# environment names (implicit TLS on 465 by default), which `check --deploy` requires.
+SMTP_SSL_PORT = 465
+SMTP_TIMEOUT_SECONDS = 10
+MAILERS = (
+    {"default": {"BACKEND": "django.core.mail.backends.console.EmailBackend"}}
+    if DEBUG
+    else {
+        "default": {
+            "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+            "OPTIONS": {
+                "host": config("DJANGO_SMTP_HOST", default="localhost"),
+                "port": config("DJANGO_SMTP_PORT", default=SMTP_SSL_PORT, cast=int),
+                "username": config("DJANGO_SMTP_USER", default=""),
+                "password": config("DJANGO_SMTP_PASSWORD", default=""),
+                "use_ssl": config("DJANGO_SMTP_USE_SSL", default=True, cast=bool),
+                "timeout": SMTP_TIMEOUT_SECONDS,
+            },
+        },
+    }
+)
 
 # [LOGGING]: structured `domain.event` events, never a formatted sentence.
 structlog.configure(

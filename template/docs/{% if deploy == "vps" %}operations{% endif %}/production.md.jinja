@@ -36,7 +36,8 @@ Puis, dans `/opt/{{ name }}` (créé au besoin), les secrets, jamais versionnés
 - `/opt/{{ name }}/.env` : `POSTGRES_PASSWORD=<long et aléatoire>` (`openssl rand -hex 24`), en 600 ;
 - `/opt/{{ name }}/backend/.env` : d'après `backend/.env.example`, avec `DJANGO_DEBUG=False`,
   `DJANGO_SECRET_KEY` aléatoire, `DJANGO_ALLOWED_HOSTS={{ api_domain }}` et
-  `DJANGO_CSRF_TRUSTED_ORIGINS=https://{{ api_domain }}`, en 600 ;
+  `DJANGO_CSRF_TRUSTED_ORIGINS=https://{{ api_domain }}` et, pour envoyer des mails, `DJANGO_SMTP_HOST`,
+  `DJANGO_SMTP_USER` et `DJANGO_SMTP_PASSWORD` (SSL sur 465 par défaut), en 600 ;
 - `/root/.restic-env` (facultatif) : `RESTIC_REPOSITORY`, `RESTIC_PASSWORD` et, pour un seau
   S3, `AWS_ACCESS_KEY_ID` et `AWS_SECRET_ACCESS_KEY`, en 600.
 
@@ -141,7 +142,8 @@ Then, in `/opt/{{ name }}` (created when needed), the secrets, never versioned (
 - `/opt/{{ name }}/.env`: `POSTGRES_PASSWORD=<long and random>` (`openssl rand -hex 24`), mode 600;
 - `/opt/{{ name }}/backend/.env`: from `backend/.env.example`, with `DJANGO_DEBUG=False`, a random
   `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS={{ api_domain }}` and
-  `DJANGO_CSRF_TRUSTED_ORIGINS=https://{{ api_domain }}`, mode 600;
+  `DJANGO_CSRF_TRUSTED_ORIGINS=https://{{ api_domain }}` and, to send mails, `DJANGO_SMTP_HOST`,
+  `DJANGO_SMTP_USER` and `DJANGO_SMTP_PASSWORD` (SSL on 465 by default), mode 600;
 - `/root/.restic-env` (optional): `RESTIC_REPOSITORY`, `RESTIC_PASSWORD` and, for an S3 bucket,
   `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`, mode 600.
 
