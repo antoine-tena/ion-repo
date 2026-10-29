@@ -538,3 +538,21 @@ def test_drafts_wait_behind_their_level(
 
     assert run_kiln(monkeypatch, "grid", "--level", "assess") == 0
     assert "SEALED-DOMAIN" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    ("service", "status"),
+    [
+        ("    user: '70:70'\n", detectors.PASS),
+        ("    user: root\n", detectors.FAIL),
+        ("    user: app\n    cap_add: [CHOWN]\n", detectors.FAIL),
+    ],
+)
+def test_a_non_root_service_without_capabilities_is_hardened(
+    tmp_path: Path, service: str, status: str
+) -> None:
+    compose = "services:\n  db:\n    read_only: true\n    cap_drop: [ALL]\n" + service
+    repo = make_repo(tmp_path, {"compose.yml": compose})
+    rules = {rule.id: rule for rule in RULES}
+
+    assert detectors.detect(rules["HARDENED-CONTAINERS"].detector, repo).status == status
