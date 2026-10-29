@@ -6,9 +6,13 @@ _subdirectory: template
 _templates_suffix: .jinja
 _answers_file: .copier-answers.yml
 _min_copier_version: "9.4"
-# Files the project owns: kiln writes them once, then never touches them again.
+# Files the project owns: kiln writes them once, then never touches them again. The favicons are
+# binary: an update cannot merge the project's own one, it would put kiln's back.
 _skip_if_exists:
   - CLAUDE.md
+  - frontend/public/favicon.ico
+  - frontend/public/favicon.svg
+  - frontend/app/favicon.ico
 
 # First question: the size of the project, four notches from tiny to large. It chooses how much
 # ceremony the project gets (rules, CI, containers), and changes later with `kiln set size=…`.
