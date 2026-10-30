@@ -208,7 +208,7 @@ def update_all(
             print(f"{root.relative_to(code_dir)!s:<30} {outcome}")
         return
     started = time.monotonic()
-    logs = LOGS_DIR / datetime.datetime.now().strftime("%Y-%m-%d-%H%M%S")
+    logs = LOGS_DIR / datetime.datetime.now().astimezone().strftime("%Y-%m-%d-%H%M%S")
     logs.mkdir(parents=True, exist_ok=True)
     ui.note(f"\none line per repo, its full output in {logs} (--verbose: shown here)\n")
     width = max((len(str(root.relative_to(code_dir))) for root in roots), default=0)
