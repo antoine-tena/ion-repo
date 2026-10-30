@@ -34,7 +34,7 @@ OPT_OUT_VARIABLE = "KILN_NO_UPDATE_CHECK"
 # Set by Claude Code in the commands it runs: its own hook asks there.
 CLAUDE_CODE_VARIABLE = "CLAUDECODE"
 # `doctor` already reports a late tool; `completion` is read by the shell.
-SILENT_COMMANDS = frozenset({"completion", "doctor"})
+SILENT_COMMANDS = frozenset({"completion", "doctor", "frame"})
 
 State = dict[str, Any]
 

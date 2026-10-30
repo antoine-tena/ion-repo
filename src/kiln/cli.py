@@ -29,7 +29,7 @@ LANGUAGES = ("en", "fr")
 # Home screen: commands by section; the role of each comes from its argparse help.
 COMMAND_GROUPS = (
     ("Project", ("new", "adopt", "install", "publish", "update", "set", "waive")),
-    ("Day to day", ("dev", "check", "ci", "contract", "doctor", "pause", "completion")),
+    ("Day to day", ("dev", "check", "ci", "contract", "doctor", "pause", "frame", "completion")),
     ("The grid", ("grid", "score", "fix", "bot")),
     ("All repos", ("status", "update --all", "version")),
 )
@@ -52,7 +52,20 @@ LEGACY_OPTIONS = {
     "set": {"--poste": "--global"},
 }
 NO_RECAP_COMMANDS = frozenset(
-    {"dev", "ci", "status", "doctor", "version", "waive", "grid", "score", "fix", "pause", "bot"}
+    {
+        "dev",
+        "ci",
+        "status",
+        "doctor",
+        "version",
+        "waive",
+        "grid",
+        "score",
+        "fix",
+        "pause",
+        "frame",
+        "bot",
+    }
 )
 HELP_FLAGS: tuple[list[str], ...] = ([], ["-h"], ["--help"])
 
@@ -187,6 +200,7 @@ def build_parser() -> argparse.ArgumentParser:
     _add_fix_command(commands)
     _add_bot_command(commands)
     _add_pause_command(commands)
+    _add_frame_command(commands)
     status_parser = commands.add_parser("status", help="state of the kiln repos of the code folder")
     status_parser.add_argument("--all", action="store_true", help="every repo (the default)")
     set_parser = commands.add_parser(
@@ -376,6 +390,17 @@ def _add_pause_command(commands: argparse._SubParsersAction[_KilnParser]) -> Non
         "name", nargs="?", default="", help="the session in a few words (none: names proposed)"
     )
     pause_parser.add_argument("--next", default="", help="the next step")
+
+
+def _add_frame_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
+    frame_parser = commands.add_parser(
+        "frame", help="print the two rules that frame a Keramos tool's skill answer"
+    )
+    frame_parser.add_argument("tool", help="the Keramos tool (kiln, grog, hearth...)")
+    frame_parser.add_argument("skill", help="its skill (summary, merge...)")
+    frame_parser.add_argument(
+        "--width", type=int, help="the rules' width (default: the terminal's, less 6)"
+    )
 
 
 def _add_waive_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
@@ -599,6 +624,10 @@ def dispatch(arguments: argparse.Namespace) -> list[str]:
         from kiln import pause
 
         pause.pause(Path.cwd(), arguments.name, arguments.next)
+    elif arguments.command == "frame":
+        from kiln import frame
+
+        frame.frame(arguments.tool, arguments.skill, arguments.width)
     elif arguments.command == "version":
         _dispatch_version(arguments, repo_root(Path.cwd()))
     elif arguments.command == "status" or (arguments.command == "update" and arguments.all):

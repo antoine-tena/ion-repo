@@ -77,19 +77,19 @@ ERROR_ORIGIN = (
     "showed (kiln update would undo it): in kiln's own repo when this machine has it, otherwise "
     "report it with /kiln:report, only with the user's agreement."
 )
-# Said at every start too: the answer of a Keramos tool's skill stands out in the terminal, framed
-# by two lines of the same width (antoine's choice, the double line), its body plain Markdown.
+# Said at every start too: the answer of a Keramos tool's skill stands out in the terminal, between
+# two double lines as wide as the terminal (no corners: Markdown can't close a box's sides), which
+# `kiln frame` draws since Claude's Bash can't see the terminal's width.
 SKILL_FRAME = (
     "Keramos [SKILL-FRAME]: an answer given by a skill of a Keramos tool (kiln, grog, hearth, "
     "seal, stylus, glaze, wedge, saggar, raku, slake, cone, and any later one such as bisque) "
-    "is framed; any other answer is not. First a code block without a language holding only "
-    "the line `╔══ ◆ keramos · <tool> ═…═╗`, then the answer in ordinary Markdown (bold, lists, "
-    "sections), last a code block without a language holding only the line "
-    "`╚═…═ /<tool>:<skill> ══╝`. Both lines are 55 columns wide, filled with `═`. For "
-    "/grog:summary:\n"
-    "```\n╔══ ◆ keramos · grog ═════════════════════════════════╗\n```\n"
+    "is framed; any other answer is not. Run `kiln frame <tool> <skill>` first: it prints two "
+    "lines as wide as the terminal. Write the first in a code block without a language, then "
+    "the answer in ordinary Markdown (bold, lists, sections), then the second in a code block "
+    "without a language. Copy them as printed, never by hand. For /grog:summary:\n"
+    "```\n══ ◆ keramos · grog ═══…═══\n```\n"
     "...\n"
-    "```\n╚════════════════════════════════════ /grog:summary ══╝\n```"
+    "```\n═══…═══ /grog:summary ══\n```"
 )
 TOOL_KEY = reminders.TOOL_KEY
 LEGACY_PLUGIN_LINK = Path(".claude") / "kiln"
