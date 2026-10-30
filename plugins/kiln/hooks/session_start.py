@@ -77,6 +77,20 @@ ERROR_ORIGIN = (
     "showed (kiln update would undo it): in kiln's own repo when this machine has it, otherwise "
     "report it with /kiln:report, only with the user's agreement."
 )
+# Said at every start too: the answer of a Keramos tool's skill stands out in the terminal, framed
+# by two lines of the same width (antoine's choice, the double line), its body plain Markdown.
+SKILL_FRAME = (
+    "Keramos [SKILL-FRAME]: an answer given by a skill of a Keramos tool (kiln, grog, hearth, "
+    "seal, stylus, glaze, wedge, saggar, raku, slake, cone, and any later one such as bisque) "
+    "is framed; any other answer is not. First a code block without a language holding only "
+    "the line `╔══ ◆ keramos · <tool> ═…═╗`, then the answer in ordinary Markdown (bold, lists, "
+    "sections), last a code block without a language holding only the line "
+    "`╚═…═ /<tool>:<skill> ══╝`. Both lines are 55 columns wide, filled with `═`. For "
+    "/grog:summary:\n"
+    "```\n╔══ ◆ keramos · grog ═════════════════════════════════╗\n```\n"
+    "...\n"
+    "```\n╚════════════════════════════════════ /grog:summary ══╝\n```"
+)
 TOOL_KEY = reminders.TOOL_KEY
 LEGACY_PLUGIN_LINK = Path(".claude") / "kiln"
 
@@ -762,7 +776,13 @@ def main() -> None:
     red, found = startup_context(payload)
     context = "\n\n".join(
         part
-        for part in (ERROR_ORIGIN, red, found.context if found else "", launch_place(payload))
+        for part in (
+            ERROR_ORIGIN,
+            SKILL_FRAME,
+            red,
+            found.context if found else "",
+            launch_place(payload),
+        )
         if part
     )
     session_id = payload.get("session_id", "")
