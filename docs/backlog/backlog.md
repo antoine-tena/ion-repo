@@ -1477,6 +1477,13 @@ still being written. Filing it afterwards is the need, not avoiding the restart.
   repo below, offered for moving.
 - [ ] The `cwd` recorded inside the transcript is left as it is; check that `--resume` from the
   repo works with it.
+- [ ] Learned by moving ~80 sessions by hand on 2026-10-30: the repo is guessed from the paths the
+  session's tools touched (absolute, `~/`, and `cd`/`-C` relative to its `cwd`), the old paths of a
+  reorganised `~/code` mapped to their new place first; a session on all repos at once stays put.
+  A session that ran on across a folder rename is split in two project folders under the same id:
+  append the tail to the head. The `memory/` of a project folder whose path no longer exists moves
+  too (MEMORY.md lines merged). Project folder names start with `-`: shell tools take them for
+  options, so work in Python or with `./`. Keep a journal of the moves to undo them.
 
 ### T-371 · `/kiln:token`: a paste prompt in kiln's own style
 - **Type**: improvement
