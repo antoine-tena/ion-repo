@@ -513,7 +513,13 @@ def test_every_start_recalls_that_errors_may_come_from_kiln(
     hook.main()
 
     said = json.loads(capsys.readouterr().out)["hookSpecificOutput"]["additionalContext"]
-    assert said == hook.ERROR_ORIGIN
+    assert said == f"{hook.ERROR_ORIGIN}\n\n{hook.SKILL_FRAME}"
+
+
+def test_skill_frame_lines_share_one_width() -> None:
+    hook = load_hook()
+    lines = [line for line in hook.SKILL_FRAME.splitlines() if line.startswith(("╔", "╚"))]
+    assert [len(line) for line in lines] == [55, 55]
 
 
 def beta_machine(
