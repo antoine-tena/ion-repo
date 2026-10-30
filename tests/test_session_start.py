@@ -313,7 +313,6 @@ def test_the_notice_waits_for_the_first_prompt(
     spec.loader.exec_module(first_prompt)
     monkeypatch.setattr(hook, "NOTICES_DIR", tmp_path)
     monkeypatch.setattr(first_prompt, "NOTICES_DIR", tmp_path)
-    monkeypatch.setattr(first_prompt.place, "PLACES_DIR", tmp_path / "places")
     hook.save_notice("abc", "the logo")
 
     def prompt() -> str:
@@ -507,6 +506,7 @@ def test_every_start_recalls_that_errors_may_come_from_kiln(
 ) -> None:
     hook = load_hook()
     monkeypatch.setattr(hook, "git_root", lambda cwd: None)
+    monkeypatch.setattr(hook.place, "context", lambda cwd: "")
     monkeypatch.setattr(sys, "argv", ["session_start.py"])
     monkeypatch.setattr(sys, "stdin", io.StringIO('{"source": "clear", "cwd": "/"}'))
 
