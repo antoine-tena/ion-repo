@@ -6,6 +6,12 @@ Three kinds, not to be confused.
 
 Final decisions: do not propose them again, even if an audit recommends it.
 
+**2026-10-30**, antoine's decision for the launch: no proof on real repos and no study; v0.5.0
+launches on kiln's own repos at 100 and the demos already recorded, none re-recorded.
+- T-131 · Proof on two real repos, on local copies
+- T-132 · The study: a hundred public Django and Nuxt repos scored (and its idea H01, a labelled
+  corpus built from it)
+
 **2026-10-24**, antoine's decision with T-177: kiln's own docs are in English only, in no other
 language.
 - T-164 · French docs brought up to date at the candidate: no French docs left to translate

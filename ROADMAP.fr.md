@@ -56,7 +56,7 @@ anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
-| v0.5.0 | Public launch: the proof and the page | Candidate Sun 1 Nov, promoted Tue 3 Nov. Milestone decided by antoine (16 October 2026), its content defined on 17 October: the version the launch waits for (T-03). The proof (two real repos, a hundred public ones, kiln's own repos at 100) and the page that shows it, the potential line as its demo. | 12 tickets |
+| v0.5.0 | Public launch: the proof and the page | Candidate Sun 1 Nov, promoted Tue 3 Nov. Milestone decided by antoine (16 October 2026), its content defined on 17 October: the version the launch waits for (T-03). The proof (kiln's own repos at 100) and the page that shows it, the potential line as its demo. No study and no new demo: the recorded demos stay (antoine, 30 October 2026). | 10 tickets |
 | v0.5.1 | Launch week: the rehearsal, and the bugs already known | Candidate Tue 3 Nov. Fixes only from here to the launch; the week absorbs up to three slipped releases. | 8 tickets |
 | v0.5.2 | Launch week: what the rehearsal found | Candidate Thu 5 Nov: the fixes of T-142, nothing else. | fixes as they come |
 | v0.5.3 | Launch day | Candidate Sat 7 Nov, promoted on Mon 9 Nov by the next candidate: the version strangers install. Gate checked on Mon 9 Nov at 20:00; nothing is promoted on launch day. | 1 ticket |
