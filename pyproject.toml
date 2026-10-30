@@ -2,7 +2,7 @@
 # Sur PyPI, `kiln` est pris : la distribution s'appelle kiln-cli, la commande reste `kiln`. `pypi.yml`
 # publie le même code sous `keramos-kiln`, le nom de la famille Keramos, qui la remplacera.
 name = "kiln-cli"
-version = "0.4.9"
+version = "0.4.10"
 description = "Claude Code's workshop: start every new project, and rescue every old one, like a senior engineer would — even if you're not one."
 # README.md, its relative images and links made absolute for PyPI (fancy-pypi-readme, below).
 dynamic = ["readme"]

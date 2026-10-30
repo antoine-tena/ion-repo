@@ -6,6 +6,103 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 `release/vX.Y.Z` branch, rewritten before its first candidate. Names are those of their release:
 entries before v0.4.0 quote kiln's former French names.
 
+## v0.4.10 — 2026-10-30
+<!-- draft: rewrite for users, breaking changes first, then delete this line -->
+- **Breaking**: Plain sizes tiny, small, medium, large instead of spark, ember, flame, blaze
+- .claude/ laid out like PostHog, plans/ like Sentry
+- Claude judges a session's place from the repos below it
+- A session started outside any repo is told where to restart
+- Caddy's health probe under the API's name
+- Gitleaks scans the checked commit only
+- Containers that run under Ubuntu 26.04
+- First deployment and Caddy log owner
+- SMTP mailer in production
+- The PyPI workflow publishes with a token, or trusted publishing
+- Resize skill, a repo up or down a size
+- Deploy on a server shared with others
+- Keep the project's own favicon
+- Kiln set pypi_name publishes a command on PyPI
+- Kiln also published on PyPI as keramos-kiln
+- Ruff 0.17, CODEOWNERS only from a team of two
+- A command-line tool can ship its own Claude Code plugin
+- Kiln trouvé dans le dossier d'un outil d'une famille
+- Dépôts vus trois dossiers sous ~/code (une famille, un dossier par outil)
+- Tap renommé homebrew-kiln
+- Kiln trouvé dans un sous-dossier
+- Fichiers lourds gardés exprès
+- Pipe the log to gitleaks stdin
+- Sans le nom de la session
+- Cache masqué quand il va bien
+- Total cumulé exact, contexte en k
+- Nombre exact de tokens du contexte
+- Total de tokens visible si étroit
+- Tokens utilisés depuis toujours
+- The last line names what the repo has
+- Project rules name only the stack a repo has
+- The branch guard lets a repo's first commit through
+- The conflict hint says to commit before --no-template
+- --all checks a whole update only, and leaves frozen repos alone
+- An adopted front is checked by its own package manager and scripts
+- --rehearse refuses a repo not under kiln before cloning it
+- The spinner shows the time elapsed while a command runs
+- An npm folder installs with npm ci, no stray pnpm-lock.yaml
+- Kiln update --all shows one line per repo, its output in a log
+- Charter.yml and django.yml no longer fail on setup-uv's post step
+- The pull request's body says what was checked, no stale points
+- A template's conflict stops the update before the dependencies read it
+- Without a token, commits that write workflows are left out
+- Names proposed when none is given; kiln completion defaults to bash
+- Kiln-bot's weekly pull request and the score on each pull request
+- --against REF, the change since a commit
+- Kiln bot, kiln-bot's run on kiln/bot
+- A repo without .pre-commit-config.yaml is pointed to kiln adopt, not kiln install
+- Drf-spectacular's export in a DRF repo, no front types without a script
+- A dirty tree names its files, kiln set points to kiln adopt
+- Podman's build of hardened services shown as it runs, Ctrl-C without a traceback
+- A session's place kept, listed at the next start
+- Build provenance on releases, OpenSSF Scorecard weekly
+- Kiln's workflows and actions pass zizmor
+- On develop, kiln opens its work branch itself
+- -V and -v print the version; a command's --help drawn like the home screen
+- The stack's front runs through its lock's package manager
+- Each commit proven, its points given
+- Ruff and gitleaks converters change nothing on a second run
+- Converters run in a throwaway worktree
+- Converters for the CI and a tracked .env
+- WORKFLOW-INJECTION reads only scripts
+- Kiln fix's converters run after the template
+- An image a converter touched is built
+- Requirements alone become a uv project
+- Compose services hardened where they still start
+- The repo's checks told apart and timed out
+- A compose file's services offered
+- Code at the root gets its stack too
+- GitHub settings read through gh
+- Binary and non-UTF-8 files read right
+- Agent files out of the score
+- Reproduce first, direct links
+- Ai_trailers, Claude's help disclosed or not
+- Kiln's own repo no longer called "not a kiln repo"
+- A job with its own services reported in English
+- Pnpm ignore les builds non listés partout
+- Pnpm ignore les builds non listés
+- Pnpm sans lockfile, install simple
+- A language not scored yet is said beside the score
+- The tests and linters of every common stack are seen
+- A milestone's minor goes to the release that reaches it
+- Say the score again below a list of gaps
+- An agent is never a ticket's owner
+- Check a kiln repo whole before and after each converter
+- Move an old runtime and an old Debian together
+- Catch SQL formatted around quotes of the other kind
+- Workflow tokens read the repo only
+- Actions pinned to a commit SHA
+- Dependabot for every ecosystem found
+- The checks type what mypy is set for, and a red one is named
+- A pinned action keeps its exact version in the comment
+- Dependabot also updates the actions that composite actions use
+- Python rules read the code, not the examples in its strings
+
 ## v0.4.9 — 2026-10-26
 <!-- readme: unchanged: a fix, no new command nor option -->
 - `kiln ci`, `/kiln:worktree` and kiln's reusable GitHub workflows (`pnpm.yml`, `api-contract.yml`) skip the dependencies' build scripts that `allowBuilds` does not list too, instead of failing with `ERR_PNPM_IGNORED_BUILDS` (pnpm 11+), as `kiln install` does since 0.4.8.
