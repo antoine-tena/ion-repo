@@ -7,9 +7,12 @@
 *.key
 *.p12
 
-# --- Claude Code: personal settings (.claude/settings.json stays shared) ---
+# --- Claude Code: what stays on each machine (settings.json, skills/, rules/, hooks/ and
+# plans/ are shared) ---
 .claude/settings.local.json
 .claude/worktrees/
+.claude/memory/
+.claude/sessions/
 # Link to the installed kiln plugin, made by kiln 0.3's session hook.
 .claude/kiln
 # Serena's index (plugin serena@kiln), specific to each worktree.
