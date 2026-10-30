@@ -6,6 +6,7 @@ import json
 import re
 import sys
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -18,7 +19,7 @@ RULES = model.load_rules()
 WORKFLOW = ".github/workflows/ci.yml"
 # A case of a forge rule: the GitHub settings `gh` would read, as JSON, under this name.
 FORGE = "<github settings>"
-GITHUB = {
+GITHUB: dict[str, Any] = {
     "slug": "acme/app",
     "default_branch": "main",
     "public": True,
@@ -302,6 +303,12 @@ def test_each_rule_says_pass_and_fail_where_it_should(
     assert outcome.status == expected, outcome
     if expected == "fail":
         assert outcome.locations or outcome.detail
+
+
+@pytest.mark.parametrize("user", ["0:0", "root:root"])
+def test_a_container_running_as_root_by_uid_and_group_fails(tmp_path: Path, user: str) -> None:
+    (tmp_path / "Dockerfile").write_text(f"FROM python:3.14\nUSER {user}\n")
+    assert detectors.non_root_containers(read_repo(tmp_path)).status == detectors.FAIL
 
 
 def test_requirements_pinned_to_exact_versions_are_their_own_lock(tmp_path: Path) -> None:
