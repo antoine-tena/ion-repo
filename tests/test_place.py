@@ -1,4 +1,4 @@
-"""`place.py`: a session started outside any repo, whose first messages name a repo below it."""
+"""`place.py`: a session started outside any repo is told the repos below it."""
 
 import importlib.util
 import io
@@ -23,98 +23,56 @@ def load(name: str) -> ModuleType:
 
 
 @pytest.fixture
-def place(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> ModuleType:
-    module = load("place")
-    monkeypatch.setattr(module, "PLACES_DIR", tmp_path / "places")
-    return module
+def place() -> ModuleType:
+    return load("place")
 
 
 @pytest.fixture
 def code(tmp_path: Path) -> Path:
-    """`code/` holding `shop`, `tools/kiln`, `tools/kiln-measures`, a hidden and a nested repo."""
+    """`code/` holding `shop`, `tools/kiln`, a hidden repo, a nested one and a plain folder."""
     root = tmp_path / "code"
-    for repo in ("shop", "tools/kiln", "tools/kiln-measures", ".hidden/secret", "shop/inner"):
+    for repo in ("shop", "tools/kiln", ".hidden/secret", "shop/inner"):
         (root / repo).mkdir(parents=True)
         subprocess.run(["git", "init", "-q", str(root / repo)], check=True)
     (root / "notes").mkdir()
     return root
 
 
-def ask(place: ModuleType, cwd: Path, prompt: str, session: str = "s1") -> str | None:
-    return place.check({"session_id": session, "cwd": str(cwd), "prompt": prompt})
-
-
 def test_repos_below_skip_hidden_folders_and_inside_repos(place: ModuleType, code: Path) -> None:
     assert [repo.relative_to(code) for repo in place.repos_below(code)] == [
         Path("shop"),
         Path("tools/kiln"),
-        Path("tools/kiln-measures"),
     ]
 
 
-@pytest.mark.parametrize(
-    ("prompt", "expected"),
-    [
-        ("fix the hooks of kiln", True),
-        ("Kiln's hooks", True),
-        ("in ~/code/tools/kiln, please", True),
-        ("what does kiln?", True),
-        ("look at kiln-measures", False),
-        ("the kilns of the village", False),
-        ("read kiln.toml", False),
-    ],
-)
-def test_a_repo_is_named_as_a_word(place: ModuleType, prompt: str, expected: bool) -> None:
-    assert place.named(prompt, "kiln") is expected
+def test_outside_a_repo_claude_is_told_the_repos_below(place: ModuleType, code: Path) -> None:
+    told = place.context(code)
+    assert told.startswith(f"kiln [WRONG-PLACE]: this session was started in {code},")
+    assert "Repos below it: shop, tools/kiln." in told
+    assert "secret" not in told and "inner" not in told
 
 
-def test_a_named_repo_is_told_once(place: ModuleType, code: Path) -> None:
-    told = ask(place, code, "add a page to the shop")
-    assert told is not None and "[WRONG-PLACE]" in told and f"cd {code / 'shop'} && claude" in told
-    assert ask(place, code, "and the shop's footer") is None
+def test_a_long_list_is_cut(place: ModuleType, code: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(place, "MAX_LISTED", 1)
+    assert "Repos below it: shop and 1 more." in place.context(code)
 
 
-def test_kiln_measures_is_not_kiln(place: ModuleType, code: Path) -> None:
-    told = ask(place, code, "a new measure in kiln-measures")
-    assert told is not None and f"cd {code / 'tools/kiln-measures'} " in told
-    assert f"({code / 'tools/kiln'})" not in told
+def test_silent_inside_a_repo_and_without_repos_below(place: ModuleType, code: Path) -> None:
+    assert place.context(code / "shop" / "inner") == ""
+    assert place.context(code / "shop") == ""
+    assert place.context(code / "notes") == ""
 
 
-def test_a_name_of_the_launch_path_means_that_folder(place: ModuleType, code: Path) -> None:
-    assert ask(place, code / "tools", "how should the tools work together?") is None
-    (code / "tools" / "tools").mkdir()
-    subprocess.run(["git", "init", "-q", str(code / "tools" / "tools")], check=True)
-    assert ask(place, code / "tools", "the tools, again", session="s2") is None
-
-
-def test_silent_inside_a_repo(place: ModuleType, code: Path) -> None:
-    assert ask(place, code / "shop" / "inner", "work on kiln") is None
-    assert ask(place, code / "shop", "work on kiln", session="s2") is None
-
-
-def test_silent_for_slash_commands_and_unknown_names(place: ModuleType, code: Path) -> None:
-    assert ask(place, code, "/kiln:pause") is None
-    assert ask(place, code, "hello") is None
-    assert ask(place, code, "what about notes?") is None
-
-
-def test_only_the_first_messages_are_watched(place: ModuleType, code: Path) -> None:
-    for prompt in ("hello", "how are you", "fine"):
-        assert ask(place, code, prompt) is None
-    assert ask(place, code, "now the shop") is None
-
-
-def test_first_prompt_hands_the_advice_to_claude(
-    tmp_path: Path, code: Path, monkeypatch: pytest.MonkeyPatch
+def test_session_start_adds_it_to_claude_s_context(
+    code: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    first_prompt = load("first_prompt")
-    monkeypatch.setattr(first_prompt, "NOTICES_DIR", tmp_path / "notices")
-    monkeypatch.setattr(first_prompt.place, "PLACES_DIR", tmp_path / "places")
-    payload = {"session_id": "s1", "cwd": str(code), "prompt": "the shop"}
+    session_start = load("session_start")
+    monkeypatch.setattr(session_start, "save_notice", lambda *_: None)
+    monkeypatch.setattr(session_start, "paused_sessions", lambda _: "")
+    payload = {"session_id": "s1", "cwd": str(code), "source": "startup"}
     monkeypatch.setattr("sys.stdin", io.StringIO(json.dumps(payload)))
     output = io.StringIO()
     monkeypatch.setattr("sys.stdout", output)
-    first_prompt.main()
-    told = json.loads(output.getvalue())["hookSpecificOutput"]
-    assert told["hookEventName"] == "UserPromptSubmit"
-    assert "[WRONG-PLACE]" in told["additionalContext"]
+    session_start.main()
+    told = json.loads(output.getvalue())["hookSpecificOutput"]["additionalContext"]
+    assert "[WRONG-PLACE]" in told and "shop, tools/kiln" in told
