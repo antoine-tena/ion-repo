@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-385.**
+**Next free: T-386.**
 
 ---
 
@@ -141,6 +141,7 @@ it.
 - T-163 · Skills call one kiln command, the backlog first (L)
 - T-165 · Write less code, measured: a ladder before writing (M)
 - T-192 · The score in Claude Code's session, context files under a budget (S)
+- T-385 · `kiln session move`: a session filed under its repo afterwards (S)
 
 ### v0.5.8 · kiln never makes you wait
 The same features, sooner: what was measured slow on 24 October (the suite every release waits for,
@@ -1453,6 +1454,29 @@ that another session was still open on its subject.
 - [ ] The `SessionStart` hook lists the other sessions whose transcript
   (`~/.claude/projects/<project>/`) was written in the last minutes with a `cwd` in the same repo
   (its worktrees included), with their branch, and asks whether to go on.
+
+### T-385 · `kiln session move`: a session filed under its repo afterwards
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-30
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: the user, 2026-10-30, after a session started in `~/code` created the repo
+  `Polytech/mobilite` and worked in it
+
+`place.py` never moves a session, and that stays: a task that belongs to a repo is restarted
+there. But a session started outside any repo sometimes creates the repo it then works in, and its
+transcript stays under `~/.claude/projects/-home-antoine-code/`: `claude --resume` in the repo
+does not list it. It had to be copied by hand, and the live session could not be moved, its file
+still being written. Filing it afterwards is the need, not avoiding the restart.
+- [ ] `kiln session move <id> <repo>` moves `~/.claude/projects/<encoded launch folder>/<id>.jsonl`,
+  and its `<id>/` folder when there is one, to the repo's project folder (created if missing),
+  then prints the line that resumes it: `cd <repo> && claude --resume <id>`.
+- [ ] A session still being written (the current one, or a transcript changed in the last
+  minutes) is refused, with the exact command to run once it is closed.
+- [ ] Without `<id>`: the sessions of the launch folder whose `cwd` or edited files point into a
+  repo below, offered for moving.
+- [ ] The `cwd` recorded inside the transcript is left as it is; check that `--resume` from the
+  repo works with it.
 
 ### T-371 · `/kiln:token`: a paste prompt in kiln's own style
 - **Type**: improvement
