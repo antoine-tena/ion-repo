@@ -516,10 +516,10 @@ def test_every_start_recalls_that_errors_may_come_from_kiln(
     assert said == f"{hook.ERROR_ORIGIN}\n\n{hook.SKILL_FRAME}"
 
 
-def test_skill_frame_lines_share_one_width() -> None:
+def test_skill_frame_has_kiln_frame_draw_cornerless_rules() -> None:
     hook = load_hook()
-    lines = [line for line in hook.SKILL_FRAME.splitlines() if line.startswith(("╔", "╚"))]
-    assert [len(line) for line in lines] == [55, 55]
+    assert "`kiln frame <tool> <skill>`" in hook.SKILL_FRAME
+    assert not set("╔╗╚╝") & set(hook.SKILL_FRAME)
 
 
 def beta_machine(
