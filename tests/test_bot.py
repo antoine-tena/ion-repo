@@ -46,6 +46,7 @@ def test_the_week_s_fixes_become_one_pull_request_body(tmp_path: Path) -> None:
 
     proposal = bot.run_bot(root, update=True, body_path=tmp_path / "body.md")
 
+    assert proposal.before is not None and proposal.after is not None
     assert proposal.changed and proposal.after > proposal.before
     text = (tmp_path / "body.md").read_text()
     assert text.startswith(f"## kiln score: {proposal.before} → {proposal.after} (+")

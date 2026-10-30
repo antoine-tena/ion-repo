@@ -405,7 +405,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    uses: antoine-tena/kiln/.github/workflows/bot.yml@v0.4.9
+    uses: antoine-tena/kiln/.github/workflows/bot.yml@v0.4.10
     secrets:
       token: ${{ secrets.KILN_BOT_TOKEN }}  # optional, see below
 ```

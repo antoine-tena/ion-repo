@@ -21,6 +21,7 @@ import tomllib
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from pathlib import PurePosixPath
+from typing import Any
 
 import yaml  # brought by copier
 
@@ -498,17 +499,17 @@ def supported_runtimes(repo: Repo, today: str = "") -> Outcome:
 COMPOSE_FILES = ("**/compose.y*ml", "**/compose.*.y*ml", "**/docker-compose*.y*ml")
 
 
-ROOT_USERS = ("", "0", "root")
+COMPOSE_ROOT_USERS = ("", "0", "root")
 
 
-def _has_no_new_privileges(settings: dict) -> bool:
+def _has_no_new_privileges(settings: dict[str, Any]) -> bool:
     return any("no-new-privileges" in str(opt) for opt in settings.get("security_opt") or [])
 
 
-def _runs_unprivileged(settings: dict) -> bool:
+def _runs_unprivileged(settings: dict[str, Any]) -> bool:
     """A non-root user and no capability added back."""
     user = str(settings.get("user", "")).split(":")[0]
-    return user not in ROOT_USERS and not settings.get("cap_add")
+    return user not in COMPOSE_ROOT_USERS and not settings.get("cap_add")
 
 
 def hardened_compose(repo: Repo) -> Outcome:

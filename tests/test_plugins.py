@@ -45,7 +45,7 @@ def test_every_cited_skill_exists() -> None:
 # Une règle de `.claude/rules/` ne se charge que quand Claude touche un fichier que ses `paths`
 # désignent : un motif qui ne désigne plus rien (fichier renommé ou déplacé) l'éteint sans bruit.
 def test_rule_paths_match_files() -> None:
-    dead = {}
+    dead: dict[str, list[str]] = {}
     for rule in (ROOT / ".claude" / "rules").glob("*.md"):
         front_matter = rule.read_text().split("---")[1]
         for pattern in re.findall(r'^\s*- "([^"]+)"$', front_matter, re.M):

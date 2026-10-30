@@ -1,6 +1,7 @@
 """The GitHub settings `kiln score` reads through `gh` (T-158, T-186): answers of a fake `gh`,
 admin rights required, a day of cache, nothing in CI, never a token."""
 
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -42,7 +43,7 @@ def gh(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> dict[str, tuple[int, 
     monkeypatch.setattr(forge, "_api", api)
     monkeypatch.setattr(forge, "ENABLED", True)
     monkeypatch.setattr(forge, "_read", {})
-    monkeypatch.setattr(forge.shutil, "which", lambda name: f"/usr/bin/{name}")
+    monkeypatch.setattr(shutil, "which", lambda name: f"/usr/bin/{name}")
     monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
     answers["calls"] = (0, calls)
     return answers
@@ -143,6 +144,6 @@ def test_nothing_is_read_in_ci_nor_without_gh(
     monkeypatch.setattr(forge, "ENABLED", False)
     assert forge.settings(root) is None
     monkeypatch.setattr(forge, "ENABLED", True)
-    monkeypatch.setattr(forge.shutil, "which", lambda name: None)
+    monkeypatch.setattr(shutil, "which", lambda name: None)
     assert forge.settings(root) is None
     assert gh["calls"][1] == []
