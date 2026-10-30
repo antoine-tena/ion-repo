@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-387.**
+**Next free: T-388.**
 
 ---
 
@@ -800,6 +800,27 @@ packs (T-69). From here, strict semver: breaking → major, `feat` → minor.
 ## 🔴 Critical
 
 ## 🟠 Important
+
+### T-387 · What belongs to another craft leaves kiln for its tool
+- **Type**: task
+- **Status**: todo — the server part waits for hearth's T-07
+- **Opened**: 2026-10-30
+- **Effort**: L · **Owner**: — · **Due**: —
+- **Origin**: antoine, reminded on 30 October 2026: much of what kiln carries today belongs to
+  another Keramos tool (one tool per craft; kiln is the technique of the code)
+
+An inventory first, then one move per craft, each tool taking the piece before kiln drops it
+(a project never loses a file between two `kiln update`):
+- [ ] **hearth** (hosting and operations): the `vps` plugin (`deploy`, `prod-dump`,
+  `prod-logs`), the `config/vps/` template (deploy-remote, backup, restore-test, heal, Caddyfile,
+  compose, setup-deploy-user), `scripts/ops/` (deploy, smoke test), `docs/operations/` and the
+  rule `production.md`; step 8 "Deploy" of `/kiln:release` calls hearth. New server know-how
+  goes to hearth now, not here (annski's `config/vps/` is ahead of the template: hearth T-07).
+- [ ] **saggar** (security, secrets): skill `/kiln:token` and the `.<service>/` convention, rule
+  `security.md`; the charter's [SECRETS] and [VULNERABILITY-AUDIT] stay, as code rules.
+- [ ] **stylus** (words): the announcement of `/kiln:release` (what's-new window, email).
+- [ ] The rest reviewed with antoine (`contribution`, `good-first-issues`: raku?), and the
+  kiln-generated `README.md` of each repo pointing to the tools that now hold each piece.
 
 ### T-372 · `keramos-kiln` everywhere once it is on PyPI
 - **Type**: task
