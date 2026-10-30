@@ -18,20 +18,19 @@ arrêtée dès que sa candidate est taguée. Ce qui est déjà sorti est dans le
   de version, et `kiln update` les convertit dans votre repo. La mineure ne monte qu'à une étape,
   dans la version qui l'atteint : le travail qui y mène sort sous la mineure d'avant, si bien que
   les stacks de la v0.8.0 arrivent en v0.7.x. Le semver strict commence à la 1.0.
-- Un seul mainteneur écrit kiln avec Claude Code, environ 25 heures de session par semaine. Les
-  dates ci-dessous découlent du plan à ce rythme : des estimations, pas des échéances, et chaque
-  version que le plan ne prévoit pas les repousse de deux jours.
+- Un seul mainteneur écrit kiln avec Claude Code, environ 25 heures de session par semaine. Le plan
+  ne porte pas de dates pour l'instant : le lancement public n'en a pas encore.
 
 ## Étapes
 
 | Étape | Ce que ça change pour vous | Prévue |
 |---|---|---|
-| v0.5.0 | N'importe quel repo Django ou Nuxt, créé par kiln ou non, noté face à la grille en quelques secondes, puis mis à niveau par script partout où un script le peut. Lancement public le mercredi 11 novembre 2026, si la v0.5.0 tient sa barre ; sinon une semaine plus tard. | novembre 2026 |
-| v0.6.0 | Claude Code comble seul les écarts qu'un script laisse, chacun prouvé par la note. | décembre 2026 |
-| v0.7.0 | Tous les repos d'une organisation (une université, un réseau d'associations, une entreprise de 50 personnes) notés sans les cloner, leurs écarts classés d'un repo à l'autre. | printemps 2027 |
-| v0.8.0 | Chaque stack courante notée et corrigée par script : Java et Kotlin, C# et .NET, PHP, C et C++, Go, Rust, Ruby, applications mobiles, jeux, R et Elixir, chacune avec ses frameworks les plus utilisés. | printemps 2027 |
-| v0.9.0 | N'importe quelle CI, n'importe quelle machine, n'importe quelle taille : les autres systèmes de CI, ARM, les réseaux coupés d'internet, les monorepos et le million de fichiers. | mi-2027 |
-| v1.0.0 | La promesse de stabilité. Le format des règles se fige une fois qu'il a tenu sur les stacks qui font environ 95 % des repos, et chacun peut publier des paquets de règles pour le reste. Semver strict ensuite. | mi-2027 |
+| v0.5.0 | N'importe quel repo Django ou Nuxt, créé par kiln ou non, noté face à la grille en quelques secondes, puis mis à niveau par script partout où un script le peut. Le lancement public, une fois que la v0.5.0 tient sa barre. | pas de date |
+| v0.6.0 | Claude Code comble seul les écarts qu'un script laisse, chacun prouvé par la note. | pas de date |
+| v0.7.0 | Tous les repos d'une organisation (une université, un réseau d'associations, une entreprise de 50 personnes) notés sans les cloner, leurs écarts classés d'un repo à l'autre. | pas de date |
+| v0.8.0 | Chaque stack courante notée et corrigée par script : Java et Kotlin, C# et .NET, PHP, C et C++, Go, Rust, Ruby, applications mobiles, jeux, R et Elixir, chacune avec ses frameworks les plus utilisés. | pas de date |
+| v0.9.0 | N'importe quelle CI, n'importe quelle machine, n'importe quelle taille : les autres systèmes de CI, ARM, les réseaux coupés d'internet, les monorepos et le million de fichiers. | pas de date |
+| v1.0.0 | La promesse de stabilité. Le format des règles se fige une fois qu'il a tenu sur les stacks qui font environ 95 % des repos, et chacun peut publier des paquets de règles pour le reste. Semver strict ensuite. | pas de date |
 
 Toutes les stacks viennent avant la 1.0, exprès : un format éprouvé sur deux frameworks casserait
 à la première stack qui diffère, et la 1.0 promet qu'il ne cassera pas.
@@ -45,23 +44,25 @@ anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 
 <!-- roadmap:start: drawn from docs/backlog/backlog.md by scripts/roadmap.py -->
 
-### v0.4.x · 3 releases
+### v0.4.x · 5 releases
 
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
-| v0.4.10 | Every gap seen, wherever the code lives | Candidate Tue 27 Oct. The score and the fixes reach what they miss today: GitHub settings, code at the root as well as in `backend/` and `frontend/`, compose services, loose requirements, files read as empty. | fixes as they come |
-| v0.4.11 | Never lets it rot, kiln first | Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other people's repos: each commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03). | fixes as they come |
-| v0.4.12 | Each craft in its own tool | The launch being off, what belongs to another craft leaves kiln now; the order of the moves is the one of T-387, and T-395 splits this release when it replans. ⚠ breaking: skill names, the server's generated tree, each with its conversion in `kiln update`. | 8 tickets |
+| v0.4.11 | Never lets it rot, kiln first | kiln-bot runs kiln's workflows with write access in other people's repos: each commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03). | fixes as they come |
+| v0.4.12 | What the last sessions tripped on | Real sessions of late October hit these, each small: the release, the merge, a long session, a first `kiln check`. They cost time now, so they go before the moves. | 12 tickets |
+| v0.4.13 | A tool's piece reaches a repo: the small moves | How a tool's skill and files get into a generated repo gets decided, then proven on the three smallest moves. ⚠ breaking: skill names, each with a forward and its conversion in `kiln update`. | 5 tickets |
+| v0.4.14 | The server in hearth | The biggest move, alone in its release: production deployments depend on it. ⚠ breaking: the generated tree, the `deploy` question, `--vps`, the `vps` skills, with their conversion. | 1 ticket |
+| v0.4.15 | The grid in cone | The last move, after kiln runs on slake (slake's T-07, one engine at a time). It closes the map of the moves. | 2 tickets |
 
 ### v0.5.x · 18 releases
 
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
-| v0.5.0 | Public launch: the proof and the page | Candidate Sun 1 Nov, promoted Tue 3 Nov. Milestone decided by antoine (16 October 2026), its content defined on 17 October: the version the launch waits for (T-03). The proof (kiln's own repos at 100) and the page that shows it, the potential line as its demo. No study and no new demo: the recorded demos stay (antoine, 30 October 2026). | 10 tickets |
-| v0.5.1 | Launch week: the rehearsal, and the bugs already known | Candidate Tue 3 Nov. Fixes only from here to the launch; the week absorbs up to three slipped releases. | 8 tickets |
-| v0.5.2 | Launch week: what the rehearsal found | Candidate Thu 5 Nov: the fixes of T-142, nothing else. | fixes as they come |
-| v0.5.3 | Launch day | Candidate Sat 7 Nov, promoted on Mon 9 Nov by the next candidate: the version strangers install. Gate checked on Mon 9 Nov at 20:00; nothing is promoted on launch day. | 1 ticket |
-| v0.5.4 | The first week with strangers | Candidate Mon 9 Nov, promoted after the launch. What the launch brings in (issues, reports, the first gap reports of T-38) comes first; these give way to it. From here each milestone is announced (T-118). | 11 tickets |
+| v0.5.0 | Public launch: the proof and the page | Milestone decided by antoine (16 October 2026), its content defined on 17 October: the version the launch waits for (T-03). The proof (kiln's own repos at 100) and the page that shows it, the potential line as its demo. No study and no new demo: the recorded demos stay (antoine, 30 October 2026). | 10 tickets |
+| v0.5.1 | Before the launch: the rehearsal, and the bugs already known | Fixes only from here to the launch. | 8 tickets |
+| v0.5.2 | Before the launch: what the rehearsal found | The fixes of T-142, nothing else. | fixes as they come |
+| v0.5.3 | Launch day | Promoted two days before the launch by the next candidate: the version strangers install. Gate checked that evening at 20:00; nothing is promoted on launch day. | 1 ticket |
+| v0.5.4 | The first week with strangers | Promoted after the launch. What the launch brings in (issues, reports, the first gap reports of T-38) comes first; these give way to it. From here each milestone is announced (T-118). | 11 tickets |
 | v0.5.5 | A score you can trust: the false alarms of real repos, gone | Strangers' repos hold fixtures, vendored and generated code, templates, READMEs in other languages: each class of false alarm is handled once, in the engine, and stays fixed by a test; the reference repo's score in every note says when the grid moved. | 2 tickets |
 | v0.5.6 | Show your score | The image that travels by itself, and anyone's repo scored from its URL: the launch's visitors become its messengers. | 4 tickets |
 | v0.5.7 | Claude pays less per session | Context length is the cost (measured on 22 October): skills that run one kiln command, a ladder before writing code, context files kept under a budget, the score shown without Claude asking for it. | 5 tickets |
@@ -70,7 +71,7 @@ anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 | v0.5.10 | `kiln fix`: more gaps closed, faster, from scripts | The code's own rules get converters, the checks run once with a bisection on red, the options kiln-bot and the skills need; a fresh `kiln new` repo leaves `kiln fix` nothing to do. | 4 tickets |
 | v0.5.11 | Rules that test themselves | Before the grid grows by hundreds of rules: each rule carries its examples, its rung and its message per place, and `kiln grid new`, `test`, `try` and `lint` make a rule in minutes. | 1 ticket |
 | v0.5.12 | Findings where people look | With rules that test themselves (v0.5.11) to build on: in the pull request, the CI's summary and GitHub's code scanning, written without a flag; repo-local rules in the grid's format. | 3 tickets |
-| v0.5.13 | The grid grows: the exact rules first, three new themes | T-141 opens here, its other boxes being the theme releases below: the rules a detector decides exactly today, the first rule of `licensing`, `infrastructure` and `data-science`, and the template held to every new rule by its own test. | 4 tickets |
+| v0.5.13 | The grid grows: the exact rules first, three new themes | T-141 opens here, its other boxes being the theme releases below: the rules a detector decides exactly today, the first rule of `licensing`, `infrastructure` and `data-science`, and the template held to every new rule by its own test. | 5 tickets |
 | v0.5.14 | Repos safe to hand to an agent | What Claude Code users need first (17 October): narrow permissions, pinned MCP servers, no secret an agent can read, model calls with limits; plugins and MCP servers scored as a kind of their own. | 5 tickets |
 | v0.5.15 | The roadmap Claude reads without exploring | The input of v0.6.0: each gap a context pack with its recipe and its proof, ordered by points per token, cut into batches that fit a session. | 1 ticket |
 | v0.5.16 | Tests at the lowest token cost | The other half of v0.6.0: generators that cost no tokens in the template, coverage and surviving mutants measured by script, Claude on the holes only. | 3 tickets |
