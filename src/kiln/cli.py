@@ -302,7 +302,7 @@ def _dispatch_score(arguments: argparse.Namespace) -> None:
         gap_report.offer(root, report, input if is_interactive() else None)
 
 
-def _add_grid_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_grid_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     from kiln.grid.model import LEVELS, THEMES
 
     grid_parser = commands.add_parser("grid", help="the rules kiln holds as the best, with sources")
@@ -314,7 +314,7 @@ def _add_grid_command(commands: argparse._SubParsersAction[argparse.ArgumentPars
     grid_parser.add_argument("--level", choices=LEVELS, help="only this level")
 
 
-def _add_score_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_score_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     score_parser = commands.add_parser(
         "score", help="any repo measured against the grid, in seconds, no token"
     )
@@ -341,7 +341,7 @@ def _add_score_command(commands: argparse._SubParsersAction[argparse.ArgumentPar
     )
 
 
-def _add_fix_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_fix_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     fix_parser = commands.add_parser(
         "fix", help="close by script every gap a script can close, on a branch, with proof"
     )
@@ -352,7 +352,7 @@ def _add_fix_command(commands: argparse._SubParsersAction[argparse.ArgumentParse
     fix_parser.add_argument("--rule", help="only this rule (its ID)")
 
 
-def _add_bot_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_bot_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     bot_parser = commands.add_parser(
         "bot", help="kiln-bot's run: kiln update and kiln fix on kiln/bot, for one pull request"
     )
@@ -368,7 +368,7 @@ def _add_bot_command(commands: argparse._SubParsersAction[argparse.ArgumentParse
     )
 
 
-def _add_pause_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_pause_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     pause_parser = commands.add_parser(
         "pause", help="keep this Claude Code session's place, listed at the next start"
     )
@@ -378,7 +378,7 @@ def _add_pause_command(commands: argparse._SubParsersAction[argparse.ArgumentPar
     pause_parser.add_argument("--next", default="", help="the next step")
 
 
-def _add_waive_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_waive_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     waive_parser = commands.add_parser(
         "waive", help="waive a rule of kiln, or freeze a file (no argument: list)"
     )
@@ -394,7 +394,7 @@ def _add_waive_command(commands: argparse._SubParsersAction[argparse.ArgumentPar
     waive_parser.add_argument("--upstream", default="", help="issue or PR opened on kiln")
 
 
-def _add_new_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_new_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     new_parser = commands.add_parser("new", help="generate a complete new project")
     new_parser.add_argument(
         "directory", type=Path, nargs="?", help="project folder (otherwise asked: project name)"
@@ -429,7 +429,7 @@ def _add_new_command(commands: argparse._SubParsersAction[argparse.ArgumentParse
     )
 
 
-def _add_ci_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_ci_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     ci_parser = commands.add_parser("ci", help="replay a commit's CI on this machine")
     ci_parser.add_argument("revision", nargs="?", default="HEAD", help="commit (default: HEAD)")
     ci_parser.add_argument(
@@ -440,7 +440,7 @@ def _add_ci_command(commands: argparse._SubParsersAction[argparse.ArgumentParser
     ci_parser.add_argument("--status", action="store_true", help="verdict only, no replay")
 
 
-def _add_dev_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_dev_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     dev_parser = commands.add_parser("dev", help="run the project locally")
     dev_parser.add_argument(
         "action",
@@ -470,7 +470,7 @@ def _check_dev_arguments(arguments: argparse.Namespace) -> None:
         raise KilnError("--containers runs the whole stack: no --only")
 
 
-def _add_update_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_update_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     update_parser = commands.add_parser("update", help="update the template and dependencies")
     update_parser.add_argument("--no-template", action="store_true", help="keep the architecture")
     update_parser.add_argument("--no-deps", action="store_true", help="keep the dependencies")

@@ -3,6 +3,7 @@ branch, undone when the checks turn red, nothing written by a dry run, and each 
 closing its rule. The network (commit SHAs, digests) is faked."""
 
 import re
+import shutil
 import subprocess
 from collections.abc import Callable
 from pathlib import Path
@@ -423,7 +424,7 @@ def test_an_image_a_converter_touched_is_built(
 
 
 def test_only_container_files_are_built(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(checks.shutil, "which", lambda name: f"/usr/bin/{name}")
+    monkeypatch.setattr(shutil, "which", lambda name: f"/usr/bin/{name}")
     builds = IMAGE_BUILDS(tmp_path, ["api/Dockerfile", "web/app.Dockerfile", "README.md"])
     assert [build.argv[-3:] for build in builds] == [
         ("-f", "api/Dockerfile", "api"),
@@ -695,7 +696,9 @@ def test_the_throwaway_worktree_has_what_the_checks_need(tmp_path: Path) -> None
 # --- each commit proven (T-170) ---------------------------------------------------------------
 
 
-def converter(monkeypatch: pytest.MonkeyPatch, rule_id: str, convert: Callable) -> None:
+def converter(
+    monkeypatch: pytest.MonkeyPatch, rule_id: str, convert: Callable[[Repo], list[str]]
+) -> None:
     """`rule_id`'s converter replaced by `convert` for one test."""
     name = RULES[rule_id].fixer
     monkeypatch.setitem(FIXERS, name, FIXERS[name].__class__(name, convert, "test converter"))

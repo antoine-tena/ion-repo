@@ -100,8 +100,8 @@ def _uv_project(repo: Repo) -> list[str]:
     }
     for command in steps:
         if not _uv(command, repo.root):
-            for made in UV_PROJECT_FILES:
-                (repo.root / made).unlink(missing_ok=True)
+            for leftover in UV_PROJECT_FILES:
+                (repo.root / leftover).unlink(missing_ok=True)
             for txt, text in originals.items():
                 (repo.root / txt).write_text(text, encoding="utf-8")
             return []

@@ -13,7 +13,7 @@ from kiln.fleet import (
     integration_branch,
     template_state,
 )
-from kiln.shell import KilnError
+from kiln.shell import KilnError, step
 from kiln.update import conflicted_files
 
 
@@ -203,7 +203,7 @@ def test_update_all_shows_one_line_per_repo_and_logs_the_rest(
     monkeypatch.setattr(fleet, "require_tools", lambda *_: None)
 
     def noisy_update(root: Path, *, allow_major: bool) -> str:
-        fleet.step("Check: charter")
+        step("Check: charter")
         # A command's output, written straight to the descriptors (pre-commit's hooks).
         subprocess.run(["sh", "-c", "echo hook passed; echo hook warning >&2"], check=True)
         return "merged into develop" if root.name == "ok" else "failed: tree not clean\n  a.lock"
@@ -265,9 +265,12 @@ def test_a_frozen_repo_is_left_alone_by_update_all(
     monkeypatch.setattr(fleet, "require_tools", lambda *_: None)
     monkeypatch.setattr(fleet, "load_config", lambda: UserConfig(frozen_repos=("witness",)))
     updated: list[str] = []
-    monkeypatch.setattr(
-        fleet, "update_one", lambda root, **_: updated.append(root.name) or "merged into develop"
-    )
+
+    def update_one(root: Path, **_: object) -> str:
+        updated.append(root.name)
+        return "merged into develop"
+
+    monkeypatch.setattr(fleet, "update_one", update_one)
 
     fleet.update_all(code_dir, allow_major=False)
 

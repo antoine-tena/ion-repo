@@ -339,7 +339,11 @@ def test_a_compose_file_running_the_project_is_offered_and_remembered(adopted: P
     asked: list[str] = []
 
     def answer(reply: str) -> Callable[[str], str]:
-        return lambda prompt: asked.append(prompt) or reply
+        def ask(prompt: str) -> str:
+            asked.append(prompt)
+            return reply
+
+        return ask
 
     commands = dev_processes(adopted)
     assert _compose_instead(adopted, commands, answer("c"))
