@@ -8,7 +8,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, NoReturn
 
-from kiln import banner, tool_update, ui
+from kiln import banner, renames, tool_update, ui
 from kiln.config import load_config
 from kiln.shell import KilnError, repo_root
 from kiln.versions import installed_version
@@ -17,8 +17,9 @@ if TYPE_CHECKING:
     from kiln import new
 
 EXIT_FAILURE = 1
+EXIT_INTERRUPTED = 130  # 128 + SIGINT, as shells report it
 PROJECT_NAME = re.compile(r"[a-z][a-z0-9-]*")
-SIZES = ("spark", "ember", "flame", "blaze")
+SIZES = ("tiny", "small", "medium", "large")
 PROJECT_TYPES = ("app", "api", "site", "dashboard", "analysis", "cli")
 BACKENDS = ("django", "fastapi", "data", "cli", "java", "none")
 FRONTENDS = ("nuxt", "next", "astro", "vite-react", "streamlit", "dash", "none")
@@ -28,13 +29,13 @@ LANGUAGES = ("en", "fr")
 # Home screen: commands by section; the role of each comes from its argparse help.
 COMMAND_GROUPS = (
     ("Project", ("new", "adopt", "install", "publish", "update", "set", "waive")),
-    ("Day to day", ("dev", "check", "ci", "contract", "doctor", "completion")),
-    ("The grid", ("grid", "score", "fix")),
+    ("Day to day", ("dev", "check", "ci", "contract", "doctor", "pause", "completion")),
+    ("The grid", ("grid", "score", "fix", "bot")),
     ("All repos", ("status", "update --all", "version")),
 )
 FLEET_UPDATE_ROLE = "update every kiln repo, merged straight away"
 EXAMPLES = (
-    "kiln new atelier --size ember --backend fastapi",
+    "kiln new atelier --size small --backend fastapi",
     "kiln update --major",
     "kiln set podman=true",
     "kiln set --global             # this machine's settings",
@@ -51,14 +52,15 @@ LEGACY_OPTIONS = {
     "set": {"--poste": "--global"},
 }
 NO_RECAP_COMMANDS = frozenset(
-    {"dev", "ci", "status", "doctor", "version", "waive", "grid", "score", "fix"}
+    {"dev", "ci", "status", "doctor", "version", "waive", "grid", "score", "fix", "pause", "bot"}
 )
 HELP_FLAGS: tuple[list[str], ...] = ([], ["-h"], ["--help"])
 
 
 class _VersionAction(argparse.Action):
-    """`--version`, computed only when asked: `installed_version()` runs git on an install
-    from a folder, a cost the other commands need not pay."""
+    """`--version` (`-V` as uv and ruff have it, `-v` as typed by habit), computed only when
+    asked: `installed_version()` runs git on an install from a folder, a cost the other commands
+    need not pay."""
 
     def __init__(self, option_strings: Sequence[str], dest: str, **_: object) -> None:
         super().__init__(option_strings, dest, nargs=0, help="show the version of kiln")
@@ -72,6 +74,41 @@ class _VersionAction(argparse.Action):
     ) -> NoReturn:
         print(installed_version())
         parser.exit()
+
+
+class _KilnParser(argparse.ArgumentParser):
+    """A command's `--help` drawn like the home screen (banner, sections) instead of argparse's
+    plain text, its usage short as uv has it (`kiln new [options] [directory]`)."""
+
+    def print_help(self, file: object = None) -> None:
+        self.color = False  # Python 3.14 paints argparse's help, which ours paints itself
+        formatter = self._get_formatter()
+        groups: list[banner.OptionGroup] = []
+        for title, positional in (("Arguments", True), ("Options", False)):
+            options = [
+                (formatter._format_action_invocation(action), _sentence(formatter, action))
+                for action in self._actions
+                if bool(action.option_strings) != positional
+                and not isinstance(action, argparse._HelpAction)
+                and action.help != argparse.SUPPRESS
+            ]
+            if options:
+                groups.append((title, options))
+        positionals = [
+            formatter._format_args(action, formatter._get_default_metavar_for_positional(action))
+            for action in self._actions
+            if not action.option_strings
+        ]
+        usage = " ".join([self.prog, "[options]", *positionals])
+        banner.show_command_help(_sentence(formatter, self), usage, groups)
+
+
+def _sentence(formatter: argparse.HelpFormatter, source: object) -> str:
+    if isinstance(source, argparse.Action):
+        text = formatter._expand_help(source) if source.help else ""
+    else:
+        text = getattr(source, "description", None) or ""
+    return text[:1].upper() + text[1:]
 
 
 def modernize(arguments: Sequence[str]) -> list[str]:
@@ -95,13 +132,20 @@ def _flag_legacy(old: str, new: str) -> str:
     return new
 
 
+def _size(value: str) -> str:
+    """A size; its name after the fire, before kiln 0.4.10 (`ember`), still read and flagged."""
+    return _flag_legacy(value, renames.SIZES[value]) if value in renames.SIZES else value
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="kiln", description=__doc__)
-    parser.add_argument("--version", action=_VersionAction)
-    commands = parser.add_subparsers(dest="command")
+    parser.add_argument("-V", "-v", "--version", action=_VersionAction)
+    commands = parser.add_subparsers(dest="command", parser_class=_KilnParser)
     _add_new_command(commands)
     adopt_parser = commands.add_parser("adopt", help="bring an existing repo under kiln")
-    adopt_parser.add_argument("--size", choices=SIZES, help="size of the project (default: ember)")
+    adopt_parser.add_argument(
+        "--size", type=_size, choices=SIZES, help="size of the project (default: small)"
+    )
     adopt_parser.add_argument("--template", help="template source (path or git URL)")
     install_parser = commands.add_parser("install", help="set up this machine after a clone")
     install_parser.add_argument(
@@ -141,8 +185,10 @@ def build_parser() -> argparse.ArgumentParser:
     _add_grid_command(commands)
     _add_score_command(commands)
     _add_fix_command(commands)
+    _add_bot_command(commands)
+    _add_pause_command(commands)
     status_parser = commands.add_parser("status", help="state of the kiln repos of the code folder")
-    status_parser.add_argument("--all", action="store_true", help="(default) every repo")
+    status_parser.add_argument("--all", action="store_true", help="every repo (the default)")
     set_parser = commands.add_parser(
         "set", help="show or change the repo's settings (outside a repo: this machine's)"
     )
@@ -157,7 +203,11 @@ def build_parser() -> argparse.ArgumentParser:
     completion_parser = commands.add_parser(
         "completion", help="shell completion script (eval it in ~/.bashrc)"
     )
-    completion_parser.add_argument("shell", choices=["bash"], help="target shell")
+    completion_parser.add_argument(
+        "shell", nargs="?", default="bash", choices=["bash"], help="target shell (default: bash)"
+    )
+    for choice in commands._choices_actions:
+        commands.choices[choice.dest].description = choice.help
     return parser
 
 
@@ -218,8 +268,17 @@ def _dispatch_score(arguments: argparse.Namespace) -> None:
     if not root.is_dir():
         raise KilnError(f"no folder {arguments.path}")
     if arguments.online:
+        from kiln.grid import forge
+
         score.refresh_end_of_life()
+        forge.REFRESH = True
     report = score.score_repo(root)
+    if arguments.against:
+        from kiln.grid import fix
+
+        with fix.scratch_worktree(root, "--detach", ref=arguments.against) as copy:
+            print("\n".join(score.compared(score.score_repo(copy), report)))
+        return
     if arguments.rule or arguments.roadmap:
         from kiln.grid import roadmap
 
@@ -243,7 +302,7 @@ def _dispatch_score(arguments: argparse.Namespace) -> None:
         gap_report.offer(root, report, input if is_interactive() else None)
 
 
-def _add_grid_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_grid_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     from kiln.grid.model import LEVELS, THEMES
 
     grid_parser = commands.add_parser("grid", help="the rules kiln holds as the best, with sources")
@@ -255,7 +314,7 @@ def _add_grid_command(commands: argparse._SubParsersAction[argparse.ArgumentPars
     grid_parser.add_argument("--level", choices=LEVELS, help="only this level")
 
 
-def _add_score_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_score_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     score_parser = commands.add_parser(
         "score", help="any repo measured against the grid, in seconds, no token"
     )
@@ -266,7 +325,9 @@ def _add_score_command(commands: argparse._SubParsersAction[argparse.ArgumentPar
     score_parser.add_argument("--all", action="store_true", help="every rule and every location")
     score_parser.add_argument("--badge", action="store_true", help="a README badge (Markdown)")
     score_parser.add_argument(
-        "--online", action="store_true", help="refresh end-of-life dates from endoflife.date"
+        "--online",
+        action="store_true",
+        help="refresh end-of-life dates from endoflife.date and the GitHub settings",
     )
     score_parser.add_argument(
         "--roadmap", action="store_true", help="what needs judgment, for Claude, with its places"
@@ -275,9 +336,12 @@ def _add_score_command(commands: argparse._SubParsersAction[argparse.ArgumentPar
         "--write", action="store_true", help="with --roadmap: the items as backlog tickets"
     )
     score_parser.add_argument("--rule", help="one rule only: fails while its gap is open")
+    score_parser.add_argument(
+        "--against", metavar="REF", help="the change since a commit (a pull request's base)"
+    )
 
 
-def _add_fix_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_fix_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     fix_parser = commands.add_parser(
         "fix", help="close by script every gap a script can close, on a branch, with proof"
     )
@@ -288,7 +352,33 @@ def _add_fix_command(commands: argparse._SubParsersAction[argparse.ArgumentParse
     fix_parser.add_argument("--rule", help="only this rule (its ID)")
 
 
-def _add_waive_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_bot_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
+    bot_parser = commands.add_parser(
+        "bot", help="kiln-bot's run: kiln update and kiln fix on kiln/bot, for one pull request"
+    )
+    bot_parser.add_argument(
+        "path", type=Path, nargs="?", default=Path(), help="the repo (default: here)"
+    )
+    bot_parser.add_argument("--no-update", action="store_true", help="kiln fix only")
+    bot_parser.add_argument("--body", type=Path, help="write the pull request's body there")
+    bot_parser.add_argument(
+        "--no-workflows",
+        action="store_true",
+        help="leave out what writes .github/workflows/ (GITHUB_TOKEN may not push it)",
+    )
+
+
+def _add_pause_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
+    pause_parser = commands.add_parser(
+        "pause", help="keep this Claude Code session's place, listed at the next start"
+    )
+    pause_parser.add_argument(
+        "name", nargs="?", default="", help="the session in a few words (none: names proposed)"
+    )
+    pause_parser.add_argument("--next", default="", help="the next step")
+
+
+def _add_waive_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     waive_parser = commands.add_parser(
         "waive", help="waive a rule of kiln, or freeze a file (no argument: list)"
     )
@@ -304,7 +394,7 @@ def _add_waive_command(commands: argparse._SubParsersAction[argparse.ArgumentPar
     waive_parser.add_argument("--upstream", default="", help="issue or PR opened on kiln")
 
 
-def _add_new_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_new_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     new_parser = commands.add_parser("new", help="generate a complete new project")
     new_parser.add_argument(
         "directory", type=Path, nargs="?", help="project folder (otherwise asked: project name)"
@@ -314,7 +404,7 @@ def _add_new_command(commands: argparse._SubParsersAction[argparse.ArgumentParse
     new_parser.add_argument("--description", help="one sentence about the project")
     new_parser.add_argument("--owner", help="owning GitHub account")
     new_parser.add_argument("--team", help="comma-separated GitHub logins")
-    new_parser.add_argument("--size", choices=SIZES, help="size of the project")
+    new_parser.add_argument("--size", type=_size, choices=SIZES, help="size of the project")
     new_parser.add_argument(
         "--type", dest="project_type", choices=PROJECT_TYPES, help="what you are building"
     )
@@ -339,7 +429,7 @@ def _add_new_command(commands: argparse._SubParsersAction[argparse.ArgumentParse
     )
 
 
-def _add_ci_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_ci_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     ci_parser = commands.add_parser("ci", help="replay a commit's CI on this machine")
     ci_parser.add_argument("revision", nargs="?", default="HEAD", help="commit (default: HEAD)")
     ci_parser.add_argument(
@@ -350,7 +440,7 @@ def _add_ci_command(commands: argparse._SubParsersAction[argparse.ArgumentParser
     ci_parser.add_argument("--status", action="store_true", help="verdict only, no replay")
 
 
-def _add_dev_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_dev_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     dev_parser = commands.add_parser("dev", help="run the project locally")
     dev_parser.add_argument(
         "action",
@@ -380,7 +470,7 @@ def _check_dev_arguments(arguments: argparse.Namespace) -> None:
         raise KilnError("--containers runs the whole stack: no --only")
 
 
-def _add_update_command(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_update_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     update_parser = commands.add_parser("update", help="update the template and dependencies")
     update_parser.add_argument("--no-template", action="store_true", help="keep the architecture")
     update_parser.add_argument("--no-deps", action="store_true", help="keep the dependencies")
@@ -392,6 +482,11 @@ def _add_update_command(commands: argparse._SubParsersAction[argparse.ArgumentPa
         "--rehearse",
         action="store_true",
         help="play the update on a throwaway clone first, the repo left untouched",
+    )
+    update_parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="with --all: every command's output shown, not one line per repo",
     )
 
 
@@ -491,6 +586,19 @@ def dispatch(arguments: argparse.Namespace) -> list[str]:
         from kiln.grid import fix
 
         fix.fix(arguments.path.resolve(), dry_run=arguments.dry_run, only=arguments.rule)
+    elif arguments.command == "bot":
+        from kiln import bot
+
+        bot.run_bot(
+            arguments.path.resolve(),
+            update=not arguments.no_update,
+            body_path=arguments.body,
+            workflows=not arguments.no_workflows,
+        )
+    elif arguments.command == "pause":
+        from kiln import pause
+
+        pause.pause(Path.cwd(), arguments.name, arguments.next)
     elif arguments.command == "version":
         _dispatch_version(arguments, repo_root(Path.cwd()))
     elif arguments.command == "status" or (arguments.command == "update" and arguments.all):
@@ -675,7 +783,12 @@ def _dispatch_fleet(arguments: argparse.Namespace) -> None:
     if arguments.command == "status":
         fleet.show_status(code_dir)
     else:
-        fleet.update_all(code_dir, allow_major=arguments.major, rehearse=arguments.rehearse)
+        fleet.update_all(
+            code_dir,
+            allow_major=arguments.major,
+            rehearse=arguments.rehearse,
+            verbose=arguments.verbose,
+        )
 
 
 def show_home(parser: argparse.ArgumentParser) -> None:
@@ -712,6 +825,11 @@ def main() -> None:
     except KilnError as error:
         ui.error(str(error))
         sys.exit(EXIT_FAILURE)
+    except KeyboardInterrupt:
+        # Ctrl-C: the cleanups already ran on the way out (copies, containers), no traceback.
+        print()
+        ui.note("Interrupted.")
+        sys.exit(EXIT_INTERRUPTED)
 
 
 def _recap(arguments: argparse.Namespace, started: float, *, succeeded: bool) -> None:

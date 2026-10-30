@@ -1,22 +1,38 @@
-"""Converters of `kiln fix`: containers and runtimes (T-128).
+"""Converters of `kiln fix`: containers and runtimes (T-128, T-159).
 
-Images are not built here: a commit that touches a `Dockerfile` says so, and the repo's CI
-builds it before anything ships."""
+Images are not built here: `kiln fix` builds an image a converter touched when podman or docker
+is there. Compose services are hardened only where podman proves they still start hardened, on a
+throwaway copy of the repo.
+"""
 
+import contextlib
 import datetime
 import json
+import os
 import re
+import shutil
+import subprocess
+import tempfile
+import time
 from collections.abc import Callable
+from pathlib import Path
 
+import yaml  # brought by copier
+
+from kiln import shell, ui
 from kiln.grid import detectors
-from kiln.grid.detectors import CONTAINER_FILES
+from kiln.grid.detectors import COMPOSE_FILES, CONTAINER_FILES
 from kiln.grid.facts import Repo
 from kiln.grid.fixers import Fixer, register, resolve
+from kiln.shell import KilnError
 
 FROM = re.compile(r"^(?P<head>\s*FROM\s+(?:--\S+\s+)*)(?P<image>\S+)(?P<tail>.*)$", re.I)
 OLD_DEBIAN = re.compile(r"\b(bookworm|bullseye|buster|stretch)\b")
 NODE_LTS = "24"
 PYTHON_PIN = "3.13"
+RUNTIME_TAG = re.compile(
+    r"(?P<pre>(?:\S+/)?(?P<runtime>python|node)):v?(?P<v>\d+(?:\.\d+)?)(?P<rest>.*)"
+)
 # Bases where a plain user can run the app; others (php-apache binds port 80) are left out.
 USER_READY = frozenset({"python", "node", "debian", "ubuntu", "alpine"})
 
@@ -63,6 +79,24 @@ def _pin(image: str) -> str:
     return f"{name}@{resolve.image_digest(tagged)}"
 
 
+def _runtime_moved(name: str) -> str:
+    """The image's Python or Node moved to a supported line when past its end of life."""
+    found = RUNTIME_TAG.fullmatch(name)
+    if not found:
+        return name
+    runtime, version = found["runtime"], found["v"]
+    line = ".".join(version.split(".")[:2]) if runtime == "python" else version.split(".")[0]
+    if _supported(runtime, line):
+        return name
+    return f"{found['pre']}:{PYTHON_PIN if runtime == 'python' else NODE_LTS}{found['rest']}"
+
+
+def _current(name: str) -> str:
+    """An image moved to a supported runtime and to Debian 13 at once: either move alone may
+    name an image that was never built (`python:3.8-trixie`, `python:3.13-buster`)."""
+    return OLD_DEBIAN.sub("trixie", _runtime_moved(name))
+
+
 def pin_images(repo: Repo) -> list[str]:
     """Each base image pinned by digest, its tag kept for the reader and for Dependabot."""
     return _edit_images(repo, lambda image: None if "@sha256:" in image else _pin(image))
@@ -74,7 +108,7 @@ def move_to_trixie(repo: Repo) -> list[str]:
     def edit(image: str) -> str | None:
         if not OLD_DEBIAN.search(image.split("@")[0]):
             return None
-        moved = OLD_DEBIAN.sub("trixie", image.split("@")[0])
+        moved = _current(image.split("@")[0])
         return _pin(moved) if "@sha256:" in image else moved
 
     return _edit_images(repo, edit)
@@ -167,23 +201,192 @@ def move_runtimes(repo: Repo) -> list[str]:
             changed.add(name)
 
     def edit(image: str) -> str | None:
-        found = re.match(
-            r"(?P<pre>(?:\S+/)?(?P<runtime>python|node)):v?(?P<v>\d+(?:\.\d+)?)(?P<rest>[^@]*)",
-            image,
-        )
-        if not found:
+        name = image.split("@")[0]
+        if _runtime_moved(name) == name:
             return None
-        runtime, version = found["runtime"], found["v"]
-        line = ".".join(version.split(".")[:2]) if runtime == "python" else version.split(".")[0]
-        if _supported(runtime, line):
-            return None
-        moved = f"{found['pre']}:{PYTHON_PIN if runtime == 'python' else NODE_LTS}{found['rest']}"
+        moved = _current(name)
         return _pin(moved) if "@sha256:" in image else moved
 
     changed.update(_edit_images(repo, edit))
     return sorted(changed)
 
 
+# What a hardened service gets: no write outside its volumes (a tmpfs for /tmp, which most
+# programs need), no capability, no privilege gained through setuid.
+HARDENING = (
+    ("read_only", "read_only: true"),
+    ("cap_drop", "cap_drop: [ALL]"),
+    ("security_opt", "security_opt: [no-new-privileges:true]"),
+    ("tmpfs", "tmpfs: [/tmp]"),
+)
+START_TIMEOUT = 600
+SETTLE_SECONDS = 5
+_SERVICE = re.compile(r"^(?P<indent>\s+)(?P<name>[\w.-]+):\s*(#.*)?$")
+
+
+def _unhardened(text: str) -> list[str]:
+    try:
+        compose = yaml.safe_load(text)
+    except yaml.YAMLError:
+        return []
+    services = compose.get("services") if isinstance(compose, dict) else None
+    return [
+        service
+        for service, settings in (services or {}).items()
+        if isinstance(settings, dict) and not _is_hardened(settings)
+    ]
+
+
+def _is_hardened(settings: dict[str, object]) -> bool:
+    caps = settings.get("cap_drop")
+    options = settings.get("security_opt")
+    return (
+        settings.get("read_only") is True
+        and isinstance(caps, list)
+        and "ALL" in [str(cap).upper() for cap in caps]
+        and isinstance(options, list)
+        and any("no-new-privileges" in str(option) for option in options)
+    )
+
+
+def harden_text(text: str, services: list[str]) -> str:
+    """The compose file with the keys a hardened service lacks added under each of `services`;
+    a key it already sets is left as written (`read_only: false` is a choice: judgment's)."""
+    try:
+        compose = yaml.safe_load(text)
+    except yaml.YAMLError:
+        return text
+    settings = (compose or {}).get("services") or {}
+    lines = text.splitlines(keepends=True)
+    in_services, depth = False, None
+    out: list[str] = []
+    for index, line in enumerate(lines):
+        out.append(line)
+        if line.strip() and not line[0].isspace():
+            in_services = line.rstrip().startswith("services:")
+            depth = None
+            continue
+        found = _SERVICE.match(line.rstrip("\n"))
+        if not in_services or not found:
+            continue
+        depth = depth or len(found["indent"])
+        if len(found["indent"]) != depth or found["name"] not in services:
+            continue
+        own = settings.get(found["name"]) or {}
+        child = next(
+            (
+                len(later) - len(later.lstrip())
+                for later in lines[index + 1 :]
+                if later.strip() and not later.lstrip().startswith("#")
+            ),
+            depth + 2,
+        )
+        child = child if child > depth else depth + 2
+        if not out[-1].endswith("\n"):
+            out[-1] += "\n"
+        out += [" " * child + f"{entry}\n" for key, entry in HARDENING if key not in own]
+    return "".join(out)
+
+
+def harden_compose(repo: Repo) -> list[str]:
+    """Each compose service read-only, every capability dropped, no privilege escalation, kept
+    only where podman starts it hardened on a throwaway copy; the others are left as they were
+    and named."""
+    targets = {
+        name: found
+        for name in repo.matching(*COMPOSE_FILES)
+        if (found := _unhardened(repo.text(name)))
+    }
+    if not targets:
+        return []
+    if not _podman_ready():
+        raise KilnError(
+            "podman and podman-compose are needed to prove each service still starts hardened: "
+            "https://podman.io/docs/installation"
+        )
+    changed: list[str] = []
+    left: list[str] = []
+    for name, services in targets.items():
+        text = repo.text(name)
+        started = _starts(repo.root, name, harden_text(text, services), services)
+        final = harden_text(text, [service for service in services if service in started])
+        if final != text:
+            (repo.root / name).write_text(final, encoding="utf-8")
+            changed.append(name)
+        left += [f"{name} ({service})" for service in services if service not in started]
+    if not changed:
+        raise KilnError(f"no service starts hardened: {', '.join(left)}")
+    if left:
+        ui.note(f"left as they were, they do not start hardened: {', '.join(left)}")
+    return changed
+
+
+def _podman_ready() -> bool:
+    return shutil.which("podman") is not None and shutil.which("podman-compose") is not None
+
+
+def _starts(root: Path, name: str, hardened: str, services: list[str]) -> set[str]:
+    """The services podman keeps running, hardened, on a copy of the repo: their own project
+    name, no fixed container name, so that nothing the user runs is touched."""
+    project = f"kiln-harden-{os.getpid()}"
+    with tempfile.TemporaryDirectory(prefix="kiln-harden-") as scratch:
+        copy = Path(scratch) / "repo"
+        subprocess.run(
+            ["git", "worktree", "add", "-q", "--detach", str(copy)],
+            cwd=root,
+            capture_output=True,
+            check=False,
+        )
+        if not copy.is_dir():
+            return set()
+        compose = copy / name
+        compose.write_text(re.sub(r"(?m)^\s+container_name:.*\n", "", hardened), encoding="utf-8")
+        command = ["podman-compose", "-p", project, "-f", str(compose)]
+        # Building the images can take minutes: said, so that the run does not look stuck.
+        label = f"podman builds and starts {', '.join(services)} hardened, on a throwaway copy"
+        if not shell.shows_spinner():
+            ui.note(f"{label} (up to {START_TIMEOUT // 60} min)")
+        try:
+            with shell.spinner_line(label) if shell.shows_spinner() else contextlib.nullcontext():
+                subprocess.run(
+                    [*command, "up", "-d", *services],
+                    cwd=compose.parent,
+                    capture_output=True,
+                    timeout=START_TIMEOUT,
+                    check=False,
+                )
+                time.sleep(SETTLE_SECONDS)
+            return {service for service in services if _running(project, service)}
+        except subprocess.TimeoutExpired:
+            return set()
+        finally:
+            subprocess.run(
+                [*command, "down", "-v"], cwd=compose.parent, capture_output=True, check=False
+            )
+            subprocess.run(
+                ["git", "worktree", "remove", "--force", str(copy)],
+                cwd=root,
+                capture_output=True,
+                check=False,
+            )
+
+
+def _running(project: str, service: str) -> bool:
+    listed = subprocess.run(
+        [
+            "podman", "ps", "-q",
+            "--filter", f"label=io.podman.compose.project={project}",
+            "--filter", f"label=io.podman.compose.service={service}",
+            "--filter", "status=running",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )  # fmt: skip
+    return bool(listed.stdout.strip())
+
+
+register(Fixer("harden_compose", harden_compose, "compose services hardened", network=True))
 register(Fixer("pin_images", pin_images, "base images pinned by digest", network=True))
 register(Fixer("move_to_trixie", move_to_trixie, "images moved to Debian 13", network=True))
 register(Fixer("add_user", add_user, "images run as a non-root user"))

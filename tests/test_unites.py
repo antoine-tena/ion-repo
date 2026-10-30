@@ -22,7 +22,7 @@ from kiln.config import UserConfig
 from kiln.deps import _major_bounds
 from kiln.dev import read_env_file, service_prefix
 from kiln.dev.backing import backing_services
-from kiln.doctor import Level, workstation_findings
+from kiln.doctor import Level, repo_findings, workstation_findings
 from kiln.install import (
     ensure_env_file,
     moved_from,
@@ -127,6 +127,31 @@ def test_a_backend_change_runs_the_backend_checks_not_the_frontend_ones(tmp_path
     assert {command.directory for command in commands} == {"backend"}
 
 
+def test_an_npm_front_is_checked_by_npm_and_only_with_its_own_scripts(tmp_path: Path) -> None:
+    stack = Stack(backend="aucun", frontend="vite-react", has_podman=False, frontend_dir=".")
+    (tmp_path / "package.json").write_text('{"scripts": {"lint": "eslint ."}}')
+    (tmp_path / "package-lock.json").write_text("{}")
+
+    commands = _check_commands(tmp_path, stack)
+
+    # pnpm would install over package-lock.json, add a pnpm-lock.yaml, then find no typecheck.
+    assert [command.argv for command in commands] == [("npm", "run", "lint"), ("charter",)]
+
+
+def test_a_python_tool_the_repo_lacks_is_skipped_not_spawned(tmp_path: Path) -> None:
+    stack = Stack(backend="django", frontend="aucun", has_podman=False)
+    venv_bin = tmp_path / "backend" / ".venv" / "bin"
+    venv_bin.mkdir(parents=True)
+    (venv_bin / "ruff").touch()
+    (tmp_path / "backend" / "pyproject.toml").write_text('[dependency-groups]\ndev = ["ruff"]\n')
+
+    labels = [command.label for command in _check_commands(tmp_path, stack)]
+
+    assert labels == ["backend ruff", "backend format", "charter"]
+    (tmp_path / "backend" / "pyproject.toml").write_text('dev = ["ruff", "mypy"]\n')
+    assert "backend mypy" in [command.label for command in _check_commands(tmp_path, stack)]
+
+
 def test_backend_tests_take_the_databases_of_the_ci_job(tmp_path: Path) -> None:
     assert _ci_django_job(tmp_path, "backend") is None  # no ci.yml: the compose's databases
     workflows = tmp_path / ".github" / "workflows"
@@ -228,6 +253,8 @@ def test_team_accepts_a_comma_list() -> None:
     assert parse_assignments(["team=a, b", "podman=true"]) == {"team": ["a", "b"], "podman": True}
     # Names of before kiln 0.4.0 still work.
     assert parse_assignments(["equipe=a", "frontend=aucun"]) == {"team": ["a"], "frontend": "none"}
+    films = {"large_files": ["public/film.mp4", "public/film.webm"]}
+    assert parse_assignments(["large_files=public/film.mp4,public/film.webm"]) == films
 
 
 def test_sentence_with_a_colon_stays_text() -> None:
@@ -388,7 +415,7 @@ def test_adopted_repo_stack_comes_from_its_files(tmp_path: Path) -> None:
 
 def test_adopted_repo_declares_its_size_in_its_charter(tmp_path: Path) -> None:
     (tmp_path / "charte.toml").write_text('envergure = "flame"\nexclus = []\n')
-    assert answers_if_any(tmp_path) == {"size": "flame"}
+    assert answers_if_any(tmp_path) == {"size": "medium"}
 
 
 def test_logo_draws_two_pixel_rows_per_line(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -404,7 +431,7 @@ def test_project_summary_names_size_and_frameworks(tmp_path: Path) -> None:
         "nom: atelier\nenvergure: ember\nbackend: fastapi\nfrontend: aucun\npodman: true\n"
     )
 
-    assert _project_summary(tmp_path) == "atelier · ember · fastapi, podman"
+    assert _project_summary(tmp_path) == "atelier · small · fastapi, podman"
 
 
 def test_durations_read_the_french_way() -> None:
@@ -539,6 +566,19 @@ def test_doctor_without_a_chosen_system_detects_it(monkeypatch: pytest.MonkeyPat
     assert findings["podman"].fix.startswith("brew install podman")
 
 
+def test_doctor_knows_kilns_own_repo(tmp_path: Path) -> None:
+    # kiln is the template's source: no answers, no charter, and not a stranger's repo (T-362).
+    (tmp_path / "template").mkdir()
+    (tmp_path / "copier.yml").write_text("_subdirectory: template\n")
+    stranger = repo_findings(tmp_path, None)[0]
+    (tmp_path / "pyproject.toml").write_text('[project]\nname = "kiln-cli"\n')
+    kiln = repo_findings(tmp_path, None)[0]
+
+    assert (stranger.level, stranger.detail) == (Level.WARN, "not a kiln repo")
+    assert kiln.level is Level.OK
+    assert "kiln's own repo" in kiln.detail
+
+
 def test_dev_prefixes_line_up_outside_a_terminal() -> None:
     assert service_prefix("nuxt", 6, ui.FIRE) == "nuxt   │ "
 
@@ -585,10 +625,11 @@ def test_fixes_only_means_nothing_added_nor_broken() -> None:
     assert not is_fixes_only([])
 
 
+@pytest.mark.parametrize("flag", ["--version", "-V", "-v"])
 def test_version_flag_prints_the_installed_version(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    flag: str, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    monkeypatch.setattr(sys, "argv", ["kiln", "--version"])
+    monkeypatch.setattr(sys, "argv", ["kiln", flag])
     with pytest.raises(SystemExit) as exit_request:
         cli.main()
 
@@ -775,6 +816,30 @@ def test_the_beta_channel_installs_the_checkout_of_the_code_directory(tmp_path: 
     assert beta_install_command(tmp_path) == f"uv tool install --force --editable {tmp_path}/kiln"
 
 
+def test_the_beta_channel_finds_the_checkout_in_a_folder_of_the_code_directory(
+    tmp_path: Path,
+) -> None:
+    from kiln.versions import beta_install_command
+
+    (tmp_path / "tools/kiln/src/kiln").mkdir(parents=True)
+    (tmp_path / "tools/kiln/src/kiln/versions.py").write_text("")
+    expected = f"uv tool install --force --editable {tmp_path}/tools/kiln"
+    assert beta_install_command(tmp_path) == expected
+    (tmp_path / "kiln").symlink_to(tmp_path / "tools/kiln")
+    assert beta_install_command(tmp_path) == expected
+
+
+def test_the_beta_channel_finds_the_checkout_in_a_tool_folder_of_a_family(
+    tmp_path: Path,
+) -> None:
+    from kiln.versions import beta_install_command
+
+    (tmp_path / "family/kiln/kiln/src/kiln").mkdir(parents=True)
+    (tmp_path / "family/kiln/kiln/src/kiln/versions.py").write_text("")
+    expected = f"uv tool install --force --editable {tmp_path}/family/kiln/kiln"
+    assert beta_install_command(tmp_path) == expected
+
+
 def test_a_folder_install_is_what_it_was_built_from_not_the_folder_today(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -902,3 +967,40 @@ def test_pnpm_install_frozen_only_with_a_lockfile(tmp_path: Path) -> None:
     (tmp_path / "pnpm-lock.yaml").write_text("lockfileVersion: '9.0'\n")
     frozen = ["pnpm", "install", "--frozen-lockfile", PNPM_LENIENT_BUILDS]
     assert pnpm_install_command(tmp_path) == frozen
+
+
+def test_a_kiln_workflow_pinned_by_kiln_fix_follows_the_template(tmp_path: Path) -> None:
+    """`@<sha> # v0.4.10` (kiln fix) against the old render `@v0.4.10` and the new `@v0.4.11`:
+    no conflict left, the new tag taken, for the update's converters to pin again (T-159)."""
+    from kiln.update import CONFLICT_MARKER, resolve_kiln_ref_conflicts
+
+    def run_git(*arguments: str, given: str | None = None) -> str:
+        return subprocess.run(
+            ["git", *arguments],
+            cwd=tmp_path,
+            input=given,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+
+    uses = "    uses: antoine-tena/kiln/.github/workflows/charter.yml@"
+    base = f"# kiln v0.4.10\njobs:\n  a:\n{uses}v0.4.10\n"
+    ours = f"# kiln v0.4.10\njobs:\n  a:\n{uses}{'a' * 40} # v0.4.10\n"
+    theirs = f"# kiln v0.4.11\njobs:\n  a:\n{uses}v0.4.11\n"
+    run_git("init", "-q")
+    name = ".github/workflows/ci.yml"
+    blobs = [run_git("hash-object", "-w", "--stdin", given=text) for text in (base, ours, theirs)]
+    entries = "".join(f"100644 {blob} {stage}\t{name}\n" for stage, blob in enumerate(blobs, 1))
+    run_git("update-index", "--index-info", given=entries)
+    (tmp_path / ".github/workflows").mkdir(parents=True)
+    (tmp_path / name).write_text(f"{CONFLICT_MARKER}\n{ours}=======\n{theirs}>>>>>>> after\n")
+    resolve_kiln_ref_conflicts(tmp_path)
+    assert (tmp_path / name).read_text() == theirs
+
+
+def test_an_npm_folder_installs_with_npm_and_no_pnpm_lock(tmp_path: Path) -> None:
+    # An adopted npm repo: pnpm would write a pnpm-lock.yaml next to its package-lock.json,
+    # leaving the tree dirty (kiln update --all then stopped on it).
+    (tmp_path / "package-lock.json").write_text("{}\n")
+    assert pnpm_install_command(tmp_path) == ["npm", "ci"]

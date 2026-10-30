@@ -14,7 +14,9 @@ ROOT = Path(__file__).resolve().parent.parent
 READMES = ("README.md", "README.fr.md")
 # The reference, in each language: everything kiln offers, looked up there.
 REFERENCES = ("docs/reference.md", "docs/reference.fr.md")
-DOCS = (*READMES, *REFERENCES, "CONTRIBUTING.md")
+# Where kiln goes, for people who never open the backlog: the releases drawn from its plan.
+ROADMAPS = ("ROADMAP.md", "ROADMAP.fr.md")
+DOCS = (*READMES, *REFERENCES, *ROADMAPS, "CONTRIBUTING.md")
 MARKETPLACE = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text())
 
 
@@ -22,12 +24,16 @@ def docs() -> dict[str, str]:
     return {name: (ROOT / name).read_text(encoding="utf-8") for name in DOCS}
 
 
-def screenshots() -> ModuleType:
-    spec = importlib.util.spec_from_file_location("screenshots", ROOT / "scripts/screenshots.py")
+def script(name: str) -> ModuleType:
+    spec = importlib.util.spec_from_file_location(name, ROOT / f"scripts/{name}.py")
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def screenshots() -> ModuleType:
+    return script("screenshots")
 
 
 def recordings() -> dict[Path, Path]:
@@ -127,7 +133,7 @@ SALES_WORDS = (
 )  # fmt: skip
 
 
-@pytest.mark.parametrize("readme", READMES)
+@pytest.mark.parametrize("readme", (*READMES, *ROADMAPS))
 def test_a_readme_reads_as_written_by_a_person(readme: str) -> None:
     text = (ROOT / readme).read_text(encoding="utf-8")
     prose = "\n".join(
@@ -155,6 +161,17 @@ def test_both_readmes_say_the_same_things() -> None:
         ]
 
     assert outline(english) == outline(french), "README.fr.md follows README.md"
+
+
+def test_the_roadmap_shows_the_backlog_plan() -> None:
+    drawn = script("roadmap").draw()
+
+    for readme, roadmap in zip(READMES, ROADMAPS, strict=True):
+        text = (ROOT / roadmap).read_text(encoding="utf-8")
+        assert drawn in text, f"{roadmap} lags the plan: uv run python scripts/roadmap.py"
+        assert f"]({roadmap})" in (ROOT / readme).read_text(encoding="utf-8"), (
+            f"{readme} links {roadmap}"
+        )
 
 
 def test_installed_plugins_exist_and_former_names_are_gone() -> None:

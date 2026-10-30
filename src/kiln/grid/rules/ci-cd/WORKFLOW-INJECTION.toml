@@ -9,14 +9,13 @@ profiles = ["solo", "association", "company", "university", "enterprise"]
 why = "A pull request title is attacker-controlled: expanded into `run:`, it becomes code with the workflow's secrets."
 applies = ["github-actions"]
 detectable = "script"
-fixable = "judgment"
-fixer = ""
+fixable = "script"
+fixer = "move_to_env"
 since = "0.4.2"
 
 [detector]
-kind = "regex"
-files = [".github/workflows/*.yml", ".github/workflows/*.yaml"]
-pattern = '''\$\{\{\s*github\.(head_ref|event\.(issue|pull_request|comment|review|review_comment|discussion|head_commit|commits|pages)\S*\.(title|body|message|name|email|label|ref|head_ref|default_branch))'''
+kind = "python"
+check = "workflow_injection"
 
 [[sources]]
 url = "https://securitylab.github.com/resources/github-actions-untrusted-input/"

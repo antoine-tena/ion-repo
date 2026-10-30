@@ -5,18 +5,23 @@ name: Charter
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   charter:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           # The migrations rule compares with the integration branch.
           fetch-depth: 0
       # kiln at the exact version of this workflow: its actions and the charter command come
       # from there (removed at once, so that the project's checks never see it).
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           repository: antoine-tena/kiln
           ref: ${{ job.workflow_sha || 'develop' }}
           path: .kiln
@@ -24,6 +29,15 @@ jobs:
         with:
           ref: ${{ job.workflow_sha || 'develop' }}
       - name: Remove kiln from the project directory
-        run: rm -rf .kiln
+        # Its charter action is set aside: setup-uv's post step reads it again at the end.
+        run: |
+          cp -r .kiln/actions/charter "$RUNNER_TEMP/kiln-charter-action"
+          rm -rf .kiln
       - name: Charter
         run: charter
+
+      # Once the project's checks are done: the charter action back for setup-uv's post step,
+      # which otherwise fails the job ("Can't find 'action.yml'").
+      - name: kiln's charter action back
+        if: always()
+        run: mkdir -p .kiln/actions && cp -r "$RUNNER_TEMP/kiln-charter-action" .kiln/actions/charter

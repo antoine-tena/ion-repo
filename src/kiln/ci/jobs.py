@@ -77,13 +77,14 @@ LEGACY_INPUTS: Mapping[str, str] = {
     "version-pnpm": "pnpm-version",
 }
 # gitleaks on the workstation (`mise use -g gitleaks`, `brew install gitleaks`): the same scan as
-# the `secrets` workflow, over the whole history.
+# the `secrets` workflow, over the whole history of the commit checked (HEAD), not every local
+# branch: another branch in progress on the machine is not part of the verdict.
 GITLEAKS_SCAN = """\
 if ! command -v gitleaks >/dev/null; then
   echo "gitleaks is missing: mise use -g gitleaks (or brew install gitleaks)" >&2
   exit 1
 fi
-gitleaks git --redact --no-banner --verbose ."""
+gitleaks git --redact --no-banner --verbose --log-opts=HEAD ."""
 # OSV-Scanner on the workstation (`mise use -g osv-scanner`, `brew install osv-scanner`): the same
 # audit of a Maven project as the `security` workflow.
 OSV_SCAN = """\

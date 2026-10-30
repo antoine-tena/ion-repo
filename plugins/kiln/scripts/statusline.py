@@ -49,6 +49,9 @@ LEGACY_STYLES = {
     "aucune": "none",
     "perso": "custom",
 }
+# tokens of every transcript of the machine, summed in the background (lifetime_tokens.py)
+LIFETIME_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "lifetime_tokens.py")
+LIFETIME_TTL = 300
 TIMES = "\u00d7"  # multiplication sign, between a name and a count (wt, br)
 INTEGRATION = ("main", "master", "develop")
 DAYS = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
@@ -135,7 +138,8 @@ def git_state(path: str) -> dict[str, str | int]:
 
 
 def scan(root: str) -> None:
-    """Prints the git state of each repo under `root` (except `_*` folders and node_modules)."""
+    """Prints the git state of each repo under `root`, down to three folders (a family folder with
+    one folder per tool), except `_*` folders and node_modules."""
     found = []
     for dirpath, dirs, files in os.walk(root):
         if (".git" in dirs or ".git" in files) and dirpath != root:
@@ -143,7 +147,7 @@ def scan(root: str) -> None:
             dirs.clear()
             continue
         depth = dirpath[len(root) :].count(os.sep)
-        dirs[:] = [x for x in dirs if not x.startswith("_") and x != "node_modules" and depth < 2]
+        dirs[:] = [x for x in dirs if not x.startswith("_") and x != "node_modules" and depth < 3]
     found.sort(key=lambda p: os.path.basename(p).lstrip(".").lower())
     print(json.dumps([git_state(p) for p in found]))
 
@@ -233,6 +237,14 @@ def compaction_point(window: int, project: str, model: str) -> int:
             own = ((settings.get("modelSettings") or {}).get(model) or {}).get("autoCompactWindow")
             point = window_tokens(own or settings.get("autoCompactWindow"))
     return min(point, window) if point and window else point or window
+
+
+def human_tokens(n: int) -> str:
+    """1234 → 1.2k, 9977454502 → 10.0G."""
+    for scale, unit in ((1e9, "G"), (1e6, "M"), (1e3, "k")):
+        if n >= scale:
+            return f"{n / scale:.1f}{unit}"
+    return str(n)
 
 
 def plural(n: int, word: str) -> str:
@@ -669,10 +681,6 @@ def collect_session(status: Status, d: dict, main: str) -> None:
     style = (d.get("output_style") or {}).get("name")
     if style and style != "default":
         head.append(Item(f"style {style}", short=""))
-    name = str(d.get("session_name") or "")
-    if name:
-        name = name if len(name) <= 24 else name[:23] + "…"
-        head.append(Item(f'"{name}"', role="muted", short=""))
     status.session.append(head)
 
     # the context in tokens, coloured by what a message costs, its gauge full at the compaction;
@@ -768,8 +776,10 @@ def collect_session(status: Status, d: dict, main: str) -> None:
     if pc.get("hit_ratio") is not None:
         ratio = 100 * float(pc["hit_ratio"])
         warm = pc.get("warm", True)
-        level = 1 if warm and ratio < 70 else 0  # cold: the context's figure turns red
-        status.usage.append([Item(f"cache {ratio:.0f}%" if warm else "cache cold", level)])
+        if not warm:  # cold: the context's figure turns red
+            status.usage.append([Item("cache cold")])
+        elif ratio < 70:  # a healthy cache is not shown
+            status.usage.append([Item(f"cache {ratio:.0f}%", 1)])
     c = d.get("cost") or {}
     if c:
         mins = int((c.get("total_duration_ms") or 0) / 60000)
@@ -780,6 +790,13 @@ def collect_session(status: Status, d: dict, main: str) -> None:
             Item(f"+{c.get('total_lines_added', 0)}/-{c.get('total_lines_removed', 0)}", short="")
         )
         status.usage.append(usage)
+    lifetime_cmd = f"python3 {shlex.quote(LIFETIME_SCRIPT)}"
+    lifetime = cached("lifetime-tokens", LIFETIME_TTL, lifetime_cmd, CACHE)
+    if lifetime.isdigit():
+        # first of the usage groups: those at the end drop first when room runs out
+        exact = f"{int(lifetime):,}".replace(",", "\u202f")  # 9 977 454 502
+        short = human_tokens(int(lifetime))
+        status.usage.insert(0, [Item(f"Σ {exact} tok", short=f"Σ{short}")])
 
 
 # ---------------------------------------------------------------------------- rendering

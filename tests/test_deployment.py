@@ -33,12 +33,32 @@ def test_vps_brings_server_files_scripts_and_docs(tmp_path: Path) -> None:
     compose = yaml.safe_load((project_dir / "config/vps/compose.yaml").read_text())
     assert set(compose["services"]) == {"db", "backend"}
     assert compose["services"]["backend"]["read_only"] is True
-    assert "api.demo.example.com {" in (project_dir / "config/vps/Caddyfile").read_text()
+    caddyfile = (project_dir / "config/vps/Caddyfile").read_text()
+    assert "api.demo.example.com {" in caddyfile
+    # The health probe names the public host, the only one Django accepts.
+    assert "Host api.demo.example.com" in caddyfile
     for unit in ("backup", "restore-test", "heal"):
         assert (project_dir / f"config/vps/demo-{unit}.timer").is_file()
         service = (project_dir / f"config/vps/demo-{unit}.service").read_text()
         assert f"ExecStart=/usr/local/sbin/demo-{unit}" in service
     assert (project_dir / "docs/operations/production.md").is_file()
+
+
+def test_vps_ports_and_caddy_site_suit_a_shared_server(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", **VPS_ANSWERS, vps_port=8010, vps_db_port=5442)
+
+    backend = yaml.safe_load((project_dir / "config/vps/compose.yaml").read_text())["services"]
+    assert backend["db"]["ports"] == ["127.0.0.1:5442:5432"]
+    assert "127.0.0.1:8010" in backend["backend"]["command"]
+    assert "@127.0.0.1:5442/demo" in backend["backend"]["environment"]["DATABASE_URL"]
+    caddyfile = (project_dir / "config/vps/Caddyfile").read_text()
+    assert "reverse_proxy 127.0.0.1:8010" in caddyfile
+    # A site file imported by the server's Caddyfile: no global options block of its own.
+    assert not caddyfile.lstrip().startswith("{")
+    switch = (project_dir / "config/vps/deploy-remote.sh").read_text()
+    assert 'CADDY_SITE="/etc/caddy/sites/$NAME.caddy"' in switch
+    assert "PORT=8010" in switch
+    assert "DB_PORT=5442" in switch
 
 
 @pytest.mark.parametrize(

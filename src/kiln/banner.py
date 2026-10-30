@@ -6,6 +6,8 @@ Outside a terminal, or with `NO_COLOR`, a single line without the drawing: logs 
 output stay readable.
 """
 
+import shutil
+import textwrap
 from collections.abc import Sequence
 from pathlib import Path
 
@@ -45,6 +47,8 @@ REPO_URL = "github.com/antoine-tena/kiln"
 
 # Home screen: command sections (name, role) and examples.
 CommandGroup = tuple[str, Sequence[tuple[str, str]]]
+# `kiln <command> --help`: sections of (flags, role).
+OptionGroup = tuple[str, Sequence[tuple[str, str]]]
 
 
 def show_banner(action: str, root: Path | None = None) -> None:
@@ -82,8 +86,29 @@ def show_home(groups: Sequence[CommandGroup], examples: Sequence[str]) -> None:
         print(f"{INDENT}  {ui.paint('$', ui.STONE_DARK)} {example}")
     print(
         f"\n{INDENT}{ui.paint('kiln <command> --help', bold=True)}"
-        f"{ui.paint(f' for the options · {REPO_URL}', ui.STONE)}\n"
+        f"{ui.paint(' for the options · ', ui.STONE)}"
+        f"{ui.paint('kiln -V', bold=True)}{ui.paint(f' the version · {REPO_URL}', ui.STONE)}\n"
     )
+
+
+def show_command_help(role: str, usage: str, groups: Sequence[OptionGroup]) -> None:
+    """`kiln <command> --help`: the home screen's banner and layout, the command's options."""
+    show_banner(role)
+    columns = shutil.get_terminal_size((100, 24)).columns
+    margin = " " * len(f"{INDENT}Usage  ")
+    usage_lines = textwrap.wrap(usage, max(columns - len(margin), 30))
+    print(f"{INDENT}{ui.paint('Usage', bold=True)}  {usage_lines[0]}")
+    for line in usage_lines[1:]:
+        print(f"{margin}{line}")
+    width = max((len(flags) for _, options in groups for flags, _ in options), default=0) + 3
+    for title, options in groups:
+        print(f"\n{INDENT}{ui.paint(title.upper(), ui.FIRE, bold=True)}")
+        for flags, text in options:
+            lines = textwrap.wrap(text, max(columns - len(INDENT) - 2 - width, 30)) or [""]
+            print(f"{INDENT}  {ui.paint(f'{flags:<{width}}', ui.STONE_LIGHT, bold=True)}{lines[0]}")
+            for line in lines[1:]:
+                print(f"{INDENT}  {' ' * width}{line}")
+    print()
 
 
 def render_logo() -> list[str]:
@@ -106,7 +131,7 @@ def render_logo() -> list[str]:
 
 
 def _project_summary(root: Path) -> str:
-    """Project name, size and frameworks: `demo · flame · django + nuxt, podman`."""
+    """Project name, size and frameworks: `demo · medium · django + nuxt, podman`."""
     try:
         answers = answers_if_any(root)
         stack = load_stack(root)

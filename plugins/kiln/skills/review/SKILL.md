@@ -28,8 +28,10 @@ Each one, against the repo's habits:
 - **Subject**: Conventional Commits `type(scope): summary` (`!` for a breaking change), in the
   language of the history, under 72 characters, saying what changes rather than how; no
   `wip`, `test`, `oops`, `fix typo`, `update`, `.` or a bare file name.
-- **Body and trailers**: no `Co-Authored-By: Claude`, no `Claude-Session:`, no
-  « Generated with » line; a breaking change says it (`BREAKING CHANGE:`).
+- **Body and trailers**: no `Claude-Session:`, no « Generated with » line; a
+  `Co-Authored-By: Claude` only on a machine set to disclose it (`kiln set ai_trailers`,
+  `disclose` by default; the branch guard refuses it under `never`); a breaking change says it
+  (`BREAKING CHANGE:`).
 - **Author**: the user's usual identity on this repo (`git config user.name/email`, the
   history), never a placeholder or a machine address; an outside contributor keeps their own.
 - **Shape**: small and atomic, one purpose each, only the files of the task. To fold in:
@@ -38,8 +40,9 @@ Each one, against the repo's habits:
 
 ## 3. Diff
 
-- No secret or real personal data (`gitleaks git --log-opts=origin/<integration>..<branch>`
-  if installed, otherwise read the diff for keys, tokens, `.env`, e-mails, phone numbers).
+- No secret or real personal data (`git log -p origin/<integration>..<branch> | gitleaks stdin`
+  if installed: a session moved into a worktree refuses `gitleaks git`, which runs git itself;
+  otherwise read the diff for keys, tokens, `.env`, e-mails, phone numbers).
 - No stray file: scratch or debug output, `*.orig`, `*.rej`, `.DS_Store`, a local `.<service>/`
   folder, a large binary, a lockfile changed without its manifest.
 - No leftover: conflict markers, `print` / `console.log` of debugging, commented-out code, a

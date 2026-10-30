@@ -6,8 +6,17 @@ ROOT = Path(__file__).resolve().parent.parent
 MARKETPLACE = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text())
 PLUGINS = [plugin["name"] for plugin in MARKETPLACE["plugins"]]
 # Ce qui renvoie à un skill (`/kiln:merge`) : la charte et les fichiers générés, les plugins
-# eux-mêmes, les messages de la commande, la documentation.
-CITING = ("template", "plugins", "src", "README.md", "README.fr.md", "CONTRIBUTING.md", "CLAUDE.md")
+# eux-mêmes, les messages de la commande, la documentation, les consignes de kiln.
+CITING = (
+    "template",
+    "plugins",
+    "src",
+    "README.md",
+    "README.fr.md",
+    "CONTRIBUTING.md",
+    "CLAUDE.md",
+    ".claude/rules",
+)
 TEXT_SUFFIXES = {".md", ".py", ".jinja", ".json", ".yml", ".yaml", ".toml", ".sh", ".txt"}
 
 
@@ -31,6 +40,18 @@ def test_every_cited_skill_exists() -> None:
         if not (ROOT / "plugins" / match[1] / "skills" / match[2] / "SKILL.md").is_file()
     }
     assert sorted(missing) == []
+
+
+# Une règle de `.claude/rules/` ne se charge que quand Claude touche un fichier que ses `paths`
+# désignent : un motif qui ne désigne plus rien (fichier renommé ou déplacé) l'éteint sans bruit.
+def test_rule_paths_match_files() -> None:
+    dead: dict[str, list[str]] = {}
+    for rule in (ROOT / ".claude" / "rules").glob("*.md"):
+        front_matter = rule.read_text().split("---")[1]
+        for pattern in re.findall(r'^\s*- "([^"]+)"$', front_matter, re.M):
+            if not any(ROOT.glob(pattern)):
+                dead.setdefault(rule.name, []).append(pattern)
+    assert dead == {}
 
 
 # Une description de skill est relue à chaque message de chaque session (T-162) : courte,

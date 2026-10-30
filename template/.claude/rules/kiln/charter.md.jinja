@@ -1,4 +1,5 @@
-{%- set level = {'spark': 0, 'ember': 1, 'flame': 2, 'blaze': 3}[size] %}
+{%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
+{%- set level = {'tiny': 0, 'small': 1, 'medium': 2, 'large': 3}[size] %}
 {%- set back_py = backend in ['django', 'fastapi', 'data', 'cli'] %}
 {%- set front_py = frontend in ['streamlit', 'dash'] %}
 {%- set front_js = frontend in ['nuxt', 'next', 'astro', 'vite-react'] %}
@@ -115,11 +116,11 @@ matching files.
 - **[UV-PODMAN]** Python goes through uv (`uv add`, `uv run`, `uv tool install`): never pip, pipx
   nor `requirements.txt`. Containers go through podman (`Containerfile`, `compose.yaml`,
   `podman-compose`): never docker, `Dockerfile` nor `docker-compose.yml` (checked).
-{%- if java %} Java goes through the wrapper `backend/mvnw`, never a `mvn` installed on the machine.{% endif %}
+{%- if java %} Java goes through the wrapper `{{ bp }}mvnw`, never a `mvn` installed on the machine.{% endif %}
 - **[LOCKED-DEPENDENCIES]** Every dependency is resolved by a committed lockfile
 {%- if back_py or front_py %} (`uv.lock`{{ ', `pnpm-lock.yaml`' if front_js }}){% elif front_js %} (`pnpm-lock.yaml`){% endif %}; CI installs it frozen and
   fails when it drifts.
-{%- if java %} Maven has no lockfile: exact versions in `backend/pom.xml` (the enforcer refuses
+{%- if java %} Maven has no lockfile: exact versions in `{{ bp }}pom.xml` (the enforcer refuses
   ranges), checksums required, Maven itself pinned by the wrapper.
 {%- endif %}
 - **[NEW-DEPENDENCY]** A new dependency is justified in its commit: maintained (a release less

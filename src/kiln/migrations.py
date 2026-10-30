@@ -59,12 +59,14 @@ def answers_for_update(root: Path, changes: Mapping[str, object]) -> dict[str, o
     """The data given to Copier: the answers under their new names, then `changes`."""
     raw = raw_answers(root)
     data: dict[str, object] = {}
+    current = renames.answers(raw)
     if is_legacy(raw):
-        current = renames.answers(raw)
         data = {key: value for key, value in current.items() if not key.startswith("_")}
         data.update(LEGACY_DEFAULTS)
         if current.get("backend") == "java":
             data["java_package"] = "fr." + str(current.get("name", "")).replace("-", "")
+    elif current.get("size") != raw.get("size"):
+        data["size"] = current["size"]  # a size named after the fire, before kiln 0.4.10
     if "ci_runner" not in raw and "ci_runner" not in changes:
         data["ci_runner"] = ci_runner_for(root)
     return {**data, **changes}

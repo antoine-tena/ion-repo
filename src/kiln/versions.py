@@ -22,9 +22,11 @@ from packaging.version import InvalidVersion, Version
 from kiln.config import BETA_CHANNEL, INTERNAL_CHANNEL, load_config
 
 KILN_GIT_URL = "https://github.com/antoine-tena/kiln"
-# Package name on PyPI; `kiln` before, still there on machines not yet updated.
-PYPI_NAME = "kiln-cli"
-DISTRIBUTIONS = (PYPI_NAME, "kiln")
+# Package name on PyPI, in the Keramos family's `keramos-<tool>`; `kiln-cli` is published beside it
+# with the same code until the testers have moved, `kiln` came before PyPI.
+PYPI_NAME = "keramos-kiln"
+LEGACY_PYPI_NAME = "kiln-cli"
+DISTRIBUTIONS = (PYPI_NAME, LEGACY_PYPI_NAME, "kiln")
 CHANGELOG_FILE = "CHANGELOG.md"
 # Written into the package by `hatch_build.py`: what a copy of a checkout was built from.
 BUILD_INFO_FILE = "_build.json"
@@ -107,6 +109,14 @@ def _installed_distribution() -> Distribution | None:
     return None
 
 
+def installed_pypi_name() -> str:
+    """The PyPI name the tool was installed under, kept by its upgrade: `kiln-cli` stays
+    `kiln-cli`, so a tester's tool is not replaced by a second one carrying the same commands."""
+    dist = _installed_distribution()
+    name = dist.metadata["Name"] if dist else ""
+    return LEGACY_PYPI_NAME if name == LEGACY_PYPI_NAME else PYPI_NAME
+
+
 def install_source() -> str:
     """Where the tool comes from: `pypi`, `homebrew` (the tap's formula, T-12), `git` (a GitHub
     revision) or `folder` (a checkout)."""
@@ -127,7 +137,7 @@ def upgrade_command(version: str) -> str:
     if source == "homebrew" and release is not None and not release.is_prerelease:
         return "brew upgrade kiln"
     if source == "pypi" and release is not None and not release.is_prerelease:
-        return f'uv tool install --force "{PYPI_NAME}=={release}"'
+        return f'uv tool install --force "{installed_pypi_name()}=={release}"'
     return f'uv tool install --force "git+{KILN_GIT_URL}@{version}"'
 
 
@@ -135,10 +145,24 @@ def beta_install_command(code_dir: Path) -> str:
     """Command that makes the tool kiln's `develop` (`beta` channel): the checkout of the code
     directory installed editable, read live (each merge into `develop` is there at once),
     otherwise GitHub's `develop`."""
-    checkout = code_dir / "kiln"
-    if (checkout / "src" / "kiln" / "versions.py").is_file():
+    checkout = kiln_checkout(code_dir)
+    if checkout is not None:
         return f"uv tool install --force --editable {checkout}"
     return f'uv tool install --force "git+{KILN_GIT_URL}@develop"'
+
+
+def kiln_checkout(code_dir: Path) -> Path | None:
+    """kiln's checkout in the code directory, at its root, in one of its folders or one level
+    further (a family folder with one folder per tool), by its real path: a link left at the old
+    place leads to the same checkout."""
+    for checkout in (
+        code_dir / "kiln",
+        *sorted(code_dir.glob("*/kiln")),
+        *sorted(code_dir.glob("*/*/kiln")),
+    ):
+        if (checkout / "src" / "kiln" / "versions.py").is_file():
+            return checkout.resolve()
+    return None
 
 
 def tool_release_tag() -> str | None:

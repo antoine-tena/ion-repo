@@ -1,12 +1,13 @@
-{%- set level = {'spark': 0, 'ember': 1, 'flame': 2, 'blaze': 3}[size] -%}
+{%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
+{%- set level = {'tiny': 0, 'small': 1, 'medium': 2, 'large': 3}[size] -%}
 ---
 paths:
-  - "frontend/**"
+  - "{{ fp }}**"
 ---
 <!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten. -->
 # Frontend: Nuxt 4 and Vue 3
 
-`frontend/app/`: pages, components (`components/`), composables, styles (`assets/`), constants
+`{{ fp }}app/`: pages, components (`components/`), composables, styles (`assets/`), constants
 (`app/utils/constants.ts`){% if backend == 'django' %}, API types generated in `app/types/api.d.ts` (`kiln contract`){% endif %}.
 Run: `kiln dev`; check: `kiln check` (ESLint, `nuxt typecheck`).
 

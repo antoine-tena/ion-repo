@@ -6,7 +6,23 @@ Three kinds, not to be confused.
 
 Final decisions: do not propose them again, even if an audit recommends it.
 
+**2026-10-30**, antoine's decision for the launch: no proof on real repos and no study; v0.5.0
+launches on kiln's own repos at 100 and the demos already recorded, none re-recorded.
+- T-131 · Proof on two real repos, on local copies
+- T-132 · The study: a hundred public Django and Nuxt repos scored (and its idea H01, a labelled
+  corpus built from it)
+
+**2026-10-24**, antoine's decision with T-177: kiln's own docs are in English only, in no other
+language.
+- T-164 · French docs brought up to date at the candidate: no French docs left to translate
+- T-55 · README in Chinese, Japanese, Spanish and Portuguese: every translation is a copy to keep
+  in step at each release
+
 ## Declined for now
+
+**2026-10-26**, reopened by antoine's answers (the backlog's decisions of 26 October 2026): T-37
+(Docker accepted beside podman) and T-117 (a VS Code extension) are back in the backlog; T-94
+(Windows without WSL) stays declined, `kiln score` only says what to do there (T-189).
 
 **2026-10-17**, when the backlog was rewritten from the vision of that day (antoine's request):
 kiln keeps a repo up to date with the best practices and easy for Claude to read, Django and
@@ -32,7 +48,9 @@ frameworks build features; kiln keeps the repo they live in at the level of the 
 - T-108 · An API reference page served by every backend
 - T-96 · `kiln new "…"`: the project described in a sentence
 
-**More stacks and project types**: Django and Nuxt first, the other templates frozen (T-133).
+**More templates and project types**: Django and Nuxt first, the other templates frozen (T-133).
+Scoring other stacks is not ruled out: stack packs after the launch (decision 1 of 24 October
+2026, [the kiln score ideas](backlog.md#-kiln-score-the-thesis)).
 - T-07 · Better support for Java projects
 - T-36 · `kiln new` recommends the stack, the user decides
 - T-79, T-80, T-81 · Project types `mcp`, `agent`, `library`
@@ -44,8 +62,6 @@ frameworks build features; kiln keeps the repo they live in at the level of the 
 
 **The comfort of `kiln new` for a newcomer**: the main door is now `kiln score` on the repo
 people already have.
-- T-37 · Docker or podman: the engine the machine has (the grid's container rules are
-  engine-neutral, T-125)
 - T-40 · kiln tells you what is possible, once, at the right moment
 - T-41 · Beginner with nothing to set, expert with everything settable (each finding of
   `kiln score` already says why and the command that fixes or waives it, T-46)
@@ -61,7 +77,6 @@ people already have.
 - T-121 · `kiln uninstall`: the machine left as it was (`uvx kiln-cli score` installs nothing)
 - T-47 · `kiln eject` (the fixes are plain commits on a branch; back if organisations ask)
 - T-94 · Windows without WSL
-- T-117 · A VS Code extension
 
 **Large companies, not at first**: AWS and Moderne serve them; T-39 brings profiles for
 associations, companies of about 50 people and universities.
@@ -86,6 +101,12 @@ small structures' repos up to date; back once the grid holds.
 - Living forks: one's changes kept as intentions with their tests, replayed on each upstream
   release (`kiln update` for any open-source software)
 - A financial guarantee on merged code: trust sold as an insured product
+
+**Paths the vision dropped on the way** (17 October 2026):
+- A "measured harness" (scoring an agent's configuration): a product centred on agents, not
+  kiln's subject, and partly Anthropic's ground
+- "Dependabot for the Claude Code configuration": Claude Code's `/doctor` has done it since
+  July 2026
 
 ## Dropped
 

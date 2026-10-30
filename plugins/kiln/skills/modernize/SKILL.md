@@ -12,6 +12,8 @@ offer to run it before anything else (no token spent).
    `kiln score --roadmap` there. Pick the item; read its rule (`kiln grid <ID>`: why, sources,
    what passes). Open only the places the roadmap quotes, and what they call or import when the
    change needs it: the roadmap is there so you do not explore the repo.
+   An item whose `kiln fix` commit broke a check names its log: its first line gives the branch
+   the commit waits on; cherry-pick it, make the check green again, and that is the gap closed.
 2. **To confirm** (an approximate detector): look at each place once. A real gap stays in the
    list; a false positive is dismissed for good, with the user's yes:
    `kiln waive <ID> --paths <file> --permanent --reason "false positive: <why, in a few words>"`.

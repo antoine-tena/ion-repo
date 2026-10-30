@@ -1,14 +1,11 @@
 {%- set api = backend == 'django' %}
 {%- set domain = api_domain if api else site_url.split('://')[-1].split('/')[0] %}
-{%- set port = 8000 if api else (8501 if frontend == 'streamlit' else 8050) -%}
-# Caddy of the server: automatic TLS (Let's Encrypt) and headers, in front of the {{ 'API' if api else 'app' }} on
-# 127.0.0.1:{{ port }}. Installed by the switch (deploy-remote.sh) as /etc/caddy/Caddyfile, reloaded when
-# it changed.
-{
-	email admin@{{ domain.split('.')[-2:] | join('.') }}
-}
-
+{%- set port = vps_port if api else (8501 if frontend == 'streamlit' else 8050) -%}
+# Caddy site of the project: automatic TLS (Let's Encrypt) and headers, in front of the {{ 'API' if api else 'app' }} on
+# 127.0.0.1:{{ port }}. Installed by the switch (deploy-remote.sh) as /etc/caddy/sites/{{ name }}.caddy,
+# which the server's Caddyfile imports (a server shared with other projects keeps their sites).
 {{ domain }} {
+	tls admin@{{ domain.split('.')[-2:] | join('.') }}
 	encode zstd gzip
 {%- if api %}
 
@@ -39,5 +36,13 @@
 		header_up X-Forwarded-Proto {scheme}
 		health_uri {{ '/api/health' if api else ('/_stcore/health' if frontend == 'streamlit' else '/') }}
 		health_interval 30s
+{%- if api %}
+		# Under the public name: Django refuses a host missing from DJANGO_ALLOWED_HOSTS, and Caddy
+		# would then take the API for down.
+		health_headers {
+			Host {{ domain }}
+			X-Forwarded-Proto https
+		}
+{%- endif %}
 	}
 }

@@ -1,0 +1,49 @@
+{%- set bd = backend_dir | default('backend') %}{%- set bp = '' if bd == '.' else bd ~ '/' -%}
+name: PyPI
+
+# Publishes {{ pypi_name }} on PyPI at each release tag `vN` (`/kiln:release`), its version taken
+# from the tag; the command stays `{{ name }}`. Either a PyPI token in the secret `PYPI_TOKEN` of
+# the `pypi` environment (`/kiln:token`; "Entire account" to create the project at the first tag,
+# scoped to it afterwards), or, without it, trusted publishing: PyPI trusts this workflow and the
+# `pypi` environment, declared once at https://pypi.org/manage/account/publishing/. PyPI refuses a
+# reusable workflow as a trusted publisher: this one stays in the repo, written by kiln. Off with
+# `kiln set pypi_name=`.
+on:
+  push:
+    tags: [ "v[0-9]*" ]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/{{ pypi_name }}/
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    defaults:
+      run:
+        working-directory: {{ bd }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
+        with:
+          enable-cache: false  # a release: no cache to poison
+      - name: Version from the tag
+        run: uv version --frozen "${GITHUB_REF_NAME#v}"
+      - name: Build
+        run: uv build --out-dir dist
+      # Build provenance (Sigstore): `gh attestation verify <wheel> -R {{ owner or '<owner>' }}/{{ name }}`.
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: {{ bp }}dist/*
+      - name: Publish
+        env:
+          UV_PUBLISH_TOKEN: {{ '${{ secrets.PYPI_TOKEN }}' }}
+        run: uv publish --trusted-publishing automatic

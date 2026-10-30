@@ -1,13 +1,14 @@
-{%- set level = {'spark': 0, 'ember': 1, 'flame': 2, 'blaze': 3}[size] -%}
+{%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
+{%- set level = {'tiny': 0, 'small': 1, 'medium': 2, 'large': 3}[size] -%}
 ---
 paths:
-  - "backend/**"
+  - "{{ bp }}**"
 ---
 <!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten. -->
 # Backend: Python data (polars or NumPy, marimo, Plotly)
 
-`backend/pipeline/`: loading (`sources.py`), transformations (`transforms.py`), figures
-(`figures.py`); `backend/notebooks/`: marimo notebooks; `backend/data/`: data (`sample/` is
+`{{ bp }}pipeline/`: loading (`sources.py`), transformations (`transforms.py`), figures
+(`figures.py`); `{{ bp }}notebooks/`: marimo notebooks; `{{ bp }}data/`: data (`sample/` is
 committed). Explore: `kiln dev` (or `uv run marimo edit notebooks`); check: `kiln check`.
 
 ## Data chain

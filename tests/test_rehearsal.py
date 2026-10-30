@@ -26,6 +26,7 @@ def repo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     git(root, "init", "-q", "-b", "develop")
     (root / ".gitignore").write_text(".env\nbackend/.env\n")
     (root / "README.md").write_text("demo\n")
+    (root / ".copier-answers.yml").write_text("stack: python\n")
     git(root, "add", "-A")
     git(root, "commit", "-qm", "start")
     (root / ".env").write_text("SECRET=local\n")
@@ -73,3 +74,10 @@ def test_a_failed_rehearsal_keeps_its_clone_and_says_why(
     assert kept.is_dir()
     with pytest.raises(KilnError, match="rehearsal: the update fails"):
         rehearsal.rehearse_project(repo, should_update_deps=False, allow_major=False)
+
+
+def test_a_repo_not_under_kiln_is_refused_before_any_clone(tmp_path: Path, repo: Path) -> None:
+    (repo / ".copier-answers.yml").unlink()
+    with pytest.raises(KilnError, match="not under kiln"):
+        rehearsal.rehearse(repo, should_update_deps=False, allow_major=False)
+    assert list((tmp_path / "tmp").iterdir()) == []

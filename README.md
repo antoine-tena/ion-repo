@@ -12,13 +12,14 @@ Make Claude Code build production-grade repos, bring yours up to that grade, and
 
 [![PyPI](https://img.shields.io/pypi/v/kiln-cli.svg?color=c2551f)](https://pypi.org/project/kiln-cli/)
 [![CI](https://github.com/antoine-tena/kiln/actions/workflows/kiln.yml/badge.svg?branch=develop)](https://github.com/antoine-tena/kiln/actions/workflows/kiln.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/antoine-tena/kiln/badge)](https://scorecard.dev/viewer/?uri=github.com/antoine-tena/kiln)
 [![License: MIT](https://img.shields.io/badge/license-MIT-4c4c4c.svg)](LICENSE)
 
 [**Reference**](docs/reference.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Français](README.fr.md)
 
-<img src="docs/assets/kiln-new.gif" alt="kiln new my-app asks three questions (what you build, how big, the team's language), creates a Django and Nuxt app with its first commit, then kiln check passes ruff, mypy, pytest, ESLint, the type checks and charter" width="820">
+<img src="docs/assets/kiln-new.gif" alt="kiln new my-app asks three questions (what you build, how big, the team's language), creates a Django and Nuxt app with its first commit, then kiln check passes ruff, mypy, pytest, ESLint, the type checks and charter, and kiln score gives it 100/100" width="820">
 
-<i>A real run, played at 1.5× with the waits cut: <code>kiln new</code>, then <code>kiln check</code> in the new repo.</i>
+<i>A real run, played at 1.5× with the waits cut: <code>kiln new</code>, then <code>kiln check</code> and <code>kiln score</code> in the new repo.</i>
 
 </div>
 
@@ -46,13 +47,28 @@ kiln itself calls no AI and needs no API key.
 - `kiln grid` lists the practices kiln stands behind, each with its reason, its sources (checked
   and dated) and how it is detected. `kiln score` measures any repo against them in about a
   second, without a token: a score out of 100, one per pillar, and the gaps to close first. `kiln fix` closes on a
-  branch those a script can close, one commit per rule, undone if your checks turn red.
-  `kiln score --roadmap` hands the rest to Claude Code as a short list with file and line, and
-  `/kiln:modernize` works through it, each gap proven closed by `kiln score --rule`.
+  branch those a script can close, one commit per rule, each proven, set aside if your checks turn
+  red. `kiln score --roadmap` hands the rest to Claude Code as a short list with file and line,
+  and `/kiln:modernize` works through it, each gap proven closed by `kiln score --rule`.
+  [kiln-bot](docs/reference.md) brings the fixes as a weekly pull request, in one
+  copy-paste.
 - Skills for worktrees, merges, releases and reviews; hooks that keep Claude off `main` and
   `develop`; a status line that shows CI, tickets and production.
 - A private repo's CI runs on your machine (`kiln ci`, its verdict kept as a git note) and spends
   no GitHub minutes; a public repo's runs on GitHub, where it is free.
+
+## Rescue an old repo
+
+<p align="center">
+  <img src="docs/assets/kiln-rescue.gif" alt="kiln score puts an old Django repo at 23 out of 100; kiln adopt, kiln fix and kiln score --roadmap follow; Claude Code works through the roadmap with /kiln:modernize, one commit per gap; kiln score then gives it 100 out of 100" width="820">
+</p>
+<p align="center"><i>A real run on <a href="https://github.com/antoine-tena/kiln-demo-legacy">kiln-demo-legacy</a>, a Django app left as it was written around 2020, played at 1.5× with the waits cut; Claude Code's five minutes as a time-lapse.</i></p>
+
+`kiln score` puts it at 23/100. `kiln adopt` lays kiln's rules, checks and instructions without
+overwriting a file (39), `kiln fix` closes what a script can, one commit per rule (65), and
+`kiln score --roadmap` hands the rest to Claude Code. `/kiln:modernize` pins what the code does
+today with tests first, then closes each gap in its own commit, proven by `kiln score --rule`:
+100/100. The demo repo's README gives the commands to replay it.
 
 ## Install
 
@@ -94,7 +110,7 @@ $ claude                     # Claude Code works it off, with kiln's rules, skil
 | A content site (`site`) | — | Astro |
 | A data dashboard (`dashboard`) | polars, marimo, Plotly | Streamlit |
 | A data analysis (`analysis`) | polars, marimo, Plotly | — |
-| A command-line tool (`cli`) | Python, installable | — |
+| A command-line tool (`cli`) | Python, installable, with its own Claude Code plugin if you want one | — |
 
 Next.js, Vite + React, Dash and Java 25 + Maven are there too, and kiln's tests generate and check every
 combination. Django and Nuxt are complete; the other stacks are frozen but maintained: new grid
@@ -102,7 +118,7 @@ rules go to Django and Nuxt first.
 
 Every repo also gets uv, pnpm and podman (never pip, npm or docker), CI that calls kiln's
 reusable workflows, protected `main` and `develop` branches, a `docs/backlog/` of typed tickets,
-and a size (`spark`, `ember`, `flame` or `blaze`) that sets how much process it carries. A
+and a size (`tiny`, `small`, `medium` or `large`) that sets how much process it carries. A
 Django app can ship to a hardened VPS (Caddy, read-only containers, automatic rollback, tested
 backups), a Nuxt front to Vercel.
 
@@ -174,7 +190,9 @@ Code's: in `0.x`, each release bumps the patch, breaking changes come first in t
 [changelog](CHANGELOG.md) and `kiln update` converts them; the minor marks a milestone. Strict
 semver starts at 1.0. What comes next is for the repos you already have: any Django or Nuxt repo
 scored against the grid in seconds, then brought up to it by script wherever a script can
-(v0.5.0).
+(v0.5.0). Then Claude Code closing alone what a script leaves, whole organisations, every common
+stack, CI and machine, and the stability promise of 1.0, release by release:
+[**ROADMAP.md**](ROADMAP.md).
 
 ## Contributing
 

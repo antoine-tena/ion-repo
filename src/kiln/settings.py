@@ -37,6 +37,8 @@ SETTABLE_KEYS = (
     "backend",
     "frontend",
     "podman",
+    "claude_plugin",
+    "pypi_name",
     "java_package",
     "timezone",
     "serena",
@@ -44,15 +46,19 @@ SETTABLE_KEYS = (
     "deploy",
     "vps_host",
     "api_domain",
+    "vps_port",
+    "vps_db_port",
     "site_url",
     "deploy_branch",
     "frontend_deploy",
     "north_star",
     "statusline_ci",
     "ci_runner",
+    "update_bot",
     "prod_health_url",
+    "large_files",
 )
-LIST_KEYS = frozenset({"team"})
+LIST_KEYS = frozenset({"team", "large_files"})
 # The demo of a new project's front (a backend health badge, its typed client): it leans on the
 # template's constants and generated API types, which a front already built has replaced.
 STARTER_FILES = (
@@ -76,7 +82,8 @@ def show_settings(root: Path) -> None:
 
 
 def parse_assignments(assignments: list[str]) -> dict[str, object]:
-    """`key=value` read as YAML (`true`, `[a, b]`); a team can be written `a,b`."""
+    """`key=value` read as YAML (`true`, `[a, b]`); a list (team, large files) can be written
+    `a,b`."""
     parsed: dict[str, object] = {}
     for assignment in assignments:
         old_key, separator, raw_value = assignment.partition("=")
@@ -84,7 +91,7 @@ def parse_assignments(assignments: list[str]) -> dict[str, object]:
         if not separator or key not in SETTABLE_KEYS:
             raise KilnError(f'"{assignment}": expected key=value, keys: {", ".join(SETTABLE_KEYS)}')
         if key in LIST_KEYS and not raw_value.startswith("["):
-            parsed[key] = [login.strip() for login in raw_value.split(",") if login.strip()]
+            parsed[key] = [entry.strip() for entry in raw_value.split(",") if entry.strip()]
         else:
             parsed[key] = _scalar(raw_value)
         if key in PER_USE_LANGUAGES:
@@ -103,7 +110,7 @@ def _scalar(raw_value: str) -> object:
 def apply_settings(root: Path, assignments: list[str]) -> None:
     changes = parse_assignments(assignments)
     require_tools("git", "uv")
-    check_working_branch(root)
+    check_working_branch(root, "chore/kiln-set")
     step("Settings: " + ", ".join(f"{key}={value}" for key, value in changes.items()))
     previous_stack = load_stack(root)
     apply_template(root, changes)

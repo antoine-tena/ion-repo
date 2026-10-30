@@ -90,6 +90,13 @@ logs for a few minutes (the project's diagnosis skill if any), the announcement 
 something breaks: back to the previous release through the project's procedure, and say so.
 No deployment configured (no `scripts/ops/deploy-*.sh`, nothing in `CLAUDE.md`): the release ends
 at the tag on `main`; say so and skip to the next step.
+A command published on PyPI (`.github/workflows/pypi.yml`, `kiln set pypi_name=…`): the pushed
+tag is the deployment, version `N` taken from `vN`. Follow the run (`gh run watch`), then check
+`https://pypi.org/project/<pypi_name>/N/`; a red run names its failing step. The first tag needs
+either a PyPI token in the secret `PYPI_TOKEN` of the `pypi` environment ("Entire account" to
+create the project, `/kiln:token`), or the publisher declared on PyPI
+(https://pypi.org/manage/account/publishing/: repository, workflow `pypi.yml`, environment
+`pypi`); a version on PyPI can never be uploaded again, so a broken one is fixed by the next tag.
 
 ## 9. Merge back and tidy
 ```bash

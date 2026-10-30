@@ -22,13 +22,17 @@ SERVICE={{ 'backend' if api else 'frontend' }}
 SOURCES="{{ 'backend' if api else ('frontend backend' if backend == 'data' else 'frontend') }}"
 # A database to migrate and back up: the Django API only.
 HAS_DB={{ 1 if api else 0 }}
-PORT={{ 8000 if api else (8501 if frontend == 'streamlit' else 8050) }}
+PORT={{ vps_port if api else (8501 if frontend == 'streamlit' else 8050) }}
+DB_PORT={{ vps_db_port if api else '' }}
 HEALTH_PATH={{ '/api/health' if api else ('/_stcore/health' if frontend == 'streamlit' else '/') }}
 PUBLIC_HOST={{ api_domain if api else site_url.split('://')[-1].split('/')[0] }}
 {% raw -%}
 ROOT="/opt/$NAME"
 IMAGE="localhost/${DB_USER}_$SERVICE"
 BUILD="/opt/$NAME-build"
+CADDY_MAIN=/etc/caddy/Caddyfile
+CADDY_SITE="/etc/caddy/sites/$NAME.caddy"
+CADDY_MAIN_REWRITTEN=0
 KEEP_IMAGES=5
 REPO_ENV="$ROOT/.env"
 BACKEND_ENV="$ROOT/backend/.env"
@@ -55,8 +59,8 @@ write_env_file() {
   [ -f "$BACKEND_ENV" ] || die "$BACKEND_ENV is missing: create it from backend/.env.example."
   grep -q '^POSTGRES_PASSWORD=.' "$REPO_ENV" 2> /dev/null || die "POSTGRES_PASSWORD absent de $REPO_ENV."
   grep -vE '^\s*(#|$)' "$BACKEND_ENV" > "$ENV_FILE"
-  printf 'DATABASE_URL=postgres://%s:%s@127.0.0.1:5432/%s\n' \
-    "$DB_USER" "$(grep '^POSTGRES_PASSWORD=' "$REPO_ENV" | cut -d= -f2-)" "$DB_USER" >> "$ENV_FILE"
+  printf 'DATABASE_URL=postgres://%s:%s@127.0.0.1:%s/%s\n' \
+    "$DB_USER" "$(grep '^POSTGRES_PASSWORD=' "$REPO_ENV" | cut -d= -f2-)" "$DB_PORT" "$DB_USER" >> "$ENV_FILE"
 }
 
 run_image() {  # run_image <image> <commande…>
@@ -171,12 +175,56 @@ install_server_files() {
   systemctl enable --now "${timers[@]}" > /dev/null 2>&1
   # Restarts `restart: always` containers after a reboot of the server.
   systemctl enable podman-restart.service > /dev/null 2>&1 || true
-  if ! cmp -s "$BUILD/config/vps/Caddyfile" /etc/caddy/Caddyfile; then
-    [ -f /etc/caddy/Caddyfile ] && install -m 644 /etc/caddy/Caddyfile /etc/caddy/Caddyfile.previous
-    install -m 644 "$BUILD/config/vps/Caddyfile" /etc/caddy/Caddyfile
-    systemctl reload caddy
-    echo "Caddyfile installed and reloaded (previous one: /etc/caddy/Caddyfile.previous)."
+  install_caddy_site
+}
+
+# `caddy validate` opens the site's log file: run as root, it would create it as root, and Caddy,
+# which runs as the caddy user, could then no longer write it.
+prepare_caddy_log() {
+  install -d -o caddy -g caddy -m 750 /var/log/caddy
+  touch "/var/log/caddy/$NAME-access.log"
+  chown caddy:caddy "/var/log/caddy/$NAME-access.log"
+}
+
+# The server's Caddyfile imports one file per site from /etc/caddy/sites/, so that several projects
+# share the server. kiln writes that Caddyfile only when it is Caddy's default or its own former
+# one (the whole site in the Caddyfile); a Caddyfile someone else wrote is never touched.
+ensure_caddy_import() {
+  grep -qE '^\s*import\s+(/etc/caddy/)?sites/\*' "$CADDY_MAIN" 2> /dev/null && return 0
+  if [ -f "$CADDY_MAIN" ] && ! grep -qE '/usr/share/caddy|Installed by the switch \(deploy-remote\.sh\) as /etc/caddy/Caddyfile' "$CADDY_MAIN"; then
+    die "$CADDY_MAIN is another project's: add the line 'import /etc/caddy/sites/*.caddy' to it, then deploy again."
   fi
+  [ -f "$CADDY_MAIN" ] && install -m 644 "$CADDY_MAIN" "$CADDY_MAIN.previous"
+  printf '%s\n' "# One file per site, installed by the switch of each project." "import /etc/caddy/sites/*.caddy" > "$CADDY_MAIN"
+  CADDY_MAIN_REWRITTEN=1
+  echo "$CADDY_MAIN now imports /etc/caddy/sites/ (previous one: $CADDY_MAIN.previous)."
+}
+
+# Back to the files Caddy runs with, so that the next deployment installs the site again.
+restore_caddy_files() {
+  if [ -f "$CADDY_SITE.previous" ]; then mv "$CADDY_SITE.previous" "$CADDY_SITE"; else rm -f "$CADDY_SITE"; fi
+  if [ "$CADDY_MAIN_REWRITTEN" = 1 ] && [ -f "$CADDY_MAIN.previous" ]; then cp "$CADDY_MAIN.previous" "$CADDY_MAIN"; fi
+}
+
+# The site of this project, checked with every other site of the server before Caddy reloads; the
+# previous file comes back if the whole configuration does not hold.
+install_caddy_site() {
+  cmp -s "$BUILD/config/vps/Caddyfile" "$CADDY_SITE" && grep -qE '^\s*import\s+(/etc/caddy/)?sites/\*' "$CADDY_MAIN" && return 0
+  install -d -m 755 /etc/caddy/sites
+  rm -f "$CADDY_SITE.previous"
+  [ -f "$CADDY_SITE" ] && install -m 644 "$CADDY_SITE" "$CADDY_SITE.previous"
+  install -m 644 "$BUILD/config/vps/Caddyfile" "$CADDY_SITE"
+  ensure_caddy_import
+  prepare_caddy_log
+  if ! caddy validate --adapter caddyfile --config "$CADDY_MAIN" >> "$LOG" 2>&1; then
+    restore_caddy_files
+    die "the server's Caddy configuration does not hold with this site: nothing reloaded (log: $LOG)."
+  fi
+  if ! systemctl reload caddy; then
+    restore_caddy_files
+    die "Caddy refused this site; the previous files are back, the configuration in service is unchanged (journalctl -u caddy)."
+  fi
+  echo "Caddy site $CADDY_SITE installed and reloaded."
 }
 
 # Code received, image built and checked, configuration validated: nothing switched yet.
@@ -194,7 +242,7 @@ build_candidate() {
   [ "$(podman run --rm --entrypoint cat "$TAG" GIT_SHA)" = "$TARGET" ] || die "image $TAG does not carry version $TARGET."
   echo "Image $TAG ready."
   podman-compose -f "$BUILD/config/vps/compose.yaml" config > /dev/null 2>> "$LOG" || die "invalid compose stack."
-  install -d -o caddy -g caddy -m 750 /var/log/caddy
+  prepare_caddy_log
   caddy validate --adapter caddyfile --config "$BUILD/config/vps/Caddyfile" >> "$LOG" 2>&1 || die "invalid Caddyfile."
   local script
   for script in "$BUILD"/config/vps/*.sh; do bash -n "$script"; done
@@ -250,7 +298,8 @@ cmd_deploy() {
 
   install_server_files
   PREV="$(cat DEPLOYED 2> /dev/null || true)"
-  if [ "$HAS_DB" = 1 ]; then
+  # The first deployment has no database yet: nothing to back up.
+  if [ "$HAS_DB" = 1 ] && podman container exists "$NAME-db"; then
     wait_for_db
     "/usr/local/sbin/$NAME-backup" pre-deploy
     BACKUP="$(find /root/backups -maxdepth 1 -name "$NAME-pre-deploy-*.dump" -printf '%T@ %p\n' | sort -rn | head -1 | cut -d' ' -f2-)"
@@ -258,6 +307,8 @@ cmd_deploy() {
   [ -f compose.yaml ] && install -m 600 compose.yaml compose.yaml.previous
   install -m 600 "$BUILD/config/vps/compose.yaml" compose.yaml
   if [ "$HAS_DB" = 1 ]; then
+    # The database runs as the image's postgres user (uid 70), owner of its data folder.
+    install -d -o 70 -g 70 -m 700 "$ROOT/postgres"
     compose up -d --no-deps db
     wait_for_db
     migrate_with "$TAG"

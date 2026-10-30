@@ -16,6 +16,7 @@ from kiln.stack import PNPM_LENIENT_BUILDS
 
 COOLDOWN_DAYS = 7
 DEPENDABOT = ".github/dependabot.yml"
+ACTIONS = ("**/action.yml", "**/action.yaml")
 USES = re.compile(
     r"""^(?P<head>\s*-?\s*uses:\s*)(?P<quote>['"]?)(?P<target>(?!\./|docker://)[^@\s'"]+)"""
     r"""@(?P<ref>[^\s'"#]+)(?P=quote)(?P<tail>.*)$"""
@@ -30,9 +31,10 @@ def _write(repo: Repo, name: str, text: str) -> None:
 
 
 def pin_actions(repo: Repo) -> list[str]:
-    """`uses: owner/repo@v4` → `uses: owner/repo@<sha> # v4`, reusable workflows included."""
+    """`uses: owner/repo@v4` → `uses: owner/repo@<sha> # v4.2.2` (the exact version on that
+    commit, as pinact writes it), reusable workflows included."""
     changed = []
-    files = repo.matching(*WORKFLOWS, "**/action.yml", "**/action.yaml")
+    files = repo.matching(*WORKFLOWS, *ACTIONS)
     for name in files:
         lines = repo.text(name).splitlines(keepends=True)
         edited = False
@@ -43,7 +45,8 @@ def pin_actions(repo: Repo) -> list[str]:
             owner_repo = "/".join(found["target"].split("/")[:2])
             sha = resolve.commit_of(owner_repo, found["ref"])
             tail = found["tail"]
-            comment = tail if "#" in tail else f" # {found['ref']}{tail}"
+            version = resolve.exact_version(owner_repo, sha) or found["ref"]
+            comment = tail if "#" in tail else f" # {version}{tail}"
             ending = "\n" if line.endswith("\n") else ""
             q = found["quote"]
             lines[index] = f"{found['head']}{q}{found['target']}@{sha}{q}{comment}{ending}"
@@ -87,13 +90,27 @@ def add_cooldown(repo: Repo) -> list[str]:
     return changed
 
 
+def _folder(name: str) -> str:
+    """A file's folder as Dependabot names it: `/` at the root, `/.devcontainer` below it."""
+    parent = PurePosixPath(name).parent.as_posix()
+    return "/" if parent == "." else f"/{parent}"
+
+
 def _folders(repo: Repo, *patterns: str) -> list[str]:
-    found = {
-        "/" + str(PurePosixPath(name).parent).removeprefix(".").strip("/")
-        for name in repo.matching(*patterns)
-        if "node_modules/" not in name
+    return sorted(
+        {_folder(name) for name in repo.matching(*patterns) if "node_modules/" not in name}
+    )
+
+
+def _actions_folders(repo: Repo) -> list[str]:
+    """`/` for the workflows, then each composite action that uses others: Dependabot reads
+    no other folder unless told."""
+    composites = {
+        _folder(name)
+        for name in repo.matching(*ACTIONS)
+        if any(USES.match(line) for line in repo.text(name).splitlines())
     }
-    return sorted(folder if folder != "/" else "/" for folder in found)
+    return sorted(({"/"} if repo.matching(*WORKFLOWS) else set()) | composites)
 
 
 def ecosystems(repo: Repo) -> list[tuple[str, list[str]]]:
@@ -110,7 +127,7 @@ def ecosystems(repo: Repo) -> list[tuple[str, list[str]]]:
         ),
         ("npm", _folders(repo, "**/package.json")),
         ("docker", _folders(repo, *CONTAINER_FILES)),
-        ("github-actions", ["/"] if repo.matching(*WORKFLOWS) else []),
+        ("github-actions", _actions_folders(repo)),
     ]
     return [(name, folders) for name, folders in found if folders]
 
@@ -176,6 +193,8 @@ PRE_COMMIT = (".pre-commit-config.yaml", ".pre-commit-config.yml")
 
 def add_secret_scan(repo: Repo) -> list[str]:
     """gitleaks in the pre-commit hooks when the repo has them, otherwise a workflow."""
+    if any("gitleaks" in repo.text(name) for name in repo.matching(*PRE_COMMIT, *WORKFLOWS)):
+        return []  # there already: a second run changes nothing
     version = resolve.latest_release(GITLEAKS)
     for name in repo.matching(*PRE_COMMIT):
         text = repo.text(name).rstrip("\n")
@@ -245,44 +264,71 @@ def _ci_steps(repo: Repo) -> list[str]:
     return steps
 
 
+# `cd frontend && pnpm run lint`: the command, its folder aside.
+IN_FOLDER = re.compile(r"^cd \S+ && ")
+SETUP_ACTIONS = (
+    "actions/checkout",
+    "astral-sh/setup-uv",
+    "pnpm/action-setup",
+    "actions/setup-python",
+    "actions/setup-node",
+)
+
+
+def _needs(action: str, commands: list[str]) -> bool:
+    return {
+        "actions/checkout": True,
+        "astral-sh/setup-uv": any(command.startswith(("uv ", "uvx ")) for command in commands),
+        "actions/setup-python": any(
+            command.startswith(("pip ", "python ")) for command in commands
+        ),
+        "pnpm/action-setup": any(command.startswith("pnpm ") for command in commands),
+        "actions/setup-node": any(command.startswith(("pnpm ", "npm ")) for command in commands),
+    }[action]
+
+
+def setup_steps(steps: list[str]) -> list[str]:
+    """The actions `steps` need, pinned by SHA: checkout, then uv, pnpm, Python, Node."""
+    commands = [IN_FOLDER.sub("", step) for step in steps]
+    uses = []
+    for action in SETUP_ACTIONS:
+        if not _needs(action, commands):
+            continue
+        version = resolve.latest_release(action)
+        uses.append(f"      - uses: {action}@{resolve.commit_of(action, version)} # {version}")
+        if action == "actions/checkout":
+            uses.append("        with:\n          persist-credentials: false")
+        if action == "actions/setup-python":
+            uses.append('        with:\n          python-version: "3.13"')
+        if action == "actions/setup-node":
+            uses.append("        with:\n          node-version: 24")
+    return uses
+
+
+def write_workflow(
+    repo: Repo, name: str, job: str, steps: list[str], *, weekly: bool = False
+) -> None:
+    """A workflow of one job on each push and pull request (and every Monday when `weekly`),
+    its token reading the repo only."""
+    schedule = '  schedule:\n    - cron: "0 6 * * 1"\n' if weekly else ""
+    runs = [f"      - run: {step}" for step in steps]
+    _write(
+        repo,
+        name,
+        f"name: {PurePosixPath(name).stem}\non:\n  push:\n  pull_request:\n{schedule}"
+        f"permissions:\n  contents: read\njobs:\n  {job}:\n    runs-on: ubuntu-latest\n"
+        "    steps:\n" + "\n".join(setup_steps(steps) + runs) + "\n",
+    )
+
+
 def add_ci(repo: Repo) -> list[str]:
     """A minimal GitHub Actions CI: the repo's own install, lint and tests on each push and pull
     request, actions pinned by SHA."""
     steps = _ci_steps(repo)
     if not steps:
         return []
-    uses = []
-    for action in (
-        "actions/checkout",
-        "astral-sh/setup-uv",
-        "pnpm/action-setup",
-        "actions/setup-python",
-        "actions/setup-node",
-    ):
-        needed = {
-            "actions/checkout": True,
-            "astral-sh/setup-uv": any(step.startswith("uv ") for step in steps),
-            "actions/setup-python": any(step.startswith(("pip ", "python ")) for step in steps),
-            "pnpm/action-setup": any(step.startswith("pnpm ") for step in steps),
-            "actions/setup-node": any(step.startswith(("pnpm ", "npm ")) for step in steps),
-        }[action]
-        if needed:
-            version = resolve.latest_release(action)
-            uses.append(f"      - uses: {action}@{resolve.commit_of(action, version)} # {version}")
-            if action == "actions/checkout":
-                uses.append("        with:\n          persist-credentials: false")
-            if action == "actions/setup-python":
-                uses.append('        with:\n          python-version: "3.13"')
-            if action == "actions/setup-node":
-                uses.append("        with:\n          node-version: 24")
     name = ".github/workflows/ci.yml"
-    runs = [f"      - run: {step}" for step in steps]
-    _write(
-        repo,
-        name,
-        "name: ci\non:\n  push:\n  pull_request:\npermissions:\n  contents: read\njobs:\n"
-        "  checks:\n    runs-on: ubuntu-latest\n    steps:\n" + "\n".join(uses + runs) + "\n",
-    )
+    write_workflow(repo, name, "checks", steps)
     return [name]
 
 

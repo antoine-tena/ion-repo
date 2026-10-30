@@ -1,4 +1,5 @@
 import json
+import re
 import subprocess
 import tomllib
 from pathlib import Path
@@ -70,6 +71,48 @@ def test_every_stack_renders_valid_files(tmp_path: Path, backend: str, frontend:
     assert (project_dir / "frontend").is_dir() == (frontend != "none")
 
 
+@pytest.mark.parametrize(
+    ("backend", "frontend"),
+    [(back, "none") for back in BACKENDS[:-1]] + [("none", front) for front in FRONTENDS[:-1]],
+)
+def test_every_stack_follows_its_code_to_the_root(
+    tmp_path: Path, backend: str, frontend: str
+) -> None:
+    # An adopted repo with its code at the root (T-166): the paths of CI, hooks, rules, charter
+    # and Dependabot go there, never to a `backend/` or `frontend/` it does not have.
+    where = {"backend_dir": "."} if backend != "none" else {"frontend_dir": "."}
+    kept = ["backend"] if backend != "none" else ["frontend"]
+    project_dir = generate(
+        tmp_path / "demo", backend=backend, frontend=frontend, kept=kept, **where
+    )
+
+    texts = {
+        name: (project_dir / name).read_text()
+        for name in (
+            ".github/workflows/ci.yml",
+            ".github/dependabot.yml",
+            ".pre-commit-config.yaml",
+            "charter.toml",
+            "CLAUDE.md",
+            ".claude/rules/kiln/project.md",
+        )
+    }
+    for name, text in texts.items():
+        assert not re.search(r"(?<![\w.-])(backend|frontend)/", text), name
+    assert "at the root" in texts[".claude/rules/kiln/project.md"]
+    tomllib.loads(texts["charter.toml"])
+    ci = yaml.safe_load(texts[".github/workflows/ci.yml"])
+    yaml.safe_load(texts[".pre-commit-config.yaml"])
+    directories = [
+        job.get("with", {}).get("directory") for job in ci["jobs"].values() if "with" in job
+    ]
+    assert "backend" not in directories and "frontend" not in directories
+    assert yaml.safe_load(texts[".github/dependabot.yml"])["updates"][0]["directories"] == ["/"]
+    assert (
+        yaml.safe_load((project_dir / ".copier-answers.yml").read_text())[next(iter(where))] == "."
+    )
+
+
 @pytest.mark.parametrize(("backend", "frontend"), PODMAN_STACKS)
 def test_podman_adds_containers_for_every_stack(
     tmp_path: Path, backend: str, frontend: str
@@ -93,7 +136,7 @@ def test_stack_advice_follows_project_type(tmp_path: Path) -> None:
     assert (answers["backend"], answers["frontend"]) == ("data", "streamlit")
 
 
-@pytest.mark.parametrize(("size", "has_podman"), [("ember", False), ("flame", True)])
+@pytest.mark.parametrize(("size", "has_podman"), [("small", False), ("medium", True)])
 def test_size_sets_podman_default(tmp_path: Path, size: str, has_podman: bool) -> None:
     project_dir = generate(tmp_path / "demo", size=size)
 
@@ -101,6 +144,29 @@ def test_size_sets_podman_default(tmp_path: Path, size: str, has_podman: bool) -
     assert (answers["size"], answers["podman"]) == (size, has_podman)
     project_rules = (project_dir / ".claude/rules/kiln/project.md").read_text()
     assert f"**{size.capitalize()}**" in project_rules
+
+
+def test_every_repo_reproduces_first_and_links_directly(tmp_path: Path) -> None:
+    project_rules = (generate(tmp_path / "demo") / ".claude/rules/kiln/project.md").read_text()
+
+    assert "**[REPRODUCE-FIRST]**" in project_rules
+    assert "**[DIRECT-LINKS]**" in project_rules
+    assert "kiln set ai_trailers=disclose|never" in project_rules
+
+
+@pytest.mark.parametrize(
+    ("backend", "frontend"), [("none", "nuxt"), ("none", "astro"), ("none", "none")]
+)
+def test_project_rules_name_only_the_stack_there_is(
+    tmp_path: Path, backend: str, frontend: str
+) -> None:
+    # A front alone, or a repo adopted without a stack of kiln: no empty check list, no "None".
+    kept = ["src"] if frontend == "none" else []
+    project_dir = generate(tmp_path / "demo", backend=backend, frontend=frontend, kept=kept)
+
+    project_rules = (project_dir / ".claude/rules/kiln/project.md").read_text()
+    assert not re.search(r"of the stack \((?!\w)", project_rules)
+    assert "None" not in project_rules
 
 
 def test_vue_templates_keep_their_mustaches(tmp_path: Path) -> None:
@@ -193,7 +259,7 @@ def test_tool_project_gets_a_command_line_package(tmp_path: Path) -> None:
     # A long description must not overflow into the code (E501 at the first commit).
     long_description = "A tool whose description goes well beyond a hundred characters. " * 3
     project_dir = generate(
-        tmp_path / "demo", project_type="cli", size="flame", description=long_description
+        tmp_path / "demo", project_type="cli", size="medium", description=long_description
     )
 
     answers = yaml.safe_load((project_dir / ".copier-answers.yml").read_text())
@@ -209,6 +275,64 @@ def test_tool_project_gets_a_command_line_package(tmp_path: Path) -> None:
         for line in path.read_text().splitlines()
     ]
     assert all(len(line) <= 100 for line in python_lines)
+
+
+def test_tool_project_can_ship_its_claude_code_plugin(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", project_type="cli", claude_plugin=True)
+
+    marketplace = json.loads((project_dir / ".claude-plugin/marketplace.json").read_text())
+    assert [plugin["source"] for plugin in marketplace["plugins"]] == ["./plugins/demo"]
+    manifest = project_dir / "plugins/demo/.claude-plugin/plugin.json"
+    assert json.loads(manifest.read_text())["name"] == "demo"
+    skill = (project_dir / "plugins/demo/skills/run/SKILL.md").read_text()
+    assert skill.startswith("---\nname: run\n")
+    settings = json.loads((project_dir / ".claude/settings.json").read_text())
+    assert settings["extraKnownMarketplaces"]["demo"]["source"]["repo"] == "antoine-tena/demo"
+    assert settings["enabledPlugins"]["demo@demo"] is True
+    assert (project_dir / "backend/tests/test_plugin.py").is_file()
+
+
+def test_tool_project_can_be_published_on_pypi(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", project_type="cli", pypi_name="keramos-demo")
+
+    pyproject = tomllib.loads((project_dir / "backend/pyproject.toml").read_text())
+    assert pyproject["project"]["name"] == "keramos-demo"
+    assert pyproject["project"]["scripts"] == {"demo": "demo.cli:main"}
+    cli = (project_dir / "backend/demo/cli.py").read_text()
+    assert 'DISTRIBUTION = "keramos-demo"' in cli
+    workflow = yaml.safe_load((project_dir / ".github/workflows/pypi.yml").read_text())
+    job = workflow["jobs"]["publish"]
+    assert workflow[True]["push"]["tags"] == ["v[0-9]*"]
+    assert job["environment"]["url"] == "https://pypi.org/project/keramos-demo/"
+    assert job["permissions"]["id-token"] == "write"
+    assert job["defaults"]["run"]["working-directory"] == "backend"
+    steps = job["steps"]
+    # Every action pinned by its SHA ([PINNED-ACTIONS]).
+    actions = [step["uses"] for step in steps if "uses" in step]
+    assert actions
+    assert all(re.fullmatch(r"[^@]+@[0-9a-f]{40}", action) for action in actions)
+    assert steps[-1]["run"] == "uv publish --trusted-publishing automatic"
+    assert steps[-1]["env"] == {"UV_PUBLISH_TOKEN": "${{ secrets.PYPI_TOKEN }}"}
+    assert "`uv tool install keramos-demo`" in (project_dir / "README.md").read_text()
+
+
+def test_tool_project_is_not_published_by_default(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", project_type="cli")
+
+    assert not (project_dir / ".github/workflows/pypi.yml").exists()
+    pyproject = tomllib.loads((project_dir / "backend/pyproject.toml").read_text())
+    assert pyproject["project"]["name"] == "demo"
+    assert 'DISTRIBUTION = "demo"' in (project_dir / "backend/demo/cli.py").read_text()
+
+
+def test_tool_project_ships_no_plugin_by_default(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", project_type="cli")
+
+    assert not (project_dir / "plugins").exists()
+    assert not (project_dir / ".claude-plugin").exists()
+    assert not (project_dir / "backend/tests/test_plugin.py").exists()
+    settings = json.loads((project_dir / ".claude/settings.json").read_text())
+    assert list(settings["extraKnownMarketplaces"]) == ["kiln"]
 
 
 def test_java_backend_gets_a_maven_project(tmp_path: Path) -> None:
@@ -330,6 +454,18 @@ def test_a_released_project_scores_100_on_kiln_grid(
     assert {gap.rule for gap in report.gaps} <= expected
 
 
+def test_a_released_tool_published_on_pypi_scores_100_on_kiln_grid(
+    tmp_path: Path, released: tuple[Path, str]
+) -> None:
+    project_dir = generate_released(
+        released, tmp_path / "demo", project_type="cli", pypi_name="keramos-demo"
+    )
+
+    report = score.score_repo(project_dir)
+
+    assert {gap.rule for gap in report.gaps} <= {"LOCKED-DEPENDENCIES"}
+
+
 @pytest.mark.parametrize(("backend", "frontend"), PODMAN_STACKS)
 def test_dependabot_watches_each_folder_of_the_project(
     tmp_path: Path, backend: str, frontend: str
@@ -353,6 +489,13 @@ def test_dependabot_watches_each_folder_of_the_project(
             ), (update["package-ecosystem"], folder)
 
 
+def test_a_solo_project_has_no_codeowners(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", team=["antoine-tena"])
+
+    assert not (project_dir / ".github/CODEOWNERS").exists()
+    assert "## Team" in (project_dir / "README.md").read_text()
+
+
 def test_a_project_without_owner_has_no_codeowners_nor_team(tmp_path: Path) -> None:
     project_dir = tmp_path / "demo"
     copier.run_copy(
@@ -374,15 +517,15 @@ def rule_files(project_dir: Path) -> set[str]:
 
 
 def test_the_size_chooses_the_rules(tmp_path: Path) -> None:
-    spark = generate(tmp_path / "spark", size="spark", backend="cli", frontend="none")
-    blaze = generate(tmp_path / "blaze", size="blaze", podman=True)
+    tiny = generate(tmp_path / "tiny", size="tiny", backend="cli", frontend="none")
+    large = generate(tmp_path / "large", size="large", podman=True)
 
-    assert rule_files(spark) == {"project.md", "charter.md", "python.md", "cli.md"}
-    assert rule_files(blaze) >= {"django.md", "nuxt.md", "production.md", "security.md"}
-    django_rules = (blaze / ".claude/rules/kiln/django.md").read_text()
+    assert rule_files(tiny) == {"project.md", "charter.md", "python.md", "cli.md"}
+    assert rule_files(large) >= {"django.md", "nuxt.md", "production.md", "security.md"}
+    django_rules = (large / ".claude/rules/kiln/django.md").read_text()
     assert "[RLS]" in django_rules and "[OUTBOX]" in django_rules
-    ember_django = generate(tmp_path / "ember", size="ember")
-    assert "[OUTBOX]" not in (ember_django / ".claude/rules/kiln/django.md").read_text()
+    small_django = generate(tmp_path / "small", size="small")
+    assert "[OUTBOX]" not in (small_django / ".claude/rules/kiln/django.md").read_text()
 
 
 def test_rules_load_by_path_and_claude_md_stays_short(tmp_path: Path) -> None:
@@ -429,3 +572,38 @@ def test_no_deployment_cites_no_deploy_workflow(tmp_path: Path) -> None:
 
     assert "deploy.yml" not in (project_dir / ".github/workflows/ci.yml").read_text()
     assert not (project_dir / "scripts").exists()
+
+
+def test_large_files_kept_on_purpose_pass_the_size_ceiling(tmp_path: Path) -> None:
+    default = generate(tmp_path / "default")
+    hooks = yaml.safe_load((default / ".pre-commit-config.yaml").read_text())["repos"][0]["hooks"]
+    large_files = next(hook for hook in hooks if hook["id"] == "check-added-large-files")
+    assert "exclude" not in large_files
+    assert "large_files" not in (default / ".copier-answers.yml").read_text()
+
+    films = ["frontend/public/film.mp4", "frontend/public/film.webm"]
+    project = generate(tmp_path / "films", large_files=films)
+    hooks = yaml.safe_load((project / ".pre-commit-config.yaml").read_text())["repos"][0]["hooks"]
+    pattern = next(hook for hook in hooks if hook["id"] == "check-added-large-files")["exclude"]
+    assert all(re.match(pattern, film) for film in films)
+    assert not re.match(pattern, "frontend/public/filmXmp4")
+    assert not re.match(pattern, "frontend/public/other.mp4")
+    assert "large_files:" in (project / ".copier-answers.yml").read_text()
+
+
+@pytest.mark.parametrize(("bot", "cron"), [("weekly", "0 6 * * 1"), ("monthly", "0 6 1 * *")])
+def test_kiln_bot_runs_on_its_schedule_and_is_off_by_default(
+    tmp_path: Path, bot: str, cron: str
+) -> None:
+    """T-59: off by default (a private repo pays its minutes), the answer kept only when set."""
+    default = generate(tmp_path / "default")
+    assert not (default / ".github/workflows/kiln-bot.yml").exists()
+    assert "update_bot" not in (default / ".copier-answers.yml").read_text()
+
+    project = generate(tmp_path / bot, update_bot=bot)
+    workflow = yaml.safe_load((project / ".github/workflows/kiln-bot.yml").read_text())
+    assert workflow[True]["schedule"] == [{"cron": cron}]
+    job = workflow["jobs"]["bot"]
+    assert job["uses"].startswith("antoine-tena/kiln/.github/workflows/bot.yml@")
+    assert job["secrets"] == {"token": "${{ secrets.KILN_BOT_TOKEN }}"}
+    assert f"update_bot: {bot}" in (project / ".copier-answers.yml").read_text()

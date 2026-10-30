@@ -9,14 +9,14 @@ profiles = ["solo", "association", "company", "university", "enterprise"]
 why = "A rule only the author's editor checks is a suggestion."
 applies = []
 detectable = "script"
-fixable = "judgment"
-fixer = ""
+fixable = "script"
+fixer = "add_lint_job"
 since = "0.4.2"
 
 [detector]
 kind = "regex"
-files = [".github/workflows/*.yml", ".github/workflows/*.yaml", ".gitlab-ci.yml", ".pre-commit-config.yaml", ".pre-commit-config.yml", ".circleci/config.yml", ".forgejo/workflows/*.yml", "azure-pipelines.yml", "bitbucket-pipelines.yml", "Jenkinsfile"]
-pattern = '''(ruff|flake8|pylint|eslint|biome|oxlint|(npm|pnpm|yarn|bun) (run )?lint|kiln check|charter|antoine-tena/kiln/\.github/workflows/(django|python|pnpm|maven)\.yml)'''
+files = [".github/workflows/*.yml", ".github/workflows/*.yaml", ".gitlab-ci.yml", ".pre-commit-config.yaml", ".pre-commit-config.yml", ".circleci/config.yml", ".forgejo/workflows/*.yml", "azure-pipelines.yml", "bitbucket-pipelines.yml", "Jenkinsfile", "pom.xml", "build.gradle", "build.gradle.kts"]
+pattern = '''(ruff|flake8|pylint|eslint|biome|oxlint|\bxo\b|(npm|pnpm|yarn|bun) (run )?lint|clippy|golangci|go vet|staticcheck|rubocop|standardrb|phpstan|psalm|\bpint\b|php-cs-fixer|phpcs|checkstyle|spotless|\bpmd\b|spotbugs|ktlint|detekt|dotnet format|swiftlint|credo|(dart|flutter) analyze|clang-tidy|cppcheck|super-linter|megalinter|kiln check|charter|antoine-tena/kiln/\.github/workflows/(django|python|pnpm|maven)\.yml)'''
 expect = "match"
 
 [[sources]]

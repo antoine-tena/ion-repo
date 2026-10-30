@@ -198,6 +198,32 @@ def test_a_pypi_install_is_read_from_its_metadata(
     assert hook.is_tool_outdated(("pypi", "v0.4.0"), "v0.4.1", "abc")
 
 
+def test_a_keramos_kiln_install_is_found_and_upgraded_under_its_name(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    hook = load_hook()
+    fake_tool(tmp_path, "keramos-kiln", "keramos_kiln-0.4.0.dist-info", None)
+    uv_tool_dir(hook, tmp_path, monkeypatch)
+
+    assert hook.installed_kiln() == ("pypi", "v0.4.0")
+    assert hook.tool_update_command(("pypi", "v0.4.0"), "v0.4.1").startswith(
+        'uv tool install --force "keramos-kiln==0.4.1" && '
+    )
+
+
+def test_a_tester_s_kiln_cli_tool_stays_kiln_cli(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    hook = load_hook()
+    fake_tool(tmp_path, "kiln-cli", "kiln_cli-0.4.0.dist-info", None)
+    uv_tool_dir(hook, tmp_path, monkeypatch)
+
+    # Not a second tool beside it carrying the same commands.
+    assert hook.tool_update_command(("pypi", "v0.4.0"), "v0.4.1").startswith(
+        'uv tool install --force "kiln-cli==0.4.1" && '
+    )
+
+
 def test_the_old_kiln_tool_is_still_found_and_removed_on_update(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -225,9 +251,11 @@ def test_promoted_versions_come_from_pypi_and_candidates_from_github(
     uv_tool_dir(hook, tmp_path, monkeypatch)
 
     assert hook.tool_update_command(("pypi", "v0.4.0"), "v0.4.1").startswith(
-        'uv tool install --force "kiln-cli==0.4.1" && '
+        'uv tool install --force "keramos-kiln==0.4.1" && '
     )
-    assert hook.tool_update_command(None, "v0.4.1").startswith('uv tool install --force "kiln-cli')
+    assert hook.tool_update_command(None, "v0.4.1").startswith(
+        'uv tool install --force "keramos-kiln'
+    )
     assert '"git+https://github.com/antoine-tena/kiln@v0.5.0-rc.1"' in hook.tool_update_command(
         ("pypi", "v0.4.1"), "v0.5.0-rc.1"
     )
@@ -478,6 +506,7 @@ def test_every_start_recalls_that_errors_may_come_from_kiln(
 ) -> None:
     hook = load_hook()
     monkeypatch.setattr(hook, "git_root", lambda cwd: None)
+    monkeypatch.setattr(hook.place, "context", lambda cwd: "")
     monkeypatch.setattr(sys, "argv", ["session_start.py"])
     monkeypatch.setattr(sys, "stdin", io.StringIO('{"source": "clear", "cwd": "/"}'))
 
@@ -487,9 +516,11 @@ def test_every_start_recalls_that_errors_may_come_from_kiln(
     assert said == hook.ERROR_ORIGIN
 
 
-def beta_machine(hook: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    """A machine on the beta channel, with kiln's checkout in its code directory."""
-    checkout = tmp_path / "code/kiln"
+def beta_machine(
+    hook: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, place: str = "kiln"
+) -> Path:
+    """A machine on the beta channel, with kiln's checkout in its code directory, at `place`."""
+    checkout = tmp_path / "code" / place
     (checkout / "src/kiln").mkdir(parents=True)
     (checkout / "src/kiln/versions.py").write_text("")
     config = tmp_path / "config.toml"
@@ -513,6 +544,27 @@ def test_on_the_beta_channel_the_editable_checkout_is_never_outdated(
 
     assert hook.follows_candidates()
     assert hook.installed_kiln() == ("editable", str(checkout))
+    assert hook.tool_status() == "up to date"
+
+
+def test_on_the_beta_channel_the_checkout_may_sit_in_a_folder_of_the_code_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    hook = load_hook()
+    checkout = beta_machine(hook, tmp_path, monkeypatch, place="tools/kiln")
+    fake_tool(
+        tmp_path / "uv-tools",
+        "kiln-cli",
+        "kiln_cli-0.4.4.dist-info",
+        json.dumps({"url": f"file://{checkout}", "dir_info": {"editable": True}}),
+    )
+    uv_tool_dir(hook, tmp_path / "uv-tools", monkeypatch)
+
+    assert hook.kiln_checkout() == checkout
+    assert hook.tool_status() == "up to date"
+    # A link left at the old place, while open sessions still read their hooks there.
+    (tmp_path / "code/kiln").symlink_to(checkout)
+    assert hook.kiln_checkout() == checkout
     assert hook.tool_status() == "up to date"
 
 
@@ -561,3 +613,62 @@ def test_tool_update_moves_an_installed_plugin_to_the_marketplace_version(
         "claude plugin install kiln@kiln --scope user && "
         "claude plugin update kiln@kiln --scope user"
     )
+
+
+# --- sessions kept by /kiln:pause (T-344) -----------------------------------------------------
+
+
+def test_a_paused_session_is_listed_at_the_next_start_then_leaves_the_list(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """`kiln pause` writes the place; the next start lists it; resumed, or its branch deleted,
+    it is gone."""
+    from kiln import pause
+
+    hook = load_hook()
+    paused = sys.modules["paused"]
+    sessions = tmp_path / "sessions"
+    monkeypatch.setattr(pause, "SESSIONS_DIR", sessions)
+    monkeypatch.setattr(paused, "SESSIONS_DIR", sessions)
+    repo = tmp_path / "shop"
+    repo.mkdir()
+    for command in (
+        ["init", "-q", "-b", "feat/cart"],
+        ["commit", "-q", "--allow-empty", "-m", "a"],
+    ):
+        subprocess.run(["git", *command], cwd=repo, check=True)
+    for session, name in (("aaa", "cart: totals"), ("bbb", "cart: coupons")):
+        monkeypatch.setenv(pause.SESSION_VARIABLE, session)
+        pause.pause(repo, name, "merge feat/cart")
+    capsys.readouterr()
+
+    shown = hook.paused_sessions({"source": "startup", "session_id": "new"})
+    assert shown.startswith("Paused sessions (/kiln:pause):")
+    assert "⏸ cart: totals  (shop · feat/cart, 1 min ago)" in shown
+    assert "    next: merge feat/cart\n    claude --resume aaa" in shown
+
+    assert hook.paused_sessions({"source": "resume", "session_id": "aaa"}) == ""
+    assert "cart: totals" not in hook.paused_sessions({"source": "startup", "session_id": "new"})
+
+    subprocess.run(["git", "switch", "-q", "-c", "main"], cwd=repo, check=True)
+    subprocess.run(["git", "branch", "-q", "-D", "feat/cart"], cwd=repo, check=True)
+    assert hook.paused_sessions({"source": "startup", "session_id": "new"}) == ""
+    assert list(sessions.iterdir()) == []
+
+
+def test_pause_needs_a_claude_code_session(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from kiln import pause
+    from kiln.shell import KilnError
+
+    monkeypatch.delenv(pause.SESSION_VARIABLE, raising=False)
+    with pytest.raises(KilnError, match="no Claude Code session"):
+        pause.pause(tmp_path, "x", "")
+
+
+def test_on_the_beta_channel_the_checkout_may_sit_in_a_tool_folder_of_a_family(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    hook = load_hook()
+    checkout = beta_machine(hook, tmp_path, monkeypatch, place="family/kiln/kiln")
+
+    assert hook.kiln_checkout() == checkout

@@ -1,10 +1,11 @@
-{%- set level = {'spark': 0, 'ember': 1, 'flame': 2, 'blaze': 3}[size] %}
+{%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
+{%- set level = {'tiny': 0, 'small': 1, 'medium': 2, 'large': 3}[size] %}
 {%- set languages = {'en': 'English', 'fr': 'French'} %}
-{%- set size_text = {'spark': 'a script, a personal tool, a one-off analysis', 'ember': 'a small app or site, one or two people, low stakes', 'flame': 'an app in production, real users, several contributors', 'blaze': 'several teams or services, high stakes'}[size] %}
+{%- set size_text = {'tiny': 'a script, a personal tool, a one-off analysis', 'small': 'a small app or site, one or two people, low stakes', 'medium': 'an app in production, real users, several contributors', 'large': 'several teams or services, high stakes'}[size] %}
 {%- set back_text = {'django': 'Django + Django Ninja', 'fastapi': 'FastAPI', 'data': 'Python data: polars or NumPy, marimo, Plotly', 'cli': 'a Python command-line tool', 'java': 'Java 25, Maven, no framework'}.get(backend) %}
 {%- set front_text = {'nuxt': 'Nuxt 4 + Vue 3', 'next': 'Next.js 16 + React 19', 'astro': 'Astro 7', 'vite-react': 'Vite + React 19', 'streamlit': 'Streamlit', 'dash': 'Dash'}.get(frontend) %}
 {%- set front_url = {'nuxt': 'http://localhost:3000', 'next': 'http://localhost:3000', 'astro': 'http://localhost:4321', 'vite-react': 'http://localhost:5173', 'streamlit': 'http://localhost:8501', 'dash': 'http://localhost:8050'}.get(frontend) %}
-{%- set python_dirs = (['backend'] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + (['frontend'] if frontend in ['streamlit', 'dash'] else []) %}
+{%- set python_dirs = ([bd] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + ([fd] if frontend in ['streamlit', 'dash'] else []) %}
 {%- set uses = [language_comments, language_commits, language_docs, language_tickets, language_ui] -%}
 <!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten.
 Project rules go in CLAUDE.md or in .claude/rules/ outside kiln/. -->
@@ -14,11 +15,13 @@ Project rules go in CLAUDE.md or in .claude/rules/ outside kiln/. -->
 
 Size: **{{ size | capitalize }}**, {{ size_text }} (`kiln set size=…` changes it).
 {% if back_text and front_text -%}
-Backend {{ back_text }} in `backend/`, frontend {{ front_text }} in `frontend/`.
+Backend {{ back_text }} {{ 'at the root' if bd == '.' else 'in `' ~ bdir ~ '`' }}, frontend {{ front_text }} {{ 'at the root' if fd == '.' else 'in `' ~ fdir ~ '`' }}.
 {%- elif back_text -%}
-Backend {{ back_text }} in `backend/`.
+Backend {{ back_text }} {{ 'at the root' if bd == '.' else 'in `' ~ bdir ~ '`' }}.
+{%- elif front_text -%}
+Frontend {{ front_text }} {{ 'at the root' if fd == '.' else 'in `' ~ fdir ~ '`' }}.
 {%- else -%}
-Frontend {{ front_text }} in `frontend/`.
+No stack of kiln here: its common part only (CI, hooks, rules, charter).
 {%- endif %}
 The repo is generated and kept current by [kiln](https://github.com/antoine-tena/kiln).
 
@@ -34,24 +37,23 @@ The repo is generated and kept current by [kiln](https://github.com/antoine-tena
   a background task goes in its folder's `Procfile.dev`, one `name: command` line.
 {%- endif %}
 {%- if backend == 'cli' %}
-- `cd backend && uv run {{ name }} --help`: run the tool; `uv tool install --editable backend`
+- `cd {{ bd }} && uv run {{ name }} --help`: run the tool; `uv tool install --editable {{ bd }}`
   installs it on the machine.
 {%- elif backend == 'java' %}
-- `cd backend && ./mvnw verify`: compile (warnings are errors), run JUnit, check coverage.
+- `cd {{ bd }} && ./mvnw verify`: compile (warnings are errors), run JUnit, check coverage.
 {%- endif %}
-- `kiln check`: every check of the stack ({% if python_dirs %}ruff, mypy, pytest{% endif %}
-{%- if backend == 'java' %}{{ ', ' if python_dirs }}Maven{% endif %}
-{%- if frontend in ['nuxt', 'next', 'vite-react'] %}, ESLint, type checks{% elif frontend == 'astro' %}, ESLint, `astro check`{% endif %}), then `charter`.
+{%- set checks = (['ruff', 'mypy', 'pytest'] if python_dirs else []) + (['Maven'] if backend == 'java' else []) + (['ESLint', 'type checks'] if frontend in ['nuxt', 'next', 'vite-react'] else ['ESLint', '`astro check`'] if frontend == 'astro' else []) %}
+- `kiln check`: {% if checks %}every check of the stack ({{ checks | join(', ') }}), then `charter`{% else %}`charter`, the rules of `charter.toml`{% endif %}.
   Run it before saying a change is done.
 {%- if backend == 'django' and frontend == 'nuxt' %}
 - `kiln contract`: export `openapi.json` from the Django code and regenerate the front's types
-  (`frontend/app/types/api.d.ts`), after any change to a route or a schema; commit both.
+  (`{{ fp }}app/types/api.d.ts`), after any change to a route or a schema; commit both.
 {%- endif %}
 {%- if python_dirs %}
 - A Python dependency: `uv add <package>` in its directory (`--dev` for a tool); never pip.
 {%- endif %}
 {%- if frontend in ['nuxt', 'next', 'astro', 'vite-react'] %}
-- A JavaScript dependency: `pnpm add <package>` in `frontend/` (`-D` for a tool); never npm.
+- A JavaScript dependency: `pnpm add <package>` {{ 'at the root' if fd == '.' else 'in `' ~ fdir ~ '`' }} (`-D` for a tool); never npm.
 {%- endif %}
 - `kiln update`: kiln's improvements and compatible dependency upgrades, on a branch, checks
   included; `kiln set key=value` changes a setting of the project (stack, team, podman…).
@@ -79,6 +81,9 @@ The repo is generated and kept current by [kiln](https://github.com/antoine-tena
 - `docs/backlog/` is the only up-to-date list of work: `backlog.md` (open tickets `T-NN` by
   priority, how to write them in its `README.md`), `done.md` (closed ones), `rejected.md` (what was turned down), `urgent.md`
   (what only a human of the team can do). Skill `/kiln:backlog`.
+- `.claude/`: committed, `settings.json`, `skills/` (the project's own skills), `rules/`,
+  `hooks/` (the scripts of its own hooks) and `plans/` (plan mode's plans); local, ignored by
+  git, `settings.local.json`, `worktrees/`, `memory/` and `sessions/`.
 - `charter.toml`: the checked rules and their budgets; `kiln-waivers.toml`: deliberate
   deviations; `.copier-answers.yml`: the project's settings for kiln (changed by `kiln set`,
   never by hand).
@@ -100,7 +105,16 @@ The repo is generated and kept current by [kiln](https://github.com/antoine-tena
   characters at most, prefixed by its type with an optional scope (`feat:`, `fix:`,
   `refactor:`, `style:`, `docs:`, `perf:`, `test:`, `build:`, `ci:`, `chore:`, `revert:`;
   `fix(map): …`){% if backend in ['django', 'fastapi'] %}; a migration commit never mixes schema
-  and business logic{% endif %}. Never a `Co-Authored-By: Claude` nor `Claude-Session:` line,
-  never `--author`: the author stays the one of `git config`.
+  and business logic{% endif %}. Whether a commit says Claude helped (`Co-Authored-By: Claude`)
+  is each machine's choice (`kiln set ai_trailers=disclose|never`, kiln's branch guard enforces
+  it); never a `Claude-Session:` line, never `--author`: the author stays the one of
+  `git config`.
 - **[MERGE]** Merge commits (`git merge --no-ff`), never squash nor rebase onto the integration
   branch; then the branch goes, local and remote, with its worktree (`/kiln:merge`).
+
+## Way of working
+
+- **[REPRODUCE-FIRST]** A bug is reproduced, by a failing test or a command, before it is fixed.
+  A diagnosis, one's own or another session's, is checked on a copy first.
+- **[DIRECT-LINKS]** A step asked of a human online (a console, a back office, a form) comes with
+  its direct link, as precise as possible, never a menu path.

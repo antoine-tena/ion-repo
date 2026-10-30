@@ -16,7 +16,9 @@ since = "0.4.2"
 [detector]
 kind = "regex"
 files = ["**/*.py"]
-pattern = '''\bdatetime\.(utcnow|utcfromtimestamp)\(|\bdatetime\.now\(\s*\)'''
+within = "code"
+# `datetime.now().astimezone()` is aware (the local zone and its offset): ruff's DTZ005 lets it be.
+pattern = '''\bdatetime\.(utcnow|utcfromtimestamp)\(|\bdatetime\.now\(\s*\)(?!\s*\.astimezone\()'''
 
 [[sources]]
 url = "https://docs.python.org/3/library/datetime.html"

@@ -6,22 +6,25 @@ _subdirectory: template
 _templates_suffix: .jinja
 _answers_file: .copier-answers.yml
 _min_copier_version: "9.4"
-# Files the project owns: kiln writes them once, then never touches them again.
+# Files the project owns: kiln writes them once, then never touches them again. The favicons are
+# binary: an update cannot merge the project's own one, it would put kiln's back.
 _skip_if_exists:
   - CLAUDE.md
+  - frontend/public/favicon.ico
+  - frontend/public/favicon.svg
+  - frontend/app/favicon.ico
 
-# First question: the size of the project, four notches named after the fire of the kiln. It
-# chooses how much ceremony the project gets (rules, CI, containers), and changes later with
-# `kiln set size=…`.
+# First question: the size of the project, four notches from tiny to large. It chooses how much
+# ceremony the project gets (rules, CI, containers), and changes later with `kiln set size=…`.
 size:
   type: str
-  help: How hot does this one burn?
+  help: How big are the stakes?
   choices:
-    "Spark: a script, a personal tool, a one-off analysis": spark
-    "Ember: a small app or site, one or two people, low stakes": ember
-    "Flame: an app in production, real users, several contributors": flame
-    "Blaze: several teams or services, high stakes": blaze
-  default: ember
+    "Tiny: a script, a personal tool, a one-off analysis": tiny
+    "Small: a small app or site, one or two people, low stakes": small
+    "Medium: an app in production, real users, several contributors": medium
+    "Large: several teams or services, high stakes": large
+  default: small
 
 name:
   type: str
@@ -93,7 +96,8 @@ language_ui:
   when: "{{ language_custom }}"
 
 # kiln fills the owner and the team in (machine settings, else the account gh is logged in
-# with); empty, the project has neither CODEOWNERS nor a team in its README.
+# with); empty, the project has no team in its README. CODEOWNERS only from two people: alone,
+# it would only ask the owner to review the bots' pull requests.
 owner:
   type: str
   help: GitHub account or organisation that owns the repository (empty if none)
@@ -112,6 +116,19 @@ kept:
   type: yaml
   default: "[]"
   when: "{{ kept | length > 0 }}"
+
+# Where the backend and the front live: `backend/` and `frontend/` in a repo kiln generated, the
+# root (`.`) in a repo adopted with its code there. Written by `kiln adopt`, never asked; kept in
+# the answers only when it differs.
+backend_dir:
+  type: str
+  default: backend
+  when: "{{ (backend_dir | default('backend')) != 'backend' }}"
+
+frontend_dir:
+  type: str
+  default: frontend
+  when: "{{ (frontend_dir | default('frontend')) != 'frontend' }}"
 
 # The project type only advises: it preselects the backend and the frontend below, which stay
 # free. Table of advice: kiln's README, "What you get".
@@ -163,11 +180,31 @@ frontend:
 podman:
   type: bool
   help: Podman containers (Containerfile, compose.yaml, PostgreSQL)? Later with `kiln set podman=true`.
-  default: "{{ size in ['flame', 'blaze'] and not (backend in ['cli', 'java'] and frontend == 'none') }}"
+  default: "{{ size in ['medium', 'large'] and not (backend in ['cli', 'java'] and frontend == 'none') }}"
   # A command-line tool, or a Java backend without a framework, has no server to put in a
   # container yet; its front, if any, does.
   validator: >-
     {% if podman and backend in ['cli', 'java'] and frontend == 'none' %}{{ 'A Java backend without a framework' if backend == 'java' else 'A command-line tool' }} alone has nothing to put in podman.{% endif %}
+
+# A command-line tool that also ships its own Claude Code plugin: `plugins/<name>/` (manifest, a
+# first skill), its catalog `.claude-plugin/marketplace.json`, enabled in the repo's own sessions.
+# Later with `kiln set claude_plugin=true`.
+claude_plugin:
+  type: bool
+  help: Ship a Claude Code plugin with the command (skills, hooks)? Later with `kiln set claude_plugin=true`.
+  default: false
+  when: "{{ backend == 'cli' }}"
+
+# A command-line tool published on PyPI under this name (`.github/workflows/pypi.yml`, at each
+# release tag `vN`); the command keeps the project's name. Empty: not published. Later with
+# `kiln set pypi_name=<name>`.
+pypi_name:
+  type: str
+  help: Name on PyPI, if the command is published there (empty if not). Later with `kiln set pypi_name=<name>`.
+  default: ""
+  when: "{{ backend == 'cli' }}"
+  validator: >-
+    {% if pypi_name and not (pypi_name | regex_search('^[a-z0-9]+([-_.][a-z0-9]+)*$')) %}A PyPI name: lowercase letters and digits, separated by dashes.{% endif %}
 
 # Java: the root package of the sources (and their directories under src/main/java).
 java_package:
@@ -231,6 +268,20 @@ api_domain:
   default: "api.{{ name }}.example.com"
   when: "{{ deploy == 'vps' and backend == 'django' }}"
 
+# A server shared with other projects keeps its own ports: the stack takes these on 127.0.0.1,
+# free on that server. Later with `kiln set vps_port=… vps_db_port=…`.
+vps_port:
+  type: int
+  help: Port of the API on the server (127.0.0.1; another one if a project already uses it)
+  default: 8000
+  when: "{{ deploy == 'vps' and backend == 'django' }}"
+
+vps_db_port:
+  type: int
+  help: Port of the database on the server (127.0.0.1; another one if a project already uses it)
+  default: 5432
+  when: "{{ deploy == 'vps' and backend == 'django' }}"
+
 site_url:
   type: str
   help: Public address of the site, allowed by CORS and checked by the smoke test
@@ -278,6 +329,26 @@ ci_runner:
     "On this machine, with kiln ci (no GitHub minutes: a private repo)": local
     "On GitHub (free and unlimited for a public repo)": github
   default: local
+
+# kiln-bot (T-59): `kiln update` then `kiln fix` as one pull request, on a schedule. Off by
+# default: on a private repo each run spends GitHub minutes. Set with `kiln set update_bot=weekly`.
+update_bot:
+  type: str
+  help: kiln-bot, the grid's fixes and kiln's updates as a pull request?
+  choices:
+    "Off": "off"
+    "Every Monday": weekly
+    "On the 1st of each month": monthly
+  default: "off"
+  when: "{{ (update_bot | default('off')) != 'off' }}"
+
+# Heavy files the repo keeps on purpose (a site's film, a model's weights), by their exact path
+# from the root: pre-commit's 1 MB ceiling lets them through, and only them. Set with
+# `kiln set large_files=frontend/public/film.mp4,…`, never asked; kept in the answers when set.
+large_files:
+  type: yaml
+  default: "[]"
+  when: "{{ large_files | length > 0 }}"
 
 # Claude Code's status line (kiln plugin): settings set as `git config statusline.*` by
 # `kiln install`, `kiln new` and `kiln set`, never by hand.

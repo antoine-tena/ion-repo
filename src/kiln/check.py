@@ -24,6 +24,7 @@ from kiln.ci.jobs import RELAYS, Plan, plan_job
 from kiln.ci.services import remove_orphan_containers, running_services
 from kiln.ci.workflow import CI_WORKFLOW, load_jobs
 from kiln.dev.backing import start_backing_services
+from kiln.dev.processes import PACKAGE_FILE, package_scripts, through_lock_manager
 from kiln.install import (
     ensure_env_file,
     moved_from,
@@ -32,7 +33,7 @@ from kiln.install import (
     sync_command,
 )
 from kiln.shell import KilnError, run, run_status, step
-from kiln.stack import BACKEND_DIR, Command, Stack, load_stack
+from kiln.stack import Command, Stack, load_stack
 
 
 def run_checks(root: Path, with_tests: bool = False, changed: list[str] | None = None) -> list[str]:
@@ -41,8 +42,8 @@ def run_checks(root: Path, with_tests: bool = False, changed: list[str] | None =
     failed_checks: list[str] = []
     stack = load_stack(root)
     # A worktree has no backend/.env (ignored by git): without it, Django does not start.
-    if stack.has_api and not (root / BACKEND_DIR / ".env").exists():
-        ensure_env_file(root / BACKEND_DIR)
+    if stack.has_api and not (root / stack.backend_dir / ".env").exists():
+        ensure_env_file(root / stack.backend_dir)
     # Nor node_modules, or older ones than the lockfile (uv run syncs Python by itself).
     is_pnpm_checked = stack.pnpm_dir is not None and _touches(changed, stack.pnpm_dir)
     if is_pnpm_checked and stack.pnpm_dir is not None and pnpm_behind(root / stack.pnpm_dir):
@@ -102,7 +103,7 @@ def _check_commands(
     declares its packages and environment (`[types]`): a bare `mypy .` knows neither. With
     `changed`, only the directories it touches, and the charter's bans on those files."""
     types = charter_config.load(root).get("types")
-    typed_directory = types.get("directory", BACKEND_DIR) if isinstance(types, dict) else None
+    typed_directory = types.get("directory", stack.backend_dir) if isinstance(types, dict) else None
     commands: list[Command] = []
     for command in stack.check_commands(with_tests):
         if command.label == "charter":
@@ -115,8 +116,32 @@ def _check_commands(
             continue
         if command.label == f"{typed_directory} mypy":
             command = Command(command.label, ".", ("charter", "types"))
-        commands.append(command)
+        elif missing := _missing_from_repo(root, command):
+            ui.note(f"{command.label}: {missing}, check skipped")
+            continue
+        commands.append(through_lock_manager(root, command))
     return commands
+
+
+def _missing_from_repo(root: Path, command: Command) -> str | None:
+    """What an adopted repo lacks for a check of its stack: a front script its package.json
+    does not declare, a Python tool neither its venv nor its pyproject.toml has. Said instead of
+    failing on `Command "lint" not found` or `Failed to spawn: mypy`."""
+    folder = root / command.directory
+    match command.argv:
+        case ("pnpm", script) if script not in package_scripts(folder):
+            return f"no `{script}` script in {_shown(command.directory, PACKAGE_FILE)}"
+        case ("uv", "run", tool, *_) if (folder / ".venv").is_dir() and not (
+            folder / ".venv" / "bin" / tool
+        ).exists():
+            pyproject = folder / "pyproject.toml"
+            if not (pyproject.is_file() and tool in pyproject.read_text(encoding="utf-8")):
+                return f"{tool} is not in {_shown(command.directory, 'pyproject.toml')}"
+    return None
+
+
+def _shown(directory: str, name: str) -> str:
+    return name if directory == "." else f"{directory}/{name}"
 
 
 def _touches(changed: list[str] | None, directory: str) -> bool:

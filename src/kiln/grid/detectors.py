@@ -3,7 +3,9 @@
 A detector is the `[detector]` table of a rule file. Its `kind`:
 - `file`: `paths` (globs) present, or absent with `expect = "absent"`;
 - `regex`: `pattern` searched in `files` (globs); `expect = "none"` (the default) fails on each
-  match, with its location, `expect = "match"` passes on the first one;
+  match, with its location, `expect = "match"` passes on the first one; in a Python file,
+  `within = "code"` keeps the matches that start outside its strings and comments, `within =
+  "comments"` those that start in a comment (a file that does not tokenize is read whole);
 - `toml`, `json`, `yaml`: the dotted `key` in each file of `files`, present (or equal to
   `equals`), or absent with `expect = "absent"`;
 - `python`: `check`, a function of `PYTHON_CHECKS`, for what no pattern can say.
@@ -11,19 +13,26 @@ No file to look at means the rule does not apply (`n/a`), never a pass.
 """
 
 import datetime
+import io
 import json
 import re
+import tokenize
 import tomllib
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from pathlib import PurePosixPath
+from typing import Any
 
 import yaml  # brought by copier
 
+from kiln.grid import forge
 from kiln.grid.facts import Repo
 
 PASS, FAIL, NOT_APPLICABLE = "pass", "fail", "n/a"
 KINDS = ("file", "regex", "toml", "json", "yaml", "python")
+# Where a regex match counts in a Python file: an example in a string is not the code itself.
+WITHIN = ("code", "comments")
+STRING_TOKENS = frozenset({tokenize.STRING, tokenize.FSTRING_MIDDLE, tokenize.TSTRING_MIDDLE})
 # Locations kept per rule: enough to act on, not a dump.
 MAX_LOCATIONS = 20
 
@@ -74,6 +83,8 @@ def problems(detector: Mapping[str, object]) -> list[str]:
             re.compile(str(detector["pattern"]), re.MULTILINE)
         except re.error as error:
             found.append(f"detector regex: {error}")
+    if kind == "regex" and detector.get("within", "code") not in WITHIN:
+        found.append(f"detector regex: `within` is one of {', '.join(WITHIN)}")
     if kind == "python" and detector.get("check") not in PYTHON_CHECKS:
         found.append(f"detector python: no check named {detector.get('check')!r}")
     return found
@@ -99,16 +110,59 @@ def _regex(detector: Mapping[str, object], repo: Repo) -> Outcome:
         return Outcome(NOT_APPLICABLE)
     pattern = re.compile(str(detector["pattern"]), re.MULTILINE)
     wants_match = detector.get("expect", "none") == "match"
+    within = str(detector.get("within", ""))
     locations: list[str] = []
     for name in files:
+        if not repo.is_code(name):
+            continue
         text = repo.text(name)
-        for found in pattern.finditer(text):
+        for found in _matches(pattern, text, within if name.endswith(".py") else ""):
             if wants_match:
                 return Outcome(PASS, (name,))
             locations.append(f"{name}:{text.count(chr(10), 0, found.start()) + 1}")
     if wants_match:
         return Outcome(FAIL, detail="no file matches")
     return Outcome(FAIL, tuple(locations[:MAX_LOCATIONS])) if locations else Outcome(PASS)
+
+
+def _matches(pattern: re.Pattern[str], text: str, within: str) -> list[re.Match[str]]:
+    """The matches of `pattern` in a file; `within` the code or the comments of a Python
+    source, tokenized only when something matched (most files have nothing)."""
+    found = list(pattern.finditer(text))
+    if not within or not found:
+        return found
+    spans = _python_spans(text)
+    if spans is None:
+        return found
+    strings, comments = spans
+    if within == "comments":
+        return [match for match in found if _inside(match.start(), comments)]
+    return [match for match in found if not _inside(match.start(), strings + comments)]
+
+
+Spans = list[tuple[int, int]]
+
+
+def _python_spans(text: str) -> tuple[Spans, Spans] | None:
+    """Where the strings and the comments of a Python source lie, as offsets in `text`; None
+    when it does not tokenize."""
+    line_starts = [0, *(found.end() for found in re.finditer("\n", text))]
+    strings: Spans = []
+    comments: Spans = []
+    try:
+        for token in tokenize.generate_tokens(io.StringIO(text).readline):
+            if token.type in STRING_TOKENS or token.type == tokenize.COMMENT:
+                (start_row, start_column), (end_row, end_column) = token.start, token.end
+                start = line_starts[start_row - 1] + start_column
+                end = line_starts[end_row - 1] + end_column
+                (comments if token.type == tokenize.COMMENT else strings).append((start, end))
+    except tokenize.TokenError, SyntaxError:
+        return None
+    return strings, comments
+
+
+def _inside(offset: int, spans: Spans) -> bool:
+    return any(start <= offset < end for start, end in spans)
 
 
 def _key(kind: str, detector: Mapping[str, object], repo: Repo) -> Outcome:
@@ -120,7 +174,7 @@ def _key(kind: str, detector: Mapping[str, object], repo: Repo) -> Outcome:
     failing: list[str] = []
     for name in files:
         try:
-            data = _parse(kind, (repo.root / name).read_text(encoding="utf-8"))
+            data = _parse(kind, repo.text(name))
         except OSError, ValueError, yaml.YAMLError:
             failing.append(name)
             continue
@@ -190,7 +244,7 @@ def lockfiles(repo: Repo) -> Outcome:
 def _pinned_requirements(repo: Repo, name: str) -> bool:
     """Every requirement of the file is `==` (an `-r` include or an option line aside)."""
     try:
-        lines = (repo.root / name).read_text(encoding="utf-8").splitlines()
+        lines = repo.text(name).splitlines()
     except OSError, UnicodeDecodeError:
         return True
     wanted = [line.split("#")[0].strip() for line in lines]
@@ -202,7 +256,7 @@ def _has_deps(repo: Repo, manifest: str) -> bool:
     if PurePosixPath(manifest).name != "pyproject.toml":
         return True
     try:
-        project = tomllib.loads((repo.root / manifest).read_text(encoding="utf-8"))
+        project = tomllib.loads(repo.text(manifest))
     except OSError, tomllib.TOMLDecodeError:
         return True
     return bool(project.get("project", {}).get("dependencies")) or bool(
@@ -222,7 +276,7 @@ def non_root_containers(repo: Repo) -> Outcome:
     failing = []
     for name in files:
         try:
-            lines = (repo.root / name).read_text(encoding="utf-8").splitlines()
+            lines = repo.text(name).splitlines()
         except OSError, UnicodeDecodeError:
             continue
         users = [line.split()[1] for line in lines if re.match(r"\s*USER\s+\S", line, re.I)]
@@ -269,7 +323,7 @@ def workflow_permissions(repo: Repo) -> Outcome:
     failing = []
     for name in files:
         try:
-            workflow = yaml.safe_load((repo.root / name).read_text(encoding="utf-8"))
+            workflow = yaml.safe_load(repo.text(name))
         except OSError, UnicodeDecodeError, yaml.YAMLError:
             continue
         if not isinstance(workflow, dict) or "permissions" in workflow:
@@ -278,6 +332,64 @@ def workflow_permissions(repo: Repo) -> Outcome:
         jobs = jobs.values() if isinstance(jobs, dict) else []
         if not jobs or not all(isinstance(job, dict) and "permissions" in job for job in jobs):
             failing.append(name)
+    return Outcome(FAIL, tuple(failing[:MAX_LOCATIONS])) if failing else Outcome(PASS)
+
+
+# What an outsider writes (a title, a body, a branch name), read from the event.
+UNTRUSTED = re.compile(
+    r"github\.(head_ref|event\.(issue|pull_request|comment|review|review_comment|discussion|"
+    r"head_commit|commits|pages)\S*\.(title|body|message|name|email|label|ref|head_ref|"
+    r"default_branch))"
+)
+EXPRESSION = re.compile(r"\$\{\{\s*(?P<inner>.*?)\s*\}\}")
+# The keys whose value is code: a shell script, the JavaScript of `actions/github-script`.
+SCRIPT_KEYS = ("run", "script")
+
+
+def untrusted_expressions(text: str) -> list[re.Match[str]]:
+    """The `${{ … }}` of `text` that read an outsider's text."""
+    return [found for found in EXPRESSION.finditer(text) if UNTRUSTED.search(found["inner"])]
+
+
+def workflow_scripts(text: str) -> list[tuple[yaml.MappingNode, yaml.ScalarNode]]:
+    """Each `run:` or `script:` of a workflow: the mapping holding it (the step), and its value,
+    with the positions the converter edits. Raises `yaml.YAMLError` on a file YAML cannot read."""
+    found = []
+    pending: list[yaml.Node] = [yaml.compose(text) or yaml.ScalarNode("tag", "")]
+    while pending:
+        node = pending.pop()
+        if isinstance(node, yaml.MappingNode):
+            for key, value in node.value:
+                is_script = isinstance(key, yaml.ScalarNode) and key.value in SCRIPT_KEYS
+                if is_script and isinstance(value, yaml.ScalarNode):
+                    found.append((node, value))
+                else:
+                    pending.append(value)
+        elif isinstance(node, yaml.SequenceNode):
+            pending.extend(node.value)
+    return found
+
+
+def workflow_injection(repo: Repo) -> Outcome:
+    """No outsider's text expanded inside a script: through `env:`, it stays data. A file YAML
+    cannot read counts every such expression."""
+    files = repo.matching(*WORKFLOWS)
+    if not files:
+        return Outcome(NOT_APPLICABLE)
+    failing = []
+    for name in files:
+        text = repo.text(name)
+        try:
+            lines = sorted(
+                value.start_mark.line + 1
+                for _, value in workflow_scripts(text)
+                if untrusted_expressions(value.value)
+            )
+        except yaml.YAMLError:
+            lines = [
+                text.count("\n", 0, found.start()) + 1 for found in untrusted_expressions(text)
+            ]
+        failing += [f"{name}:{line}" for line in lines]
     return Outcome(FAIL, tuple(failing[:MAX_LOCATIONS])) if failing else Outcome(PASS)
 
 
@@ -387,16 +499,30 @@ def supported_runtimes(repo: Repo, today: str = "") -> Outcome:
 COMPOSE_FILES = ("**/compose.y*ml", "**/compose.*.y*ml", "**/docker-compose*.y*ml")
 
 
+COMPOSE_ROOT_USERS = ("", "0", "root")
+
+
+def _has_no_new_privileges(settings: dict[str, Any]) -> bool:
+    return any("no-new-privileges" in str(opt) for opt in settings.get("security_opt") or [])
+
+
+def _runs_unprivileged(settings: dict[str, Any]) -> bool:
+    """A non-root user and no capability added back."""
+    user = str(settings.get("user", "")).split(":")[0]
+    return user not in COMPOSE_ROOT_USERS and not settings.get("cap_add")
+
+
 def hardened_compose(repo: Repo) -> Outcome:
     """Each compose service runs with a read-only file system, every capability dropped and
-    no privilege escalation."""
+    no privilege escalation: no-new-privileges, or a non-root user with no capability added
+    back (nothing left to escalate to, where AppArmor refuses no-new-privileges)."""
     files = repo.matching(*COMPOSE_FILES)
     if not files:
         return Outcome(NOT_APPLICABLE)
     failing = []
     for name in files:
         try:
-            compose = yaml.safe_load((repo.root / name).read_text(encoding="utf-8"))
+            compose = yaml.safe_load(repo.text(name))
         except OSError, UnicodeDecodeError, yaml.YAMLError:
             continue
         services = compose.get("services") if isinstance(compose, dict) else None
@@ -406,9 +532,7 @@ def hardened_compose(repo: Repo) -> Outcome:
             hardened = (
                 settings.get("read_only") is True
                 and "ALL" in [str(cap).upper() for cap in settings.get("cap_drop") or []]
-                and any(
-                    "no-new-privileges" in str(opt) for opt in settings.get("security_opt") or []
-                )
+                and (_has_no_new_privileges(settings) or _runs_unprivileged(settings))
             )
             if not hardened:
                 failing.append(f"{name} ({service})")
@@ -474,15 +598,95 @@ def traced_models(repo: Repo) -> Outcome:
     return Outcome(FAIL, tuple(untraced[:MAX_LOCATIONS])) if untraced else Outcome(PASS)
 
 
+def _forge(
+    repo: Repo, judge: Callable[[forge.Settings], list[str] | None], section: str
+) -> Outcome:
+    """A setting of the repo's GitHub project: `judge` lists what is missing (empty: met), or
+    None when GitHub does not offer it to this repo; a gap ends with its settings page."""
+    found = forge.settings(repo.root)
+    if found is None:
+        return Outcome(NOT_APPLICABLE, detail=forge.UNKNOWN if forge.ENABLED else "")
+    missing = judge(found)
+    if missing is None:
+        return Outcome(NOT_APPLICABLE)
+    if not missing:
+        return Outcome(PASS)
+    return Outcome(FAIL, detail=f"{'; '.join(missing)}: {found.page(section)}")
+
+
+def protected_branch(repo: Repo) -> Outcome:
+    def judge(found: forge.Settings) -> list[str]:
+        wanted = {"non_fast_forward": "force pushes allowed", "deletion": "deletion allowed"}
+        if not found.merge_commits:
+            wanted["required_linear_history"] = "linear history not required"
+        branch = found.default_branch
+        return [
+            f"{branch}: {why}" for rule, why in wanted.items() if rule not in found.branch_rules
+        ]
+
+    return _forge(repo, judge, "rules")
+
+
+def forge_secret_scanning(repo: Repo) -> Outcome:
+    def judge(found: forge.Settings) -> list[str] | None:
+        if found.secret_scanning is None:
+            return None
+        return [
+            what
+            for what, on in (
+                ("secret scanning off", found.secret_scanning),
+                ("push protection off", found.push_protection),
+            )
+            if not on
+        ]
+
+    return _forge(repo, judge, "security_analysis")
+
+
+def forge_dependabot_alerts(repo: Repo) -> Outcome:
+    def judge(found: forge.Settings) -> list[str] | None:
+        if found.vulnerability_alerts is None:
+            return None
+        if not found.vulnerability_alerts:
+            return ["Dependabot alerts off"]
+        return [] if found.security_updates else ["Dependabot security updates off"]
+
+    return _forge(repo, judge, "security_analysis")
+
+
+def forge_private_reporting(repo: Repo) -> Outcome:
+    def judge(found: forge.Settings) -> list[str] | None:
+        if not found.public or found.private_reporting is None:
+            return None
+        return [] if found.private_reporting else ["private vulnerability reporting off"]
+
+    return _forge(repo, judge, "security_analysis")
+
+
+def forge_code_scanning(repo: Repo) -> Outcome:
+    def judge(found: forge.Settings) -> list[str] | None:
+        if found.code_scanning is None:
+            return None
+        return [] if found.code_scanning else ["code scanning not set up"]
+
+    return _forge(repo, judge, "security_analysis")
+
+
 PYTHON_CHECKS: dict[str, Callable[[Repo], Outcome]] = {
     "lockfiles": lockfiles,
     "non_root_containers": non_root_containers,
     "images_by_digest": images_by_digest,
     "workflow_permissions": workflow_permissions,
+    "workflow_injection": workflow_injection,
     "strict_typescript": strict_typescript,
     "supported_runtimes": supported_runtimes,
     "hardened_compose": hardened_compose,
     "committed_migrations": committed_migrations,
     "python_linter": python_linter,
     "traced_models": traced_models,
+    "protected_branch": protected_branch,
+    "forge_secret_scanning": forge_secret_scanning,
+    "forge_dependabot_alerts": forge_dependabot_alerts,
+    "forge_private_reporting": forge_private_reporting,
+    "forge_code_scanning": forge_code_scanning,
 }

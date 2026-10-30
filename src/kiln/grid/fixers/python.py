@@ -4,7 +4,7 @@ import re
 import shutil
 import subprocess
 import tomllib
-from pathlib import PurePosixPath
+from pathlib import Path, PurePosixPath
 
 from kiln.grid.facts import Repo
 from kiln.grid.fixers import Fixer, register
@@ -39,13 +39,19 @@ def _pinned(text: str) -> bool:
 
 
 def lock_requirements(repo: Repo) -> list[str]:
-    """Each loose `requirements*.txt` becomes its `.in` source, compiled by uv into a pinned
-    `.txt`: images and scripts that install it keep working, now on exact versions."""
+    """A repo whose dependencies live in a loose `requirements.txt` alone becomes a uv project:
+    `pyproject.toml` and `uv.lock` hold them, `requirements.txt` stays as their exact export
+    (`uv export`), so that images and scripts that install it keep working. Elsewhere, each
+    loose `requirements*.txt` becomes its `.in` source, compiled by uv into a pinned `.txt`."""
     loose = [name for name in repo.matching("**/requirements*.txt") if not _pinned(repo.text(name))]
     if not loose:
         return []
     if shutil.which("uv") is None:
         raise KilnError("uv is needed to compile the requirements: https://docs.astral.sh/uv/")
+    if "requirements.txt" in loose and not (repo.root / "pyproject.toml").exists():
+        made = _uv_project(repo)
+        if made:
+            return made
     changed: list[str] = []
     failed: list[str] = []
     for name in loose:
@@ -68,6 +74,45 @@ def lock_requirements(repo: Repo) -> list[str]:
     return changed
 
 
+UV_PROJECT_FILES = ("pyproject.toml", "uv.lock", ".python-version")
+DEV_REQUIREMENTS = "requirements-dev.txt"
+
+
+def _uv_project(repo: Repo) -> list[str]:
+    """`pyproject.toml` and `uv.lock` from `requirements.txt` (and `requirements-dev.txt` as the
+    dev group), both `.txt` exported back with exact versions; [] when uv cannot resolve them,
+    every file it wrote removed."""
+    has_dev = (repo.root / DEV_REQUIREMENTS).exists()
+    name = re.sub(r"[^a-z0-9]+", "-", repo.root.name.lower()).strip("-") or "app"
+    steps = [
+        ["uv", "init", "--bare", "--no-workspace", "--vcs", "none", "--name", name],
+        ["uv", "add", "--no-sync", "-r", "requirements.txt"],
+        *([["uv", "add", "--no-sync", "--dev", "-r", DEV_REQUIREMENTS]] if has_dev else []),
+        ["uv", "export", "--quiet", "--no-hashes", "--no-dev", "--no-emit-project",
+         "-o", "requirements.txt"],
+        *([["uv", "export", "--quiet", "--no-hashes", "--only-dev", "--no-emit-project",
+            "-o", DEV_REQUIREMENTS]] if has_dev else []),
+    ]  # fmt: skip
+    originals = {
+        txt: (repo.root / txt).read_text(encoding="utf-8")
+        for txt in ("requirements.txt", DEV_REQUIREMENTS)
+        if (repo.root / txt).exists()
+    }
+    for command in steps:
+        if not _uv(command, repo.root):
+            for leftover in UV_PROJECT_FILES:
+                (repo.root / leftover).unlink(missing_ok=True)
+            for txt, text in originals.items():
+                (repo.root / txt).write_text(text, encoding="utf-8")
+            return []
+    made = [name for name in UV_PROJECT_FILES if (repo.root / name).exists()]
+    return [*made, *originals]
+
+
+def _uv(command: list[str], cwd: Path) -> bool:
+    return subprocess.run(command, cwd=cwd, capture_output=True, check=False).returncode == 0
+
+
 def _line_length(repo: Repo) -> int | None:
     """The line length the repo already uses, from black or flake8."""
     try:
@@ -88,11 +133,13 @@ def add_ruff(repo: Repo) -> list[str]:
     its safe fixes applied: imports sorted, syntax of the supported Pythons, unused noqa."""
     name = "pyproject.toml"
     text = repo.text(name)
+    if "[tool.ruff" in text or (repo.root / "ruff.toml").exists():
+        return []  # set up already: a second run changes nothing
     length = _line_length(repo)
-    section = "\n[tool.ruff]\n" + (f"line-length = {length}\n" if length else "")
+    section = "[tool.ruff]\n" + (f"line-length = {length}\n" if length else "")
     section += "\n[tool.ruff.lint]\nselect = [" + ", ".join(f'"{code}"' for code in RUFF_SELECT)
     section += "]\n"
-    _write(repo, name, (text.rstrip("\n") + "\n" if text else "") + section)
+    _write(repo, name, (text.rstrip("\n") + "\n\n" if text else "") + section)
     if shutil.which("uvx") is not None:
         subprocess.run(
             ["uvx", "ruff", "check", "--fix", "--select", SAFE_FIXES, "--quiet", "."],

@@ -7,6 +7,7 @@ import pytest
 
 from kiln import cli, install
 from kiln.config import UserConfig
+from kiln.stack import Stack
 
 
 @pytest.fixture
@@ -32,7 +33,7 @@ def test_a_bare_machine_gets_the_command_the_catalogue_and_the_plugin(
     install.install_machine()
 
     assert machine == [
-        ["uv", "tool", "install", "kiln-cli"],
+        ["uv", "tool", "install", "keramos-kiln"],
         ["claude", "plugin", "marketplace", "add", "antoine-tena/kiln"],
         ["claude", "plugin", "install", "kiln@kiln", "--scope", "user"],
     ]
@@ -82,3 +83,18 @@ def test_git_hooks_need_their_configuration(machine: list[list[str]], tmp_path: 
     (tmp_path / ".pre-commit-config.yaml").write_text("repos: []\n")
     install.install_git_hooks(tmp_path)
     assert machine == [["pre-commit", "install"]]
+
+
+@pytest.mark.parametrize(
+    ("stack", "hint"),
+    [
+        (Stack("django", "nuxt", False), "Run the project: kiln dev"),
+        (Stack("cli", "none", False), "Run the project: cd backend && uv run demo --help"),
+        (Stack("cli", "none", False, backend_dir="."), "Run the project: uv run demo --help"),
+        (Stack("java", "none", False, backend_dir="."), "Run the project: ./mvnw verify"),
+        (Stack("none", "none", False), "Check the project: kiln check"),
+    ],
+)
+def test_the_last_line_names_what_the_repo_has(stack: Stack, hint: str) -> None:
+    # A repo adopted without a stack of kiln has no backend/ to run.
+    assert install.launch_hint(stack, "demo") == hint

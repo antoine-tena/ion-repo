@@ -19,7 +19,7 @@ from typing import IO
 
 from kiln import ui
 from kiln.dev.processes import runs_beyond_front, signal_group, spawn
-from kiln.stack import Command
+from kiln.stack import Command, load_stack
 
 # Color of each process's prefix, in launch order.
 PREFIX_COLORS = (ui.FIRE, ui.MOSS, ui.GLOW, ui.CHEEK)
@@ -30,7 +30,7 @@ _print_lock = threading.Lock()
 def run_foreground(root: Path, commands: list[Command]) -> None:
     width = max(len(command.label) for command in commands)
     env = {**os.environ, "PYTHONUNBUFFERED": "1"}
-    full_stack = runs_beyond_front(commands)
+    full_stack = runs_beyond_front(commands, load_stack(root).frontend_dir)
     if ui.is_styled():
         env["FORCE_COLOR"] = "1"
     processes = []

@@ -9,12 +9,12 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: astral-sh/setup-uv@v7
+    - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
 
     - name: kiln and charter
       shell: bash
       env:
         REF: ${{ inputs.ref }}
-      run: |
+      run: | # zizmor: ignore[github-env] only uv's own folder joins the PATH
         uv tool install --python 3.14 "git+https://github.com/antoine-tena/kiln@${REF}"
         uv tool dir --bin >> "$GITHUB_PATH"

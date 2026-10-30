@@ -1,3 +1,4 @@
+{%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
 # {{ title }}
 
 {{ description }}
@@ -13,38 +14,38 @@ that adds, moves or removes a directory, a domain or an entry point. One line pe
 it holds; no copy of the code.
 
 {% if backend == 'django' -%}
-- `backend/config/`: settings (`settings.py`), URLs (`urls.py`), Ninja API (`api.py`),
+- `{{ bp }}config/`: settings (`settings.py`), URLs (`urls.py`), Ninja API (`api.py`),
   middlewares, health probes (`health.py`), admin commands (`management/`).
-- `backend/<app>/`: one Django app per business domain; `backend/tests/`: cross-cutting tests.
+- `{{ bp }}<app>/`: one Django app per business domain; `{{ bp }}tests/`: cross-cutting tests.
 {% elif backend == 'fastapi' -%}
-- `backend/app/`: entry point (`main.py`), settings (`settings.py`), health probes
-  (`health.py`); one module per domain. `backend/tests/`: tests.
+- `{{ bp }}app/`: entry point (`main.py`), settings (`settings.py`), health probes
+  (`health.py`); one module per domain. `{{ bp }}tests/`: tests.
 {% elif backend == 'data' -%}
-- `backend/pipeline/`: loading (`sources.py`), transformations (`transforms.py`), figures
-  (`figures.py`); `backend/notebooks/`: marimo notebooks; `backend/data/`: data (`sample/` is
-  committed). `backend/tests/`: tests.
+- `{{ bp }}pipeline/`: loading (`sources.py`), transformations (`transforms.py`), figures
+  (`figures.py`); `{{ bp }}notebooks/`: marimo notebooks; `{{ bp }}data/`: data (`sample/` is
+  committed). `{{ bp }}tests/`: tests.
 {% elif backend == 'cli' -%}
-- `backend/{{ name | replace('-', '_') }}/`: commands (`cli.py`, entry point `__main__.py`) and
-  business logic; `backend/tests/`: tests.
+- `{{ bp }}{{ name | replace('-', '_') }}/`: commands (`cli.py`, entry point `__main__.py`) and
+  business logic; `{{ bp }}tests/`: tests.
 {% elif backend == 'java' -%}
-- `backend/src/main/java/{{ java_package | replace('.', '/') }}/`: entry point (`Main.java`), one
-  package per domain; `backend/src/test/java/`: JUnit tests; `backend/pom.xml`: Maven build.
+- `{{ bp }}src/main/java/{{ java_package | replace('.', '/') }}/`: entry point (`Main.java`), one
+  package per domain; `{{ bp }}src/test/java/`: JUnit tests; `{{ bp }}pom.xml`: Maven build.
 {% endif -%}
 {% if frontend == 'nuxt' -%}
-- `frontend/app/`: pages, components (`components/`), composables, styles (`assets/`),
+- `{{ fp }}app/`: pages, components (`components/`), composables, styles (`assets/`),
   constants (`app/utils/constants.ts`){% if backend == 'django' %}, API types generated in
   `app/types/api.d.ts`{% endif %}.
 {% elif frontend == 'next' -%}
-- `frontend/app/`: routes (App Router); `frontend/components/`: components; `frontend/lib/`:
+- `{{ fp }}app/`: routes (App Router); `{{ fp }}components/`: components; `{{ fp }}lib/`:
   API client and constants (`constants.ts`).
 {% elif frontend == 'astro' -%}
-- `frontend/src/`: pages (`pages/`), layouts (`layouts/`), styles, constants (`constants.ts`).
+- `{{ fp }}src/`: pages (`pages/`), layouts (`layouts/`), styles, constants (`constants.ts`).
 {% elif frontend == 'vite-react' -%}
-- `frontend/src/`: the app (`App.tsx`, entry `main.tsx`), API client (`lib/`), constants
-  (`constants.ts`); `frontend/index.html`: the page Vite serves.
+- `{{ fp }}src/`: the app (`App.tsx`, entry `main.tsx`), API client (`lib/`), constants
+  (`constants.ts`); `{{ fp }}index.html`: the page Vite serves.
 {% elif frontend in ['streamlit', 'dash'] -%}
-- `frontend/app.py`: entry point; `frontend/dashboard/`: pages, layout and constants;
-  `frontend/tests/`: tests.
+- `{{ fp }}app.py`: entry point; `{{ fp }}dashboard/`: pages, layout and constants;
+  `{{ fp }}tests/`: tests.
 {% endif -%}
 {% if deploy == 'vps' -%}
 - `config/vps/`, `scripts/ops/`: deployment and operations; how-to in

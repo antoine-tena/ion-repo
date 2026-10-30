@@ -34,6 +34,8 @@ from pathlib import Path
 from typing import Any, NamedTuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import paused
+import place
 import reminders
 
 ANSWERS_FILE = ".copier-answers.yml"
@@ -116,11 +118,20 @@ def is_beta() -> bool:
 
 
 def kiln_checkout() -> Path | None:
-    """kiln's checkout in the code directory (`code_dir`), the source of the beta channel."""
+    """kiln's checkout in the code directory (`code_dir`), the source of the beta channel: at its
+    root, in one of its folders or one level further (a family folder with one folder per tool),
+    by its real path (a link left at the old place leads there)."""
     values = machine_settings()
     code_dir = Path(str(values.get("code_dir", values.get("dossier_code", DEFAULT_CODE_DIR))))
-    checkout = code_dir.expanduser() / "kiln"
-    return checkout if (checkout / KILN_PACKAGE_MARKER).is_file() else None
+    code_dir = code_dir.expanduser()
+    for checkout in (
+        code_dir / "kiln",
+        *sorted(code_dir.glob("*/kiln")),
+        *sorted(code_dir.glob("*/*/kiln")),
+    ):
+        if (checkout / KILN_PACKAGE_MARKER).is_file():
+            return checkout.resolve()
+    return None
 
 
 def run(*command: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
@@ -129,9 +140,11 @@ def run(*command: str, cwd: Path | None = None) -> subprocess.CompletedProcess[s
 
 # --- Tool: kiln installed by uv, from PyPI, from GitHub (commit) or from a directory (checkout) ---
 
-# uv tools that carry kiln: `kiln-cli` (PyPI package name), `kiln` (before PyPI).
-TOOL_NAMES = ("kiln-cli", "kiln")
+# uv tools that carry kiln: `keramos-kiln` (PyPI package name), `kiln-cli` (its first name, still
+# published beside it for the testers), `kiln` (before PyPI).
+TOOL_NAMES = ("keramos-kiln", "kiln-cli", "kiln")
 PYPI_NAME = TOOL_NAMES[0]
+LEGACY_PYPI_NAME = TOOL_NAMES[1]
 
 
 def installed_kiln() -> tuple[str, str] | None:
@@ -142,7 +155,8 @@ def installed_kiln() -> tuple[str, str] | None:
     if not tool_dir:
         return None
     for name in TOOL_NAMES:
-        for metadata in Path(tool_dir, name).glob("lib/python*/site-packages/kiln*.dist-info"):
+        # `kiln_cli-…`, `keramos_kiln-…` or `kiln-…`: no dependency of kiln has kiln in its name.
+        for metadata in Path(tool_dir, name).glob("lib/python*/site-packages/*kiln*.dist-info"):
             direct_url = metadata / "direct_url.json"
             if not direct_url.exists():
                 version = next(
@@ -172,8 +186,16 @@ def recorded_build(site_packages: Path) -> str:
         return ""
 
 
+def installed_pypi_name() -> str:
+    """The PyPI name the tool was installed under, kept by its upgrade: a `kiln-cli` tool stays
+    `kiln-cli`, rather than a second tool carrying the same commands."""
+    tool_dir = run("uv", "tool", "dir").stdout.strip()
+    has_legacy_name = bool(tool_dir) and Path(tool_dir, LEGACY_PYPI_NAME).is_dir()
+    return LEGACY_PYPI_NAME if has_legacy_name else PYPI_NAME
+
+
 def has_legacy_tool() -> bool:
-    """The `kiln` uv tool from before PyPI: to remove before installing `kiln-cli`, which
+    """The `kiln` uv tool from before PyPI: to remove before installing `keramos-kiln`, which
     provides the same command."""
     tool_dir = run("uv", "tool", "dir").stdout.strip()
     return bool(tool_dir) and Path(tool_dir, "kiln").is_dir()
@@ -222,7 +244,9 @@ def is_beta_tool_outdated(install: tuple[str, str] | None) -> bool:
     live), otherwise GitHub's `develop` at its last commit."""
     checkout = kiln_checkout()
     if checkout is not None:
-        return install is None or install[0] != "editable" or Path(install[1]) != checkout
+        if install is None or install[0] != "editable":
+            return True
+        return Path(install[1]).resolve() != checkout
     if install is None or install[0] != "git":
         return True
     heads = run("git", "ls-remote", f"{KILN_GIT_URL}.git", "refs/heads/develop").stdout.split()
@@ -253,7 +277,7 @@ def tool_update_command(install: tuple[str, str] | None, tag: str) -> str:
     # PyPI only has promoted releases: a candidate (internal channel) comes from GitHub.
     if final and (install is None or install[0] == "pypi"):
         version = tag.removeprefix("v")
-        return f'{legacy}uv tool install --force "{PYPI_NAME}=={version}" && {plugins}'
+        return f'{legacy}uv tool install --force "{installed_pypi_name()}=={version}" && {plugins}'
     # A copy of a checkout is replaced by the release itself: kiln's own work runs with
     # `uv run kiln` in a worktree, never through the installed tool.
     return f'{legacy}uv tool install --force "git+{KILN_GIT_URL}@{tag}" && {plugins}'
@@ -621,8 +645,9 @@ def tool_question(state: reminders.State, current: str | None, tag: str) -> str:
         choices += ', "Uninstall kiln"'
         extra += (
             ' The question text starts with "You have been saying no for a while: do you want '
-            'to uninstall kiln?". If "Uninstall kiln": `uv tool uninstall kiln-cli && claude '
-            f"plugin uninstall kiln@kiln`, then {answer_command('never', TOOL_KEY)}."
+            'to uninstall kiln?". If "Uninstall kiln": '
+            f"`uv tool uninstall {installed_pypi_name()} && claude plugin uninstall kiln@kiln`, "
+            f"then {answer_command('never', TOOL_KEY)}."
         )
     return (
         "The kiln tool installed on this machine is behind the latest release. Before anything "
@@ -736,12 +761,39 @@ def main() -> None:
         payload = {}
     red, found = startup_context(payload)
     context = "\n\n".join(
-        part for part in (ERROR_ORIGIN, red, found.context if found else "") if part
+        part
+        for part in (ERROR_ORIGIN, red, found.context if found else "", launch_place(payload))
+        if part
     )
-    if found:
-        save_notice(payload.get("session_id", ""), found.notice)
+    session_id = payload.get("session_id", "")
+    waiting = paused_sessions(payload)
+    shown = "\n\n".join(part for part in (found.notice if found else "", waiting) if part)
+    if shown:
+        save_notice(session_id, shown)
     hook_output = {"hookEventName": "SessionStart", "additionalContext": context}
     print(json.dumps({"hookSpecificOutput": hook_output}, ensure_ascii=False))
+
+
+def paused_sessions(payload: dict[str, Any]) -> str:
+    """The sessions `/kiln:pause` kept, shown above the first prompt of a new session; a resumed
+    one leaves the list."""
+    try:
+        session_id = payload.get("session_id", "")
+        source = payload.get("source", STARTUP_SOURCE)
+        if source == "resume":
+            paused.forget(session_id)
+        return paused.listing(session_id) if source == STARTUP_SOURCE else ""
+    except Exception:
+        return ""
+
+
+def launch_place(payload: dict[str, Any]) -> str:
+    """Outside any repo: the repos below, and when to say a task belongs in one (`place.py`).
+    Said again after a compaction or a /clear, which drop it."""
+    try:
+        return place.context(Path(payload.get("cwd") or ".").resolve())
+    except Exception:
+        return ""
 
 
 def startup_context(payload: dict[str, Any]) -> tuple[str, Offer | None]:

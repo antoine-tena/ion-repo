@@ -32,6 +32,22 @@ def test_home_screen_lists_every_command_by_section(
     assert "EXAMPLES" in out
 
 
+@pytest.mark.parametrize("flag", ["-h", "--help"])
+def test_a_command_help_is_drawn_like_the_home_screen(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str], flag: str
+) -> None:
+    assert run_kiln(monkeypatch, "dev", flag) == 0
+
+    out = capsys.readouterr().out
+    assert "Run the project locally" in out
+    assert "Usage  kiln dev [options] [{status,logs,stop}] [service]" in out
+    assert "ARGUMENTS" in out
+    assert "OPTIONS" in out
+    assert "Logs: keep following" in out
+    assert "usage:" not in out
+    assert "show this help message" not in out
+
+
 def test_every_command_of_the_home_screen_exists() -> None:
     parser = cli.build_parser()
     known = {
@@ -116,6 +132,15 @@ def test_the_names_of_kiln_0_3_still_work_with_a_warning(
 ) -> None:
     assert cli.modernize(legacy) == modern
     assert "is now" in capsys.readouterr().err
+
+
+def test_a_size_named_after_the_fire_still_works_with_a_warning(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    arguments = cli.build_parser().parse_args(["adopt", "--size", "ember"])
+
+    assert arguments.size == "small"
+    assert "`ember` is now `small`" in capsys.readouterr().err
 
 
 def test_an_option_of_another_command_is_left_alone() -> None:

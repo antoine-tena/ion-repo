@@ -2,24 +2,66 @@
 should, on an example of each."""
 
 import datetime
+import json
 import re
 import sys
 from pathlib import Path
+from typing import Any
 
 import pytest
 
 from kiln import cli
-from kiln.grid import detectors, facts, fixers, model
+from kiln.grid import detectors, facts, fixers, forge, model
 from kiln.grid.facts import read_repo
 from kiln.shell import KilnError
 
 RULES = model.load_rules()
 WORKFLOW = ".github/workflows/ci.yml"
+# A case of a forge rule: the GitHub settings `gh` would read, as JSON, under this name.
+FORGE = "<github settings>"
+GITHUB: dict[str, Any] = {
+    "slug": "acme/app",
+    "default_branch": "main",
+    "public": True,
+    "merge_commits": True,
+    "branch_rules": ["deletion", "non_fast_forward"],
+    "secret_scanning": True,
+    "push_protection": True,
+    "vulnerability_alerts": True,
+    "security_updates": True,
+    "private_reporting": True,
+    "code_scanning": True,
+}
+
+
+def github(**changes: object) -> dict[str, str]:
+    return {FORGE: json.dumps({**GITHUB, **changes})}
+
+
+def given_github(files: dict[str, str], monkeypatch: pytest.MonkeyPatch) -> dict[str, str]:
+    """The settings of a forge case handed to the rule as `gh` would read them; the files."""
+    if FORGE in files:
+        data = json.loads(files[FORGE])
+        settings = forge.Settings(**{**data, "branch_rules": tuple(data["branch_rules"])})
+        monkeypatch.setattr(forge, "settings", lambda root: settings)
+    return {name: content for name, content in files.items() if name != FORGE}
+
+
 SHA = "b4ffde65f46336ab88eb53be808477a3936bae11"
 
 # For each rule, a repo that passes and one that fails (doctrine 7: a rule that flags wrongly
 # is worse than none). Files as {path: content}.
 CASES: dict[str, dict[str, dict[str, str]]] = {
+    "PROTECTED-BRANCH": {
+        "pass": github(
+            merge_commits=False, branch_rules=[*GITHUB["branch_rules"], "required_linear_history"]
+        ),
+        "fail": github(branch_rules=["deletion"]),
+    },
+    "FORGE-SECRET-SCANNING": {"pass": github(), "fail": github(push_protection=False)},
+    "DEPENDABOT-ALERTS": {"pass": github(), "fail": github(security_updates=False)},
+    "PRIVATE-VULN-REPORTING": {"pass": github(), "fail": github(private_reporting=False)},
+    "CODE-SCANNING": {"pass": github(), "fail": github(code_scanning=False)},
     "LOCKED-DEPENDENCIES": {
         "pass": {
             "backend/pyproject.toml": '[project]\nname = "a"\ndependencies = ["django"]\n',
@@ -83,10 +125,16 @@ CASES: dict[str, dict[str, dict[str, str]]] = {
         "fail": {WORKFLOW: "jobs:\n  a:\n    steps:\n      - run: pytest\n"},
     },
     "REPO-MAP": {
-        "pass": {"CLAUDE.md": "# a\n\n## Repo map\n\n- `src/`: code\n"},
+        "pass": {
+            "CLAUDE.md": "# a\n\n## Repo map\n\n- `src/`: code\n",
+            "ARCHITECTURE.md": "# Architecture\n\n## Code map\n",
+        },
         "fail": {"CLAUDE.md": "# a\n\n## Rules\n"},
     },
-    "AI-CONTEXT": {"pass": {"AGENTS.md": "# a\n"}, "fail": {"README.md": "# a\n"}},
+    "AI-CONTEXT": {
+        "pass": {"AGENTS.md": "# a\n", ".claude/settings.json": "{}"},
+        "fail": {"README.md": "# a\n", ".cursor/rules.md": "# a\n"},
+    },
     "STRICT-TS": {
         "pass": {
             "tsconfig.json": '{"compilerOptions": {"strict": true}}',
@@ -181,7 +229,10 @@ CASES: dict[str, dict[str, dict[str, str]]] = {
         "fail": {"a.vue": '<script setup lang="ts">\n// @ts-ignore\n</script>\n'},
     },
     "NAIVE-DATETIMES": {
-        "pass": {"a.py": "now = datetime.now(UTC)\nlater = timezone.now()\n"},
+        "pass": {
+            "a.py": "now = datetime.now(UTC)\nlater = timezone.now()\n"
+            "local = datetime.now().astimezone()\n"
+        },
         "fail": {"a.py": "now = datetime.datetime.utcnow()\n"},
     },
     "SQL-PARAMETERS": {
@@ -243,15 +294,21 @@ DETECTED = [rule for rule in RULES if rule.detector]
 @pytest.mark.parametrize("rule", DETECTED, ids=lambda rule: rule.id)
 @pytest.mark.parametrize("expected", ["pass", "fail"])
 def test_each_rule_says_pass_and_fail_where_it_should(
-    tmp_path: Path, rule: model.Rule, expected: str
+    tmp_path: Path, rule: model.Rule, expected: str, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    repo = make_repo(tmp_path, CASES[rule.id][expected])
+    repo = make_repo(tmp_path, given_github(CASES[rule.id][expected], monkeypatch))
 
     outcome = detectors.detect(rule.detector, repo)
 
     assert outcome.status == expected, outcome
     if expected == "fail":
         assert outcome.locations or outcome.detail
+
+
+@pytest.mark.parametrize("user", ["0:0", "root:root"])
+def test_a_container_running_as_root_by_uid_and_group_fails(tmp_path: Path, user: str) -> None:
+    (tmp_path / "Dockerfile").write_text(f"FROM python:3.14\nUSER {user}\n")
+    assert detectors.non_root_containers(read_repo(tmp_path)).status == detectors.FAIL
 
 
 def test_requirements_pinned_to_exact_versions_are_their_own_lock(tmp_path: Path) -> None:
@@ -266,12 +323,72 @@ def test_requirements_pinned_to_exact_versions_are_their_own_lock(tmp_path: Path
 
 
 @pytest.mark.parametrize(
-    "test_file",
-    ["Converter.Tests/ExtractTests.cs", "src/socialnetwork/BavardTest.java", "tests/BookTest.php"],
+    "line",
+    [
+        """cursor.execute("SELECT id FROM book WHERE title LIKE '%%%s%%'" % q)""",
+        """cursor.execute('SELECT id FROM book WHERE title = "{}"'.format(q))""",
+    ],
 )
-def test_tests_are_found_in_dotnet_java_and_php(tmp_path: Path, test_file: str) -> None:
+def test_sql_formatted_around_quotes_of_the_other_kind_is_caught(tmp_path: Path, line: str) -> None:
+    rule = next(rule for rule in RULES if rule.id == "SQL-PARAMETERS")
+    repo = make_repo(tmp_path, {"views.py": f"{line}\n"})
+
+    assert detectors.detect(rule.detector, repo).locations == ("views.py:1",)
+
+
+@pytest.mark.parametrize(
+    "test_file",
+    [
+        "Converter.Tests/ExtractTests.cs",
+        "src/socialnetwork/BavardTest.java",
+        "tests/BookTest.php",
+        "tests/tests.rs",
+        "spec/models/user_spec.rb",
+        "test/models/user_test.rb",
+        "test/base-url.ts",
+        "test/app_test.exs",
+        "test/widget_test.dart",
+        "Tests/AppTests/AppTests.swift",
+        "tests/parse.cpp",
+    ],
+)
+def test_tests_are_found_in_every_common_stack(tmp_path: Path, test_file: str) -> None:
     rule = next(rule for rule in RULES if rule.id == "TESTS-PRESENT")
     repo = make_repo(tmp_path, {test_file: "// a test\n"})
+
+    assert detectors.detect(rule.detector, repo).status == detectors.PASS
+
+
+@pytest.mark.parametrize(
+    ("rule_id", "step"),
+    [
+        ("TESTS-IN-CI", "run: bundle exec rake spec"),
+        ("TESTS-IN-CI", "run: php artisan test"),
+        ("TESTS-IN-CI", "run: ./mvnw -B verify"),
+        ("TESTS-IN-CI", "run: ./gradlew build"),
+        ("TESTS-IN-CI", "run: dotnet test"),
+        ("TESTS-IN-CI", "run: mix test"),
+        ("TESTS-IN-CI", "run: npx ava"),
+        ("LINT-IN-CI", "run: cargo clippy --all-targets -- -Dwarnings"),
+        ("LINT-IN-CI", "uses: golangci/golangci-lint-action@v9"),
+        ("LINT-IN-CI", "run: bundle exec rubocop"),
+        ("LINT-IN-CI", "run: vendor/bin/phpstan analyse"),
+        ("LINT-IN-CI", "run: ./gradlew ktlintCheck detekt"),
+        ("LINT-IN-CI", "run: dotnet format --verify-no-changes"),
+        ("LINT-IN-CI", "run: flutter analyze"),
+    ],
+)
+def test_the_ci_of_every_common_stack_is_read(tmp_path: Path, rule_id: str, step: str) -> None:
+    rule = next(rule for rule in RULES if rule.id == rule_id)
+    repo = make_repo(tmp_path, {WORKFLOW: f"jobs:\n  a:\n    steps:\n      - {step}\n"})
+
+    assert detectors.detect(rule.detector, repo).status == detectors.PASS
+
+
+def test_a_linter_bound_to_the_build_runs_with_it(tmp_path: Path) -> None:
+    rule = next(rule for rule in RULES if rule.id == "LINT-IN-CI")
+    plugin = "<plugin><artifactId>maven-checkstyle-plugin</artifactId></plugin>\n"
+    repo = make_repo(tmp_path, {"pom.xml": plugin})
 
     assert detectors.detect(rule.detector, repo).status == detectors.PASS
 
@@ -289,6 +406,42 @@ def test_a_failing_regex_says_where(tmp_path: Path) -> None:
     repo = make_repo(tmp_path, {WORKFLOW: f"steps:\n  - uses: a/b@{SHA}\n  - uses: c/d@main\n"})
 
     assert detectors.detect(rule.detector, repo).locations == (f"{WORKFLOW}:3",)
+
+
+@pytest.mark.parametrize(
+    ("rule_id", "source"),
+    [
+        ("NOQA-CODES", 'FAILING = "import os  # noqa\\n"\n'),
+        ("TYPE-IGNORE-CODES", 'def f() -> None:\n    """Never `x = g()  # type: ignore`."""\n'),
+        ("NAIVE-DATETIMES", "FAILING = 'now = datetime.utcnow()'  # not datetime.now()\n"),
+        ("SQL-PARAMETERS", "FAILING = 'cursor.execute(f\"SELECT {pk}\")'\n"),
+    ],
+)
+def test_a_python_rule_reads_code_not_the_text_of_its_strings(
+    tmp_path: Path, rule_id: str, source: str
+) -> None:
+    rule = next(rule for rule in RULES if rule.id == rule_id)
+    repo = make_repo(tmp_path, {"tests/test_a.py": source})
+
+    assert detectors.detect(rule.detector, repo).status == detectors.PASS
+
+
+def test_code_and_comments_beside_a_string_are_still_read(tmp_path: Path) -> None:
+    rules = {rule.id: rule for rule in RULES}
+    repo = make_repo(
+        tmp_path,
+        {
+            "a.py": 'x = "# noqa"  # noqa\nwhen = f"at {datetime.now()}"\n',
+            "b.py": 'y = 1  # noqa\n"""never closed\n',  # does not tokenize: read whole
+        },
+    )
+
+    noqa = detectors.detect(rules["NOQA-CODES"].detector, repo)
+    naive = detectors.detect(rules["NAIVE-DATETIMES"].detector, repo)
+
+    assert sorted(noqa.locations) == ["a.py:1", "b.py:1"]
+    assert naive.locations == ("a.py:2",)
+    assert detectors.problems({"kind": "regex", "files": "*.py", "pattern": "x", "within": "doc"})
 
 
 def test_the_grid_catches_its_own_mistakes(tmp_path: Path) -> None:
@@ -392,3 +545,21 @@ def test_drafts_wait_behind_their_level(
 
     assert run_kiln(monkeypatch, "grid", "--level", "assess") == 0
     assert "SEALED-DOMAIN" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    ("service", "status"),
+    [
+        ("    user: '70:70'\n", detectors.PASS),
+        ("    user: root\n", detectors.FAIL),
+        ("    user: app\n    cap_add: [CHOWN]\n", detectors.FAIL),
+    ],
+)
+def test_a_non_root_service_without_capabilities_is_hardened(
+    tmp_path: Path, service: str, status: str
+) -> None:
+    compose = "services:\n  db:\n    read_only: true\n    cap_drop: [ALL]\n" + service
+    repo = make_repo(tmp_path, {"compose.yml": compose})
+    rules = {rule.id: rule for rule in RULES}
+
+    assert detectors.detect(rules["HARDENED-CONTAINERS"].detector, repo).status == status

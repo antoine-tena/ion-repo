@@ -91,7 +91,7 @@ def test_legacy_tracker_becomes_an_english_backlog(tmp_path: Path) -> None:
     assert "### T-01 · Livrer la démo" in text
     assert "- **Status**: in progress — branch feat/demo, since 3 janvier" in text
     assert text.count("- **Opened**: 2026-01-02") == 2
-    assert "- **Effort**: S · **Owner**: Claude · **Due**: —" in text
+    assert "- **Effort**: S · **Owner**: — · **Due**: —" in text
     assert "- **Status**: blocked — waiting for antoine" in text
     assert "## ⚪ Background — long-running work, debt and ideas" in text
     assert "Après T-03." in text

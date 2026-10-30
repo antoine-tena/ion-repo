@@ -3,7 +3,7 @@
     uv run python scripts/homebrew_formula.py 0.4.5 > Formula/kiln.rb
 
 `pypi.yml` runs it once PyPI has the release and pushes the result to the tap
-(https://github.com/antoine-tena/kiln-homebrew), so `brew upgrade kiln` follows each promotion.
+(https://github.com/antoine-tena/homebrew-kiln), so `brew upgrade kiln` follows each promotion.
 The formula installs wheels only, each pinned by its hash from `uv.lock`: copier needs
 pydantic-core, and a Homebrew build from source would compile Rust on every machine. uv does the
 installing (kiln needs it anyway), into a virtualenv of Homebrew's Python.

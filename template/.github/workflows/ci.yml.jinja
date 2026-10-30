@@ -1,3 +1,4 @@
+{%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
 {# The kiln release the project comes from: its workflows are cited at that release's commit,
     its tag in a comment ([PINNED-ACTIONS]: a tag can move, a SHA cannot), and `kiln update`
     moves both forward. A promoted tag sits on its last candidate's commit: the SHA stays. A
@@ -41,18 +42,21 @@ jobs:
   backend:
     uses: antoine-tena/kiln/.github/workflows/python.yml@{{ kiln_pin }}
     with:
-      directory: backend
+      directory: {{ bd }}
 {%- elif backend == 'java' %}
   backend:
     uses: antoine-tena/kiln/.github/workflows/maven.yml@{{ kiln_pin }}
     with:
-      directory: backend
+      directory: {{ bd }}
 {%- endif %}
 {%- if frontend in ['nuxt', 'next', 'astro', 'vite-react'] %}
 
   frontend:
     uses: antoine-tena/kiln/.github/workflows/pnpm.yml@{{ kiln_pin }}
     with:
+{%- if fd != 'frontend' %}
+      directory: {{ fd }}
+{%- endif %}
       scripts: |
         lint
         typecheck
@@ -65,13 +69,19 @@ jobs:
   frontend:
     uses: antoine-tena/kiln/.github/workflows/python.yml@{{ kiln_pin }}
     with:
-      directory: frontend
+      directory: {{ fd }}
 {%- endif %}
 {%- if backend == 'django' and frontend == 'nuxt' %}
 
   api-contract:
     uses: antoine-tena/kiln/.github/workflows/api-contract.yml@{{ kiln_pin }}
     with:
+{%- if bd != 'backend' %}
+      backend: {{ bd }}
+{%- endif %}
+{%- if fd != 'frontend' %}
+      frontend: {{ fd }}
+{%- endif %}
       env: |
         DJANGO_SECRET_KEY=ci-without-secret-value
 {%- endif %}
@@ -83,8 +93,8 @@ jobs:
   secrets-scan:
     uses: antoine-tena/kiln/.github/workflows/secrets.yml@{{ kiln_pin }}
 
-{%- set uv_dirs = (['backend'] if backend not in ['none', 'java'] else []) + (['frontend'] if frontend in ['streamlit', 'dash'] else []) %}
-{%- set pnpm_dir = 'frontend' if frontend in ['nuxt', 'next', 'astro', 'vite-react'] else '' %}
+{%- set uv_dirs = ([bd] if backend not in ['none', 'java'] else []) + ([fd] if frontend in ['streamlit', 'dash'] else []) %}
+{%- set pnpm_dir = fd if frontend in ['nuxt', 'next', 'astro', 'vite-react'] else '' %}
 {%- if uv_dirs or pnpm_dir or backend == 'java' %}
 
   security:
@@ -93,7 +103,7 @@ jobs:
       uv: "{{ uv_dirs | join(' ') }}"
       pnpm: "{{ pnpm_dir }}"
 {%- if backend == 'java' %}
-      maven: backend
+      maven: {{ bd }}
 {%- endif %}
 {%- endif %}
 {%- if podman %}
@@ -101,9 +111,9 @@ jobs:
   containers:
     uses: antoine-tena/kiln/.github/workflows/infra.yml@{{ kiln_pin }}
     with:
-      containerfiles: "{{ ((['backend/Containerfile'] if backend not in ['none', 'cli', 'java'] else []) + (['frontend/Containerfile'] if frontend != 'none' else [])) | join(' ') }}"
+      containerfiles: "{{ (([(bp ~ 'Containerfile')] if backend not in ['none', 'cli', 'java'] else []) + ([(fp ~ 'Containerfile')] if frontend != 'none' else [])) | join(' ') }}"
       compose: compose.yaml
 {%- if backend in ['django', 'fastapi'] %}
-      setup: cp backend/.env.example backend/.env
+      setup: cp {{ bp }}.env.example {{ bp }}.env
 {%- endif %}
 {%- endif %}

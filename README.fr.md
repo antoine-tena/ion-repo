@@ -12,13 +12,14 @@ kiln donne à Claude Code de quoi construire des repos de qualité production, r
 
 [![PyPI](https://img.shields.io/pypi/v/kiln-cli.svg?color=c2551f)](https://pypi.org/project/kiln-cli/)
 [![CI](https://github.com/antoine-tena/kiln/actions/workflows/kiln.yml/badge.svg?branch=develop)](https://github.com/antoine-tena/kiln/actions/workflows/kiln.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/antoine-tena/kiln/badge)](https://scorecard.dev/viewer/?uri=github.com/antoine-tena/kiln)
 [![Licence : MIT](https://img.shields.io/badge/licence-MIT-4c4c4c.svg)](LICENSE)
 
 [**Référence**](docs/reference.fr.md) · [Journal des versions](CHANGELOG.md) · [Contribuer](CONTRIBUTING.md) · [English](README.md)
 
-<img src="docs/assets/kiln-new.gif" alt="kiln new my-app pose trois questions (ce que l'on construit, sa taille, la langue de l'équipe), crée une application Django et Nuxt avec son premier commit, puis kiln check passe ruff, mypy, pytest, ESLint, les types et charter" width="820">
+<img src="docs/assets/kiln-new.gif" alt="kiln new my-app pose trois questions (ce que l'on construit, sa taille, la langue de l'équipe), crée une application Django et Nuxt avec son premier commit, puis kiln check passe ruff, mypy, pytest, ESLint, les types et charter, et kiln score lui donne 100/100" width="820">
 
-<i>Une vraie exécution, jouée en 1,5× et coupée pendant les attentes : <code>kiln new</code>, puis <code>kiln check</code> dans le nouveau repo.</i>
+<i>Une vraie exécution, jouée en 1,5× et coupée pendant les attentes : <code>kiln new</code>, puis <code>kiln check</code> et <code>kiln score</code> dans le nouveau repo.</i>
 
 </div>
 
@@ -51,14 +52,30 @@ aucune IA et ne demande aucune clé d'API.
   (vérifiées et datées) et sa façon d'être détectée. `kiln score` y mesure n'importe quel repo
   en une seconde environ, sans jeton : une note sur 100, une par pilier, et les écarts à
   combler d'abord. `kiln fix` comble sur une branche ceux qu'un script peut combler, un
-  commit par règle, annulé si vos contrôles passent au rouge.
+  commit par règle, chacun prouvé, mis de côté si vos contrôles passent au rouge.
   `kiln score --roadmap` confie le reste à Claude Code en une courte liste, fichier et ligne
   compris, et `/kiln:modernize` la traite, chaque écart prouvé comblé par `kiln score --rule`.
+  [kiln-bot](docs/reference.fr.md) apporte les correctifs en pull request chaque
+  semaine, en un copier-coller.
 - Des skills pour les worktrees, les fusions, les versions et les relectures ; des hooks qui
   tiennent Claude à l'écart de `main` et `develop` ; une status line qui montre la CI, les
   tickets et la production.
 - La CI d'un repo privé tourne sur votre poste (`kiln ci`, son verdict gardé en note git) et ne
   coûte aucune minute GitHub ; celle d'un repo public tourne sur GitHub, où c'est gratuit.
+
+## Sauver un vieux repo
+
+<p align="center">
+  <img src="docs/assets/kiln-rescue.gif" alt="kiln score donne 23 sur 100 à un vieux repo Django ; suivent kiln adopt, kiln fix et kiln score --roadmap ; Claude Code traite la feuille de route avec /kiln:modernize, un commit par écart ; kiln score lui donne alors 100 sur 100" width="820">
+</p>
+<p align="center"><i>Une vraie exécution sur <a href="https://github.com/antoine-tena/kiln-demo-legacy">kiln-demo-legacy</a>, une application Django laissée telle qu'on l'écrivait vers 2020, jouée en 1,5× et coupée pendant les attentes ; les cinq minutes de Claude Code en accéléré.</i></p>
+
+`kiln score` lui donne 23/100. `kiln adopt` pose les règles, les contrôles et les consignes de
+kiln sans écraser un fichier (39), `kiln fix` comble ce qu'un script peut combler, un commit par
+règle (65), et `kiln score --roadmap` confie le reste à Claude Code. `/kiln:modernize` fige
+d'abord par des tests ce que fait le code aujourd'hui, puis comble chaque écart dans son propre
+commit, prouvé par `kiln score --rule` : 100/100. Le README du repo de démo donne les commandes
+pour la rejouer.
 
 ## Installation
 
@@ -101,7 +118,7 @@ $ claude                      # Claude Code le résorbe, avec les règles, skill
 | Un site de contenu (`site`) | — | Astro |
 | Un tableau de bord de données (`dashboard`) | polars, marimo, Plotly | Streamlit |
 | Une analyse de données (`analysis`) | polars, marimo, Plotly | — |
-| Un outil en ligne de commande (`cli`) | Python, installable | — |
+| Un outil en ligne de commande (`cli`) | Python, installable, avec son propre plugin Claude Code si on le veut | — |
 
 Next.js, Vite + React, Dash et Java 25 + Maven sont là aussi, et les tests de kiln génèrent et vérifient chaque
 combinaison. Django et Nuxt sont complets ; les autres stacks sont figées mais entretenues : les
@@ -109,7 +126,7 @@ nouvelles règles de la grille vont d'abord à Django et Nuxt.
 
 Chaque repo reçoit aussi uv, pnpm et podman (jamais pip, npm ni docker), une CI qui appelle les
 workflows réutilisables de kiln, des branches `main` et `develop` protégées, un `docs/backlog/`
-de tickets typés, et une taille (`spark`, `ember`, `flame` ou `blaze`) qui règle le cérémonial
+de tickets typés, et une taille (`tiny`, `small`, `medium` ou `large`) qui règle le cérémonial
 qu'il porte. Une application Django peut partir sur un VPS durci (Caddy, conteneurs en lecture
 seule, retour arrière automatique, sauvegardes restaurées), un front Nuxt sur Vercel.
 
@@ -185,7 +202,9 @@ ses versions comme Claude Code : en `0.x`, chaque version monte le correctif, le
 cassants viennent en tête du [journal](CHANGELOG.md) et `kiln update` les convertit ; la mineure
 marque une étape. Le semver strict commence à la 1.0. La suite est pour les repos que vous avez
 déjà : n'importe quel repo Django ou Nuxt noté face à la grille en quelques secondes, puis mis à
-niveau par script partout où un script le peut (v0.5.0).
+niveau par script partout où un script le peut (v0.5.0). Ensuite Claude Code qui comble seul ce
+qu'un script laisse, les organisations entières, chaque stack, CI et machine courantes, et la
+promesse de stabilité de la 1.0, version par version : [**ROADMAP.fr.md**](ROADMAP.fr.md).
 
 ## Contribuer
 

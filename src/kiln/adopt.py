@@ -1,7 +1,8 @@
 """`kiln adopt`: brings under kiln a repo it did not generate, to the level of `kiln new`.
 
 The template is rendered with the answers kiln infers from the repo (its stack, from the marker
-files of `backend/` and `frontend/`; its size; its owner, from the `origin` remote), and every
+files of `backend/` and `frontend/`, or of the root, where `backend_dir` or `frontend_dir`
+records it; its size; its owner, from the `origin` remote), and every
 file the repo does not have yet is laid: `CLAUDE.md`, `.claude/rules/kiln/`, the size's
 `charter.toml`, the pre-commit hooks, the CI calling kiln's workflows, `docs/backlog/`… Nothing
 the repo already has is overwritten: those files, and the stack's code folders (`backend/`,
@@ -25,7 +26,7 @@ from kiln.charter.config import LEGACY_CHARTER_FILE
 from kiln.migrations import ci_runner_for
 from kiln.new import user_defaults
 from kiln.rules import write_unverified_rules
-from kiln.shell import KilnError, capture, require_tools, run_status, step
+from kiln.shell import KilnError, capture, require_clean_tree, require_tools, run_status, step
 from kiln.stack import (
     ANSWERS_FILE,
     BACKEND_DIR,
@@ -34,6 +35,7 @@ from kiln.stack import (
     FRONTEND_MARKERS,
     NO_FRAMEWORK,
     PODMAN_MARKERS,
+    ROOT_DIR,
     VITE_REACT,
     Stack,
     detect_stack,
@@ -41,11 +43,11 @@ from kiln.stack import (
 )
 from kiln.statusline import apply_statusline_settings
 from kiln.template import template_revision, template_source
-from kiln.update import PROTECTED_BRANCHES
+from kiln.update import leave_protected_branch
 from kiln.versions import follows_candidates
 
 BACKLOG_DIR = Path("docs") / "backlog"
-DEFAULT_SIZE = "ember"
+DEFAULT_SIZE = "small"
 GITIGNORE = ".gitignore"
 COMPOSE_FILE = "compose.yaml"
 # The project type only preselects the stack: the one that fits what was found.
@@ -93,11 +95,8 @@ def check_adoptable(root: Path) -> None:
         raise KilnError(
             f"{LEGACY_CHARTER_FILE}: adopted under kiln 0.3, kiln update first moves its names"
         )
-    branch = capture(["git", "branch", "--show-current"], root)
-    if branch in (*PROTECTED_BRANCHES, "master"):
-        raise KilnError(f"on {branch}: create a branch first (e.g. chore/kiln-adopt)")
-    if capture(["git", "status", "--porcelain"], root):
-        raise KilnError("working tree not clean: commit or set aside the changes")
+    require_clean_tree(root)
+    leave_protected_branch(root, "chore/kiln-adopt")
 
 
 def adoption_answers(root: Path, size: str, stack: Stack) -> dict[str, object]:
@@ -114,6 +113,11 @@ def adoption_answers(root: Path, size: str, stack: Stack) -> dict[str, object]:
         # Not empty, so that a repo without a stack is accepted; the real list comes after.
         "kept": [ANSWERS_FILE],
     }
+    # Code at the root (a Vite app, a `manage.py` there): the template's paths follow it.
+    if stack.backend_dir != BACKEND_DIR:
+        answers["backend_dir"] = stack.backend_dir
+    if stack.frontend_dir != FRONTEND_DIR:
+        answers["frontend_dir"] = stack.frontend_dir
     if owner := _remote_owner(root):
         answers["owner"] = owner
     return answers
@@ -121,7 +125,9 @@ def adoption_answers(root: Path, size: str, stack: Stack) -> dict[str, object]:
 
 def kept_paths(root: Path, rendered: Path, stack: Stack) -> list[str]:
     """What the repo keeps as its own: the files of the template it already has, its code
-    folders, and the template's compose file when it has its own."""
+    folders (the template's `backend/` or `frontend/` too when its code lives at the root: the
+    template's sample code is never laid beside the repo's), and the template's compose file
+    when it has its own."""
     folders = [
         directory
         for directory, name in ((BACKEND_DIR, stack.backend), (FRONTEND_DIR, stack.frontend))
@@ -170,10 +176,16 @@ def _say_stack(root: Path, stack: Stack) -> None:
     ]
     if found:
         ui.note(f"stack: {' + '.join(found)}")
+    for name, directory in (
+        (stack.backend, stack.backend_dir),
+        (stack.frontend, stack.frontend_dir),
+    ):
+        if directory == ROOT_DIR:
+            ui.note(f"{name} at the root: kiln's files follow it there")
     if elsewhere:
         ui.note(
-            f"{', '.join(elsewhere)} at the root: kiln's files for it expect {BACKEND_DIR}/ or "
-            f"{FRONTEND_DIR}/; the common part only"
+            f"{', '.join(elsewhere)} at the root too: one framework only at the root, "
+            "the common part for the other"
         )
     elif not found:
         ui.note("no stack of kiln found: the common part only (CI, hooks, rules, charter)")

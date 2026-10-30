@@ -9,7 +9,7 @@ from typing import Any
 
 import pytest
 
-from kiln.config import UserConfig
+from kiln.config import UserConfig, load_config, save_config
 from kiln.machine import apply_machine, only_machine_keys
 from kiln.shell import KilnError
 from kiln.statusline import (
@@ -18,6 +18,7 @@ from kiln.statusline import (
     ensure_statusline,
     is_kiln_statusline,
 )
+from kiln.trailers import apply_trailers_choice, ensure_trailers
 
 SCRIPT = Path(__file__).parent.parent / "plugins" / "kiln" / "scripts" / "statusline.py"
 OWN = {"type": "command", "command": "~/bin/ma-ligne.sh"}
@@ -61,10 +62,57 @@ def test_machine_keys_set_in_a_repo_go_to_the_machine() -> None:
     assert not only_machine_keys([])
 
 
+def test_frozen_repos_are_kept_by_the_machine_and_can_be_cleared() -> None:
+    config = apply_machine(UserConfig(), ["frozen_repos=kiln-rehearsal, courses/old"])
+    save_config(config)
+
+    assert load_config().frozen_repos == ("kiln-rehearsal", "courses/old")
+    assert only_machine_keys(["frozen_repos=kiln-rehearsal"])
+    assert apply_machine(config, ["frozen_repos="]).frozen_repos == ()
+
+
 def test_statusline_choice_is_checked() -> None:
     assert apply_machine(UserConfig(), ["statusline=band"]).statusline == "band"
     with pytest.raises(KilnError, match="statusline"):
         apply_machine(UserConfig(), ["statusline=arc-en-ciel"])
+
+
+def test_trailers_choice_is_checked() -> None:
+    assert apply_machine(UserConfig(), ["ai_trailers=never"]).ai_trailers == "never"
+    with pytest.raises(KilnError, match="ai_trailers"):
+        apply_machine(UserConfig(), ["ai_trailers=sometimes"])
+
+
+def test_never_empties_claudes_attribution_and_disclose_gives_it_back(home: Path) -> None:
+    settings = home / ".claude" / "settings.json"
+    settings.write_text(json.dumps({"model": "opus"}))
+
+    apply_trailers_choice("never")
+    assert json.loads(settings.read_text()) == {
+        "model": "opus",
+        "attribution": {"commit": "", "pr": ""},
+    }
+    apply_trailers_choice("disclose")
+    assert json.loads(settings.read_text()) == {"model": "opus"}
+
+
+def test_disclose_keeps_an_attribution_the_user_wrote(home: Path) -> None:
+    settings = home / ".claude" / "settings.json"
+    own = {"attribution": {"commit": "Assisted-by: Claude"}}
+    settings.write_text(json.dumps(own))
+
+    apply_trailers_choice("disclose")
+    assert json.loads(settings.read_text()) == own
+
+
+def test_choose_for_me_means_disclose(home: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+    monkeypatch.setattr("sys.stdin.isatty", lambda: True)
+    monkeypatch.setattr("builtins.input", lambda prompt: "")
+
+    assert ensure_trailers(UserConfig()).ai_trailers == "disclose"
+    assert 'ai_trailers = "disclose"' in (home / ".config/kiln/config.toml").read_text()
+    assert ensure_trailers(UserConfig(ai_trailers="never")).ai_trailers == "never"
 
 
 def test_styles_named_before_kiln_0_4_are_still_accepted() -> None:
@@ -141,6 +189,21 @@ def test_no_claude_code_leaves_the_status_line_alone(
 
     assert ensure_statusline(UserConfig()) == UserConfig()
     assert not (tmp_path / ".claude").exists()
+
+
+def test_overview_finds_the_repos_two_folders_down(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    script = load_script()
+    for repo in ("annski", "family/kiln/kiln", "family/seal/seal", "_archive/old", "a/b/c/deep"):
+        (tmp_path / repo / ".git").mkdir(parents=True)
+    monkeypatch.setattr(
+        script, "git_state", lambda path: Path(path).relative_to(tmp_path).as_posix()
+    )
+
+    script.scan(str(tmp_path))
+
+    assert json.loads(capsys.readouterr().out) == ["annski", "family/kiln/kiln", "family/seal/seal"]
 
 
 def test_secret_scan_ignores_rendered_examples(tmp_path: Path) -> None:

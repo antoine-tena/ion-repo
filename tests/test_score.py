@@ -61,6 +61,73 @@ def test_gaps_lower_the_score_and_the_cheapest_come_first(tmp_path: Path) -> Non
     assert report.top_gaps()[0].rule in gaps
 
 
+def test_coding_without_an_agent_is_no_fault(tmp_path: Path) -> None:
+    # A map in the README is a map; no agent file, no agent folder: nothing to say (T-342).
+    files = {k: v for k, v in GOOD.items() if k != "AGENTS.md"}
+    report = score.score_repo(make(tmp_path, {**files, "README.md": "# a\n\n## Layout\n"}))
+
+    assert report.score == 100
+    assert "AI-CONTEXT" not in statuses(report)
+    assert report.advice == ()
+
+
+def test_a_repo_worked_with_an_agent_is_advised_its_instructions(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    files = {k: v for k, v in GOOD.items() if k != "AGENTS.md"}
+    files |= {"README.md": "# a\n\n## Layout\n", ".claude/settings.json": "{}"}
+    report = score.score_repo(make(tmp_path, files))
+
+    assert report.score == 100
+    assert [found.rule for found in report.advice] == ["AI-CONTEXT"]
+    score.show(report)
+    out = capsys.readouterr().out
+    assert "Advice (out of the score)" in out
+    stacks = next(line for line in out.splitlines() if "stacks:" in line)
+    assert "agent" not in stacks
+
+
+def test_a_text_that_is_not_utf8_is_read_not_skipped(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # Read as empty, a cp1252 source passed every pattern rule (T-186, A31).
+    root = make(tmp_path, GOOD)
+    (root / "app.py").write_bytes("# café\ntry:\n    pass\nexcept:\n    pass\n".encode("cp1252"))
+    (root / "notes.py").write_bytes("\ufeff# BOM\n".encode("utf-16"))
+    report = score.score_repo(root)
+
+    assert statuses(report)["BARE-EXCEPT"] == "fail"
+    assert report.not_utf8 == ("app.py (cp1252)", "notes.py (utf-16)")
+    score.show(report)
+    assert "not UTF-8, read all the same: app.py (cp1252)" in capsys.readouterr().out
+
+
+def test_binary_and_minified_files_are_left_to_code_rules(tmp_path: Path) -> None:
+    # A NUL byte in the first 8 KB is binary; a 1,000-character line is minified (A30).
+    root = make(tmp_path, GOOD)
+    (root / "blob.py").write_bytes(b"\0\0except:\n")
+    (root / "vendor.min.py").write_text("x = 1;" * 300 + "\ntry:\n    pass\nexcept:\n    pass\n")
+    report = score.score_repo(root)
+
+    assert statuses(report)["BARE-EXCEPT"] == "pass"
+    assert report.not_utf8 == ()
+
+
+def test_github_settings_out_of_reach_are_left_out_and_said(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = make(tmp_path, GOOD)
+    subprocess.run(["git", "-C", str(root), "remote", "add", "origin", "https://github.com/a/b"])
+    monkeypatch.setattr("kiln.grid.forge.ENABLED", True)
+    monkeypatch.setattr("kiln.grid.forge.shutil.which", lambda name: None)
+    report = score.score_repo(root)
+
+    assert report.score == 100
+    assert statuses(report)["FORGE-SECRET-SCANNING"] == "n/a"
+    score.show(report)
+    assert "GitHub settings unknown" in capsys.readouterr().out
+
+
 def test_the_same_repo_gets_the_same_score_and_nothing_is_written(tmp_path: Path) -> None:
     root = make(tmp_path, {"app.py": "try:\n    pass\nexcept:\n    pass\n"})
     before = sorted(path.name for path in root.rglob("*"))
@@ -89,6 +156,17 @@ def test_stacks_the_grid_does_not_cover_are_listed(tmp_path: Path) -> None:
     report = score.score_repo(make(tmp_path, {**GOOD, "api/composer.json": "{}"}))
 
     assert report.uncovered == ("PHP: not covered by the grid yet",)
+
+
+def test_a_language_not_scored_yet_is_said_beside_the_score(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    files = {**GOOD, "Cargo.toml": "[package]\n", "src/main.rs": "fn main() {}\n"}
+
+    score.show(score.score_repo(make(tmp_path, files)))
+
+    header = capsys.readouterr().out.strip().splitlines()[:4]
+    assert any("not scored yet: Rust" in line for line in header)
 
 
 @pytest.mark.parametrize(
@@ -126,6 +204,20 @@ def test_json_badge_and_screen(
     cli.main()
     screen = capsys.readouterr().out
     assert "kiln score" in screen and "NOQA-CODES" in screen and "app.py:1" in screen
+
+
+def test_the_score_closes_a_screen_long_with_gaps(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # An old repo lists a hundred lines of gaps: its score would scroll out of sight.
+    root = make(tmp_path, {**GOOD, "app.py": "import os  # noqa\n"})
+    report = score.score_repo(root)
+    score.show(report)
+    last = capsys.readouterr().out.rstrip().splitlines()[-1]
+    assert f"{report.score}/100" in last and "1 gap" in last
+
+    score.show(score.score_repo(make(tmp_path / "good", GOOD)))
+    assert "gap" not in capsys.readouterr().out.rstrip().splitlines()[-1]
 
 
 def test_a_missing_folder_is_said(

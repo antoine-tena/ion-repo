@@ -12,12 +12,14 @@ from typing import TextIO
 from {{ name | replace('-', '_') }}.greeting import build_greeting
 
 PROGRAM = "{{ name }}"
+# The installed package the version is read from{{ ', its name on PyPI' if pypi_name | default('') else '' }}.
+DISTRIBUTION = "{{ pypi_name | default('', true) or name }}"
 EXIT_OK = 0
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog=PROGRAM, description=__doc__)
-    parser.add_argument("--version", action="version", version=f"%(prog)s {version(PROGRAM)}")
+    parser.add_argument("--version", action="version", version=f"%(prog)s {version(DISTRIBUTION)}")
     parser.add_argument("name", nargs="?", default="", help={{ '"à qui dire bonjour"' if language_ui == 'fr' else '"who to greet"' }})
     return parser
 

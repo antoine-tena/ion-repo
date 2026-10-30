@@ -2,7 +2,8 @@
 
 They live in `~/.config/kiln/config.toml`: system, default GitHub owner and team of `kiln new`,
 code directory of `kiln status` and `kiln update --all`, release channel, Claude Code's status
-line. Keys and values of before kiln 0.4.0 (`canal=interne`) are still accepted.
+line, whether Claude's commits say Claude helped, the repos `kiln update --all` leaves alone.
+Keys and values of before kiln 0.4.0 (`canal=interne`) are still accepted.
 """
 
 from dataclasses import replace
@@ -13,8 +14,10 @@ from kiln.config import (
     BETA_CHANNEL,
     CHANNELS,
     DEFAULT_STATUSLINE,
+    DISCLOSE_TRAILERS,
     STATUSLINE_CHOICES,
     SYSTEMS,
+    TRAILER_CHOICES,
     UserConfig,
     config_path,
     load_config,
@@ -22,9 +25,19 @@ from kiln.config import (
 )
 from kiln.shell import KilnError
 from kiln.statusline import apply_statusline_choice
+from kiln.trailers import apply_trailers_choice
 from kiln.versions import beta_install_command
 
-MACHINE_KEYS = ("system", "owner", "team", "code_dir", "channel", "statusline")
+MACHINE_KEYS = (
+    "system",
+    "owner",
+    "team",
+    "code_dir",
+    "channel",
+    "statusline",
+    "ai_trailers",
+    "frozen_repos",
+)
 
 
 def show_machine(config: UserConfig) -> None:
@@ -39,6 +52,13 @@ def show_machine(config: UserConfig) -> None:
             "beta: kiln's develop, live)"
         ),
         "statusline": f"{statusline} ({' / '.join(STATUSLINE_CHOICES)})",
+        "ai_trailers": (
+            f"{config.ai_trailers or DISCLOSE_TRAILERS} (disclose: Claude's commits and pull "
+            "requests say Claude helped; never: they don't)"
+        ),
+        "frozen_repos": (
+            f"{', '.join(config.frozen_repos) or '(none)'} (left alone by kiln update --all)"
+        ),
     }
     width = max(len(key) for key in MACHINE_KEYS)
     print(ui.paint(f"Machine settings ({config_path()})", bold=True))
@@ -76,8 +96,9 @@ def apply_machine(config: UserConfig, assignments: list[str]) -> UserConfig:
         elif key == "owner":
             updated = replace(updated, owner=value or None)
         elif key == "team":
-            team = tuple(login.strip() for login in value.strip("[]").split(",") if login.strip())
-            updated = replace(updated, team=team)
+            updated = replace(updated, team=_listed(value))
+        elif key == "frozen_repos":
+            updated = replace(updated, frozen_repos=_listed(value))
         elif key == "channel":
             if value not in CHANNELS:
                 raise KilnError(f"channel: {', '.join(CHANNELS)}")
@@ -86,9 +107,18 @@ def apply_machine(config: UserConfig, assignments: list[str]) -> UserConfig:
             if value not in STATUSLINE_CHOICES:
                 raise KilnError(f"statusline: {', '.join(STATUSLINE_CHOICES)}")
             updated = replace(updated, statusline=value)
+        elif key == "ai_trailers":
+            if value not in TRAILER_CHOICES:
+                raise KilnError(f"ai_trailers: {', '.join(TRAILER_CHOICES)}")
+            updated = replace(updated, ai_trailers=value)
         else:
             updated = replace(updated, code_dir=Path(value).expanduser())
     return updated
+
+
+def _listed(value: str) -> tuple[str, ...]:
+    """`alice,bob` or `[alice, bob]` as a list; empty clears it."""
+    return tuple(item.strip() for item in value.strip("[]").split(",") if item.strip())
 
 
 def run_machine(assignments: list[str]) -> None:
@@ -99,6 +129,8 @@ def run_machine(assignments: list[str]) -> None:
         save_config(config)
         if config.statusline and config.statusline != previous.statusline:
             ui.note(apply_statusline_choice(config.statusline))
+        if config.ai_trailers and config.ai_trailers != previous.ai_trailers:
+            ui.note(apply_trailers_choice(config.ai_trailers))
         if config.channel == BETA_CHANNEL != previous.channel:
             command = beta_install_command(config.code_dir)
             ui.note(f"Beta channel: make the tool kiln's develop now: {command}")

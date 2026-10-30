@@ -29,6 +29,10 @@ STATUSLINE_STYLES = ("plain", "band", "classic", "classic-band")
 NO_STATUSLINE, CUSTOM_STATUSLINE = "none", "custom"
 STATUSLINE_CHOICES = (*STATUSLINE_STYLES, NO_STATUSLINE, CUSTOM_STATUSLINE)
 DEFAULT_STATUSLINE = "plain"
+# Whether Claude's commits and pull requests say Claude helped (`Co-Authored-By: Claude`):
+# disclosed by default, as the AI policies of several large open-source projects ask.
+DISCLOSE_TRAILERS, NO_TRAILERS = "disclose", "never"
+TRAILER_CHOICES = (DISCLOSE_TRAILERS, NO_TRAILERS)
 SYSTEM_LABELS = {"linux": "Linux", "wsl": "Windows (WSL)", "macos": "macOS"}
 
 
@@ -40,6 +44,10 @@ class UserConfig:
     code_dir: Path = DEFAULT_CODE_DIR
     channel: str = PUBLIC_CHANNEL
     statusline: str | None = None  # None: not chosen yet (kiln install sets it)
+    ai_trailers: str | None = None  # None: not chosen yet (kiln install asks)
+    # Repos of the code folder `kiln update --all` leaves as they are (a witness repo kept at an
+    # old release on purpose), by their path in it.
+    frozen_repos: tuple[str, ...] = ()
 
 
 def config_path() -> Path:
@@ -54,6 +62,7 @@ def load_config() -> UserConfig:
     values = machine_settings(tomllib.loads(path.read_text()))
     team = values.get("team", [])
     statusline = values.get("statusline")
+    frozen = values.get("frozen_repos", [])
     return UserConfig(
         system=values.get("system"),
         owner=values.get("owner"),
@@ -61,6 +70,8 @@ def load_config() -> UserConfig:
         code_dir=Path(values.get("code_dir", str(DEFAULT_CODE_DIR))).expanduser(),
         channel=renames.machine_value("channel", str(values.get("channel", PUBLIC_CHANNEL))),
         statusline=renames.machine_value("statusline", str(statusline)) if statusline else None,
+        ai_trailers=values.get("ai_trailers"),
+        frozen_repos=tuple(str(repo) for repo in frozen) if isinstance(frozen, list) else (),
     )
 
 
@@ -84,6 +95,10 @@ def save_config(config: UserConfig) -> None:
         lines.append(f'channel = "{config.channel}"')
     if config.statusline:
         lines.append(f'statusline = "{config.statusline}"')
+    if config.ai_trailers:
+        lines.append(f'ai_trailers = "{config.ai_trailers}"')
+    if config.frozen_repos:
+        lines.append("frozen_repos = [" + ", ".join(f'"{r}"' for r in config.frozen_repos) + "]")
     path = config_path()
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n")

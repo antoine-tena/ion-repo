@@ -45,6 +45,17 @@ def commit_of(repo: str, ref: str) -> str:
     return refs[ref]
 
 
+def exact_version(repo: str, sha: str) -> str | None:
+    """The most precise version tag on commit `sha`: `v7.0.1` rather than the `v7` that moves
+    with it, the comment Dependabot keeps up to date beside a pinned SHA."""
+    versions = [
+        (name.count("."), tuple(int(part or 0) for part in found.groups()), name)
+        for name, commit in remote_refs(repo).items()
+        if commit == sha and (found := SEMVER.match(name))
+    ]
+    return max(versions)[2] if versions else None
+
+
 def latest_release(repo: str, major: str | None = None) -> str:
     """The highest `vX.Y.Z` tag, within `major` when given (`v4`)."""
     versions = []

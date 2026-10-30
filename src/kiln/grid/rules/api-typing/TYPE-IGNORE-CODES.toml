@@ -16,6 +16,7 @@ since = "0.4.2"
 [detector]
 kind = "regex"
 files = ["**/*.py"]
+within = "comments"
 pattern = '''#\s*type:\s*ignore(?!\[)'''
 
 [[sources]]

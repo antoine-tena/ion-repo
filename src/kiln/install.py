@@ -12,16 +12,18 @@ from kiln import ui
 from kiln.adopted_names import HOOKS_FILE
 from kiln.config import UserConfig, ensure_system, load_config
 from kiln.dev.backing import start_backing_services
+from kiln.dev.processes import LOCK_MANAGERS, NODE_INSTALLS, package_manager
 from kiln.shell import KilnError, require_tools, run, step
 from kiln.stack import (
-    BACKEND_DIR,
     MAVEN_WRAPPER,
     PNPM_LENIENT_BUILDS,
+    ROOT_DIR,
     Stack,
     answers_if_any,
     load_stack,
 )
 from kiln.statusline import apply_statusline_settings, ensure_statusline
+from kiln.trailers import ensure_trailers
 from kiln.versions import PYPI_NAME
 
 CLAUDE_DIR = Path.home() / ".claude"
@@ -82,20 +84,21 @@ def install_project(root: Path) -> None:
         run([MAVEN_WRAPPER, "-B", "-q", "-DskipTests", "package"], root / stack.maven_dir)
     if stack.has_api:
         step("backend: .env")
-        ensure_env_file(root / BACKEND_DIR)
+        ensure_env_file(root / stack.backend_dir)
     if stack.backend == "django":
         start_backing_services(root)
         step("backend: migrations")
-        run(["uv", "run", "python", "manage.py", "migrate"], root / BACKEND_DIR)
+        run(["uv", "run", "python", "manage.py", "migrate"], root / stack.backend_dir)
     if stack.pnpm_dir is not None:
-        step(f"{stack.pnpm_dir}: pnpm dependencies")
-        run(pnpm_install_command(root / stack.pnpm_dir), root / stack.pnpm_dir)
+        command = pnpm_install_command(root / stack.pnpm_dir)
+        step(f"{stack.pnpm_dir}: {command[0]} dependencies")
+        run(command, root / stack.pnpm_dir)
     step("git guards (pre-commit) and status line")
     install_git_hooks(root)
     apply_statusline_settings(root)
-    ensure_statusline(config)
+    ensure_trailers(ensure_statusline(config))
     command_name = answers_if_any(root).get("name", "<command>")
-    ui.success(f"Ready. Run the project: {_launch_hint(stack, command_name)}")
+    ui.success(f"Ready. {launch_hint(stack, command_name)}")
 
 
 def install_git_hooks(root: Path) -> None:
@@ -124,7 +127,7 @@ def install_machine() -> None:
         if not kiln_plugin_enabled():
             step(f"{BASE_PLUGIN} plugin, for every Claude session")
             run(["claude", "plugin", "install", BASE_PLUGIN, "--scope", "user"], Path.cwd())
-    ensure_statusline(config)
+    ensure_trailers(ensure_statusline(config))
     ui.success("kiln is set up on this machine. Check it: kiln doctor")
 
 
@@ -143,12 +146,20 @@ def _json_file(path: Path) -> dict[str, object]:
     return content if isinstance(content, dict) else {}
 
 
-def _launch_hint(stack: Stack, command_name: object) -> str:
+def launch_hint(stack: Stack, command_name: object) -> str:
+    """What to run first: the dev servers, the build, the tool, or only the checks of a repo
+    adopted without a stack of kiln."""
     if stack.dev_commands():
-        return "kiln dev"
+        return "Run the project: kiln dev"
     if stack.maven_dir is not None:
-        return f"cd {stack.maven_dir} && {MAVEN_WRAPPER} verify"
-    return f"cd backend && uv run {command_name} --help"
+        return f"Run the project: {_in(stack.maven_dir, f'{MAVEN_WRAPPER} verify')}"
+    if stack.backend == "cli":
+        return f"Run the project: {_in(stack.backend_dir, f'uv run {command_name} --help')}"
+    return "Check the project: kiln check"
+
+
+def _in(directory: str, command: str) -> str:
+    return command if directory == ROOT_DIR else f"cd {directory} && {command}"
 
 
 def _require_stack_tools(stack: Stack, config: UserConfig) -> None:
@@ -206,10 +217,14 @@ def moved_from(venv: Path) -> Path | None:
 
 
 def pnpm_install_command(directory: Path) -> list[str]:
-    """Frozen to the lockfile when there is one; without it (a repo that never committed one),
-    `--frozen-lockfile` fails with ERR_PNPM_NO_LOCKFILE: a plain install creates it."""
+    """Frozen to the lockfile when there is one, by the package manager that wrote it: an
+    adopted npm repo keeps its package-lock.json, where pnpm would add a pnpm-lock.yaml and
+    leave the tree dirty. Without any lock (a repo that never committed one), `--frozen-lockfile`
+    fails with ERR_PNPM_NO_LOCKFILE: a plain pnpm install creates it."""
     if (directory / PNPM_LOCKFILE).is_file():
         return ["pnpm", "install", "--frozen-lockfile", PNPM_LENIENT_BUILDS]
+    if any((directory / lock).is_file() for lock, _ in LOCK_MANAGERS):
+        return list(NODE_INSTALLS[package_manager(directory)][0])
     return ["pnpm", "install", PNPM_LENIENT_BUILDS]
 
 

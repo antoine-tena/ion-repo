@@ -21,8 +21,8 @@ A ticket: a `### T-NN · Title` heading, then the lines `- **Type**:`, `- **Stat
 then the details (`- [ ]` boxes). Types: `bug`, `improvement`, `idea`, `task`. Statuses:
 `todo`, `in progress — branch <name>, since YYYY-MM-DD`, `blocked — waiting for <who or what>`,
 `to verify — <where>`. **Owner**: `—` (free), `@login` (reserved for that GitHub account), a
-first name (reserved for that person too, login not written yet), `Claude`, or
-`contributor — #NN`. The user's account is `gh api user --jq .login` (otherwise
+first name (reserved for that person too, login not written yet), or `contributor — #NN`; never
+`Claude`: an agent is not an owner. The user's account is `gh api user --jq .login` (otherwise
 `git config user.name`); a ticket owned by **anyone else** is their work: never plan, start or
 code it, even partly, and say who to ask. **Only the user's own login is ever written**: when it
 appears in no **Owner** but first names do, ask once which first name is theirs and replace that
@@ -79,12 +79,15 @@ groupings freely each time, as long as the result follows these rules.
 - **No useless release.** A release that only holds a stray XS ticket or a vague theme is
   merged into a neighbour; a release too big to ship within the cadence the repo's
   `CLAUDE.md` sets (about a week when it says nothing) is split along a real seam. Urgent fixes (a 🔴 bug) may stand alone.
+  Work whose tickets only hold what is known today (one ecosystem after another, rules still to
+  write) is sized from what comparable work took, said in the release line, never from its boxes.
 - **Order**: what blocks first, then 🔴 then 🟠 then the rest; within that, the release that
   makes the north star of the header closest comes first.
 - **Numbers are planned, not promised.** In 0.x each release bumps the patch; a group that
   forms a milestone may be proposed as a minor bump, saying why in the release line: the user
-  decides (until then keep the patch number). Inserting or merging releases renumbers the
-  later ones. A release whose candidate is tagged is frozen: no ticket enters or leaves it.
+  decides (until then keep the patch number). The minor goes to the release that reaches the
+  milestone, never to the one that starts its work: what leads to a v0.8.0 milestone is v0.7.x.
+  Inserting or merging releases renumbers the later ones. A release whose candidate is tagged is frozen: no ticket enters or leaves it.
 - **Breaking changes** (CLI, `copier.yml` questions, generated tree, workflow inputs, skill and
   hook names, charter rule IDs) are flagged `⚠ breaking` on the release: they open its release
   note and need their conversion in `kiln update`.
@@ -98,7 +101,8 @@ Format of the section, one block per release, in order:
 
 Tickets stay in their priority sections; the release section only quotes ID, short title and
 effort. After writing, show the user the releases (name, tickets, why) and what moved since
-the last plan; they reshuffle by asking.
+the last plan; they reshuffle by asking. A repo that shows this section as a public roadmap
+(`scripts/roadmap.py`, as kiln does) has it redrawn after every change to the section.
 
 An ID is never reused. Changes are committed on the work branch, never on the integration
 branch. Never copy a ticket into `rejected.md` without an explicit decision from the user.

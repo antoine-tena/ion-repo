@@ -9,7 +9,8 @@ scripts of its `package.json` that keep running while one edits: `dev`, `dev:*`,
 `serve`, `watch`, `watch:*`, else `start`; through the package manager its lock names (npm
 without one). A `Procfile.dev` line of the same name replaces such a script. Its dependencies are
 installed first when `node_modules/` is missing or older than the lock (a fresh clone): the
-script would otherwise stop on `vite: not found`.
+script would otherwise stop on `vite: not found`. The stack's front (`pnpm dev`) also goes
+through the manager of its lock: an adopted Nuxt app kept on npm runs `npm run dev`.
 
 Each process gets the `.env` of its folder, then, when a process outside the front runs too, its
 `.env.dev` (what the full local stack changes, such as the API's address or a production key to
@@ -27,12 +28,19 @@ import subprocess
 from pathlib import Path
 from typing import IO
 
-from kiln.stack import BACKEND_DIR, FRONTEND_DIR, PNPM_LENIENT_BUILDS, Command, load_stack
+from kiln.stack import (
+    BACKEND_DIR,
+    FRONTEND_DIR,
+    PNPM_LENIENT_BUILDS,
+    ROOT_DIR,
+    Command,
+    load_stack,
+)
 
 ENV_FILE = ".env"
 DEV_ENV_FILE = ".env.dev"
 PROCFILE = "Procfile.dev"
-PROCFILE_DIRS = (BACKEND_DIR, FRONTEND_DIR, ".")
+PROCFILE_DIRS = (BACKEND_DIR, FRONTEND_DIR, ROOT_DIR)
 _PROCFILE_LINE = re.compile(r"^([A-Za-z0-9_-]+):\s*(\S.*)$")
 PACKAGE_FILE = "package.json"
 DEV_SCRIPTS = ("dev", "server", "serve", "watch")
@@ -59,21 +67,38 @@ NPM_WITHOUT_LOCK = ("npm", "install")
 
 def dev_processes(root: Path) -> list[Command]:
     """The stack's servers, then the processes of the `Procfile.dev`s; a same name replaces."""
-    by_label = {command.label: command for command in load_stack(root).dev_commands()}
+    stack = load_stack(root)
+    by_label = {
+        command.label: through_lock_manager(root, command) for command in stack.dev_commands()
+    }
     served = {command.directory for command in by_label.values()}
-    for directory in PROCFILE_DIRS:
+    directories = list(dict.fromkeys((stack.backend_dir, stack.frontend_dir, *PROCFILE_DIRS)))
+    for directory in directories:
         if directory not in served:
             for command in package_script_commands(root, directory):
                 by_label.setdefault(command.label, command)
-    for directory in PROCFILE_DIRS:
+    for directory in directories:
         for command in procfile_commands(root, directory):
             by_label[command.label] = command
     return list(by_label.values())
 
 
-def runs_beyond_front(commands: list[Command]) -> bool:
+def through_lock_manager(root: Path, command: Command) -> Command:
+    """A stack server run by pnpm, in a folder whose lock another package manager wrote (an
+    adopted npm repo), runs through that one: pnpm 11+ would first install over that lock, and
+    stop on a dependency's build script (ERR_PNPM_IGNORED_BUILDS)."""
+    folder = root / command.directory
+    if command.argv[0] != "pnpm" or not any((folder / lock).is_file() for lock, _ in LOCK_MANAGERS):
+        return command
+    manager = package_manager(folder)
+    if manager == "pnpm":
+        return command
+    return Command(command.label, command.directory, (manager, "run", *command.argv[1:]))
+
+
+def runs_beyond_front(commands: list[Command], front_dir: str = FRONTEND_DIR) -> bool:
     """Whether a process outside the front runs: the local stack, databases and `.env.dev`."""
-    return any(command.directory != FRONTEND_DIR for command in commands)
+    return any(command.directory != front_dir for command in commands)
 
 
 def procfile_commands(root: Path, directory: str) -> list[Command]:
@@ -90,15 +115,7 @@ def procfile_commands(root: Path, directory: str) -> list[Command]:
 
 def package_script_commands(root: Path, directory: str) -> list[Command]:
     """The scripts of a folder's `package.json` that keep running, run by its package manager."""
-    path = root / directory / PACKAGE_FILE
-    if not path.is_file():
-        return []
-    try:
-        scripts = json.loads(path.read_text(encoding="utf-8")).get("scripts")
-    except json.JSONDecodeError, AttributeError:
-        return []
-    if not isinstance(scripts, dict):
-        return []
+    scripts = package_scripts(root / directory)
     names = [
         name for name in scripts if name in DEV_SCRIPTS or name.startswith(DEV_SCRIPT_PREFIXES)
     ] or [name for name in scripts if name == FALLBACK_SCRIPT]
@@ -108,6 +125,15 @@ def package_script_commands(root: Path, directory: str) -> list[Command]:
         Command(prefix + name.replace(":", "-"), directory, (manager, "run", name))
         for name in names
     ]
+
+
+def package_scripts(folder: Path) -> dict[str, object]:
+    """The `scripts` of a folder's `package.json`; none when it is missing or unreadable."""
+    try:
+        scripts = json.loads((folder / PACKAGE_FILE).read_text(encoding="utf-8")).get("scripts")
+    except OSError, json.JSONDecodeError, AttributeError:
+        return {}
+    return scripts if isinstance(scripts, dict) else {}
 
 
 def node_installs(root: Path, commands: list[Command]) -> list[Command]:

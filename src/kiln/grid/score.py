@@ -19,7 +19,7 @@ from pathlib import Path, PurePosixPath
 from kiln import ui
 from kiln.charter.waivers import Waivers
 from kiln.charter.waivers import load as load_waivers
-from kiln.grid import detectors
+from kiln.grid import checks, detectors, forge
 from kiln.grid.facts import Repo, read_repo
 from kiln.grid.model import PILLARS, Rule, load_rules
 
@@ -29,7 +29,11 @@ PASSED, FAILED, WAIVED, LEFT_OUT = "pass", "fail", "waived", "n/a"
 BY_SCRIPT, BY_JUDGMENT = "kiln fix", "by judgment (Claude Code)"
 TOP_GAPS = 3
 SHOWN_LOCATIONS = 3
-# Manifests of stacks the grid does not cover yet: listed at the end, never counted (T-38).
+NOT_COVERED = ": not covered by the grid yet"
+# Facts that say how the repo is worked rather than what it is made of.
+NOT_STACKS = frozenset({"agent", "github"})
+# Manifests of stacks the grid does not cover yet: named beside the stacks it scores, listed at
+# the end, never counted (T-38).
 UNCOVERED = {
     "composer.json": "PHP",
     "go.mod": "Go",
@@ -124,6 +128,9 @@ class Report:
     findings: tuple[Finding, ...]
     uncovered: tuple[str, ...] = ()
     misfired: tuple[str, ...] = ()  # rules waived again and again: they may not fit
+    advice: tuple[Finding, ...] = ()  # gaps of unscored rules, shown apart
+    not_utf8: tuple[str, ...] = ()  # texts read in another encoding: `path (cp1252)`
+    reverted: tuple[str, ...] = ()  # rules whose converter `kiln fix` had to undo
     schema: int = SCHEMA
     checked: str = field(default_factory=lambda: datetime.date.today().isoformat())
 
@@ -140,21 +147,54 @@ class Report:
         )[:TOP_GAPS]
 
     def roadmap(self) -> list[Finding]:
-        """What no converter closes, for Claude: every rule weighs the same in the score, so
-        the sure gaps first, then the smallest (fewest places to open), to confirm last."""
+        """What no converter closes, for Claude (a converter `kiln fix` had to undo included):
+        every rule weighs the same in the score, so the sure gaps first, then the smallest
+        (fewest places to open), to confirm last."""
         return sorted(
-            (found for found in self.gaps if not found.by_script),
+            (found for found in self.gaps if not found.by_script or found.rule in self.reverted),
             key=lambda found: (found.confirm, len(found.locations) or 1, found.rule),
         )
+
+
+def compared(before: Report, after: Report) -> list[str]:
+    """What changed from `before` to `after`, in Markdown a pull request comment shows as is."""
+    old = {found.rule: found.status for found in before.findings}
+    new = {found.rule: found for found in after.findings}
+    closed = sorted(
+        r for r, found in new.items() if found.status != FAILED and old.get(r) == FAILED
+    )
+    opened = [
+        found for r, found in sorted(new.items()) if found.status == FAILED and old.get(r) != FAILED
+    ]
+    delta = (
+        f" ({after.score - before.score:+d})"
+        if after.score is not None and before.score is not None
+        else ""
+    )
+    lines = [f"**kiln score: {before.score} → {after.score}{delta}**"]
+    if closed:
+        lines += ["", "Closed: " + ", ".join(f"`{rule}`" for rule in closed)]
+    if opened:
+        lines += ["", "Opened:", *(f"- `{found.rule}`: {found.title}" for found in opened)]
+    if not closed and not opened:
+        lines += ["", "No rule changed."]
+    return lines
 
 
 def score_repo(root: Path, rules: list[Rule] | None = None) -> Report:
     repo = read_repo(root)
     waivers = load_waivers(root)
+    rules = rules if rules is not None else load_rules()
     findings = [
         _finding(rule, repo, waivers)
-        for rule in (rules if rules is not None else load_rules())
+        for rule in rules
         if rule.is_scored and set(rule.applies) <= repo.facts
+    ]
+    advice = [
+        found
+        for rule in rules
+        if rule.advice and set(rule.applies) <= repo.facts
+        if (found := _finding(rule, repo, waivers)).status == FAILED
     ]
     counted = [found for found in findings if found.status in (PASSED, FAILED)]
     return Report(
@@ -166,8 +206,11 @@ def score_repo(root: Path, rules: list[Rule] | None = None) -> Report:
         },
         facts=tuple(sorted(repo.facts)),
         findings=tuple(findings),
-        uncovered=tuple(_uncovered(repo, rules if rules is not None else load_rules())),
+        uncovered=tuple(_uncovered(repo, rules)),
         misfired=tuple(_misfired(waivers)),
+        advice=tuple(advice),
+        not_utf8=tuple(f"{name} ({encoding})" for name, encoding in sorted(repo.encodings.items())),
+        reverted=tuple(checks.reverted(root)),
     )
 
 
@@ -246,7 +289,13 @@ def _uncovered(repo: Repo, rules: list[Rule]) -> list[str]:
         for package, what in NOTABLE_PACKAGES.items()
         if package in repo.dependencies and package not in named
     }
-    return sorted(f"{stack}: not covered by the grid yet" for stack in found)
+    return sorted(f"{stack}{NOT_COVERED}" for stack in found)
+
+
+def _languages(uncovered: tuple[str, ...]) -> list[str]:
+    """The languages among what the grid does not know, said beside the stacks it scores."""
+    known = {*UNCOVERED.values(), *UNCOVERED_SOURCES.values()}
+    return [stack for line in uncovered if (stack := line.removesuffix(NOT_COVERED)) in known]
 
 
 def _misfired(waivers: Waivers) -> list[str]:
@@ -304,18 +353,36 @@ def show(report: Report, *, every: bool = False) -> None:
     print(f"\n  {title}  {ui.paint(score, ui.GLOW, bold=True)}")
     pillars = [f"{pillar} {value}" for pillar, value in report.pillars.items() if value is not None]
     print(ui.paint(f"  {'  ·  '.join(pillars)}", ui.STONE_LIGHT))
-    print(ui.paint(f"  stacks: {', '.join(report.facts) or 'none found'}", ui.STONE))
-    if report.uncovered and not report.facts:
+    found_stacks = [fact for fact in report.facts if fact not in NOT_STACKS]
+    stacks = f"  stacks: {', '.join(found_stacks) or 'none found'}"
+    if languages := _languages(report.uncovered):
+        # A visitor's Go or Rust repo: the number holds none of its language's rules yet.
+        stacks += f"  ·  not scored yet: {', '.join(languages)}"
+    print(ui.paint(stacks, ui.STONE))
+    if report.uncovered and not found_stacks:
         only = "  universal rules only: the grid does not know this repo's stack"
         print(ui.paint(only, ui.STONE))
     counted = [found for found in report.findings if found.status in (PASSED, FAILED)]
     passed = sum(found.status == PASSED for found in counted)
     print(ui.paint(f"  {passed} of {len(counted)} rules met", ui.STONE))
+    if any(found.detail == forge.UNKNOWN for found in report.findings):
+        print(ui.paint(f"  {forge.UNKNOWN} (gh auth login)", ui.STONE))
+    if report.not_utf8:
+        shown = report.not_utf8 if every else report.not_utf8[:SHOWN_LOCATIONS]
+        more = (
+            f" and {len(report.not_utf8) - len(shown)} more"
+            if len(shown) < len(report.not_utf8)
+            else ""
+        )
+        print(ui.paint(f"  not UTF-8, read all the same: {', '.join(shown)}{more}", ui.STONE))
     if top := report.top_gaps():
         print(f"\n  {ui.paint('Close first', ui.FIRE, bold=True)}")
         for found in top:
             print(f"    {ui.paint(found.rule, ui.EMBER, bold=True)}  {found.title}")
     _section("Gaps", report.gaps, ui.EMBER, locations=True, every=every)
+    _section(
+        "Advice (out of the score)", list(report.advice), ui.STONE, locations=True, every=every
+    )
     waived = [found for found in report.findings if found.status == WAIVED]
     _section("Waived (accepted deviations)", waived, ui.STONE, locations=False, every=every)
     if every:
@@ -330,6 +397,10 @@ def show(report: Report, *, every: bool = False) -> None:
     hint = "" if every else "--all for every rule and location · "
     print(ui.paint(f"\n  {hint}kiln grid <ID> for a rule in full", ui.STONE))
     print(ui.paint('  A deviation this repo accepts: kiln waive <ID> --reason "…"', ui.STONE))
+    if report.gaps:
+        # An old repo's gaps run to a hundred lines: the score, said again where the eye ends.
+        gaps = f"{len(report.gaps)} gap{'s' if len(report.gaps) > 1 else ''}"
+        print(f"\n  {title}  {ui.paint(score, ui.GLOW, bold=True)}  {ui.paint(gaps, ui.STONE)}")
 
 
 def _section(

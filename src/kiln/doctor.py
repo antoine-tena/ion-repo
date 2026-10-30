@@ -23,7 +23,7 @@ from kiln.install import (
     pnpm_behind,
 )
 from kiln.shell import INSTALL_HINTS, KilnError
-from kiln.stack import ANSWERS_FILE, BACKEND_DIR, Stack, load_stack, read_answers
+from kiln.stack import ANSWERS_FILE, Stack, load_stack, read_answers
 from kiln.versions import installed_version, latest_release, release_version, upgrade_command
 
 PROBE_TIMEOUT = 5
@@ -206,7 +206,7 @@ def repo_findings(root: Path, stack: Stack | None) -> list[Finding]:
     if stack.pnpm_dir is not None:
         findings.append(_pnpm(root / stack.pnpm_dir, f"{stack.pnpm_dir} (pnpm)"))
     if stack.has_api:
-        env_file = root / BACKEND_DIR / ".env"
+        env_file = root / stack.backend_dir / ".env"
         findings.append(
             Finding(Level.OK, "backend/.env", "present")
             if env_file.exists()
@@ -217,6 +217,8 @@ def repo_findings(root: Path, stack: Stack | None) -> list[Finding]:
 
 def _template(root: Path) -> Finding:
     if not (root / ANSWERS_FILE).exists():
+        if _is_kiln_source(root):
+            return Finding(Level.OK, "template", "kiln's own repo (the template's source)")
         if charter_path(root) is not None:
             return Finding(Level.OK, "template", "adopted repo (charter without template)")
         return Finding(Level.WARN, "template", "not a kiln repo", "kiln new, or kiln adopt")
@@ -236,11 +238,25 @@ def _template(root: Path) -> Finding:
     return Finding(Level.OK, "template", f"{commit} (up to date)")
 
 
+def _is_kiln_source(root: Path) -> bool:
+    """kiln's checkout renders the template rather than being rendered by it."""
+    pyproject = root / "pyproject.toml"
+    return (
+        (root / "copier.yml").is_file()
+        and (root / "template").is_dir()
+        and pyproject.is_file()
+        and 'name = "kiln-cli"' in pyproject.read_text(encoding="utf-8")
+    )
+
+
 def _hook(root: Path) -> Finding:
     hooks_dir = _completed(["git", "rev-parse", "--git-path", "hooks"], cwd=root)
     path = root / (hooks_dir.stdout.strip() if hooks_dir else ".git/hooks") / "pre-commit"
     if path.exists():
         return Finding(Level.OK, "pre-commit", "hook installed")
+    if not (root / ".pre-commit-config.yaml").exists():
+        # kiln install has nothing to install: the config comes with the template.
+        return Finding(Level.WARN, "pre-commit", "no .pre-commit-config.yaml", "kiln adopt")
     return Finding(Level.WARN, "pre-commit", "hook missing", "kiln install")
 
 

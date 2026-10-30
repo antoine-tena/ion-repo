@@ -1,12 +1,13 @@
+{%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
 ---
 paths:
-  - "frontend/**"
+  - "{{ fp }}**"
 ---
 <!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten. -->
 # Frontend: Streamlit
 
-`frontend/app.py`: entry point; `frontend/dashboard/`: pages, layout and constants;
-`frontend/tests/`: tests. Run: `kiln dev` (or `uv run streamlit run app.py`); check: `kiln check`.
+`{{ fp }}app.py`: entry point; `{{ fp }}dashboard/`: pages, layout and constants;
+`{{ fp }}tests/`: tests. Run: `kiln dev` (or `uv run streamlit run app.py`); check: `kiln check`.
 
 - **[PAGES]** `app.py` only calls a page of `dashboard/`; one page per module
   (`dashboard/<page>.py`) exposing a `render_<page>()` function. Several pages go through

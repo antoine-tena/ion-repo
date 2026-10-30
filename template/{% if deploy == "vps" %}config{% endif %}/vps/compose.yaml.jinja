@@ -11,22 +11,17 @@ services:
     container_name: {{ name }}-db
     image: docker.io/library/postgres:16-alpine
     restart: always
-    # [HARDENED-CONTAINERS]: read-only, no privilege escalation; the entrypoint keeps only what
-    # it needs to hand the data folder to the postgres user, then drop to it.
+    # [HARDENED-CONTAINERS]: read-only, no capability, run as the image's postgres user (70) on a
+    # data folder the switch hands to it: no root step, nothing to escalate to. No
+    # no-new-privileges: on Ubuntu 26.04, AppArmor then stacks crun's profile on every process
+    # of a rootful container and refuses the signals between them (pg_ctl, gunicorn's workers).
+    user: "70:70"
     read_only: true
     tmpfs:
       - /tmp
-      - /var/run/postgresql
+      - /var/run/postgresql:mode=1777
     cap_drop:
       - ALL
-    cap_add:
-      - CHOWN
-      - DAC_OVERRIDE
-      - FOWNER
-      - SETGID
-      - SETUID
-    security_opt:
-      - no-new-privileges:true
     environment:
       POSTGRES_USER: {{ base }}
       POSTGRES_DB: {{ base }}
@@ -35,7 +30,7 @@ services:
       - ./postgres:/var/lib/postgresql/data:Z
     # Database never exposed: only the backend and the server's scripts reach it.
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:{{ vps_db_port }}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U {{ base }}"]
       interval: 10s
@@ -50,23 +45,25 @@ services:
     env_file:
       - backend/.env
     environment:
-      DATABASE_URL: postgres://{{ base }}:${POSTGRES_PASSWORD}@127.0.0.1:5432/{{ base }}
-    # Host network: the database on 127.0.0.1, the API reached by Caddy on 127.0.0.1:8000.
+      DATABASE_URL: postgres://{{ base }}:${POSTGRES_PASSWORD}@127.0.0.1:{{ vps_db_port }}/{{ base }}
+    # Host network: the database on 127.0.0.1, the API reached by Caddy on 127.0.0.1:{{ vps_port }}, the
+    # port given by `vps_port` (the image's own command listens on 8000, on every interface).
     network_mode: host
-    # [HARDENED-CONTAINERS]: read-only file system, no capability, no privilege escalation.
+    command: ["gunicorn", "config.wsgi", "--bind", "127.0.0.1:{{ vps_port }}", "--workers", "3", "--access-logfile", "-"]
+    # [HARDENED-CONTAINERS]: read-only file system, no capability, the image's non-root user
+    # (no no-new-privileges: see the database above).
+    user: app
     read_only: true
     tmpfs:
       - /tmp
     cap_drop:
       - ALL
-    security_opt:
-      - no-new-privileges:true
     depends_on:
       db:
         condition: service_healthy
     healthcheck:
       # Under the public name: Django refuses a host missing from DJANGO_ALLOWED_HOSTS.
-      test: ["CMD", "python", "-c", "import urllib.request as r; r.urlopen(r.Request('http://127.0.0.1:8000/api/ready', headers={'Host': '{{ api_domain }}', 'X-Forwarded-Proto': 'https'}), timeout=5)"]
+      test: ["CMD", "python", "-c", "import urllib.request as r; r.urlopen(r.Request('http://127.0.0.1:{{ vps_port }}/api/ready', headers={'Host': '{{ api_domain }}', 'X-Forwarded-Proto': 'https'}), timeout=5)"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -81,14 +78,14 @@ services:
     restart: always
     # Host network: the app reached by Caddy on 127.0.0.1:{{ port }}.
     network_mode: host
-    # [HARDENED-CONTAINERS]: read-only file system, no capability, no privilege escalation.
+    # [HARDENED-CONTAINERS]: read-only file system, no capability, the image's non-root user
+    # (no no-new-privileges: see the database above).
+    user: app
     read_only: true
     tmpfs:
       - /tmp
     cap_drop:
       - ALL
-    security_opt:
-      - no-new-privileges:true
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request as r; r.urlopen('http://127.0.0.1:{{ port }}/{{ '_stcore/health' if frontend == 'streamlit' else '' }}', timeout=5)"]
       interval: 30s
