@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-389.**
+**Next free: T-396.**
 
 ---
 
@@ -64,6 +64,19 @@ as empty.
 Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other people's repos: each
 commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before
 anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03).
+
+### v0.4.12 · Each craft in its own tool
+The launch being off, what belongs to another craft leaves kiln now; the order of the moves is the
+one of T-387, and T-395 splits this release when it replans. ⚠ breaking: skill names, the server's
+generated tree, each with its conversion in `kiln update`.
+- T-395 · The launch of 11 November is cancelled: the plan follows (M)
+- T-387 · What belongs to another craft leaves kiln for its tool (L)
+- T-394 · How a tool's piece reaches a repo kiln generated (M)
+- T-391 · `/nuxt:polish` leaves kiln for glaze (S)
+- T-390 · `/kiln:token` leaves kiln for saggar (S)
+- T-392 · The announcement of `/kiln:release` goes through stylus (S)
+- T-389 · The server leaves kiln for hearth (L) (blocked: hearth's T-07)
+- T-393 · The grid leaves kiln for cone (L) (blocked: cone's T-01)
 
 ### v0.5.0 · Public launch: the proof and the page
 Candidate Sun 1 Nov, promoted Tue 3 Nov. Milestone decided by antoine (16 October 2026), its content
@@ -826,24 +839,121 @@ The release step "the pushed tag is the deployment" assumes Actions runs. Withou
 
 ### T-387 · What belongs to another craft leaves kiln for its tool
 - **Type**: task
-- **Status**: todo — the server part waits for hearth's T-07
+- **Status**: todo — the map of the moves, closed when its boxes are
 - **Opened**: 2026-10-30
 - **Effort**: L · **Owner**: — · **Due**: —
 - **Origin**: antoine, reminded on 30 October 2026: much of what kiln carries today belongs to
   another Keramos tool (one tool per craft; kiln is the technique of the code)
 
-An inventory first, then one move per craft, each tool taking the piece before kiln drops it
-(a project never loses a file between two `kiln update`):
-- [ ] **hearth** (hosting and operations): the `vps` plugin (`deploy`, `prod-dump`,
-  `prod-logs`), the `config/vps/` template (deploy-remote, backup, restore-test, heal, Caddyfile,
-  compose, setup-deploy-user), `scripts/ops/` (deploy, smoke test), `docs/operations/` and the
-  rule `production.md`; step 8 "Deploy" of `/kiln:release` calls hearth. New server know-how
-  goes to hearth now, not here (annski's `config/vps/` is ahead of the template: hearth T-07).
-- [ ] **saggar** (security, secrets): skill `/kiln:token` and the `.<service>/` convention, rule
-  `security.md`; the charter's [SECRETS] and [VULNERABILITY-AUDIT] stay, as code rules.
-- [ ] **stylus** (words): the announcement of `/kiln:release` (what's-new window, email).
-- [ ] The rest reviewed with antoine (`contribution`, `good-first-issues`: raku?), and the
-  kiln-generated `README.md` of each repo pointing to the tools that now hold each piece.
+Each tool takes the piece before kiln drops it (a project never loses a file between two
+`kiln update`). The inventory, 30 October 2026:
+- [ ] First, how a tool's piece reaches a repo: T-394.
+- [ ] **hearth**: the server: T-389, hearth's T-07.
+- [ ] **saggar**: `/kiln:token`: T-390, saggar's T-01.
+- [ ] **glaze**: `/nuxt:polish`: T-391, glaze's T-01.
+- [ ] **stylus**: the announcement of `/kiln:release`: T-392, stylus's T-01.
+- [ ] **cone**: the grid: T-393, cone's T-01.
+- [ ] **slake**: rendering and updating, Copier today: slake's T-07 (no kiln ticket of its own).
+- [ ] The generated `README.md` of each repo points to the tools that now hold each piece.
+
+Reviewed and staying in kiln: `/kiln:contribution` and `/kiln:good-first-issues` (code review, and
+issues drawn from the backlog: not visibility work), `/nuxt:preview`, the `stripe` plugin, the
+charter's rules on data and backups, kiln's own showcase (`scripts/screenshots.py`,
+`scripts/social_preview.py`, the demos, the roadmap).
+
+### T-394 · How a tool's piece reaches a repo kiln generated
+- **Type**: task
+- **Status**: todo
+- **Opened**: 2026-10-30
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: the inventory of T-387: every move below needs this answer, none has it
+
+Decide it once, before the first move:
+- [ ] Skills: `.claude/settings.json.jinja` enables plugins of the `kiln` catalog only. How a
+  repo gets `saggar@…` or `hearth@…`, and who installs the tool. The tools' repos are private
+  today: a public kiln cannot point to them.
+- [ ] Files: hearth's T-07 asks how hearth renders its files in a project (slake, or commands that
+  install them on the server). The same answer for any later tool.
+- [ ] What `kiln update` does to a repo that has the old piece: a conversion, without losing a
+  file, and a forward from each old skill name.
+- [ ] The answer written in `docs/reference.md` and `docs/reference.fr.md`.
+
+### T-389 · The server leaves kiln for hearth
+- **Type**: task
+- **Status**: blocked — waiting for hearth's T-07 and T-394
+- **Opened**: 2026-10-30
+- **Effort**: L · **Owner**: — · **Due**: —
+- **Origin**: T-387. ⚠ breaking: the generated tree, the `deploy` question of `copier.yml`,
+  `--vps`, the `vps` plugin's skill names; its conversion ships in `kiln update`
+
+- [ ] Remove the `vps` plugin (`deploy`, `prod-dump`, `prod-logs`), keeping forwards.
+- [ ] Remove `config/vps/`, `scripts/ops/` and `docs/operations/` from the template, once hearth
+  renders them. The `frontend_deploy == "vercel"` script of `scripts/ops/` is decided there too.
+- [ ] Split `production.md`: it is also generated without a VPS (`podman`, any size above `tiny`),
+  so only the server part leaves.
+- [ ] Step 8 "Deploy" of `/kiln:release` calls hearth.
+- [ ] Decide what becomes of `kiln new --vps` and the `deploy` question.
+- [ ] Until then, new server know-how goes to hearth, not here.
+
+### T-390 · `/kiln:token` leaves kiln for saggar
+- **Type**: task
+- **Status**: blocked — waiting for saggar's T-01 and T-394
+- **Opened**: 2026-10-30
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: T-387. ⚠ breaking: a skill's name; a forward from the old one
+
+- [ ] Remove the skill, and update what cites it: `/kiln:release`, the generated `pypi.yml`,
+  `docs/reference.md`.
+- [ ] Read `security.md` in full and confirm it stays. T-387 first moved it to saggar, but its one
+  heading is "Browser security" and it has 18 lines: it looks like a code rule.
+
+### T-391 · `/nuxt:polish` leaves kiln for glaze
+- **Type**: task
+- **Status**: blocked — waiting for glaze's T-01 and T-394
+- **Opened**: 2026-10-30
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: T-387. ⚠ breaking: a skill's name; a forward from the old one
+
+Remove the skill and its mention in `docs/reference.md`. `/nuxt:preview` stays.
+
+### T-392 · The announcement of `/kiln:release` goes through stylus
+- **Type**: task
+- **Status**: blocked — waiting for stylus's T-01 and T-394
+- **Opened**: 2026-10-30
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: T-387
+
+Step 4 of the skill calls stylus when it is installed, and still falls back on the project's
+`CLAUDE.md`, which keeps how the announcement is sent.
+
+### T-393 · The grid leaves kiln for cone
+- **Type**: task
+- **Status**: blocked — waiting for cone's T-01; after slake's T-07, one engine at a time
+- **Opened**: 2026-10-30
+- **Effort**: L · **Owner**: — · **Due**: —
+- **Origin**: T-387. ⚠ breaking only if a charter rule ID or a command changes: neither should
+
+- [ ] kiln depends on `keramos-cone`, and `src/kiln/grid/` keeps only what changes a repo (the
+  split is in cone's T-01).
+- [ ] What imports the grid moves to cone's contract: `cli.py`, `adopted.py`, `update.py`, `bot.py`,
+  `charter/cli.py`, and the tests (`test_grid.py`, `test_score.py`, `test_fix.py`, `test_forge.py`,
+  `test_gap_report.py`, `test_bot.py`, `test_compressor.py`…).
+- [ ] `kiln score` gives the same result, rule by rule, on the training repos.
+
+### T-395 · The launch of 11 November is cancelled: the plan follows
+- **Type**: task
+- **Status**: todo
+- **Opened**: 2026-10-30
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: antoine, 30 October 2026: nothing goes out on 11 November, a few more months of work
+  on his machine before anything is released; no new date
+
+- [ ] T-03: blocked, no date, waiting for antoine's decision.
+- [ ] The north star at the top of this file and the `## 🧭 Vision`, which name the date.
+- [ ] `/kiln:backlog plan`: the releases from v0.5.0 on are dated and themed around the launch
+  (v0.5.1 to v0.5.4 above all), and v0.4.12 is too big for one release. Then `ROADMAP.md`, public,
+  through `scripts/roadmap.py`.
+- [ ] Look through the tickets that wait for the launch or dodge it.
 
 ### T-372 · `keramos-kiln` everywhere once it is on PyPI
 - **Type**: task
