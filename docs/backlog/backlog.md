@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-396.**
+**Next free: T-397.**
 
 ---
 
@@ -813,6 +813,19 @@ packs (T-69). From here, strict semver: breaking → major, `feat` → minor.
 ## 🔴 Critical
 
 ## 🟠 Important
+
+### T-396 · `kiln version promote` crashes when run from the release worktree
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-10-30
+- **Effort**: XS · **Owner**: — · **Due**: —
+- **Origin**: v0.4.10, 30 October 2026: promoted from `.claude/worktrees/release-v0.4.10`, where
+  `/kiln:release` and `cut` leave you
+
+`_remove_release_branch` removes the worktree the command runs in; the next `run` then raises
+`FileNotFoundError` with a raw traceback. Tag, `main` and `develop` were already pushed, and the
+release branch stayed, local and remote, to delete by hand. Run every step after the removal from
+the main tree, and test a promotion started from the worktree.
 
 ### T-388 · `/kiln:release` publishes to PyPI from the machine when Actions is blocked
 - **Type**: improvement
