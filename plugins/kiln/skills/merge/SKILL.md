@@ -1,6 +1,6 @@
 ---
 name: merge
-description: Finish a piece of work - fast linters on the files the branch changed, merge into the integration branch (develop), push, delete the branch (and its worktree). No CI at a merge: it only runs when a release goes out (/kiln:release).
+description: Finish a piece of work - fast linters on the files the branch changed, merge into the integration branch (develop), push, delete the branch (and its worktree), update the repo's Claude Code plugin where it is installed. No CI at a merge: it only runs when a release goes out (/kiln:release).
 argument-hint: "[branch]"
 ---
 
@@ -39,7 +39,24 @@ step 4. Talk to the user in their language.
    Then `git worktree remove .claude/worktrees/<name>` (never `--force`), `git branch -d
    <branch>` (never `-D`) and, if it exists on GitHub (`git ls-remote --heads origin <branch>`),
    `git push origin --delete <branch>`. If a check fails: delete nothing, say which one and why.
-6. No CI to wait for: it runs only on the release branch, before `main` (`/kiln:release`).
+6. The repo ships a Claude Code plugin (`.claude-plugin/marketplace.json` at its root, as
+   `kiln set claude_plugin=true` writes it; kiln itself and every tool of the family): update the
+   installed copy now, otherwise a skill just merged stays unknown (`Unknown command`) in every
+   new session. For each plugin `<plugin>` the catalog lists, under the catalog's `name`
+   `<market>` (`<tool>@<tool>` for a family tool):
+   - `claude plugin list --json`: the entries whose `id` is `<plugin>@<market>`. None: the plugin
+     isn't installed on this machine, do nothing.
+   - Once, after the push of step 4 (a GitHub marketplace reclones from GitHub, so it would
+     still see the old commit before): `claude plugin marketplace update <market>`.
+   - Then `claude plugin update <plugin>@<market> --scope <scope>` for each scope found, and only
+     those: `user` from anywhere; `project` and `local` from the main tree when the entry's
+     `projectPath` is this repo (`cd <projectPath> && …`). An entry of another repo's
+     `projectPath` is that repo's business: leave it.
+   - Tell the user to restart Claude Code: a session loads its plugins only at launch, so the new
+     skill shows only in the next one.
+   A plugin read from a local folder (`readFromFolder`, kiln on antoine's machine) gets the same
+   commands: harmless when its version hasn't moved.
+7. No CI to wait for: it runs only on the release branch, before `main` (`/kiln:release`).
    Sum up: merge commit, files touched, linters run. Suggest `/clear`, in one line, only when
    it saves something: a long session, or the user moving to an unrelated subject (every
    message re-reads the whole conversation; the work is in git and in the backlog). After a
