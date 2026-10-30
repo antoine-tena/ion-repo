@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-388.**
+**Next free: T-389.**
 
 ---
 
@@ -800,6 +800,29 @@ packs (T-69). From here, strict semver: breaking → major, `feat` → minor.
 ## 🔴 Critical
 
 ## 🟠 Important
+
+### T-388 · `/kiln:release` publishes to PyPI from the machine when Actions is blocked
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-30
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: hearth v0.2.0, 30 October 2026: the tag was pushed, `pypi.yml` never started (GitHub
+  billing, same for v0.1.1), the run stayed queued for minutes before failing, and the package
+  went up by hand; antoine has no Actions budget left
+
+The release step "the pushed tag is the deployment" assumes Actions runs. Without it:
+- [ ] A local path, in the skill or as a command: export the tag to a temporary folder (repo
+  untouched), set the version from the tag, `uv build`, try the wheel in an isolated environment
+  (`--version`, `--help` of each area), `uv publish` with the token in the environment, never
+  printed, then check `https://pypi.org/project/<pypi_name>/N/`.
+- [ ] Which token: the repo's own `.pypi/` scoped to its project. A repo without one stops and
+  asks; never another repo's token without the user's yes (hearth's upload used the account-wide
+  token of `keramos/.pypi/`).
+- [ ] Say that a local upload has no build provenance (`attest-build-provenance` runs only on
+  GitHub), and don't wait on a queued run: its job can sit queued a long time before the billing
+  refusal shows up in the annotations.
+- [ ] Decide whether `pypi.yml` stays generated while Actions is off, since each tag then leaves a
+  failed run.
 
 ### T-387 · What belongs to another craft leaves kiln for its tool
 - **Type**: task
