@@ -1366,6 +1366,7 @@ before a deployment; the release of hearth v0.1.0 went through on it, its tests 
   with the file by `tests/test_ci.py`), so every kiln-generated CLI is replayed in full.
 - [ ] A job of kiln's own workflows that is not replayed makes the verdict a failure, not a
   footnote: only a third-party workflow may stay "not replayed".
+- [ ] `kiln check` on a `release/…` branch says "Nothing changed since the integration branch: nothing to check" (a release starts equal to `develop`), so it cannot stand in for the missing job either: on a release branch it checks the whole repo. Seen on the three releases of 30 October 2026 (hearth v0.1.1, grog v0.1.0, keramos v1), pytest and mypy run by hand each time.
 
 ## 🟡 Normal
 
