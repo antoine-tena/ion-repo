@@ -24,6 +24,9 @@
     Claude Code offers it with its plugins to whoever opens the repo, then updates them in the
     background at each launch (autoUpdate, off by default for a third-party marketplace). A
     "kiln" marketplace already installed from a local directory keeps its source. #}
+{#- Plans written in plan mode stay with the repo, reviewed and committed with the branch
+    (Claude Code's default, `~/.claude/plans/`, is outside every repo). #}
+  "plansDirectory": ".claude/plans",
   "extraKnownMarketplaces": {
     "kiln": {
       "source": {

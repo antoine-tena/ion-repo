@@ -99,7 +99,10 @@ is re-rendered, on a work branch: `chore/kiln-set`, opened by kiln on `main`, `m
   script doesn't get the same ceremony as a multi-team service.
 - **Agent-ready instructions:** kiln's rules for Claude in `.claude/rules/kiln/`, with stable
   rule IDs the `charter` engine can check; each stack's rules load only when Claude touches its
-  files. The root `CLAUDE.md` belongs to the project.
+  files. The root `CLAUDE.md` belongs to the project. `.claude/` is laid out one way everywhere:
+  `settings.json`, `skills/`, `rules/`, `hooks/` (their scripts) and `plans/` (plan mode's
+  plans, `plansDirectory`) are committed; `settings.local.json`, `worktrees/`, `memory/` and
+  `sessions/` stay on each machine, ignored by git.
 - **Optional production setups:** a hardened VPS deployment for Django (Caddy with automatic
   TLS, read-only containers, one image per commit, automatic rollback, daily backups with
   restore tests) and Vercel deployment for Nuxt fronts.

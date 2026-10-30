@@ -17,6 +17,10 @@ Un projet généré contient :
   charte toujours chargées, celles de chaque stack seulement quand Claude touche ses fichiers ;
   les règles contrôlables sont décrites dans `charter.toml` et vérifiées par la commande
   `charter`. Le `CLAUDE.md` racine appartient au projet ;
+- un `.claude/` rangé partout de la même façon : `settings.json`, `skills/`, `rules/`, `hooks/`
+  (leurs scripts) et `plans/` (les plans du mode plan, `plansDirectory`) commités ;
+  `settings.local.json`, `worktrees/`, `memory/` et `sessions/` propres à chaque machine,
+  ignorés par git ;
 - l'outillage partagé : `.claude/` (plugins et variables `KILN_*`), `.vscode/`, `.editorconfig`,
   `.gitattributes`, `.gitignore`, modèle de PR, `CODEOWNERS`, pre-commit (ruff, ESLint, charte,
   refus de commiter sur `main` et `develop`) ;
