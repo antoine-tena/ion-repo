@@ -120,7 +120,7 @@ folder or a module.
 kiln trains on two real repos, measured on 17 October 2026: the association's repo (the
 Django + Nuxt reference, the grid's training ground, T-124, T-134; its path is in the machine's
 global instructions, never named here) and a university repo (an ordinary repo, the test for a
-repo kiln didn't create, T-131). **The detailed measurements are not public** (security gaps of
+repo kiln didn't create). **The detailed measurements are not public** (security gaps of
 a site in production, vulnerabilities of a third-party project not yet reported to its team):
 they live in the **private** repo `antoine-tena/kiln-measures` (cloned next to kiln,
 `mesures-repos-entrainement.md`), never in kiln, not on a branch, not in a commit. Write only

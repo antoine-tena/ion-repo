@@ -67,12 +67,11 @@ anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03).
 
 ### v0.5.0 · Public launch: the proof and the page
 Candidate Sun 1 Nov, promoted Tue 3 Nov. Milestone decided by antoine (16 October 2026), its content
-defined on 17 October: the version the launch waits for (T-03). The proof (two real repos, a hundred
-public ones, kiln's own repos at 100) and the page that shows it, the potential line as its demo.
-- T-131 · Proof on two real repos, on local copies (M)
-- T-132 · The study: a hundred public Django and Nuxt repos scored (M)
+defined on 17 October: the version the launch waits for (T-03). The proof (kiln's own repos at 100)
+and the page that shows it, the potential line as its demo. No study and no new demo: the recorded
+demos stay (antoine, 30 October 2026).
 - T-130 · Generated repos pass the whole grid: the proof left (S)
-- T-30 · README and English docs for strangers, with the demo (L)
+- T-30 · README and English docs for strangers, with the demos already recorded (L)
 - T-177 · kiln's own docs in English only (M)
 - T-33 · One promise everywhere: tagline, About, PyPI, social preview (S)
 - T-119 · GitHub Sponsors and `FUNDING.yml` (XS)
@@ -996,58 +995,7 @@ From the kiln score ideas of 24 October 2026:
 - [ ] **P15** The reference repo's score and its potential after `kiln fix` in every release note
   (T-134).
 
-### T-131 · Proof on two real repos, on local copies
-- **Type**: task
-- **Status**: todo
-- **Opened**: 2026-10-17
-- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: vision of 17 October 2026 (validation plan, step 3; two real repos measured)
-
-- [ ] The reference repo (18 of the 31 reference practices applied on 17 October) and a
-  university repo built by students since 2023 (an ordinary repo: no CI, no lock, containers
-  running as root), each copied locally: `kiln score`, `kiln fix`, their own checks green,
-  `kiln score` again, the length of the roadmap.
-- [ ] Nothing written or pushed in either original.
-- [ ] Results anonymized in `docs/proof/` (no name, no path, nothing that identifies a project);
-  the README quotes the before and after.
-- [ ] The university repo stays a private test (antoine, 26 October 2026: never cited by kiln,
-  not even in aggregate): the launch quotes the reference repo only. One day kiln runs on it and
-  its teacher gets a pull request, by antoine's hand.
-
-### T-132 · The study: a hundred public Django and Nuxt repos scored
-- **Type**: task
-- **Status**: todo
-- **Opened**: 2026-10-17
-- **Effort**: M · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: vision of 17 October 2026 (validation steps 1 and 4: the pain on more than two
-  repos, then a number to publish); the launch article
-
-- [ ] The selection kept in the script, so anyone can rerun it: about 70 Django and 30 Nuxt
-  public repos pushed in the last 90 days, at least 50 stars, no forks, templates or tutorials.
-- [ ] Shallow clones in a temporary folder, `kiln score --json --offline` and
-  `kiln fix --dry-run`, then the aggregate: median per pillar, most-missed practices, what a
-  script closes, the distribution as a chart.
-- [ ] **Calibration first** (decision 10 of 26 October): before the hundred, repos known for their
-  quality: uv, ruff, Django, FastAPI, Nuxt, and Django apps such as Zulip, NetBox, Saleor,
-  Paperless-ngx, Healthchecks and Baserow (Django + Nuxt). Every point they lose is a gap their
-  maintainers would recognize, with its source, or a defect of the standard (rule, detector or
-  scope) fixed before the launch.
-- [ ] `docs/study/2026-11-django-nuxt.md` with the method; the reference repos named with their
-  score, the hundred as aggregates, never a list of the worst (decision 11).
-- [ ] A vulnerability found (a secret, a dangerous workflow) is reported privately to its
-  project (its SECURITY.md or GitHub's private reporting), never in the article nor in a public
-  pull request before the fix; the credit in the published advisory is the publicity
-  (decision 12).
-- [ ] The headline the article and Show HN can use, whatever it turns out to be: "the median
-  Django repo applies X % of today's reference practices; a script brings it to Y %, without
-  AI, in Z seconds".
-
-From the kiln score ideas of 24 October 2026:
-- [ ] **H01** A labelled corpus: T-132's hundred repos as its first version, then 1,000 and 10,000
-  public repos sampled by language, size and age, each pinned to a commit, every finding labelled
-  true or false.
-
-### T-30 · README and English docs for strangers, with the demo
+### T-30 · README and English docs for strangers, with the demos already recorded
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-16
@@ -1065,9 +1013,8 @@ From the kiln score ideas of 24 October 2026:
   would break on PyPI, and on a demo that types what kiln no longer offers.
 - [x] Demo recorded with vhs (`docs/assets/kiln-new.tape`, `scripts/demo_shell.sh`): `kiln new`,
   its three questions, then `kiln check` on the new repo; replayed before each candidate.
-- [ ] v0.5.0 first screen: the promise (T-33), `uvx kiln-cli score`, then the study's chart as
-  the hero, as uv and ruff open on one benchmark chart: light and dark, a caption with the exact
-  conditions, a link to the script that reruns it (T-131, T-132); then how it works in five
+- [ ] v0.5.0 first screen: the promise (T-33), `uvx kiln-cli score`, then the demos already
+  recorded (antoine, 30 October 2026: no study, no new demo); then how it works in five
   steps (score, fix, roadmap for Claude, verified by the script, continuous), the grid, and
   "Built for Claude Code; the score and the fixes need no AI at all".
 - [x] A second tape (24 October 2026, `docs/assets/kiln-rescue.tape`): on the public
@@ -1122,8 +1069,7 @@ previews), the PyPI summary and the launch titles.
   smarter cd command" (zoxide) do; "the best" alone would read as an opinion. Shown to antoine
   first, with today's line beside it: he keeps "Claude Code's workshop" and the senior engineer
   line (20 October 2026), and decides whether the analogy joins them or replaces them.
-- [ ] Right under it, the proof in numbers (T-131, T-132) and the one line
-  `uvx kiln-cli score`.
+- [ ] Right under it, the one line `uvx kiln-cli score`.
 - [ ] GitHub About and topics (best-practices, modernization, code-quality, technical-debt next
   to claude-code, django, nuxt), PyPI summary; the social preview (1280×640) redone with the new
   line, uploaded by antoine (no API): https://github.com/antoine-tena/kiln/settings (Social
@@ -1205,16 +1151,15 @@ opened at once and used for real, never about kiln (`urgent.md`).
 - [ ] `kiln-cli` 0.5.0 or later promoted on PyPI; `uvx kiln-cli score` works from an empty
   cache on Linux and macOS, on a repo kiln never saw (T-142).
 - [ ] `kiln score` deterministic, offline, without a token, under 5 seconds on a 50,000-line
-  repo (T-46); `kiln fix` closes every scriptable gap of the two local copies, their checks
-  still green (T-126 to T-128, T-131); kiln-bot runs on a test repo (T-59).
+  repo (T-46); `kiln fix` closes every scriptable gap of `kiln-demo-legacy`, its checks
+  still green (T-126 to T-128); kiln-bot runs on a test repo (T-59).
 - [ ] `kiln score` on ten known public repos of other stacks (Go, Rust, Ruby, Java, PHP,
   TypeScript) says nothing false about tests, CI and linters, and names at the top the language it
   doesn't score yet: a launch's visitors run it on their own repos, not on Django ones. Measured on
   26 October 2026: 8 false alarms in 6 of 10 such repos (no tests found in a Rust and a Ruby repo,
   no linter in CI where clippy, golangci-lint and RuboCop ran), fixed the same day; one class left,
   a linter run by `npm test`'s script, for T-190.
-- [ ] The study published (T-132); the README's first screen and the docs done, the demo
-  recorded from the released version (T-30, T-33).
+- [ ] The README's first screen and the docs done, with the demos already recorded (T-30, T-33).
 - [ ] kiln passes its own grid, its CI green on `main` (T-90).
 - [ ] No open 🔴 ticket.
 - [ ] The Hacker News title, text and every answer written by antoine, by hand: HN's
@@ -1317,8 +1262,8 @@ is GitHub's or kiln's doing.
 
 Planned in v0.5.0, "Public launch: the proof and the page": Candidate Sun 1 Nov, promoted Tue 3 Nov.
 Milestone decided by antoine (16 October 2026), its content defined on 17 October: the version the
-launch waits for (T-03). The proof (two real repos, a hundred public ones, kiln's own repos at 100)
-and the page that shows it, the potential line as its demo.
+launch waits for (T-03). The proof (kiln's own repos at 100) and the page that shows it, the
+potential line as its demo.
 
 - [ ] **I07** The potential on every run: "58 now · 74 after `kiln fix` (no token, about 2 minutes)
   · 100 after the roadmap (12 items, about 3 hours of Claude Code)".
@@ -1632,7 +1577,7 @@ The repos of `kiln adopt` (decision 4) are laid out every way: monorepos, Procfi
 files, `package.json` scripts, Makefiles, Justfiles, devcontainers.
 - [ ] Detection from existing work first (doctrine 14): Railpack's and Nixpacks' providers, which
   read how hundreds of stacks start, before any rule of kiln's own.
-- [ ] Measured on the corpus (T-132): the share of repos whose servers come up with no question;
+- [ ] Measured on a corpus of public repos: the share of repos whose servers come up with no question;
   each miss a test.
 
 ### T-352 · The score as a page: Markdown and Mermaid charts
@@ -2915,7 +2860,7 @@ well as a repo.
 - [ ] **V01** A web page per rule generated from its file (why, bad and good, the fix, sources,
   prevalence, precision, standards): the pages people land on when they search "pin GitHub Actions",
   one way to get known.
-- [ ] **V02** The study (T-132) repeated every quarter: "the state of Django and Nuxt repos".
+- [ ] **V02** A study of public repos repeated every quarter: "the state of Django and Nuxt repos".
 
 ### T-209 · One model of the repo: components, roles, one answer for every command
 - **Type**: improvement
@@ -6059,7 +6004,7 @@ rule ships with its passing and failing examples.
 - [ ] **D13** Template repos (`is_template`, `copier.yml`) scored on what they generate: rendered
   with defaults in a sandbox, the result scored. A template's score is its children's.
 - [ ] **D14** Tutorials and example repos recognized, so the study and the fleet don't count them
-  (T-132's exclusions as code).
+  (a study's exclusions as code).
 - [ ] **K14** The integration branch, the main language and the profile detected; the report says
   what it assumed.
 - [ ] **AS44** `EXTENSION-PERMISSIONS`: browser extensions ask for the fewest permissions and hosts.
@@ -7491,7 +7436,7 @@ long research conversation, two real repos measured that day (the reference repo
 university repo; the details stay private, see "Repos d'entraînement" in `CLAUDE.md`) and web
 research; moved here and condensed on 24 October 2026. What the vision planned became tickets
 (the grid as data T-123, `kiln score` T-46, `kiln fix` T-126 to T-128, the roadmap T-129, gap
-reports T-38, profiles T-39, the A/B test T-53, the study T-132, tests at the lowest cost T-135
+reports T-38, profiles T-39, the A/B test T-53, tests at the lowest cost T-135
 and T-136, the compressor T-138 and T-139, the benchmark T-145); its ideas in reserve and the
 paths it dropped are in [rejected.md](rejected.md).
 
@@ -7741,7 +7686,7 @@ reason. T-342 to T-358 come from here; "Q" numbers are the file's.
    with a measure (T-145), otherwise left out.
 9. A logo, still and animated, and a mascot to discuss (T-347).
 
-**The study (T-131, T-132).**
+**The study (T-131, T-132, dropped by antoine on 30 October 2026).**
 10. Calibration before conclusions: a standard that finds nothing well made is worthless
     (antoine, Q30). Repos known for their quality are scored before the launch; every point they
     lose is a gap their maintainers would recognize, with its source, or a defect fixed first.
@@ -7865,7 +7810,7 @@ after 1.0; `uvx` first; kiln's CLI in English until 1.0; Django with HTMX as a l
 3. Agents make applying a change easy for everyone: the value is in the choice and the proof.
 4. "The best" depends on the context: profiles of structure (T-39).
 5. Old repos without tests break when modernized blind: a test net first.
-6. Upkeep tools earn few stars (deptry about 1,000): a striking number is needed (T-132, T-145).
+6. Upkeep tools earn few stars (deptry about 1,000): a striking number is needed (T-145).
 7. The small-files hypothesis is not proven (T-53).
 8. Gap reports raise privacy, noise and grid poisoning: the circuit's rules above.
 
