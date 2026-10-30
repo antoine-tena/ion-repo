@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-382.**
+**Next free: T-385.**
 
 ---
 
@@ -88,6 +88,8 @@ Candidate Tue 3 Nov. Fixes only from here to the launch; the week absorbs up to 
 releases.
 - T-142 · Launch rehearsal: a stranger's first ten minutes, replayed (M)
 - T-167 · The branch guard reads the session's folder, not the command's (S)
+- T-382 · `kiln ci` doesn't replay `python.yml`, and its verdict still says success (S)
+- T-383 · `/kiln:worktree` reports two false failures (XS)
 - T-168 · A repo from `kiln new` + `gh repo create --push` has no CI workflow on GitHub (S)
 - T-179 · A new Django repo's tests start without warnings (S)
 - T-53 · Readable by Claude, measured: the A/B test (M) — run once, before the launch (antoine,
@@ -1291,6 +1293,9 @@ layouts directly.
 another repo with "never commit on develop": it checks the branch of the session's folder and
 ignores a leading `cd` (`git -C` got through). It should judge the repo the command runs in.
 
+Seen again by grog (30 October 2026): three refusals over two sessions, one in a throwaway copy
+on a `test/…` branch whose commit was refused with "never commit on develop".
+
 ### T-168 · A repo from `kiln new` + `gh repo create --push` has no CI workflow on GitHub
 - **Type**: bug
 - **Status**: todo
@@ -1344,6 +1349,23 @@ breaks the rule silently or builds a whole Celery stack for three mails.
 - [ ] [IDEMPOTENCY] says which routes need it when there is no shared cache (payments,
   creations), instead of "every mutation".
 - [ ] The Django template offers that path, so the first mail of a project is not improvised.
+
+### T-382 · `kiln ci` doesn't replay `python.yml`, and its verdict still says success
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-10-30
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: grog `/grog:distill` over four sessions of 29 October 2026 (Keramos session,
+  hearth's v0.1.0 release)
+
+A CLI tool's `ci.yml` calls `python.yml` (the `backend` job: pytest, mypy, ruff), which has no
+planner in `src/kiln/ci/jobs.py`: `workflow.py` lists it as "not replayed locally yet". The
+verdict then reads `kiln ci: success` on the three other jobs, the line `green-ci.sh` trusts
+before a deployment; the release of hearth v0.1.0 went through on it, its tests replayed by hand.
+- [ ] A `python` planner in `jobs.py`, step for step with `python.yml` (its `DEFAULTS` compared
+  with the file by `tests/test_ci.py`), so every kiln-generated CLI is replayed in full.
+- [ ] A job of kiln's own workflows that is not replayed makes the verdict a failure, not a
+  footnote: only a third-party workflow may stay "not replayed".
 
 ## 🟡 Normal
 
@@ -1409,6 +1431,10 @@ the session were refused the same way.
 - [ ] kiln's skills and rules write one plain command per call when the session is isolated (no
   `cd`, loop, command substitution), with the file lists passed as plain arguments.
 
+Seen again by grog (30 October 2026): about thirty refusals over four sessions, a variable in a
+plain path included (`sed -n 1,9p $K/docs/…` refused: spell the path out). Every isolated session
+pays it; worth moving up to 🟠 Important.
+
 ### T-379 · Django template: `django-stubs-ext`, so `admin.ModelAdmin[Model]` runs
 - **Type**: improvement
 - **Status**: todo
@@ -1446,6 +1472,38 @@ showed at the merge, after the pages, the measures and a question to the user ha
 the old setup. A rule of the way of working: before a decision that rests on the project's
 setup, and at least before the last commits, `git fetch` and read what the integration branch
 gained (`git log HEAD..origin/<integration>`); merge it into the branch early rather than late.
+
+### T-383 · `/kiln:worktree` reports two false failures
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-10-30
+- **Effort**: XS · **Owner**: — · **Due**: —
+- **Origin**: grog `/grog:distill` over four sessions of 29 October 2026, and the grog session
+  that distilled them
+
+- [ ] Step 3 says to run `.claude/worktree-setup.sh` "if the repo provides it": Claude checks with
+  `ls`, which exits 2 when it is absent, so the step ends in `Exit code 2` on every repo without
+  one (five sessions out of five). `prepare-worktree.sh` runs the setup script itself when it
+  exists, and the skill drops the check.
+- [ ] Step 4: `EnterWorktree` refuses ("the current directory is not in a git repository") when
+  the session was opened above the repo (`~/code/Keramos`, twice). The skill says so and goes on
+  with absolute paths, instead of a bare error.
+
+### T-384 · A session start warns when another session is working on the same repo
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-30
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: grog `/grog:distill` over four sessions of 29 October 2026: two sessions on the
+  same repo for half an hour
+
+antoine's rule is one session at a time on a project; nothing tells him when two are open. Two
+sessions worked on the same repo at once: one found a gitleaks alert that came from the other's
+commit, the other built on a setting the first was changing (T-381). A third learned at its end
+that another session was still open on its subject.
+- [ ] The `SessionStart` hook lists the other sessions whose transcript
+  (`~/.claude/projects/<project>/`) was written in the last minutes with a `cwd` in the same repo
+  (its worktrees included), with their branch, and asks whether to go on.
 
 ### T-371 · `/kiln:token`: a paste prompt in kiln's own style
 - **Type**: improvement
