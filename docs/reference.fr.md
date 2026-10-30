@@ -45,7 +45,8 @@ Les plugins Claude Code vivent dans [`plugins/`](../plugins/), catalogue `kiln`
 ([`.claude-plugin/marketplace.json`](../.claude-plugin/marketplace.json)) :
 
 - `kiln`, pour tous les projets, installé au niveau utilisateur : skills `worktree`, `merge`
-  (fusion dans `develop`), `release` (release/vN, contrôle complet, annonce, main tagué,
+  (fusion dans `develop` ; dans un repo qui fournit un plugin Claude Code, le plugin installé mis à jour
+  après le push, dans les seules portées où il l'est, et Claude Code à redémarrer), `release` (release/vN, contrôle complet, annonce, main tagué,
   déploiement), `cleanup` (ménage des worktrees), `review` (commits et diff d'une branche relus
   et rangés avant la fusion, dépôt entier avant une version), `backlog`, `update` (l'outil kiln
   et ses plugins, puis le repo ouvert), `adopt` (`kiln adopt` dans un repo existant, passif de la
