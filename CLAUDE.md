@@ -20,7 +20,7 @@ folder or a module.
   podman, `menu.py` what to run and the logs offered, `background.py` background, `status`,
   `logs`, `stop`, `foreground.py` `--foreground`, `containers.py` `--containers`), `check.py`,
   `settings.py` (`kiln set`, the settable keys), `machine.py` (`kiln set` outside a repo: machine
-  settings), `waive.py` (`kiln waive`), `pause.py` (`kiln pause`, a session's place kept, T-344), `bot.py` (`kiln bot`, kiln-bot's run on `kiln/bot`, T-59; its public test bench
+  settings), `waive.py` (`kiln waive`), `pause.py` (`kiln pause`, a session's place kept, T-344), `frame.py` (`kiln frame`, the rules of a Keramos skill answer at the terminal's width), `bot.py` (`kiln bot`, kiln-bot's run on `kiln/bot`, T-59; its public test bench
   `antoine-tena/kiln-bot-test` calls `bot.yml`, `score.yml` and `charter.yml`), `update.py`, `contract.py`, `release.py`
   (`kiln version`), `shipping.py` (`kiln version cut` and `promote`), `github_ci.py` (GitHub CI's
   verdict on a commit, awaited by `cut` and `promote`), `doctor.py` (machine and repo diagnosis),
@@ -99,7 +99,7 @@ folder or a module.
   their tag (before each candidate).
 - `tests/`: `test_template.py` (the template rendered for each stack), `test_cli.py` (the
   command: welcome, errors, summary, output outside a terminal, old names), `test_questions.py`
-  (`kiln new`'s questions), `test_new.py` (what `kiln new` says at the end), `test_contract.py` (`kiln contract`'s export, a dirty tree named), `test_pause.py` (`kiln pause`'s proposed names), `test_update_conflicts.py` (`kiln update` stopped by a template's conflict), `test_grid.py` (the
+  (`kiln new`'s questions), `test_new.py` (what `kiln new` says at the end), `test_contract.py` (`kiln contract`'s export, a dirty tree named), `test_pause.py` (`kiln pause`'s proposed names), `test_frame.py` (`kiln frame`'s widths), `test_update_conflicts.py` (`kiln update` stopped by a template's conflict), `test_grid.py` (the
   grid), `test_score.py` (`kiln score`), `test_gap_report.py` (reports of the grid's gaps), `test_forge.py` (GitHub settings through a
   fake `gh`),
   `test_fix.py` (`kiln fix` and its conversions), `test_adopted.py` (adopted repos),
