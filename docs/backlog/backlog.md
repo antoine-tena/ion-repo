@@ -8,7 +8,7 @@ that T-186 to T-319 came from. Closed tickets are in [done.md](done.md), what wa
 [rejected.md](rejected.md); how to write a ticket: [📖 How to use](#-how-to-use-humans-and-agents).
 **Nothing else is open.**
 
-North star: **kiln v0.5.0, launched publicly on Wednesday 11 November 2026: any Django or Nuxt
+North star: **kiln v0.5.0, launched publicly on a date antoine has yet to set: any Django or Nuxt
 repo scored in seconds against a sourced grid of today's best practices, brought up to it by
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
@@ -19,9 +19,9 @@ keeps a repo up to date with the best of the world, and easy for Claude to read"
 
 ## 🚀 Releases
 
-A candidate every two days, about 4 of its 7 session-hours planned, the rest margin. v0.4.0 to
-v0.4.5 went out a week ahead of the first plan: the week won goes to the releases below, and v0.5.0
-keeps its date (the launch, T-03). Every open ticket has its release and is listed under it, the
+A candidate every two days, about 4 of its 7 session-hours planned, the rest margin. The launch of
+11 November 2026 is cancelled and has no new date (antoine, 30 October 2026: a few more months of
+work on his machine first), so no release below carries a date. Every open ticket has its release and is listed under it, the
 1,070 [kiln score ideas](#-kiln-score-the-thesis) included: each became a box of a ticket (T-186 to
 T-319, or the existing ticket it extended) in the release it was planned in (antoine, 25 October
 2026: everything a ticket, in one format, in its place). A milestone takes its minor in the release
@@ -31,13 +31,12 @@ Django and Nuxt each took once the engine is set aside, and its pack holds the r
 used frameworks as well as its language's (framework coverage review of 26 October 2026: Spring
 Boot, ASP.NET Core, Laravel, Rails; the Node back ends a release of their own). The stacks come in
 the order of the 2025 surveys until the corpus measures its own, and games and R have a release each
-(stack coverage review of the same day). From v0.5.4 on, releases carry no date: at this pace v0.6.0
-lands in early December 2026, v0.7.0 in mid-April 2027, v0.8.0 at the start of June, v0.9.0 and
-v1.0.0 in mid-June 2027. These are consequences of the plan rather than promises, and each release
-the launch adds pushes them by two days. The public view of this plan is
+(stack coverage review of the same day). The launch's releases (v0.5.0 to v0.5.4) keep their order:
+they are what a launch needs, whenever it comes, and what comes after them is written for after it.
+Once antoine sets a date, they are dated back from it, and he may move other releases ahead of them. The public view of this plan is
 [`ROADMAP.md`](../../ROADMAP.md), drawn from this section by `scripts/roadmap.py`.
 
-### Shipped: v0.4.0 to v0.4.9
+### Shipped: v0.4.0 to v0.4.10
 - v0.4.0 · kiln speaks English: promoted on Mon 19 Oct, the milestone decided by antoine
   (⚠ breaking, all converted by `kiln update`).
 - v0.4.1 · The grid, as data: `kiln grid`, 105 drafts from the reference repo.
@@ -54,32 +53,51 @@ the launch adds pushes them by two days. The public view of this plan is
 - v0.4.7 to v0.4.9 · pnpm 11 in repos kiln did not make: promoted on Mon 26 Oct, three fixes
   outside the plan (a front without a lockfile, build scripts `allowBuilds` does not list, in
   `kiln install` then in `kiln ci` and the workflows); the planned releases moved by three numbers.
-
-### v0.4.10 · Every gap seen, wherever the code lives
-Candidate Tue 27 Oct. The score and the fixes reach what they miss today: GitHub settings, code at
-the root as well as in `backend/` and `frontend/`, compose services, loose requirements, files read
-as empty.
+- v0.4.10 · Every gap seen, wherever the code lives: promoted on Fri 30 Oct.
 
 ### v0.4.11 · Never lets it rot, kiln first
-Candidate Thu 29 Oct. kiln-bot runs kiln's workflows with write access in other people's repos: each
-commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before
-anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03).
+kiln-bot runs kiln's workflows with write access in other people's repos: each commit it brings is
+proven first, and kiln's own workflows pass zizmor and carry provenance before anyone runs them.
+kiln-bot on a test repo is a box of the launch gate (T-03).
 
-### v0.4.12 · Each craft in its own tool
-The launch being off, what belongs to another craft leaves kiln now; the order of the moves is the
-one of T-387, and T-395 splits this release when it replans. ⚠ breaking: skill names, the server's
-generated tree, each with its conversion in `kiln update`.
-- T-395 · The launch of 11 November is cancelled: the plan follows (M)
-- T-387 · What belongs to another craft leaves kiln for its tool (L)
+### v0.4.12 · What the last sessions tripped on
+Real sessions of late October hit these, each small: the release, the merge, a long session, a
+first `kiln check`. They cost time now, so they go before the moves.
+- T-396 · `kiln version promote` crashes when run from the release worktree (XS)
+- T-388 · `/kiln:release` publishes to PyPI from the machine when Actions is blocked (S)
+- T-378 · `/kiln:merge` from an isolated worktree: leave it before merging, plain commands only (S)
+- T-381 · A long session fetches the integration branch before building on it (S)
+- T-384 · A session start warns when another session is working on the same repo (S)
+- T-376 · `kiln check` ran no test on emberstudio, and left a `.env` towards a stopped PostgreSQL (S)
+- T-377 · An agent cannot document a new variable: `.env.example` is under the `.env*` deny (S)
+- T-375 · [CLOCK] names freezegun, which [NEW-DEPENDENCY] refuses (S)
+- T-379 · Django template: `django-stubs-ext`, so `admin.ModelAdmin[Model]` runs (S)
+- T-380 · `/kiln:merge` ends by offering `/grog:distill` on the session (S) (blocked: grog's T-01)
+- T-372 · `keramos-kiln` everywhere once it is on PyPI (S) (blocked: its first promoted release)
+- T-373 · `kiln-cli` retired, the testers moved to `keramos-kiln` (S) (blocked: T-372, antoine)
+
+### v0.4.13 · A tool's piece reaches a repo: the small moves
+How a tool's skill and files get into a generated repo gets decided, then proven on the three
+smallest moves. ⚠ breaking: skill names, each with a forward and its conversion in `kiln update`.
 - T-394 · How a tool's piece reaches a repo kiln generated (M)
 - T-391 · `/nuxt:polish` leaves kiln for glaze (S)
+- T-371 · `/kiln:token`: a paste prompt in kiln's own style (S)
 - T-390 · `/kiln:token` leaves kiln for saggar (S)
 - T-392 · The announcement of `/kiln:release` goes through stylus (S)
+
+### v0.4.14 · The server in hearth
+The biggest move, alone in its release: production deployments depend on it. ⚠ breaking: the
+generated tree, the `deploy` question, `--vps`, the `vps` skills, with their conversion.
 - T-389 · The server leaves kiln for hearth (L) (blocked: hearth's T-07)
+
+### v0.4.15 · The grid in cone
+The last move, after kiln runs on slake (slake's T-07, one engine at a time). It closes the map of
+the moves.
 - T-393 · The grid leaves kiln for cone (L) (blocked: cone's T-01)
+- T-387 · What belongs to another craft leaves kiln for its tool (L)
 
 ### v0.5.0 · Public launch: the proof and the page
-Candidate Sun 1 Nov, promoted Tue 3 Nov. Milestone decided by antoine (16 October 2026), its content
+Milestone decided by antoine (16 October 2026), its content
 defined on 17 October: the version the launch waits for (T-03). The proof (kiln's own repos at 100)
 and the page that shows it, the potential line as its demo. No study and no new demo: the recorded
 demos stay (antoine, 30 October 2026).
@@ -95,9 +113,8 @@ demos stay (antoine, 30 October 2026).
 - T-347 · A mascot and a logo, still and animated (S) — once antoine has chosen the mascot; not a
   box of the gate
 
-### v0.5.1 · Launch week: the rehearsal, and the bugs already known
-Candidate Tue 3 Nov. Fixes only from here to the launch; the week absorbs up to three slipped
-releases.
+### v0.5.1 · Before the launch: the rehearsal, and the bugs already known
+Fixes only from here to the launch.
 - T-142 · Launch rehearsal: a stranger's first ten minutes, replayed (M)
 - T-167 · The branch guard reads the session's folder, not the command's (S)
 - T-382 · `kiln ci` doesn't replay `python.yml`, and its verdict still says success (S)
@@ -108,16 +125,16 @@ releases.
   26 October 2026); its number joins the launch article only if it is net
 - T-145 · A public benchmark: Claude Code with and without kiln (L) — same condition, after T-53
 
-### v0.5.2 · Launch week: what the rehearsal found
-Candidate Thu 5 Nov: the fixes of T-142, nothing else.
+### v0.5.2 · Before the launch: what the rehearsal found
+The fixes of T-142, nothing else.
 
 ### v0.5.3 · Launch day
-Candidate Sat 7 Nov, promoted on Mon 9 Nov by the next candidate: the version strangers install.
-Gate checked on Mon 9 Nov at 20:00; nothing is promoted on launch day.
-- T-03 · Public launch: Wednesday 11 November 2026, 16:00 Paris, every forum at once (M)
+Promoted two days before the launch by the next candidate: the version strangers install. Gate
+checked that evening at 20:00; nothing is promoted on launch day.
+- T-03 · Public launch: date to set, 16:00 Paris, every forum at once (M) (blocked: antoine)
 
 ### v0.5.4 · The first week with strangers
-Candidate Mon 9 Nov, promoted after the launch. What the launch brings in (issues, reports, the
+Promoted after the launch. What the launch brings in (issues, reports, the
 first gap reports of T-38) comes first; these give way to it. From here each milestone is
 announced (T-118).
 - T-118 · Each milestone announced on Bluesky, dev.to, X and Mastodon (S)
@@ -207,6 +224,7 @@ held to every new rule by its own test.
 - T-198 · The exact rules first, and the template held to each new rule (L)
 - T-199 · Three new themes open: licensing, infrastructure, data science (M)
 - T-363 · New tools found the week they come out, assessed before recommended (M)
+- T-374 · Out-of-request work for a project without Celery: [OUT-OF-REQUEST], [OUTBOX], [IDEMPOTENCY] (M)
 
 ### v0.5.14 · Repos safe to hand to an agent
 What Claude Code users need first (17 October): narrow permissions, pinned MCP servers, no secret an
@@ -953,21 +971,6 @@ Step 4 of the skill calls stylus when it is installed, and still falls back on t
   `test_gap_report.py`, `test_bot.py`, `test_compressor.py`…).
 - [ ] `kiln score` gives the same result, rule by rule, on the training repos.
 
-### T-395 · The launch of 11 November is cancelled: the plan follows
-- **Type**: task
-- **Status**: todo
-- **Opened**: 2026-10-30
-- **Effort**: M · **Owner**: — · **Due**: —
-- **Origin**: antoine, 30 October 2026: nothing goes out on 11 November, a few more months of work
-  on his machine before anything is released; no new date
-
-- [ ] T-03: blocked, no date, waiting for antoine's decision.
-- [ ] The north star at the top of this file and the `## 🧭 Vision`, which name the date.
-- [ ] `/kiln:backlog plan`: the releases from v0.5.0 on are dated and themed around the launch
-  (v0.5.1 to v0.5.4 above all), and v0.4.12 is too big for one release. Then `ROADMAP.md`, public,
-  through `scripts/roadmap.py`.
-- [ ] Look through the tickets that wait for the launch or dodge it.
-
 ### T-372 · `keramos-kiln` everywhere once it is on PyPI
 - **Type**: task
 - **Status**: blocked — waiting for the first promoted release published under `keramos-kiln`
@@ -1006,7 +1009,7 @@ upgrading as `kiln-cli` (`installed_pypi_name`). The public pages wait for the p
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-26
-- **Effort**: S · **Owner**: — · **Due**: before the v0.5.0 candidate (Sun 1 Nov)
+- **Effort**: S · **Owner**: — · **Due**: before the v0.5.0 candidate
 - **Origin**: antoine's answers of 26 October 2026 (Q76: "Apache 2.0 then, I want the best licence
   possible"), decision 28
 
@@ -1027,7 +1030,7 @@ outside contributors have code in kiln. antoine said yes to the pair (26 October
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-26
-- **Effort**: S · **Owner**: — · **Due**: before the v0.5.0 candidate (Sun 1 Nov)
+- **Effort**: S · **Owner**: — · **Due**: before the v0.5.0 candidate
 - **Origin**: antoine's yes to decision 23 of 26 October 2026 (Q58: "I don't want too many p in
   vN.m.p")
 
@@ -1043,7 +1046,7 @@ every few weeks, each minor a themed group holding its breaking changes.
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-26
-- **Effort**: S · **Owner**: — · **Due**: before the v0.5.0 candidate (Sun 1 Nov)
+- **Effort**: S · **Owner**: — · **Due**: before the v0.5.0 candidate
 - **Origin**: antoine's answers of 26 October 2026 (Q24, Q176: "standard is the clearest"),
   decision 5
 
@@ -1059,7 +1062,7 @@ on. `kiln score` keeps its name: it scores a repo against the standard (Q113).
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-24
-- **Effort**: M · **Owner**: — · **Due**: before the v0.5.0 candidate (Sun 1 Nov)
+- **Effort**: M · **Owner**: — · **Due**: before the v0.5.0 candidate
 - **Origin**: antoine, 24 October 2026: several languages, or English only? Answer: English
   only for kiln itself. The public it wants (stars, Hacker News, outside contributors) reads
   English, as with uv, ruff and Bun; the parity between languages doubles every doc change
@@ -1283,7 +1286,7 @@ From the kiln score ideas of 24 October 2026:
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-17
-- **Effort**: M · **Owner**: @antoine-tena · **Due**: 2026-11-09
+- **Effort**: M · **Owner**: @antoine-tena · **Due**: the week before the launch
 - **Origin**: launch planned on 17 October 2026 (T-03)
 
 - [ ] On fresh GitHub-hosted runners (Ubuntu, macOS) and in a clean container: the README's
@@ -1296,12 +1299,13 @@ From the kiln score ideas of 24 October 2026:
 - [ ] Every stumble fixed in v0.5.1 to v0.5.3, never on the day.
 - [ ] The texts of T-03 checked against each forum's rules.
 
-### T-03 · Public launch: Wednesday 11 November 2026, 16:00 Paris, every forum at once
+### T-03 · Public launch: date to set, 16:00 Paris, every forum at once
 - **Type**: task
-- **Status**: todo
+- **Status**: blocked — waiting for antoine's date (11 November 2026 cancelled by him
+  on 30 October 2026: a few more months of work on his machine first)
 - **Opened**: 2026-10-15
 - **Effort**: M · **Owner**: antoine for Hacker News and Reddit, Claude for the rest ·
-  **Due**: 2026-11-11
+  **Due**: —
 - **Origin**: GitHub showcase, 15 October 2026; date and gate fixed on 17 October 2026 at
   antoine's request ("a date when I publish on every forum at once, only after a version you
   define")
@@ -1311,7 +1315,7 @@ Nothing is posted on a forum before it (T-118 starts after).
 
 **Awaiting antoine's decision** (26 October 2026, decision 1): Hacker News restricts Show HN from
 new accounts since March 2026 (https://news.ycombinator.com/showlim) and antoine has no HN
-account and no Reddit karma. Proposal: 11 November for the forums that need no history (dev.to,
+account and no Reddit karma. Proposal: the launch date for the forums that need no history (dev.to,
 Bluesky, X, Mastodon, LinkedIn, the university mail, awesome-claude-code), HN and Reddit on the
 first Wednesday his accounts are accepted, at the latest v0.6.0. Either way, both accounts are
 opened at once and used for real, never about kiln (`urgent.md`).
@@ -1335,19 +1339,14 @@ opened at once and used for real, never about kiln (`urgent.md`).
   guidelines say "Please don't put generated text in HN posts" and, for comments, "Don't
   post generated text or AI-edited text"; Claude hands over raw facts only (numbers, links).
   No upvotes asked, no booster comments from friends.
-- [ ] Gate checked on **Monday 9 November at 20:00**. One box empty: the launch moves to
-  **Wednesday 18 November**, same hour, gate on Monday 16 November. The date moves, never the
-  gate.
+- [ ] Gate checked at 20:00 on the Monday before. One box empty: the launch moves a week, same
+  hour. The date moves, never the gate.
 
-**Why this date.** Reaching v0.5.0 takes about 27 session-hours, seven releases at the two-day
-cadence (candidate on Sunday 1 November, promoted on Tuesday 3); the week from 3 to 9 November
-absorbs up to three slipped releases and rehearses the launch. A Wednesday: Hacker News readers
-are there from Tuesday to Thursday, and 11 November is a public holiday in France, so antoine is
-free to post at 16:00 and answer until midnight. A week after the US midterm elections
-(3 November), two after GitHub Universe (28 and 29 October). The Pro quota restarts on Tuesday
-10 November at 8:00: the launch day and the days after have a whole week for fixes and answers.
-16:00 in Paris is 10:00 in New York and 7:00 in San Francisco: Europe still at work, the US
-East Coast in its morning, the West Coast waking up.
+**Choosing the date.** A Wednesday: Hacker News readers are there from Tuesday to Thursday. A day
+antoine is free to post at 16:00 and answer until midnight (a public holiday in France, if one
+fits), away from an election or a big conference, with his Pro quota fresh and a whole week after it
+for fixes and answers. 16:00 in Paris is 10:00 in New York and 7:00 in San Francisco: Europe still
+at work, the US East Coast in its morning, the West Coast waking up.
 
 **The day** (Paris time; every text written the week before, each in its forum's format):
 - [ ] 15:30: last check, `uvx kiln-cli score` on a fresh clone of a public repo; README and
@@ -1429,7 +1428,7 @@ is GitHub's or kiln's doing.
 - **Origin**: kiln score ideas of 24 October 2026 (Scoring model v2, One measure drives every
   command, Docs, teaching and reach), made a ticket on 25 October 2026 at antoine's request
 
-Planned in v0.5.0, "Public launch: the proof and the page": Candidate Sun 1 Nov, promoted Tue 3 Nov.
+Planned in v0.5.0, "Public launch: the proof and the page".
 Milestone decided by antoine (16 October 2026), its content defined on 17 October: the version the
 launch waits for (T-03). The proof (kiln's own repos at 100) and the page that shows it, the
 potential line as its demo.
@@ -2543,7 +2542,7 @@ leaving 0.x.
 - **Origin**: kiln score ideas of 24 October 2026 (One model of the repo, Every forge, CI, host and
   machine, Nothing to do), made a ticket on 25 October 2026 at antoine's request
 
-Planned in v0.5.4, "The first week with strangers": Candidate Mon 9 Nov, promoted after the launch.
+Planned in v0.5.4, "The first week with strangers": promoted after the launch.
 What the launch brings in (issues, reports, the first gap reports of T-38) comes first; these give
 way to it. From here each milestone is announced (T-118).
 
@@ -7880,10 +7879,11 @@ reason. T-342 to T-358 come from here; "Q" numbers are the file's.
 1. Hacker News restricts Show HN from new accounts since March 2026
    (https://news.ycombinator.com/showlim: "take some time to get to know the community",
    criteria vague on purpose), and antoine has no HN account and no Reddit karma (Q11, Q12).
-   Proposed to him, his call (the date is his): 11 November stays for what needs no history
+   Proposed to him, his call (the date is his; 11 November cancelled on 30 October 2026): the
+   launch date stays for what needs no history
    (dev.to, Bluesky, X, Mastodon, LinkedIn, a mail to his university's students,
    awesome-claude-code); HN and Reddit on the first Wednesday his accounts are accepted, at the
-   latest v0.6.0 (early December, a stronger story); both accounts opened at once and used for
+   latest v0.6.0 (a stronger story); both accounts opened at once and used for
    real, never about kiln. Moving everything to v1.0 (Q8) is advised against: seven months without
    strangers' repos to calibrate on, and the name left to whoever ships first.
 2. The HN title stays antoine's (he dislikes "Dependabot for your methods"), `kiln score` first.
