@@ -8,6 +8,7 @@ entries before v0.4.0 quote kiln's former French names.
 
 ## v0.4.10 — 2026-10-30
 - **Breaking**: the four sizes get plain names, `tiny`, `small`, `medium` and `large`, instead of `spark`, `ember`, `flame` and `blaze`. `kiln update` renames a repo's size by itself; `--size` and `kiln set size=` still read the old names, with a warning.
+- **Security**: the Next template moves to 16.4.3, out of GHSA-673q-mjm6-r5xr and GHSA-2464-fhr4-w9xw (unauthenticated remote code execution) and GHSA-p3m5-59mp-jv5r (denial of service) of Next 16.4.0. `kiln update` brings it to a repo.
 - `kiln score` sees every gap wherever the code lives: code at the root as well as in `backend/` and `frontend/`, compose services, a loose `requirements.txt`, the repo's GitHub settings (read through `gh`, cached a day), binary and non-UTF-8 files read right, agent files left out of the score. The tests and linters of every common stack are recognized, and a language not scored yet is named beside the score.
 - `kiln fix` converts more, safely: the CI (actions pinned to a commit SHA with their version in a comment, read-only workflow tokens, Dependabot for every ecosystem found), a tracked `.env`, a `requirements.txt` turned into a uv project, compose services hardened where they still start, an old runtime and an old Debian moved together. Each converter runs in a throwaway worktree, after the template, and is judged by the repo's own checks (found, timed out, told apart); a converter that breaks them is reverted, and a second run changes nothing.
 - kiln-bot: `kiln bot` runs on a `kiln/bot` branch and opens a weekly pull request, with the score on each pull request; each commit it brings is proven first and says what it was checked with. Without a token allowed to write workflows, the commits that would touch them are left out.
@@ -21,6 +22,7 @@ entries before v0.4.0 quote kiln's former French names.
 - The stack's front runs through its lock's package manager (`npm ci` in an npm folder, no stray `pnpm-lock.yaml`), and an adopted front through its own scripts. A DRF repo exports its schema with drf-spectacular. A dirty tree names its files.
 - `.claude/` is laid out like PostHog's, plans in `.claude/plans/`; project rules name only the stack a repo has; `ai_trailers` sets whether Claude's commits say Claude helped. On `develop`, kiln opens its work branch itself, and the branch guard lets a repo's first commit through.
 - The status line shows the exact context in k, the tokens used since the first session, and hides the cache when it is fine.
+- `NON-ROOT-CONTAINERS` fails again on an image ending on `USER 0:0` or `USER root:root`.
 - Ruff 0.17. CODEOWNERS only from a team of two. Charter fixes: `charter.yml` and `django.yml` no longer fail on setup-uv's post step, `WORKFLOW-INJECTION` reads only scripts, SQL formatted around quotes of the other kind is caught, Python rules read the code and not the examples in its strings, and the checks type what mypy is set for.
 
 ## v0.4.9 — 2026-10-26
