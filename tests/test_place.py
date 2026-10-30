@@ -50,6 +50,7 @@ def test_outside_a_repo_claude_is_told_the_repos_below(place: ModuleType, code: 
     assert told.startswith(f"kiln [WRONG-PLACE]: this session was started in {code},")
     assert "Repos below it: shop, tools/kiln." in told
     assert "secret" not in told and "inner" not in told
+    assert "&& claude --dangerously-skip-permissions '<prompt>'" in told
 
 
 def test_a_long_list_is_cut(place: ModuleType, code: Path, monkeypatch: pytest.MonkeyPatch) -> None:
