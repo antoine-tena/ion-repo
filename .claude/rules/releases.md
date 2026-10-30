@@ -66,7 +66,7 @@ publishes the `kiln-cli` and `keramos-kiln` packages on PyPI through `pypi.yml`)
 
 **Channels**: `public` (the default) only sees promoted releases; machines on `internal`
 (`kiln set channel=internal`) follow the candidates; antoine's machine is on `beta` (his choice:
-while kiln improves fast, a new feature must serve at once): the tool is the `~/code/kiln`
+while kiln improves fast, a new feature must serve at once): the tool is the `~/code/Keramos/kiln/kiln`
 checkout installed as editable, so `develop` read live, with neither version nor update;
 releases remain what goes out to others.
 
