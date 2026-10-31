@@ -10,3 +10,5 @@ dist/
 .claude/worktrees/
 .claude/memory/
 .claude/sessions/
+# Résultats de `claude plugin eval` (ion repo eval-skills) : locaux, jamais suivis.
+plugins/repo/evals/results/

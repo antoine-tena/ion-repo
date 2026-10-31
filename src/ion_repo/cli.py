@@ -30,7 +30,10 @@ LANGUAGES = ("en", "fr")
 # Home screen: commands by section; the role of each comes from its argparse help.
 COMMAND_GROUPS = (
     ("Project", ("new", "adopt", "install", "publish", "update", "set", "waive")),
-    ("Day to day", ("dev", "check", "ci", "contract", "doctor", "pause", "frame", "completion")),
+    (
+        "Day to day",
+        ("dev", "check", "ci", "contract", "doctor", "pause", "frame", "eval-skills", "completion"),
+    ),
     ("The grid", ("grid", "score", "fix", "bot")),
     ("All repos", ("status", "update --all", "version")),
 )
@@ -65,6 +68,7 @@ NO_RECAP_COMMANDS = frozenset(
         "fix",
         "pause",
         "frame",
+        "eval-skills",
         "bot",
     }
 )
@@ -202,6 +206,7 @@ def build_parser() -> argparse.ArgumentParser:
     _add_bot_command(commands)
     _add_pause_command(commands)
     _add_frame_command(commands)
+    _add_eval_skills_command(commands)
     status_parser = commands.add_parser(
         "status", help="state of the ion-repo repos of the code folder"
     )
@@ -408,6 +413,27 @@ def _add_frame_command(commands: argparse._SubParsersAction[_KilnParser]) -> Non
     frame_parser.add_argument("skill", help="its skill (summary, merge...)")
     frame_parser.add_argument(
         "--width", type=int, help="the rules' width (default: the terminal's, less 6)"
+    )
+
+
+def _add_eval_skills_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
+    eval_parser = commands.add_parser(
+        "eval-skills", help="check that the repo plugin's skills fire (asks three ok first)"
+    )
+    eval_parser.add_argument(
+        "--skill",
+        action="append",
+        default=[],
+        help="a skill to test, repeatable (default: those changed against develop)",
+    )
+    eval_parser.add_argument(
+        "--all", dest="every", action="store_true", help="every case of plugins/repo/evals/"
+    )
+    eval_parser.add_argument(
+        "--max-cost-usd", type=float, default=2.0, help="cost ceiling of the run (default: 2)"
+    )
+    eval_parser.add_argument(
+        "--dry-run", action="store_true", help="show the cases and the command, start nothing"
     )
 
 
@@ -637,6 +663,16 @@ def dispatch(arguments: argparse.Namespace) -> list[str]:
         from ion_repo import frame
 
         frame.frame(arguments.tool, arguments.skill, arguments.width)
+    elif arguments.command == "eval-skills":
+        from ion_repo import eval_skills
+
+        eval_skills.eval_skills(
+            Path.cwd(),
+            arguments.skill,
+            every=arguments.every,
+            max_cost_usd=arguments.max_cost_usd,
+            dry_run=arguments.dry_run,
+        )
     elif arguments.command == "version":
         _dispatch_version(arguments, repo_root(Path.cwd()))
     elif arguments.command == "status" or (arguments.command == "update" and arguments.all):
