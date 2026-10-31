@@ -48,4 +48,4 @@ After: `git diff <old tip> <branch>` empty unless a file was meant to go; histor
 - **Tags**: well formed (`vX.Y.Z`, `-rc.N`), none on a commit outside `main` or a release branch.
 
 ## 6. Summary
-One-line verdict (clean / tidied / to fix by the user), what was rewritten (old, new tip), what is left and why.
+In the `repo` plugin's `debrief` format (`output-styles/debrief.md`), its result sentence the verdict: clean, tidied, or to fix by the user. Inside `/repo:merge` or `/repo:release`: the verdict in one line, the debrief at their end.

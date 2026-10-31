@@ -62,4 +62,4 @@ git push origin develop
 git worktree remove .claude/worktrees/release-vN
 git branch -d release/vN && git push origin --delete release/vN
 ```
-Sum up: tag, deployed commit, migrations applied, announcement, fixes made on the release, rollback command.
+Report in the `repo` plugin's `debrief` format (`output-styles/debrief.md`); a failed health probe or smoke test is a `Broken:` line.

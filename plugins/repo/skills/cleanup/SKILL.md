@@ -20,4 +20,4 @@ default branch.
    `git branch -d <branch>` (never `-D`, never `--force` on a worktree with changes).
 5. Local branches without a worktree that are merged: offer `git branch -d` the same way. Never
    delete a remote branch without explicit agreement.
-6. Sum up what was removed and what remains.
+6. Report in the `repo` plugin's `debrief` format (`output-styles/debrief.md`).

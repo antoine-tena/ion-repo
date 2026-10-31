@@ -47,5 +47,6 @@ Talk to the user in their language.
 
 ## Sum up
 
-Version of the tool before and after, template release before and after (`_commit` of
-`.copier-answers.yml`, or the workflows' tag for an adopted repo), files changed, checks, and what is left of the `Finish the ion repo update` ticket.
+In the `repo` plugin's `debrief` format (`output-styles/debrief.md`): the tool's version and
+the template's release, before → after, among its points; what is left of the `Finish the
+ion-repo update` ticket under **◆ Next**.

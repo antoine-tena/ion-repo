@@ -21,4 +21,4 @@ Branch: `$ARGUMENTS`, else current. Integration branch: per project `CLAUDE.md`,
    - `claude plugin update <plugin>@<market> --scope <scope>` for each scope found, only those: `user` from anywhere; `project`, `local` from the main tree if the entry's `projectPath` is this repo (`cd <projectPath> && …`). Another repo's `projectPath`: leave it.
    - Tell the user to restart Claude Code: plugins load at launch.
    Local-folder plugin (`readFromFolder`, ion-repo here): same commands, harmless if version unchanged.
-7. No CI: it runs only on the release branch (`/repo:release`). Sum up: merge commit, files touched, linters run. Suggest `/clear` in one line only after a long session or before an unrelated subject; otherwise say nothing of it.
+7. No CI: it runs only on the release branch (`/repo:release`). Report in the `repo` plugin's `debrief` format (`output-styles/debrief.md`). Suggest `/clear` under its **◆ Your turn**, in one line, only after a long session or before an unrelated subject; otherwise say nothing of it.
