@@ -9,9 +9,9 @@ from pathlib import Path
 
 import pytest
 
-from kiln.charter.cli import check_file, main
-from kiln.charter.config import load
-from kiln.charter.repo import Repo
+from ion_repo.charter.cli import check_file, main
+from ion_repo.charter.config import load
+from ion_repo.charter.repo import Repo
 
 ROOT = Path(__file__).resolve().parents[1]
 HOOK = ROOT / "plugins/kiln/hooks/check_file.py"
@@ -100,7 +100,7 @@ def test_the_hook_reports_the_edited_file_fast(
 ) -> None:
     bin_dir = tmp_path_factory.mktemp("bin")
     charter = bin_dir / "charter"
-    charter.write_text(f"#!{sys.executable}\nfrom kiln.charter.cli import run\nrun()\n")
+    charter.write_text(f"#!{sys.executable}\nfrom ion_repo.charter.cli import run\nrun()\n")
     charter.chmod(0o755)
     payload = json.dumps({"tool_input": {"file_path": str(repo / "backend/printer.py")}})
 

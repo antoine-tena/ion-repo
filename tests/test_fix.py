@@ -11,11 +11,11 @@ from pathlib import Path
 import pytest
 import yaml
 
-from kiln.grid import checks, detectors, fix, roadmap, score
-from kiln.grid.facts import Repo, read_repo
-from kiln.grid.fixers import FIXERS, ci, containers, python, resolve
-from kiln.grid.model import load_rules
-from kiln.shell import KilnError
+from ion_repo.grid import checks, detectors, fix, roadmap, score
+from ion_repo.grid.facts import Repo, read_repo
+from ion_repo.grid.fixers import FIXERS, ci, containers, python, resolve
+from ion_repo.grid.model import load_rules
+from ion_repo.shell import KilnError
 
 SHA = "b4ffde65f46336ab88eb53be808477a3936bae11"
 DIGEST = "sha256:" + "a" * 64

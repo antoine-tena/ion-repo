@@ -4,9 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from kiln import update
-from kiln.deps import _ignored_pnpm_dependencies
-from kiln.shell import KilnError
+from ion_repo import update
+from ion_repo.deps import _ignored_pnpm_dependencies
+from ion_repo.shell import KilnError
 
 CONFLICTED = """saveExact: true
 <<<<<<< before updating

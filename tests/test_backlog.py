@@ -4,8 +4,8 @@
 import subprocess
 from pathlib import Path
 
-from kiln.backlog import add_after_update_ticket, migrate_legacy_backlog, split_backlog
-from kiln.versions import ReleaseNotes
+from ion_repo.backlog import add_after_update_ticket, migrate_legacy_backlog, split_backlog
+from ion_repo.versions import ReleaseNotes
 
 TEMPLATE_BACKLOG = (
     Path(__file__).parent.parent / "template/docs/backlog/backlog.md.jinja"

@@ -11,7 +11,7 @@ whenever a tag changes. The tag stays in front of the digest, for the reader.
 import re
 from pathlib import Path
 
-from kiln.grid.fixers import resolve
+from ion_repo.grid.fixers import resolve
 
 TEMPLATE = Path(__file__).resolve().parent.parent / "template"
 FROM = re.compile(r"^(?P<head>FROM\s+)(?P<image>[^\s@]+)(?:@sha256:[0-9a-f]{64})?", re.M)

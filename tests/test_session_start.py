@@ -262,7 +262,7 @@ def test_promoted_versions_come_from_pypi_and_candidates_from_github(
 
 
 def test_the_logo_is_the_one_of_kiln() -> None:
-    from kiln import banner
+    from ion_repo import banner
 
     hook = load_hook()
 
@@ -629,7 +629,7 @@ def test_a_paused_session_is_listed_at_the_next_start_then_leaves_the_list(
 ) -> None:
     """`kiln pause` writes the place; the next start lists it; resumed, or its branch deleted,
     it is gone."""
-    from kiln import pause
+    from ion_repo import pause
 
     hook = load_hook()
     paused = sys.modules["paused"]
@@ -663,8 +663,8 @@ def test_a_paused_session_is_listed_at_the_next_start_then_leaves_the_list(
 
 
 def test_pause_needs_a_claude_code_session(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    from kiln import pause
-    from kiln.shell import KilnError
+    from ion_repo import pause
+    from ion_repo.shell import KilnError
 
     monkeypatch.delenv(pause.SESSION_VARIABLE, raising=False)
     with pytest.raises(KilnError, match="no Claude Code session"):

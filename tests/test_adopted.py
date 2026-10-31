@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from kiln import adopted, adopted_names, fleet, update
-from kiln.shell import KilnError
+from ion_repo import adopted, adopted_names, fleet, update
+from ion_repo.shell import KilnError
 
 CI = """\
 name: CI

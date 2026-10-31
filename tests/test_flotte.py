@@ -3,9 +3,9 @@ from pathlib import Path
 
 import pytest
 
-from kiln import fleet
-from kiln.config import UserConfig
-from kiln.fleet import (
+from ion_repo import fleet
+from ion_repo.config import UserConfig
+from ion_repo.fleet import (
     MAX_FILES_PER_COMMIT,
     commit_in_batches,
     find_adopted,
@@ -13,8 +13,8 @@ from kiln.fleet import (
     integration_branch,
     template_state,
 )
-from kiln.shell import KilnError, step
-from kiln.update import conflicted_files
+from ion_repo.shell import KilnError, step
+from ion_repo.update import conflicted_files
 
 
 def make_repo(root: Path, source: str) -> Path:

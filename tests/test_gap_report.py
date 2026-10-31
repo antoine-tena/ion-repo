@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from kiln.grid import gap_report, score
+from ion_repo.grid import gap_report, score
 
 
 @pytest.fixture
@@ -39,7 +39,7 @@ class FakeGh:
 def gh(monkeypatch: pytest.MonkeyPatch) -> FakeGh:
     fake = FakeGh([])
     monkeypatch.setattr(gap_report, "_gh", fake)
-    monkeypatch.setattr("kiln.grid.gap_report.shutil.which", lambda name: "/usr/bin/gh")
+    monkeypatch.setattr("ion_repo.grid.gap_report.shutil.which", lambda name: "/usr/bin/gh")
     return fake
 
 
@@ -95,7 +95,7 @@ def test_never_holds_for_the_repo_and_no_terminal_asks_nothing(repo: Path, gh: F
 
 
 def test_without_gh_a_prefilled_link_is_given(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("kiln.grid.gap_report.shutil.which", lambda name: None)
+    monkeypatch.setattr("ion_repo.grid.gap_report.shutil.which", lambda name: None)
 
     said = gap_report.tell("PHP: not covered by the grid yet")
 

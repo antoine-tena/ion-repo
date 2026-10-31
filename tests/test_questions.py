@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from kiln import questions
+from ion_repo import questions
 
 COPIER = yaml.safe_load((Path(__file__).parents[1] / "copier.yml").read_text())
 

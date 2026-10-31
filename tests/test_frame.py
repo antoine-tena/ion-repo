@@ -4,7 +4,7 @@ from collections.abc import Iterator
 
 import pytest
 
-from kiln import frame
+from ion_repo import frame
 
 
 def printed(capsys: pytest.CaptureFixture[str]) -> list[str]:

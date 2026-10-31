@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from kiln.grid import forge
+from ion_repo.grid import forge
 
 SLUG = "acme/app"
 REPO = {

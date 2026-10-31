@@ -8,10 +8,10 @@ from pathlib import Path
 import pytest
 import yaml
 
-from kiln.ci import execution
-from kiln.ci.execution import Workspace, run_job
-from kiln.ci.jobs import BACK_LANE, DEFAULTS, plan_job
-from kiln.ci.verdict import (
+from ion_repo.ci import execution
+from ion_repo.ci.execution import Workspace, run_job
+from ion_repo.ci.jobs import BACK_LANE, DEFAULTS, plan_job
+from ion_repo.ci.verdict import (
     FAILURE_LINE,
     SUCCESS_LINE,
     JobOutcome,
@@ -19,7 +19,7 @@ from kiln.ci.verdict import (
     read_verdict,
     record_verdict,
 )
-from kiln.ci.workflow import INLINE_KIND, Job, load_jobs
+from ion_repo.ci.workflow import INLINE_KIND, Job, load_jobs
 
 WORKFLOWS = Path(__file__).parent.parent / ".github" / "workflows"
 PROJECT_CI = """

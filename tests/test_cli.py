@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from kiln import cli, fleet, ui
-from kiln.shell import KilnError
+from ion_repo import cli, fleet, ui
+from ion_repo.shell import KilnError
 
 
 def run_kiln(monkeypatch: pytest.MonkeyPatch, *arguments: str) -> int:

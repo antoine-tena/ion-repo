@@ -5,9 +5,9 @@ from typing import Any
 import pytest
 import yaml
 
-from kiln import adopt, update
-from kiln.shell import KilnError
-from kiln.stack import detect_stack
+from ion_repo import adopt, update
+from ion_repo.shell import KilnError
+from ion_repo.stack import detect_stack
 
 TEMPLATE_DIR = str(Path(__file__).resolve().parent.parent)
 GIT_IDENTITY = ["-c", "user.name=N", "-c", "user.email=n@example.com", "-c", "commit.gpgsign=false"]

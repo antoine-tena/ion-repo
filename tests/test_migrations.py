@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from kiln import frozen, migrations
+from ion_repo import frozen, migrations
 
 LEGACY_CHARTER = """\
 # Notre commentaire.

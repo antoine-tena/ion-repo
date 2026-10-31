@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from kiln import rehearsal
-from kiln.shell import KilnError
+from ion_repo import rehearsal
+from ion_repo.shell import KilnError
 
 
 def git(cwd: Path, *args: str) -> str:

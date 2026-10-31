@@ -5,9 +5,9 @@ from pathlib import Path
 
 import pytest
 
-from kiln import cli, install
-from kiln.config import UserConfig
-from kiln.stack import Stack
+from ion_repo import cli, install
+from ion_repo.config import UserConfig
+from ion_repo.stack import Stack
 
 
 @pytest.fixture
@@ -19,7 +19,7 @@ def machine(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> list[list[str]]:
     monkeypatch.setattr(install, "load_config", lambda: UserConfig(system="linux"))
     monkeypatch.setattr(install, "ensure_statusline", lambda config: config)
     monkeypatch.setattr(install, "run", lambda command, cwd: commands.append(command))
-    monkeypatch.setattr("kiln.install.shutil.which", lambda name: f"/usr/bin/{name}")
+    monkeypatch.setattr("ion_repo.install.shutil.which", lambda name: f"/usr/bin/{name}")
     return commands
 
 
@@ -27,7 +27,7 @@ def test_a_bare_machine_gets_the_command_the_catalogue_and_the_plugin(
     machine: list[list[str]], monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(
-        "kiln.install.shutil.which", lambda name: None if name == "kiln" else f"/usr/bin/{name}"
+        "ion_repo.install.shutil.which", lambda name: None if name == "kiln" else f"/usr/bin/{name}"
     )
 
     install.install_machine()
@@ -52,7 +52,8 @@ def test_without_claude_code_the_plugins_wait(
     machine: list[list[str]], monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     monkeypatch.setattr(
-        "kiln.install.shutil.which", lambda name: None if name == "claude" else f"/usr/bin/{name}"
+        "ion_repo.install.shutil.which",
+        lambda name: None if name == "claude" else f"/usr/bin/{name}",
     )
 
     install.install_machine()

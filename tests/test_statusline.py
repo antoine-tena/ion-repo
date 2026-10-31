@@ -9,16 +9,16 @@ from typing import Any
 
 import pytest
 
-from kiln.config import UserConfig, load_config, save_config
-from kiln.machine import apply_machine, only_machine_keys
-from kiln.shell import KilnError
-from kiln.statusline import (
+from ion_repo.config import UserConfig, load_config, save_config
+from ion_repo.machine import apply_machine, only_machine_keys
+from ion_repo.shell import KilnError
+from ion_repo.statusline import (
     REFRESH_SECONDS,
     apply_statusline_choice,
     ensure_statusline,
     is_kiln_statusline,
 )
-from kiln.trailers import apply_trailers_choice, ensure_trailers
+from ion_repo.trailers import apply_trailers_choice, ensure_trailers
 
 SCRIPT = Path(__file__).parent.parent / "plugins" / "kiln" / "scripts" / "statusline.py"
 OWN = {"type": "command", "command": "~/bin/ma-ligne.sh"}

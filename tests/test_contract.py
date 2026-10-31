@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from kiln.contract import EXPORT_COMMAND, SPECTACULAR_COMMAND, _scripts, export_command
-from kiln.shell import KilnError, require_clean_tree
+from ion_repo.contract import EXPORT_COMMAND, SPECTACULAR_COMMAND, _scripts, export_command
+from ion_repo.shell import KilnError, require_clean_tree
 
 
 def test_kilns_own_export_comes_first(tmp_path: Path) -> None:

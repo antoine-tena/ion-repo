@@ -10,10 +10,10 @@ from typing import Any
 
 import pytest
 
-from kiln import cli
-from kiln.grid import detectors, facts, fixers, forge, model
-from kiln.grid.facts import read_repo
-from kiln.shell import KilnError
+from ion_repo import cli
+from ion_repo.grid import detectors, facts, fixers, forge, model
+from ion_repo.grid.facts import read_repo
+from ion_repo.shell import KilnError
 
 RULES = model.load_rules()
 WORKFLOW = ".github/workflows/ci.yml"
@@ -514,7 +514,7 @@ def test_kiln_grid_lists_and_shows(
 
 
 def test_an_unknown_rule_suggests_the_close_ones() -> None:
-    from kiln.grid.show import find_rule
+    from ion_repo.grid.show import find_rule
 
     with pytest.raises(KilnError, match=r"did you mean PINNED-ACTIONS\?"):
         find_rule("ACTIONS")

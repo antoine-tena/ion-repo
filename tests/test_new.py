@@ -5,8 +5,8 @@ from pathlib import Path
 import copier
 import pytest
 
-from kiln import new, ui
-from kiln.new import NewProjectRequest, create_project, next_steps
+from ion_repo import new, ui
+from ion_repo.new import NewProjectRequest, create_project, next_steps
 
 
 def steps_for(tmp_path: Path, backend: str, frontend: str, project_type: str) -> list[str]:

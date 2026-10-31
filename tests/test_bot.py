@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pytest
 
-from kiln import bot
-from kiln.grid import checks
-from kiln.grid.fixers import containers, resolve
-from kiln.shell import KilnError
+from ion_repo import bot
+from ion_repo.grid import checks
+from ion_repo.grid.fixers import containers, resolve
+from ion_repo.shell import KilnError
 
 SHA = "b4ffde65f46336ab88eb53be808477a3936bae11"
 

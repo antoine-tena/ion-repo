@@ -8,7 +8,7 @@ import copier
 import pytest
 import yaml
 
-from kiln.grid import score
+from ion_repo.grid import score
 
 TEMPLATE_DIR = Path(__file__).resolve().parent.parent
 ANSWERS = {

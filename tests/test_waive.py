@@ -8,8 +8,8 @@ from typing import Any
 
 import pytest
 
-from kiln.shell import KilnError
-from kiln.waive import WaiveRequest, waive
+from ion_repo.shell import KilnError
+from ion_repo.waive import WaiveRequest, waive
 
 TODAY = datetime.date(2026, 10, 16)
 

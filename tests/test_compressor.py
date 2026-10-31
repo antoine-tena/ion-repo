@@ -8,11 +8,11 @@ from pathlib import Path
 
 import pytest
 
-from kiln.grid import compressor
-from kiln.grid.compressor import candidates, proof, removal
-from kiln.grid.compressor.candidates import CODE, DEPENDENCY, Candidate
-from kiln.grid.facts import read_repo
-from kiln.shell import KilnError
+from ion_repo.grid import compressor
+from ion_repo.grid.compressor import candidates, proof, removal
+from ion_repo.grid.compressor.candidates import CODE, DEPENDENCY, Candidate
+from ion_repo.grid.facts import read_repo
+from ion_repo.shell import KilnError
 
 CORE = textwrap.dedent(
     '''\

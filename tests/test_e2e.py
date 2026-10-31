@@ -20,8 +20,8 @@ from pathlib import Path
 import copier
 import pytest
 
-from kiln import renames
-from kiln.versions import release_version
+from ion_repo import renames
+from ion_repo.versions import release_version
 
 REPO = Path(__file__).resolve().parent.parent
 TIMEOUT = 1800

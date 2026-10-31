@@ -7,9 +7,9 @@ from pathlib import Path
 import pytest
 from packaging.version import Version
 
-from kiln import github_ci, release, shipping
-from kiln.release import Evidence, Tag, read_tags
-from kiln.shell import KilnError
+from ion_repo import github_ci, release, shipping
+from ion_repo.release import Evidence, Tag, read_tags
+from ion_repo.shell import KilnError
 
 CHANGELOG = "# What's new\n\nHeader.\n\n## v0.1.0 — 2026-10-01\n- First release.\n"
 

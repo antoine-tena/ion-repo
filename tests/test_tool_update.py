@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from kiln import tool_update
+from ion_repo import tool_update
 
 DAY = tool_update.CHECK_INTERVAL
 

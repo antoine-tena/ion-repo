@@ -13,24 +13,24 @@ import pytest
 from packaging.version import Version
 from plumbum import ProcessExecutionError
 
-from kiln import check, cli, deps, github, ui
-from kiln.banner import LOGO, _project_summary, render_logo
-from kiln.check import _check_commands, _ci_django_job
-from kiln.ci.jobs import Plan, Services
-from kiln.ci.workflow import Job
-from kiln.config import UserConfig
-from kiln.deps import _major_bounds
-from kiln.dev import read_env_file, service_prefix
-from kiln.dev.backing import backing_services
-from kiln.doctor import Level, repo_findings, workstation_findings
-from kiln.install import (
+from ion_repo import check, cli, deps, github, ui
+from ion_repo.banner import LOGO, _project_summary, render_logo
+from ion_repo.check import _check_commands, _ci_django_job
+from ion_repo.ci.jobs import Plan, Services
+from ion_repo.ci.workflow import Job
+from ion_repo.config import UserConfig
+from ion_repo.deps import _major_bounds
+from ion_repo.dev import read_env_file, service_prefix
+from ion_repo.dev.backing import backing_services
+from ion_repo.doctor import Level, repo_findings, workstation_findings
+from ion_repo.install import (
     ensure_env_file,
     moved_from,
     pnpm_behind,
     pnpm_install_command,
     sync_command,
 )
-from kiln.release import (
+from ion_repo.release import (
     Evidence,
     Tag,
     is_fixes_only,
@@ -38,15 +38,15 @@ from kiln.release import (
     next_version,
     promotion_verdict,
 )
-from kiln.rules import charter_rules, verified_rules, write_unverified_rules
-from kiln.settings import (
+from ion_repo.rules import charter_rules, verified_rules, write_unverified_rules
+from ion_repo.settings import (
     parse_assignments,
     remove_replaced_artifacts,
     remove_starter_files,
     stop_on_conflicts,
 )
-from kiln.shell import KilnError, quiet_git
-from kiln.stack import (
+from ion_repo.shell import KilnError, quiet_git
+from ion_repo.stack import (
     PNPM_LENIENT_BUILDS,
     Command,
     Stack,
@@ -54,14 +54,14 @@ from kiln.stack import (
     load_stack,
     stack_from_answers,
 )
-from kiln.template import DEFAULT_TEMPLATE_SOURCE, template_revision
-from kiln.update import (
+from ion_repo.template import DEFAULT_TEMPLATE_SOURCE, template_revision
+from ion_repo.update import (
     apply_template,
     check_tool_not_older,
     git_failure,
     replace_legacy_source,
 )
-from kiln.versions import (
+from ion_repo.versions import (
     installed_version,
     notes_between,
     release_version,
@@ -453,8 +453,8 @@ def test_recap_outside_a_terminal_is_one_line(capsys: pytest.CaptureFixture[str]
 
 
 def test_machine_settings_are_parsed_and_checked() -> None:
-    from kiln.config import UserConfig
-    from kiln.machine import apply_machine
+    from ion_repo.config import UserConfig
+    from ion_repo.machine import apply_machine
 
     updated = apply_machine(
         UserConfig(), ["system=wsl", "owner=antoine", "team=a, b", "code_dir=/srv"]
@@ -469,8 +469,8 @@ def test_machine_settings_are_parsed_and_checked() -> None:
 
 
 def test_machine_keys_of_before_kiln_0_4_are_still_accepted() -> None:
-    from kiln.config import UserConfig
-    from kiln.machine import apply_machine
+    from ion_repo.config import UserConfig
+    from ion_repo.machine import apply_machine
 
     updated = apply_machine(UserConfig(), ["systeme=wsl", "canal=interne", "equipe=a"])
 
@@ -480,7 +480,7 @@ def test_machine_keys_of_before_kiln_0_4_are_still_accepted() -> None:
 def test_machine_config_of_before_kiln_0_4_is_read(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from kiln.config import config_path, load_config
+    from ion_repo.config import config_path, load_config
 
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
     config_path().parent.mkdir(parents=True)
@@ -528,8 +528,8 @@ def test_a_candidate_already_carries_its_release_notes() -> None:
 
 
 def test_doctor_blocks_on_a_tool_the_repo_needs(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("kiln.doctor.shutil.which", lambda name: None)
-    monkeypatch.setattr("kiln.doctor._latest_release", lambda: None)
+    monkeypatch.setattr("ion_repo.doctor.shutil.which", lambda name: None)
+    monkeypatch.setattr("ion_repo.doctor._latest_release", lambda: None)
     stack = Stack(backend="fastapi", frontend="nuxt", has_podman=False)
 
     findings = {f.label: f for f in workstation_findings(UserConfig(system="wsl"), stack)}
@@ -543,10 +543,10 @@ def test_doctor_sees_a_stub_that_only_says_the_tool_is_missing(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     # macOS has /usr/bin/java without a JDK: found, but `java -version` fails (#49).
-    monkeypatch.setattr("kiln.doctor.shutil.which", lambda name: f"/usr/bin/{name}")
-    monkeypatch.setattr("kiln.doctor._latest_release", lambda: None)
+    monkeypatch.setattr("ion_repo.doctor.shutil.which", lambda name: f"/usr/bin/{name}")
+    monkeypatch.setattr("ion_repo.doctor._latest_release", lambda: None)
     stub = subprocess.CompletedProcess(["java"], 1, "", "Unable to locate a Java Runtime.\n")
-    monkeypatch.setattr("kiln.doctor._completed", lambda command, cwd=None: stub)
+    monkeypatch.setattr("ion_repo.doctor._completed", lambda command, cwd=None: stub)
 
     findings = {f.label: f for f in workstation_findings(UserConfig(system="macos"), None)}
 
@@ -557,9 +557,9 @@ def test_doctor_sees_a_stub_that_only_says_the_tool_is_missing(
 
 def test_doctor_without_a_chosen_system_detects_it(monkeypatch: pytest.MonkeyPatch) -> None:
     # A repo adopted with uvx never asked for the system: macOS was told to use apt (#48).
-    monkeypatch.setattr("kiln.doctor.shutil.which", lambda name: None)
-    monkeypatch.setattr("kiln.doctor._latest_release", lambda: None)
-    monkeypatch.setattr("kiln.doctor.detect_system", lambda: "macos")
+    monkeypatch.setattr("ion_repo.doctor.shutil.which", lambda name: None)
+    monkeypatch.setattr("ion_repo.doctor._latest_release", lambda: None)
+    monkeypatch.setattr("ion_repo.doctor.detect_system", lambda: "macos")
 
     findings = {f.label: f for f in workstation_findings(UserConfig(), None)}
 
@@ -745,7 +745,7 @@ def test_the_template_is_taken_at_the_installed_release(
     monkeypatch: pytest.MonkeyPatch, version: str, direct_url: str, expected: str
 ) -> None:
     monkeypatch.setattr(
-        "kiln.versions._installed_distribution", lambda: _FakeDistribution(version, direct_url)
+        "ion_repo.versions._installed_distribution", lambda: _FakeDistribution(version, direct_url)
     )
 
     assert tool_release_tag() == expected
@@ -771,10 +771,10 @@ def test_a_tool_that_is_not_a_release_updates_no_repo(
     monkeypatch: pytest.MonkeyPatch, direct_url: str, recorded: str | None, shown: str
 ) -> None:
     monkeypatch.setattr(
-        "kiln.versions._installed_distribution", lambda: _FakeDistribution("0.3.4", direct_url)
+        "ion_repo.versions._installed_distribution", lambda: _FakeDistribution("0.3.4", direct_url)
     )
-    monkeypatch.setattr("kiln.versions._recorded_build", lambda: recorded)
-    monkeypatch.setattr("kiln.template.latest_release", lambda: "v0.4.0-rc.1")
+    monkeypatch.setattr("ion_repo.versions._recorded_build", lambda: recorded)
+    monkeypatch.setattr("ion_repo.template.latest_release", lambda: "v0.4.0-rc.1")
 
     assert tool_release_tag() is None
     assert installed_version() == shown
@@ -793,10 +793,10 @@ def test_on_the_beta_channel_the_template_is_taken_at_the_tool_commit(
     monkeypatch: pytest.MonkeyPatch, recorded: str, expected: str | None
 ) -> None:
     monkeypatch.setattr(
-        "kiln.versions._installed_distribution", lambda: _FakeDistribution("0.4.4", FOLDER)
+        "ion_repo.versions._installed_distribution", lambda: _FakeDistribution("0.4.4", FOLDER)
     )
-    monkeypatch.setattr("kiln.versions._recorded_build", lambda: recorded)
-    monkeypatch.setattr("kiln.template.is_beta", lambda: True)
+    monkeypatch.setattr("ion_repo.versions._recorded_build", lambda: recorded)
+    monkeypatch.setattr("ion_repo.template.is_beta", lambda: True)
 
     if expected is None:
         with pytest.raises(KilnError, match="uncommitted changes"):
@@ -806,8 +806,8 @@ def test_on_the_beta_channel_the_template_is_taken_at_the_tool_commit(
 
 
 def test_the_beta_channel_installs_the_checkout_of_the_code_directory(tmp_path: Path) -> None:
-    from kiln.machine import apply_machine
-    from kiln.versions import beta_install_command
+    from ion_repo.machine import apply_machine
+    from ion_repo.versions import beta_install_command
 
     assert apply_machine(UserConfig(), ["channel=beta"]).channel == "beta"
     assert "@develop" in beta_install_command(tmp_path)
@@ -819,7 +819,7 @@ def test_the_beta_channel_installs_the_checkout_of_the_code_directory(tmp_path: 
 def test_the_beta_channel_finds_the_checkout_in_a_folder_of_the_code_directory(
     tmp_path: Path,
 ) -> None:
-    from kiln.versions import beta_install_command
+    from ion_repo.versions import beta_install_command
 
     (tmp_path / "tools/kiln/src/kiln").mkdir(parents=True)
     (tmp_path / "tools/kiln/src/kiln/versions.py").write_text("")
@@ -832,7 +832,7 @@ def test_the_beta_channel_finds_the_checkout_in_a_folder_of_the_code_directory(
 def test_the_beta_channel_finds_the_checkout_in_a_tool_folder_of_a_family(
     tmp_path: Path,
 ) -> None:
-    from kiln.versions import beta_install_command
+    from ion_repo.versions import beta_install_command
 
     (tmp_path / "family/kiln/kiln/src/kiln").mkdir(parents=True)
     (tmp_path / "family/kiln/kiln/src/kiln/versions.py").write_text("")
@@ -844,10 +844,10 @@ def test_a_folder_install_is_what_it_was_built_from_not_the_folder_today(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "kiln.versions._installed_distribution", lambda: _FakeDistribution("0.4.0", FOLDER)
+        "ion_repo.versions._installed_distribution", lambda: _FakeDistribution("0.4.0", FOLDER)
     )
-    monkeypatch.setattr("kiln.versions._recorded_build", lambda: "v0.4.0-rc.1")
-    monkeypatch.setattr("kiln.versions._describe", lambda _: pytest.fail("folder read live"))
+    monkeypatch.setattr("ion_repo.versions._recorded_build", lambda: "v0.4.0-rc.1")
+    monkeypatch.setattr("ion_repo.versions._describe", lambda _: pytest.fail("folder read live"))
 
     assert tool_release_tag() == "v0.4.0-rc.1"
     assert installed_version() == "v0.4.0-rc.1"
@@ -856,7 +856,7 @@ def test_a_folder_install_is_what_it_was_built_from_not_the_folder_today(
 def test_an_editable_checkout_is_read_live(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     editable = json.dumps({"url": f"file://{tmp_path}", "dir_info": {"editable": True}})
     monkeypatch.setattr(
-        "kiln.versions._installed_distribution", lambda: _FakeDistribution("0.4.0", editable)
+        "ion_repo.versions._installed_distribution", lambda: _FakeDistribution("0.4.0", editable)
     )
     git = ["git", "-C", str(tmp_path)]
     subprocess.run([*git, "init", "-q"], check=True)
@@ -898,7 +898,7 @@ def test_update_refuses_to_take_a_repo_back_to_an_older_kiln(
     (tmp_path / ".copier-answers.yml").write_text(
         f"_commit: v0.3.5\n_src_path: {DEFAULT_TEMPLATE_SOURCE}\n"
     )
-    monkeypatch.setattr("kiln.update.tool_release_tag", lambda: "v0.3.4")
+    monkeypatch.setattr("ion_repo.update.tool_release_tag", lambda: "v0.3.4")
 
     with pytest.raises(KilnError, match="newer than the installed tool"):
         check_tool_not_older(tmp_path)
@@ -907,7 +907,7 @@ def test_update_refuses_to_take_a_repo_back_to_an_older_kiln(
 def test_without_gh_the_project_is_created_without_github(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    monkeypatch.setattr("kiln.github.shutil.which", lambda _: None)
+    monkeypatch.setattr("ion_repo.github.shutil.which", lambda _: None)
 
     assert github.can_publish() is False
     assert github.login() is None
@@ -972,7 +972,7 @@ def test_pnpm_install_frozen_only_with_a_lockfile(tmp_path: Path) -> None:
 def test_a_kiln_workflow_pinned_by_kiln_fix_follows_the_template(tmp_path: Path) -> None:
     """`@<sha> # v0.4.10` (kiln fix) against the old render `@v0.4.10` and the new `@v0.4.11`:
     no conflict left, the new tag taken, for the update's converters to pin again (T-159)."""
-    from kiln.update import CONFLICT_MARKER, resolve_kiln_ref_conflicts
+    from ion_repo.update import CONFLICT_MARKER, resolve_kiln_ref_conflicts
 
     def run_git(*arguments: str, given: str | None = None) -> str:
         return subprocess.run(

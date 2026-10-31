@@ -7,7 +7,7 @@ from types import ModuleType
 
 import pytest
 
-from kiln import versions
+from ion_repo import versions
 
 ROOT = Path(__file__).resolve().parent.parent
 SHA = "ab" * 32

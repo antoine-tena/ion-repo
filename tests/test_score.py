@@ -11,9 +11,9 @@ from pathlib import Path
 
 import pytest
 
-from kiln import cli
-from kiln.grid import roadmap, score
-from kiln.shell import KilnError
+from ion_repo import cli
+from ion_repo.grid import roadmap, score
+from ion_repo.shell import KilnError
 
 SHA = "b4ffde65f46336ab88eb53be808477a3936bae11"
 GOOD = {
@@ -118,8 +118,8 @@ def test_github_settings_out_of_reach_are_left_out_and_said(
 ) -> None:
     root = make(tmp_path, GOOD)
     subprocess.run(["git", "-C", str(root), "remote", "add", "origin", "https://github.com/a/b"])
-    monkeypatch.setattr("kiln.grid.forge.ENABLED", True)
-    monkeypatch.setattr("kiln.grid.forge.shutil.which", lambda name: None)
+    monkeypatch.setattr("ion_repo.grid.forge.ENABLED", True)
+    monkeypatch.setattr("ion_repo.grid.forge.shutil.which", lambda name: None)
     report = score.score_repo(root)
 
     assert report.score == 100

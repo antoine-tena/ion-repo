@@ -79,7 +79,7 @@ def test_a_recorded_demo_types_only_what_kiln_offers(image: Path) -> None:
 
 @pytest.mark.parametrize("readme", READMES)
 def test_a_readme_shows_only_current_images_and_existing_commands(readme: str) -> None:
-    from kiln import cli
+    from ion_repo import cli
 
     text = (ROOT / readme).read_text(encoding="utf-8")
     images = re.findall(r'(?:src|srcset)="(docs/assets/[^"]+)"', text)
@@ -198,8 +198,8 @@ LEGACY = frozenset({"--sauter", "--sans-pousser", "--garder", "--statut", "--pos
 
 def offered() -> dict[str, str]:
     """What kiln offers, by label, with the text each README must contain."""
-    from kiln import cli
-    from kiln.settings import SETTABLE_KEYS
+    from ion_repo import cli
+    from ion_repo.settings import SETTABLE_KEYS
 
     parser = cli.build_parser()
     commands = next(

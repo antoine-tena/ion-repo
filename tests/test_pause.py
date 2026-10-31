@@ -3,7 +3,7 @@
 import subprocess
 from pathlib import Path
 
-from kiln.pause import suggested_names
+from ion_repo.pause import suggested_names
 
 
 def git(root: Path, *arguments: str) -> None:

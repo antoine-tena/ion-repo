@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Former path of a hook of the `base` plugin (before kiln 0.4), still called by sessions started
-before the plugin became `kiln`: runs plugins/kiln/hooks/reminders.py."""
+before the plugin became `kiln`: runs plugins/repo/hooks/reminders.py."""
 
 import runpy
 import sys
 from pathlib import Path
 
-script = Path(__file__).resolve().parents[2] / "kiln" / "hooks" / "reminders.py"
+script = Path(__file__).resolve().parents[2] / "repo" / "hooks" / "reminders.py"
 sys.path.insert(0, str(script.parent))
 sys.argv[0] = str(script)
 runpy.run_path(str(script), run_name="__main__")
