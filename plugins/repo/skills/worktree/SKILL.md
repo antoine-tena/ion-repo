@@ -23,4 +23,6 @@ an argument, propose one from the task.
 4. Move the session into it with Claude Code's `EnterWorktree` tool (`path` = the worktree):
    the status line, the hooks and the relative paths then describe the branch being worked on,
    not the main tree's integration branch. Without that tool, work only in the worktree
-   (absolute paths). Give its path.
+   (absolute paths). Give its path. Claude Code's isolation then refuses a command it cannot read
+   (a variable, a heredoc, `git -C`, several commands chained around git): send git commands plain
+   and one by one, and put the rest in a script.

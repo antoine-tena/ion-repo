@@ -134,6 +134,9 @@ measure on a local copy, never in the repo itself. ion-repo may also train on an
 
 ## In every change
 
+- A name changes through `ion repo set` or a conversion shipped in `ion repo update`, never by a
+  find-and-replace in a generated repo: the old render no longer matches, and every such line
+  conflicts at the next update (the family's repos, 31 October 2026).
 - **Breaking** is whatever touches ion-repo's public API: commands and options of the CLI,
   questions of `copier.yml`, the generated tree, inputs of the reusable workflows and actions,
   names of skills and hooks, IDs of charter rules. Mark it in the commit (`feat!:` or
