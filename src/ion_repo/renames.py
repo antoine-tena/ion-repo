@@ -281,6 +281,7 @@ ION_PLUGINS: Mapping[str, str] = {
     "kiln@kiln": "repo@ion-repo",
     "base@kiln": "repo@ion-repo",
     "repo@kiln": "repo@ion-repo",
+    "ion-repo@ion-repo": "repo@ion-repo",  # the family's repos, renamed by hand first
     **{f"{name}@kiln": f"{name}@ion-repo" for name in STACK_PLUGINS},
 }
 ION_SKILLS = (

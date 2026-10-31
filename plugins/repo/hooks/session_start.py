@@ -13,7 +13,7 @@ The question only says from which version to which; above it, at the user's firs
 When to ask again after a "no": `reminders.py` (5, 10, 30 then 50 sessions). After 4 "no" to an
 update, the question also offers to uninstall ion-repo (tool) or to unlink the repo from ion-repo
 (repo). Outside ion-repo repos the hook does nothing: adopting ion-repo is on request only (`ion
-repo adopt`, skill `/repo:adopt`). Before kiln 0.4 it also linked the plugin at `.claude/ion-repo`
+repo adopt`, skill `/repo:adopt`). Before kiln 0.4 it also linked the plugin at `.claude/kiln`
 in every repo: that link is removed.
 
 In a repo ion-repo looks after (ion-repo itself included), Claude is also told when the last CI of
@@ -470,7 +470,7 @@ def integrated_commit(root: Path, commit: str) -> str:
 
 
 def remove_legacy_link(root: Path) -> None:
-    """kiln 0.3 linked the plugin at `.claude/ion-repo` in every repo: only that symlink goes."""
+    """kiln 0.3 linked the plugin at `.claude/kiln` in every repo: only that symlink goes."""
     link = root / LEGACY_PLUGIN_LINK
     if link.is_symlink() and Path(os.readlink(link)).name in ("base", "kiln"):
         link.unlink()

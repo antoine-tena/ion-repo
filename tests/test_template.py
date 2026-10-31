@@ -292,6 +292,15 @@ def test_tool_project_can_ship_its_claude_code_plugin(tmp_path: Path) -> None:
     assert (project_dir / "backend/tests/test_plugin.py").is_file()
 
 
+def test_template_names_the_plugin_by_its_word(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", project_type="cli")
+
+    assert "`/repo:…`" in (project_dir / ".claude/skills/README.md").read_text()
+    gitignore = (project_dir / ".gitignore").read_text()
+    assert ".claude/kiln\n" in gitignore  # the link kiln 0.3 made, under its own name
+    assert ".claude/ion-repo" not in gitignore
+
+
 def test_plugin_is_named_without_the_ion_prefix(tmp_path: Path) -> None:
     project_dir = generate(
         tmp_path / "ion-demo", name="ion-demo", project_type="cli", claude_plugin=True

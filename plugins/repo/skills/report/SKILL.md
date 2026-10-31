@@ -14,8 +14,7 @@ user in their language; write the issue, the PR and its commits in **English**.
 
 It is when the faulty thing comes from ion-repo: a file of the template (`.copier-answers.yml` at
 the root, `_src_path` pointing to `antoine-tena/ion-repo`), a rule of the shared part of
-`CLAUDE.md`, a skill, hook or the status line of an ion-repo plugin (`.claude/ion-repo` shows the
-`ion-repo` plugin), a workflow or action called from `antoine-tena/ion-repo`, the `ion-repo` or `charter`
+`CLAUDE.md`, a skill, hook or the status line of an ion-repo plugin, a workflow or action called from `antoine-tena/ion-repo`, the `ion-repo` or `charter`
 command. It is not when it is this repo's own code or rules (they are amended here), Claude
 Code itself (the user types `/bug`), or a third-party tool (uv, Copier, ruff, GitHub…), unless
 ion-repo uses it wrongly.
