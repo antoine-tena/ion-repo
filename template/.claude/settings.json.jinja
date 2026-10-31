@@ -50,7 +50,7 @@
     }
 {%- endif %}
   },
-{%- set plugins = ['repo@ion-repo'] + ([name ~ '@' ~ name] if own_plugin else []) + (['django@ion-repo'] if backend == 'django' else []) + (['nuxt@ion-repo'] if frontend == 'nuxt' else []) + (['vps@ion-repo'] if deploy == 'vps' else []) + (['serena@ion-repo'] if serena else []) %}
+{%- set plugins = ['repo@ion-repo'] + ([plugin_name ~ '@' ~ name] if own_plugin else []) + (['django@ion-repo'] if backend == 'django' else []) + (['nuxt@ion-repo'] if frontend == 'nuxt' else []) + (['vps@ion-repo'] if deploy == 'vps' else []) + (['serena@ion-repo'] if serena else []) %}
   "enabledPlugins": {
 {%- for plugin in plugins %}
     "{{ plugin }}": true{{ "," if not loop.last }}

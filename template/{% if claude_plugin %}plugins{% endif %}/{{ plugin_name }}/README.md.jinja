@@ -1,8 +1,8 @@
 {%- set fr = (language_docs | default(language)) == 'fr' -%}
 {% if fr -%}
-# Le plugin Claude Code `{{ name }}`
+# Le plugin Claude Code `{{ plugin_name }}`
 
-Ce que Claude Code sait faire avec la commande `{{ name }}` : `/{{ name }}:…`.
+Ce que Claude Code sait faire avec la commande `{{ name }}` : `/{{ plugin_name }}:…`.
 
 - `.claude-plugin/plugin.json` : son nom et sa description, sans `version` exprès (Claude Code
   suit alors les commits) ; le catalogue qui le publie est `.claude-plugin/marketplace.json`, à
@@ -13,11 +13,11 @@ Ce que Claude Code sait faire avec la commande `{{ name }}` : `/{{ name }}:…`.
 
 Les sessions ouvertes dans ce dépôt l'activent (`.claude/settings.json`, à l'état de `main`).
 Ailleurs : `claude plugin marketplace add {{ owner or '<compte>' }}/{{ name }}`, puis
-`claude plugin install {{ name }}@{{ name }}`.
+`claude plugin install {{ plugin_name }}@{{ name }}`.
 {%- else -%}
-# The `{{ name }}` Claude Code plugin
+# The `{{ plugin_name }}` Claude Code plugin
 
-What Claude Code can do with the `{{ name }}` command: `/{{ name }}:…`.
+What Claude Code can do with the `{{ name }}` command: `/{{ plugin_name }}:…`.
 
 - `.claude-plugin/plugin.json`: its name and description, without a `version` on purpose (Claude
   Code then follows the commits); the catalog that publishes it is
@@ -28,5 +28,5 @@ What Claude Code can do with the `{{ name }}` command: `/{{ name }}:…`.
 
 Sessions opened in this repo enable it (`.claude/settings.json`, at the state of `main`).
 Elsewhere: `claude plugin marketplace add {{ owner or '<account>' }}/{{ name }}`, then
-`claude plugin install {{ name }}@{{ name }}`.
+`claude plugin install {{ plugin_name }}@{{ name }}`.
 {%- endif %}
