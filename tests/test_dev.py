@@ -1,4 +1,4 @@
-"""`kiln dev`: the Procfile.dev, the background (`-d`, status, logs, stop) and its arguments."""
+"""`ion repo dev`: the Procfile.dev, the background (`-d`, status, logs, stop) and its arguments."""
 
 import os
 import socket
@@ -274,7 +274,9 @@ def test_a_port_held_by_another_worktree_points_to_its_kiln_dev_stop(
         monkeypatch.setitem(background.DEV_PORTS, "nuxt", port)
         (project / "backend/Procfile.dev").write_text("nuxt: sleep 60\n", encoding="utf-8")
 
-        with pytest.raises(KilnError, match=r"kiln dev of /code/repo-feature: `kiln dev stop`"):
+        with pytest.raises(
+            KilnError, match=r"ion repo dev of /code/repo-feature: `ion repo dev stop`"
+        ):
             run_dev(project)
 
 
@@ -359,7 +361,7 @@ def test_outside_a_terminal_the_compose_file_is_only_pointed_to(
     from ion_repo.dev import _compose_instead
 
     assert not _compose_instead(adopted, dev_processes(adopted), None)
-    assert "compose.yaml runs web, server too: kiln dev --containers" in capsys.readouterr().out
+    assert "compose.yaml runs web, server too: ion repo dev --containers" in capsys.readouterr().out
 
 
 def test_a_stack_kiln_serves_keeps_its_servers_beside_its_compose_file(adopted: Path) -> None:

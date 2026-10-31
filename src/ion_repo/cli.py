@@ -1,4 +1,5 @@
-"""kiln: Claude Code's workshop. Generates a project, tunes its settings and keeps it up to date."""
+"""ion-repo: Claude Code's workshop. Generates a project, tunes its settings and keeps it up to
+date."""
 
 import argparse
 import re
@@ -33,12 +34,12 @@ COMMAND_GROUPS = (
     ("The grid", ("grid", "score", "fix", "bot")),
     ("All repos", ("status", "update --all", "version")),
 )
-FLEET_UPDATE_ROLE = "update every kiln repo, merged straight away"
+FLEET_UPDATE_ROLE = "update every ion-repo repo, merged straight away"
 EXAMPLES = (
-    "kiln new atelier --size small --backend fastapi",
-    "kiln update --major",
-    "kiln set podman=true",
-    "kiln set --global             # this machine's settings",
+    "ion repo new atelier --size small --backend fastapi",
+    "ion repo update --major",
+    "ion repo set podman=true",
+    "ion repo set --global             # this machine's settings",
 )
 # French names of kiln 0.3, still accepted with a warning until the next minor release.
 LEGACY_COMMANDS = {"contrat": "contract"}
@@ -76,7 +77,7 @@ class _VersionAction(argparse.Action):
     need not pay."""
 
     def __init__(self, option_strings: Sequence[str], dest: str, **_: object) -> None:
-        super().__init__(option_strings, dest, nargs=0, help="show the version of kiln")
+        super().__init__(option_strings, dest, nargs=0, help="show the version of ion-repo")
 
     def __call__(
         self,
@@ -91,7 +92,7 @@ class _VersionAction(argparse.Action):
 
 class _KilnParser(argparse.ArgumentParser):
     """A command's `--help` drawn like the home screen (banner, sections) instead of argparse's
-    plain text, its usage short as uv has it (`kiln new [options] [directory]`)."""
+    plain text, its usage short as uv has it (`ion repo new [options] [directory]`)."""
 
     def print_help(self, file: object = None) -> None:
         self.color = False  # Python 3.14 paints argparse's help, which ours paints itself
@@ -139,7 +140,7 @@ def modernize(arguments: Sequence[str]) -> list[str]:
 
 def _flag_legacy(old: str, new: str) -> str:
     print(
-        f"kiln: `{old}` is now `{new}`; the old name goes away at the next minor release.",
+        f"ion-repo: `{old}` is now `{new}`; the old name goes away at the next minor release.",
         file=sys.stderr,
     )
     return new
@@ -151,11 +152,11 @@ def _size(value: str) -> str:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="kiln", description=__doc__)
+    parser = argparse.ArgumentParser(prog="ion repo", description=__doc__)
     parser.add_argument("-V", "-v", "--version", action=_VersionAction)
     commands = parser.add_subparsers(dest="command", parser_class=_KilnParser)
     _add_new_command(commands)
-    adopt_parser = commands.add_parser("adopt", help="bring an existing repo under kiln")
+    adopt_parser = commands.add_parser("adopt", help="bring an existing repo under ion-repo")
     adopt_parser.add_argument(
         "--size", type=_size, choices=SIZES, help="size of the project (default: small)"
     )
@@ -164,7 +165,7 @@ def build_parser() -> argparse.ArgumentParser:
     install_parser.add_argument(
         "--machine",
         action="store_true",
-        help="kiln for the whole machine (command, Claude plugin, settings), even from a repo",
+        help="ion-repo for the whole machine (command, Claude plugin, settings), even from a repo",
     )
     commands.add_parser("publish", help="create the private GitHub repo and protect its branches")
     _add_update_command(commands)
@@ -179,7 +180,7 @@ def build_parser() -> argparse.ArgumentParser:
     _add_ci_command(commands)
     commands.add_parser("contract", help="regenerate openapi.json and the frontend types")
     version_parser = commands.add_parser(
-        "version", help="versions of kiln: public, candidates, next"
+        "version", help="versions of ion-repo: public, candidates, next"
     )
     version_parser.add_argument(
         "action",
@@ -201,7 +202,9 @@ def build_parser() -> argparse.ArgumentParser:
     _add_bot_command(commands)
     _add_pause_command(commands)
     _add_frame_command(commands)
-    status_parser = commands.add_parser("status", help="state of the kiln repos of the code folder")
+    status_parser = commands.add_parser(
+        "status", help="state of the ion-repo repos of the code folder"
+    )
     status_parser.add_argument("--all", action="store_true", help="every repo (the default)")
     set_parser = commands.add_parser(
         "set", help="show or change the repo's settings (outside a repo: this machine's)"
@@ -245,7 +248,7 @@ def generate_bash_completion() -> str:
             f"            ;;"
         )
     commands = " ".join(sorted(subparsers.choices))
-    return f"""# kiln bash completion: eval "$(kiln completion bash)"
+    return f"""# ion-repo bash completion: eval "$(ion-repo completion bash)"
 _kiln_completion() {{
     local cur="${{COMP_WORDS[COMP_CWORD]}}"
     COMPREPLY=()
@@ -257,7 +260,7 @@ _kiln_completion() {{
 {"\n".join(cases)}
     esac
 }}
-complete -F _kiln_completion kiln"""
+complete -F _kiln_completion ion-repo kiln"""
 
 
 def _dispatch_version(arguments: argparse.Namespace, root: Path) -> None:
@@ -319,7 +322,9 @@ def _dispatch_score(arguments: argparse.Namespace) -> None:
 def _add_grid_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     from ion_repo.grid.model import LEVELS, THEMES
 
-    grid_parser = commands.add_parser("grid", help="the rules kiln holds as the best, with sources")
+    grid_parser = commands.add_parser(
+        "grid", help="the rules ion-repo holds as the best, with sources"
+    )
     grid_parser.add_argument("rule", nargs="?", help="one rule, in full (its ID)")
     grid_parser.add_argument("--theme", choices=THEMES, help="only this theme")
     grid_parser.add_argument(
@@ -368,12 +373,13 @@ def _add_fix_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
 
 def _add_bot_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     bot_parser = commands.add_parser(
-        "bot", help="kiln-bot's run: kiln update and kiln fix on kiln/bot, for one pull request"
+        "bot",
+        help="kiln-bot's run: ion repo update and ion repo fix on kiln/bot, for one pull request",
     )
     bot_parser.add_argument(
         "path", type=Path, nargs="?", default=Path(), help="the repo (default: here)"
     )
-    bot_parser.add_argument("--no-update", action="store_true", help="kiln fix only")
+    bot_parser.add_argument("--no-update", action="store_true", help="ion repo fix only")
     bot_parser.add_argument("--body", type=Path, help="write the pull request's body there")
     bot_parser.add_argument(
         "--no-workflows",
@@ -394,9 +400,11 @@ def _add_pause_command(commands: argparse._SubParsersAction[_KilnParser]) -> Non
 
 def _add_frame_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     frame_parser = commands.add_parser(
-        "frame", help="print the two rules that frame a Keramos tool's skill answer"
+        "frame", help="print the two rules that frame an Ion tool's skill answer"
     )
-    frame_parser.add_argument("tool", help="the Keramos tool (kiln, grog, hearth...)")
+    frame_parser.add_argument(
+        "tool", help="the Ion tool: its word or its plugin (repo, ion-learn, grog...)"
+    )
     frame_parser.add_argument("skill", help="its skill (summary, merge...)")
     frame_parser.add_argument(
         "--width", type=int, help="the rules' width (default: the terminal's, less 6)"
@@ -405,7 +413,7 @@ def _add_frame_command(commands: argparse._SubParsersAction[_KilnParser]) -> Non
 
 def _add_waive_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
     waive_parser = commands.add_parser(
-        "waive", help="waive a rule of kiln, or freeze a file (no argument: list)"
+        "waive", help="waive a rule of ion-repo, or freeze a file (no argument: list)"
     )
     waive_parser.add_argument(
         "target", nargs="?", metavar="RULE|file", help="rule identifier, or generated file"
@@ -416,7 +424,7 @@ def _add_waive_command(commands: argparse._SubParsersAction[_KilnParser]) -> Non
         "--renew", action="store_true", help="renew: next step, reason asked again"
     )
     waive_parser.add_argument("--permanent", action="store_true", help="waiver with no deadline")
-    waive_parser.add_argument("--upstream", default="", help="issue or PR opened on kiln")
+    waive_parser.add_argument("--upstream", default="", help="issue or PR opened on ion-repo")
 
 
 def _add_new_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
@@ -486,11 +494,11 @@ def _add_dev_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
 
 def _check_dev_arguments(arguments: argparse.Namespace) -> None:
     if arguments.action != "logs" and (arguments.service or arguments.follow):
-        raise KilnError("a service and --follow go with kiln dev logs")
+        raise KilnError("a service and --follow go with ion repo dev logs")
     starting = arguments.foreground or arguments.containers or arguments.only
     if arguments.action is not None and starting:
         options = "--foreground, --only and --containers"
-        raise KilnError(f"{options} start the project, not kiln dev {arguments.action}")
+        raise KilnError(f"{options} start the project, not ion repo dev {arguments.action}")
     if arguments.containers and arguments.only:
         raise KilnError("--containers runs the whole stack: no --only")
 
@@ -501,7 +509,7 @@ def _add_update_command(commands: argparse._SubParsersAction[_KilnParser]) -> No
     update_parser.add_argument("--no-deps", action="store_true", help="keep the dependencies")
     update_parser.add_argument("--major", action="store_true", help="major versions included")
     update_parser.add_argument(
-        "--all", action="store_true", help="every kiln repo, merged straight away"
+        "--all", action="store_true", help="every ion-repo repo, merged straight away"
     )
     update_parser.add_argument(
         "--rehearse",
@@ -561,9 +569,10 @@ def _new_project_request(arguments: argparse.Namespace) -> new.NewProjectRequest
 
 
 def _ask_project_name() -> str:
-    """`kiln new` without a folder: the name is asked, the project lands in the current folder."""
+    """`ion repo new` without a folder: the name is asked, the project lands in the current
+    folder."""
     if not sys.stdin.isatty():
-        raise KilnError("kiln new <folder>: the project folder is required outside a terminal")
+        raise KilnError("ion repo new <folder>: the project folder is required outside a terminal")
     while True:
         name = input("Project name (lowercase, digits, dashes): ").strip()
         if PROJECT_NAME.fullmatch(name):
@@ -741,11 +750,12 @@ def _repo_root_or_hint() -> Path:
             if code_dir.is_dir()
             else []
         )
-        repos_line = f" kiln repos in {code_dir}: {', '.join(names)}." if names else ""
+        repos_line = f" ion-repo repos in {code_dir}: {', '.join(names)}." if names else ""
         raise KilnError(
             f"{Path.cwd()} is not in a repo: go into one first (cd <repo>).{repos_line} "
-            "From here: kiln status, kiln update --all, kiln set (this machine's settings), "
-            "kiln install (kiln for this machine), kiln new."
+            "From here: ion repo status, ion repo update --all, ion repo set (this machine's "
+            "settings), "
+            "ion repo install (ion-repo for this machine), ion repo new."
         ) from None
 
 

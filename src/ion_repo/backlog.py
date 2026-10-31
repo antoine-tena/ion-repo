@@ -1,10 +1,10 @@
 """Work tracking: moving the former `docs/a-faire/` (in French) to `docs/backlog/`, and splitting
 the former single `backlog.md` into open tickets and `done.md`.
 
-`kiln update` calls it after Copier: the template laid down a blank `docs/backlog/`, which the
+`ion repo update` calls it after Copier: the template laid down a blank `docs/backlog/`, which the
 repo's tracking replaces, converted (headings, fields and statuses in English, `AF-NN` become
 `T-NN`); the text of the tickets stays as written. Copier already deleted `docs/a-faire/`, even
-changed: its content is read back from the last commit (`kiln update` starts from a clean tree).
+changed: its content is read back from the last commit (`ion repo update` starts from a clean tree).
 """
 
 import re
@@ -269,7 +269,7 @@ def add_after_update_ticket(root: Path, notes: list[ReleaseNotes], *, today: str
     ]
     text = path.read_text() if path.exists() else ""
     next_free = NEXT_FREE.search(text)
-    title = f"Finish the kiln update to {notes[0].tag}" if notes else ""
+    title = f"Finish the ion-repo update to {notes[0].tag}" if notes else ""
     if not actions or next_free is None or CRITICAL_HEADING not in text or title in text:
         return None
     number = int(next_free[1])
@@ -280,9 +280,9 @@ def add_after_update_ticket(root: Path, notes: list[ReleaseNotes], *, today: str
         "- **Status**: todo",
         f"- **Opened**: {today}",
         "- **Effort**: XS · **Owner**: — · **Due**: —",
-        "- **Origin**: release notes of the kiln releases crossed (`kiln update`)",
+        "- **Origin**: release notes of the ion-repo releases crossed (`ion repo update`)",
         "",
-        "What kiln cannot guess, to fill in right after the update (`/kiln:update`):",
+        "What ion-repo cannot guess, to fill in right after the update (`/repo:update`):",
         *actions,
     ])  # fmt: skip
     text = NEXT_FREE.sub(f"Next free: T-{number + 1:02d}", text, count=1)

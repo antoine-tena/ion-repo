@@ -1,12 +1,12 @@
-"""An adopted repo's references to kiln's reusable workflows, moved to the last public release.
+"""An adopted repo's references to ion-repo's reusable workflows, moved to the last public release.
 
-A repo adopted by `kiln adopt` has no Copier answers: `kiln update` cannot replay a template
-there. What it does take from kiln is its reusable workflows, quoted at a tag
-(`antoine-tena/kiln/.github/workflows/charter.yml@v0.4.0`) so that what lands on `develop`
-never reaches it before a release (antoine, 19 October 2026, T-04). `kiln update` moves those
+A repo adopted by `ion repo adopt` has no Copier answers: `ion repo update` cannot replay a template
+there. What it does take from ion-repo is its reusable workflows, quoted at a tag
+(`antoine-tena/ion-repo/.github/workflows/charter.yml@v0.4.0`) so that what lands on `develop`
+never reaches it before a release (antoine, 19 October 2026, T-04). `ion repo update` moves those
 references, and nothing else, to the latest public release, once each input the repo passes
 (`with:`) is checked against the workflow it will call; a removed input stops it, untouched.
-On the `beta` channel, they move to kiln's `develop` instead, as a generated repo's do.
+On the `beta` channel, they move to ion-repo's `develop` instead, as a generated repo's do.
 """
 
 import re
@@ -20,22 +20,23 @@ from ion_repo import ui
 from ion_repo.adopted_names import convert_legacy_names, remaining_mentions, ticket_mentions
 from ion_repo.backlog import BACKLOG_DIR, LEGACY_DIR, migrate_legacy_backlog
 from ion_repo.grid.fixers import resolve
+from ion_repo.ion_names import convert_ion_names
 from ion_repo.shell import KilnError, step
 from ion_repo.versions import is_beta, latest_release
 
 WORKFLOW_DIR = Path(".github") / "workflows"
 BETA_REF = "develop"
-# `uses: antoine-tena/kiln/.github/workflows/charter.yml@v0.4.0`, a comment after it kept; or
+# `uses: antoine-tena/ion-repo/.github/workflows/charter.yml@v0.4.0`, a comment after it kept; or
 # pinned, `…/charter.yml@<sha> # v0.4.0` ([PINNED-ACTIONS]), where the comment holds the tag.
-KILN_USES = re.compile(
-    r"(?P<lead>uses:\s*['\"]?)(?P<path>antoine-tena/kiln/(?P<file>\S+?))@(?P<ref>[^\s'\"#]+)"
+ION_REPO_USES = re.compile(
+    r"(?P<lead>uses:\s*['\"]?)(?P<path>antoine-tena/(?:ion-repo|kiln)/(?P<file>\S+?))@(?P<ref>[^\s'\"#]+)"
     r"(?P<close>['\"]?)(?P<comment>[ \t]+#[ \t]*(?P<tag>\S+).*)?"
 )
 FULL_SHA = re.compile(r"^[0-9a-f]{40}$")
-RAW_URL = "https://raw.githubusercontent.com/antoine-tena/kiln/{ref}/{file}"
+RAW_URL = "https://raw.githubusercontent.com/antoine-tena/ion-repo/{ref}/{file}"
 FETCH_TIMEOUT = 10
 
-Fetch = Callable[[str, str], str]  # (ref, path in kiln) -> the file's text
+Fetch = Callable[[str, str], str]  # (ref, path in ion-repo) -> the file's text
 Resolve = Callable[[str], str]  # tag -> its commit SHA
 
 
@@ -45,18 +46,18 @@ def _quoted(match: re.Match[str]) -> str:
 
 
 def quoted_refs(root: Path) -> set[str]:
-    """The refs at which the repo's workflows quote kiln's: one when all agree."""
+    """The refs at which the repo's workflows quote ion-repo's: one when all agree."""
     return {
         _quoted(match)
         for path in _workflow_files(root)
-        for match in KILN_USES.finditer(path.read_text(encoding="utf-8"))
+        for match in ION_REPO_USES.finditer(path.read_text(encoding="utf-8"))
     }
 
 
 def move_to_release(
     root: Path, tag: str | None = None, fetch: Fetch | None = None, resolve: Resolve | None = None
 ) -> list[str]:
-    """Every reference to kiln's workflows moved to `tag` (by default the latest public
+    """Every reference to ion-repo's workflows moved to `tag` (by default the latest public
     release), in the form the repo chose: a tag stays a tag, a SHA becomes the tag's SHA with
     the tag in its comment; returns the files changed. Refused, nothing written, when an input
     the repo passes does not exist in the workflow at that tag."""
@@ -84,7 +85,7 @@ def move_to_release(
 
     changed = []
     for path, text in texts.items():
-        moved = KILN_USES.sub(moved_ref, text)
+        moved = ION_REPO_USES.sub(moved_ref, text)
         if moved != text:
             path.write_text(moved, encoding="utf-8")
             changed.append(str(path.relative_to(root)))
@@ -92,11 +93,11 @@ def move_to_release(
 
 
 def update_adopted(root: Path) -> None:
-    """`kiln update` in an adopted repo: its names of kiln 0.3 converted, then the workflows' tag
-    moved."""
+    """`ion repo update` in an adopted repo: its names of kiln 0.3 converted, then the workflows'
+    tag moved."""
     converted = convert_legacy_names(root)
     if converted:
-        step("Adopted repo: kiln's names of 0.3 moved to today's")
+        step("Adopted repo: ion-repo's names of 0.3 moved to today's")
         for line in converted:
             ui.success(line)
         mentions = remaining_mentions(root)
@@ -104,26 +105,28 @@ def update_adopted(root: Path) -> None:
             ui.note(f"still cited in the repo's own text, to reread: {', '.join(mentions)}")
     if (root / LEGACY_DIR / "a-faire.md").is_file():
         _move_legacy_backlog(root)
+    for line in convert_ion_names(root):
+        ui.note(f"ion-repo: {line}.")
     beta = is_beta()
     step(
-        "Adopted repo: kiln's workflows moved to "
+        "Adopted repo: ion-repo's workflows moved to "
         + ("its develop (beta channel)" if beta else "the last public release")
     )
     before = quoted_refs(root)
     changed = move_to_release(root, BETA_REF if beta else None)
     if not changed:
-        ui.success(f"already at {', '.join(sorted(before)) or 'no kiln workflow'}")
+        ui.success(f"already at {', '.join(sorted(before)) or 'no ion-repo workflow'}")
         return
     after = quoted_refs(root)
     ui.success(f"{', '.join(sorted(before))} → {', '.join(sorted(after))}: {', '.join(changed)}")
 
 
 def _move_legacy_backlog(root: Path) -> None:
-    """`docs/a-faire/` to kiln's `docs/backlog/`, as `kiln update` does in a generated repo: the
-    template's backlog laid down first, then the tickets converted (`AF-NN` → `T-NN`)."""
+    """`docs/a-faire/` to ion-repo's `docs/backlog/`, as `ion repo update` does in a generated repo:
+    the template's backlog laid down first, then the tickets converted (`AF-NN` → `T-NN`)."""
     from ion_repo.adopt import copy_backlog  # ion_repo.adopt imports this module
 
-    step("Adopted repo: docs/a-faire/ becomes docs/backlog/ (skill /kiln:backlog)")
+    step("Adopted repo: docs/a-faire/ becomes docs/backlog/ (skill /repo:backlog)")
     if not (root / BACKLOG_DIR).exists():
         copy_backlog(root, None)
     migrate_legacy_backlog(root)
@@ -146,7 +149,7 @@ def _input_problems(where: Path, text: str, tag: str, fetch: Fetch) -> list[str]
     found = []
     for job_name, job in (workflow.get("jobs") or {}).items():
         uses = str(job.get("uses", "")) if isinstance(job, dict) else ""
-        match = KILN_USES.search(f"uses: {uses}")
+        match = ION_REPO_USES.search(f"uses: {uses}")
         if match is None:
             continue
         passed = set((job.get("with") or {}).keys())
@@ -176,4 +179,4 @@ def _fetch(ref: str, file: str) -> str:
 
 
 def _commit_of(tag: str) -> str:
-    return resolve.commit_of("antoine-tena/kiln", tag)
+    return resolve.commit_of("antoine-tena/ion-repo", tag)

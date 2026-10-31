@@ -1,6 +1,6 @@
 ---
 name: merge
-description: Finish a piece of work - fast linters on the files the branch changed, merge into the integration branch (develop), push, delete the branch (and its worktree), update the repo's Claude Code plugin where it is installed. No CI at a merge: it only runs when a release goes out (/kiln:release).
+description: Finish a piece of work - fast linters on the files the branch changed, merge into the integration branch (develop), push, delete the branch (and its worktree), update the repo's Claude Code plugin where it is installed. No CI at a merge: it only runs when a release goes out (/repo:release).
 argument-hint: "[branch]"
 ---
 
@@ -12,14 +12,14 @@ A pull request already open for the branch turns "Merged" on GitHub by itself at
 step 4. Talk to the user in their language.
 
 1. On the branch: everything is committed (`git status --porcelain` empty), otherwise stop and
-   say so. Then review the branch (`/kiln:review <branch>`): after the push of step 4, its
+   say so. Then review the branch (`/repo:review <branch>`): after the push of step 4, its
    commits are public for good. What the review tidies on the branch happens before the merge;
    what it leaves to the user, tell them and wait for their decision.
    Then the fast linters, in the branch's worktree, on the files the branch changed and nothing
    else (`git diff --name-only --diff-filter=d <integration>...<branch>`): `ruff check` and
    `ruff format --check` on its Python files, `eslint` on its JS/TS/Vue files, the like for
-   other languages (kiln itself: `uv run ruff check <files>`, `uv run ruff format --check
-   <files>`). No type checker, no test, no `kiln check`, no `kiln ci` at a merge: the release
+   other languages (ion-repo itself: `uv run ruff check <files>`, `uv run ruff format --check
+   <files>`). No type checker, no test, no `ion repo check`, no `ion repo ci` at a merge: the release
    runs them all (choice of antoine, 21 October 2026). A branch with no such file runs nothing.
    A failure: fix it on the branch, never merge red.
 2. Update the integration branch (`git pull --ff-only origin <integration>`), then
@@ -40,7 +40,7 @@ step 4. Talk to the user in their language.
    <branch>` (never `-D`) and, if it exists on GitHub (`git ls-remote --heads origin <branch>`),
    `git push origin --delete <branch>`. If a check fails: delete nothing, say which one and why.
 6. The repo ships a Claude Code plugin (`.claude-plugin/marketplace.json` at its root, as
-   `kiln set claude_plugin=true` writes it; kiln itself and every tool of the family): update the
+   `ion repo set claude_plugin=true` writes it; ion-repo itself and every tool of the family): update the
    installed copy now, otherwise a skill just merged stays unknown (`Unknown command`) in every
    new session. For each plugin `<plugin>` the catalog lists, under the catalog's `name`
    `<market>` (`<tool>@<tool>` for a family tool):
@@ -54,9 +54,9 @@ step 4. Talk to the user in their language.
      `projectPath` is that repo's business: leave it.
    - Tell the user to restart Claude Code: a session loads its plugins only at launch, so the new
      skill shows only in the next one.
-   A plugin read from a local folder (`readFromFolder`, kiln on antoine's machine) gets the same
+   A plugin read from a local folder (`readFromFolder`, ion-repo on antoine's machine) gets the same
    commands: harmless when its version hasn't moved.
-7. No CI to wait for: it runs only on the release branch, before `main` (`/kiln:release`).
+7. No CI to wait for: it runs only on the release branch, before `main` (`/repo:release`).
    Sum up: merge commit, files touched, linters run. Suggest `/clear`, in one line, only when
    it saves something: a long session, or the user moving to an unrelated subject (every
    message re-reads the whole conversation; the work is in git and in the backlog). After a

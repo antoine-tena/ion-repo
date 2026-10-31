@@ -1,7 +1,7 @@
-# kiln's Serena context: symbol navigation only. Edits stay with Claude Code's Edit and Write
-# tools, which kiln's hooks are attached to (charter check, protected files); Serena's
+# ion-repo's Serena context: symbol navigation only. Edits stay with Claude Code's Edit and Write
+# tools, which ion-repo's hooks are attached to (charter check, protected files); Serena's
 # "claude-code" context forbids them, hence this one.
-description: Claude Code, read-only symbol navigation (kiln)
+description: Claude Code, read-only symbol navigation (ion-repo)
 prompt: |
   Serena's tools give symbol-level code navigation backed by a language server. Before reading
   a whole source file to find something, prefer get_symbols_overview (outline of a file) and

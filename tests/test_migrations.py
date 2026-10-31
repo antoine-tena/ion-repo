@@ -1,4 +1,4 @@
-"""kiln update and a project of kiln 0.3: the conversions Copier cannot make."""
+"""ion repo update and a project of kiln 0.3: the conversions Copier cannot make."""
 
 import os
 import subprocess

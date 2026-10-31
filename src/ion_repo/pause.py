@@ -1,4 +1,5 @@
-"""`kiln pause`: a Claude Code session named and its place kept, listed at the next start (T-344).
+"""`ion repo pause`: a Claude Code session named and its place kept, listed at the next start
+(T-344).
 
 Claude Code already names a session (`/rename`) and resumes it (`claude --resume`); what it lacks
 is the list, at the next start in any repo, of the sessions left halfway with where each stopped
@@ -35,7 +36,8 @@ def pause(cwd: Path, name: str, next_step: str) -> Path | None:
         return None
     if not session or "/" in session:
         raise KilnError(
-            'no Claude Code session here: /kiln:pause, or `! kiln pause "<name>"`, from inside one'
+            'no Claude Code session here: /repo:pause, or `! ion repo pause "<name>"`, from inside '
+            "one"
         )
     root = Path(_git(cwd, "rev-parse", "--show-toplevel") or cwd)
     # The project's name, not a worktree's folder: the parent of the shared git folder.
@@ -61,11 +63,11 @@ def propose_names(cwd: Path, *, inside: bool) -> None:
     """Names drawn from the work at hand, each with the command that pauses under it."""
     names = suggested_names(cwd)
     ui.step("A name for this session")
-    prefix = "kiln pause" if inside else "! kiln pause"
+    prefix = "ion repo pause" if inside else "! ion repo pause"
     for suggestion in names or ["<what this session works on>"]:
         ui.note(f'{prefix} "{suggestion}" --next "<the next step>"')
     if not inside:
-        ui.note("From inside a Claude Code session: /kiln:pause, or one of these after `!`.")
+        ui.note("From inside a Claude Code session: /repo:pause, or one of these after `!`.")
 
 
 def suggested_names(cwd: Path) -> list[str]:

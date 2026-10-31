@@ -1,7 +1,7 @@
 """kiln's settings for this machine: `~/.config/kiln/config.toml`.
 
 The system (Linux, WSL, macOS) is asked once, at the first install; the GitHub owner, the team
-and the code directory give their defaults to `kiln new` and `kiln update --all`. Keys and
+and the code directory give their defaults to `ion repo new` and `ion repo update --all`. Keys and
 values written before kiln 0.4.0 (`canal = "interne"`, `statusline = "sobre"`) are still read.
 """
 
@@ -21,10 +21,10 @@ DEFAULT_CODE_DIR = Path.home() / "code"
 
 SYSTEMS = ("linux", "wsl", "macos")
 # Release channel: `public` (promoted releases), `internal` (candidates included) or `beta`
-# (the tool runs kiln's `develop`, read live from the checkout of the code directory).
+# (the tool runs ion-repo's `develop`, read live from the checkout of the code directory).
 PUBLIC_CHANNEL, INTERNAL_CHANNEL, BETA_CHANNEL = "public", "internal", "beta"
 CHANNELS = (PUBLIC_CHANNEL, INTERNAL_CHANNEL, BETA_CHANNEL)
-# Claude Code's status line: a kiln style, none, or the user's own (`custom`).
+# Claude Code's status line: an ion-repo style, none, or the user's own (`custom`).
 STATUSLINE_STYLES = ("plain", "band", "classic", "classic-band")
 NO_STATUSLINE, CUSTOM_STATUSLINE = "none", "custom"
 STATUSLINE_CHOICES = (*STATUSLINE_STYLES, NO_STATUSLINE, CUSTOM_STATUSLINE)
@@ -43,9 +43,9 @@ class UserConfig:
     team: tuple[str, ...] = ()
     code_dir: Path = DEFAULT_CODE_DIR
     channel: str = PUBLIC_CHANNEL
-    statusline: str | None = None  # None: not chosen yet (kiln install sets it)
-    ai_trailers: str | None = None  # None: not chosen yet (kiln install asks)
-    # Repos of the code folder `kiln update --all` leaves as they are (a witness repo kept at an
+    statusline: str | None = None  # None: not chosen yet (ion repo install sets it)
+    ai_trailers: str | None = None  # None: not chosen yet (ion repo install asks)
+    # Repos of the code folder `ion repo update --all` leaves as they are (a witness repo kept at an
     # old release on purpose), by their path in it.
     frozen_repos: tuple[str, ...] = ()
 
@@ -83,7 +83,7 @@ def machine_settings(values: dict[str, Any]) -> dict[str, Any]:
 
 
 def save_config(config: UserConfig) -> None:
-    lines = ["# kiln's settings for this machine (created by kiln install)."]
+    lines = ["# ion-repo's settings for this machine (created by ion repo install)."]
     if config.system:
         lines.append(f'system = "{config.system}"')
     if config.owner:

@@ -1,9 +1,9 @@
-"""Dependency locks and updates, by kiln's policy.
+"""Dependency locks and updates, by ion-repo's policy.
 
 By default, compatible updates: uv stays within the bounds of pyproject.toml (same major
 version), pnpm only bumps the dependencies whose latest version keeps the same major.
 `--major` raises the Python bounds to the latest version, takes the latest pnpm versions and
-updates the pre-commit hooks. The checks always follow (`kiln check`).
+updates the pre-commit hooks. The checks always follow (`ion repo check`).
 """
 
 import json
@@ -143,4 +143,4 @@ def update_pnpm(project_dir: Path, *, allow_major: bool) -> None:
         if packages:
             run(["pnpm", "add", *(["--save-dev"] if is_dev else []), *packages], project_dir)
     if held_back:
-        print("Majors available (kiln update --major): " + ", ".join(held_back))
+        print("Majors available (ion repo update --major): " + ", ".join(held_back))

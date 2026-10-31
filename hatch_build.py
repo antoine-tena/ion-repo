@@ -18,7 +18,7 @@ BUILD_INFO = "ion_repo/_build.json"
 
 class CustomBuildHook(BuildHookInterface):
     def initialize(self, version: str, build_data: dict[str, Any]) -> None:
-        # An editable install runs the folder itself: kiln reads it live.
+        # An editable install runs the folder itself: ion-repo reads it live.
         if version == "editable":
             return
         described = _git(

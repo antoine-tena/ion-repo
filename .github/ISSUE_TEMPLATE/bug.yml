@@ -1,5 +1,5 @@
 name: Bug report
-description: Something in kiln, a generated repo or a workflow does not work as expected.
+description: Something in ion-repo, a generated repo or a workflow does not work as expected.
 labels: [bug]
 body:
   - type: textarea
@@ -13,13 +13,13 @@ body:
     id: output
     attributes:
       label: Output
-      description: The relevant output. `KILN_VERBOSE=1 kiln …` shows the full output of each step.
+      description: The relevant output. `ION_REPO_VERBOSE=1 ion-repo …` shows the full output of each step.
       render: shell
   - type: input
     id: version
     attributes:
-      label: kiln version
-      description: The `kiln` line of `kiln doctor` and, in a generated repo, its `modèle` line (template version).
+      label: ion repo version
+      description: The `ion-repo` line of `ion repo doctor` and, in a generated repo, its `modèle` line (template version).
   - type: input
     id: stack
     attributes:

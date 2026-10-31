@@ -1,11 +1,11 @@
-"""`kiln dev`: the project running on the machine, in the foreground or in the background.
+"""`ion repo dev`: the project running on the machine, in the foreground or in the background.
 
 What is edited runs on the machine, reloaded at each change: the stack's servers and the
 processes of the `Procfile.dev`s (`processes`); a big project asks which ones (`menu`). What is
 never edited runs in podman: the databases of the compose file (`backing`), started when a
 process outside the front needs them. Everything runs in the background, then the logs are
-offered (`background`); `kiln dev status`, `kiln dev logs [service] [-f]` and `kiln dev stop`
-read and stop it. `--foreground` keeps it in the terminal, Ctrl+C stopping the processes and
+offered (`background`); `ion repo dev status`, `ion repo dev logs [service] [-f]` and `ion repo dev
+stop` read and stop it. `--foreground` keeps it in the terminal, Ctrl+C stopping the processes and
 keeping the databases (`foreground`). `--containers` runs the whole stack in podman instead
 (`containers`), which a repo whose compose file runs its own services is offered at once.
 """
@@ -89,8 +89,8 @@ def _start(root: Path, *, foreground: bool, only: list[str] | None, ask: menu.As
 
 
 def _compose_instead(root: Path, commands: list[Command], ask: menu.Ask | None) -> bool:
-    """A repo kiln's stack does not serve, whose compose file runs the project's own services
-    while kiln would run its package.json scripts: offered to run the compose file instead."""
+    """A repo ion-repo's stack does not serve, whose compose file runs the project's own services
+    while ion-repo would run its package.json scripts: offered to run the compose file instead."""
     compose = compose_file(root)
     if compose is None or load_stack(root).dev_commands():
         return False
@@ -99,7 +99,9 @@ def _compose_instead(root: Path, commands: list[Command], ask: menu.Ask | None) 
     if not scripts or not services:
         return False
     if ask is None or shutil.which("podman") is None:
-        ui.note(f"{compose.name} runs {', '.join(services)} too: kiln dev --containers, in podman")
+        ui.note(
+            f"{compose.name} runs {', '.join(services)} too: ion repo dev --containers, in podman"
+        )
         return False
     return menu.prefers_containers(compose.name, services, background.state_dir(root), ask)
 
@@ -107,7 +109,7 @@ def _compose_instead(root: Path, commands: list[Command], ask: menu.Ask | None) 
 def _offer_logs(root: Path, ask: menu.Ask | None) -> None:
     if ask is not None and menu.wants_logs(ask):
         _logs(root, None, follow=True)
-    ui.note("kiln dev logs [service] [-f] · kiln dev status · kiln dev stop")
+    ui.note("ion repo dev logs [service] [-f] · ion repo dev status · ion repo dev stop")
 
 
 def _status(root: Path) -> None:

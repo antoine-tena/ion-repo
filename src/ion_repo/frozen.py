@@ -1,6 +1,6 @@
-"""Frozen files: the `file = "…"` waivers of `kiln-waivers.toml`. `kiln update` and `kiln set`
-no longer touch them; but a frozen file must not drift silently, hence the report of what kiln
-changed in them between two versions."""
+"""Frozen files: the `file = "…"` waivers of `kiln-waivers.toml`. `ion repo update` and `ion repo
+set` no longer touch them; but a frozen file must not drift silently, hence the report of what
+ion-repo changed in them between two versions."""
 
 import difflib
 import tempfile
@@ -28,7 +28,7 @@ def frozen_files(root: Path) -> list[str]:
 
 
 def report_frozen_drift(root: Path, source: str, previous: str, current: str) -> None:
-    """What kiln changed, from `previous` to `current`, in the files the repo froze."""
+    """What ion-repo changed, from `previous` to `current`, in the files the repo froze."""
     frozen = frozen_files(root)
     if not frozen or not previous or previous == current:
         return
@@ -39,13 +39,13 @@ def report_frozen_drift(root: Path, source: str, previous: str, current: str) ->
             after = _render(source, current, answers_for(current, answers), Path(tmp) / "after")
             diffs = {f: _diff(before / f, after / f, f) for f in frozen}
     except (CopierError, OSError) as error:  # OSError: revision not found (git)
-        ui.note(f"Frozen files: cannot compare the versions of kiln ({error}).")
+        ui.note(f"Frozen files: cannot compare the versions of ion-repo ({error}).")
         return
     changed = {f: d for f, d in diffs.items() if d}
     if not changed:
         return
     ui.panel(
-        f"kiln changed frozen files ({WAIVERS_FILE}): {previous} → {current}",
+        f"ion-repo changed frozen files ({WAIVERS_FILE}): {previous} → {current}",
         [f"- {f}" for f in changed]
         + ["Carry over what fits, or lift the waiver to take the template again."],
     )
@@ -82,5 +82,7 @@ def _render(source: str, ref: str, answers: dict[str, object], destination: Path
 def _diff(before: Path, after: Path, name: str) -> list[str]:
     old, new = (p.read_text().splitlines() if p.exists() else [] for p in (before, after))
     return list(
-        difflib.unified_diff(old, new, f"kiln {name} (before)", f"kiln {name} (after)", lineterm="")
+        difflib.unified_diff(
+            old, new, f"ion-repo {name} (before)", f"ion-repo {name} (after)", lineterm=""
+        )
     )

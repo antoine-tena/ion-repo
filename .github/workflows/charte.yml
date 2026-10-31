@@ -1,6 +1,6 @@
 name: Charter (former name)
 
-# Name of charter.yml before kiln 0.4.0, kept for the repos that call kiln's workflows at
+# Name of charter.yml before kiln 0.4.0, kept for the repos that call ion-repo's workflows at
 # `develop` (an adopted repo is never converted). Runs charter.yml at this same commit.
 on:
   workflow_call:

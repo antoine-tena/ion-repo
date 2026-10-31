@@ -1,4 +1,4 @@
-"""`kiln check`: runs the stack's checks and the charter, without stopping at the first failure;
+"""`ion repo check`: runs the stack's checks and the charter, without stopping at the first failure;
 the test suites only with `--tests` (a merge skips them, the release runs them all).
 
 By default only what the branch changed since the integration branch: a directory's checks run
@@ -6,7 +6,7 @@ when one of its files changed, the charter's bans on the changed files alone (`c
 `--all` checks the whole repo; the release's CI does anyway.
 
 A Django backend's tests run as in the CI when `ci.yml` has its Django job: against that job's
-throwaway PostgreSQL and Redis, with its variables (`env`), as `kiln ci` replays them; never
+throwaway PostgreSQL and Redis, with its variables (`env`), as `ion repo ci` replays them; never
 against the machine's `.env`, which may lack what the CI gives, nor a test database another
 session shares. Without such a job, they get the databases of the compose file.
 """
@@ -68,11 +68,11 @@ def _run_check(root: Path, command: Command) -> int:
         return run_status(list(command.argv), root / command.directory)
     images = ", ".join(image for image in (plan.services.postgres, plan.services.redis) if image)
     ui.note(f"as the CI job {plan.job.name}: {images}, its variables")
-    # Those of a kiln check or kiln ci killed before its cleanup (closed window, SIGKILL).
+    # Those of an ion repo check or ion repo ci killed before its cleanup (closed window, SIGKILL).
     if orphan_count := remove_orphan_containers():
         ui.note(f"{orphan_count} containers of an interrupted run removed")
     try:
-        with running_services(plan.services, f"kiln-check-{os.getpid()}") as urls:
+        with running_services(plan.services, f"ion-repo-check-{os.getpid()}") as urls:
             env = base_env({**plan.env, **urls})
             return run_status(list(command.argv), root / command.directory, env)
     except KilnError as error:
@@ -81,7 +81,7 @@ def _run_check(root: Path, command: Command) -> int:
 
 
 def _ci_django_job(root: Path, directory: str) -> Plan | None:
-    """The plan of the `ci.yml` job that tests `directory` with kiln's Django workflow."""
+    """The plan of the `ci.yml` job that tests `directory` with ion-repo's Django workflow."""
     if not (root / CI_WORKFLOW).exists():
         return None
     try:
@@ -168,7 +168,7 @@ def changed_files(root: Path) -> list[str]:
             base = completed.stdout.strip()
             break
     if not base:
-        raise KilnError(f"no common ancestor with {integration}: kiln check --all")
+        raise KilnError(f"no common ancestor with {integration}: ion repo check --all")
     diff = subprocess.run(
         ["git", "diff", "--name-only", base], cwd=root, capture_output=True, text=True, check=True
     )
@@ -183,7 +183,7 @@ def check_project(root: Path, with_tests: bool = False, is_all: bool = False) ->
         ui.success("Nothing changed since the integration branch: nothing to check.")
         return
     if changed is not None:
-        ui.note(f"{len(changed)} changed files checked (kiln check --all: the whole repo)")
+        ui.note(f"{len(changed)} changed files checked (ion repo check --all: the whole repo)")
     if with_tests:
         start_backing_services(root)
     failed_checks = run_checks(root, with_tests, changed)

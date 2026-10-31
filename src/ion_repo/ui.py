@@ -1,4 +1,4 @@
-"""Terminal styles: stone and fire palette (the one of the banner's kiln) and messages.
+"""Terminal styles: stone and fire palette (the one of the banner's ion-repo) and messages.
 
 Colors only go to a terminal, without `NO_COLOR` or `TERM=dumb`: outside a terminal the text
 stays bare, for logs and captured output. 24-bit when the terminal says so (`COLORTERM`),
@@ -129,7 +129,7 @@ def note(message: str) -> None:
 
 def error(message: str) -> None:
     mark = paint("✗", EMBER, bold=True, stream=sys.stderr)
-    print(f"{mark} {paint('kiln', bold=True, stream=sys.stderr)}: {message}", file=sys.stderr)
+    print(f"{mark} {paint('ion-repo', bold=True, stream=sys.stderr)}: {message}", file=sys.stderr)
 
 
 def _close_last_step() -> None:

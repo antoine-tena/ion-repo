@@ -1,8 +1,8 @@
-"""The sessions `kiln pause` kept (T-344): listed at the next start, in any repo, above the first
-prompt; a session leaves the list once resumed, or when its repo or branch is gone (merged and
+"""The sessions `ion repo pause` kept (T-344): listed at the next start, in any repo, above the
+first prompt; a session leaves the list once resumed, or when its repo or branch is gone (merged and
 deleted).
 
-One file per session in `~/.local/state/kiln/sessions/<id>.json`, written by `kiln pause`.
+One file per session in `~/.local/state/kiln/sessions/<id>.json`, written by `ion repo pause`.
 """
 
 import datetime
@@ -48,7 +48,7 @@ def listing(current: str = "", now: datetime.datetime | None = None) -> str:
     if not blocks:
         return ""
     blocks.sort(key=lambda block: block[0], reverse=True)
-    return "Paused sessions (/kiln:pause):\n" + "\n".join(text for _, text in blocks)
+    return "Paused sessions (/repo:pause):\n" + "\n".join(text for _, text in blocks)
 
 
 def _still_there(record: dict[str, str]) -> bool:

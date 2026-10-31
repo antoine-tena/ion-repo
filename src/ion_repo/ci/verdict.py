@@ -1,4 +1,5 @@
-"""Verdict of `kiln ci`, kept as a git note on the commit (`refs/notes/ci`) and pushed to origin.
+"""Verdict of `ion repo ci`, kept as a git note on the commit (`refs/notes/ci`) and pushed to
+origin.
 
 The first line is authoritative: `kiln ci: success` or `kiln ci: failure`. It is the one
 `scripts/ops/lib/green-ci.sh` reads before allowing a deployment (the French wording of kiln 0.3,
@@ -73,7 +74,7 @@ def record_verdict(root: Path, verdict: Verdict, should_push: bool) -> None:
 
 
 def read_verdict(root: Path, sha: str) -> str | None:
-    """The `kiln ci` note on this commit, origin included; None if it was never replayed."""
+    """The `ion repo ci` note on this commit, origin included; None if it was never replayed."""
     _merge_remote_notes(root)
     completed = subprocess.run(
         ["git", "notes", f"--ref={NOTES_REF}", "show", sha],

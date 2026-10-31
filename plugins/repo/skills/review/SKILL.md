@@ -1,6 +1,6 @@
 ---
 name: review
-description: Review a branch's commits and diff before they go public - messages, authorship, forbidden trailers, stray files, secrets, fixups - and tidy its history; `--repo`: the whole repo before a release. Run by /kiln:merge and /kiln:release; use when the user asks if a branch or the repo is clean.
+description: Review a branch's commits and diff before they go public - messages, authorship, forbidden trailers, stray files, secrets, fixups - and tidy its history; `--repo`: the whole repo before a release. Run by /repo:merge and /repo:release; use when the user asks if a branch or the repo is clean.
 argument-hint: "[branch | --repo]"
 ---
 
@@ -29,7 +29,7 @@ Each one, against the repo's habits:
   language of the history, under 72 characters, saying what changes rather than how; no
   `wip`, `test`, `oops`, `fix typo`, `update`, `.` or a bare file name.
 - **Body and trailers**: no `Claude-Session:`, no « Generated with » line; a
-  `Co-Authored-By: Claude` only on a machine set to disclose it (`kiln set ai_trailers`,
+  `Co-Authored-By: Claude` only on a machine set to disclose it (`ion repo set ai_trailers`,
   `disclose` by default; the branch guard refuses it under `never`); a breaking change says it
   (`BREAKING CHANGE:`).
 - **Author**: the user's usual identity on this repo (`git config user.name/email`, the
@@ -74,12 +74,12 @@ branch's worktree, without any interactive command (`GIT_EDITOR=true` before eac
 
 After the rewrite: `git diff <old tip> <branch>` is empty unless a file was meant to go, and
 the history reads as section 2 asks. Rewriting a published commit is not this skill's job:
-say what is wrong and what will prevent it next time (a rule, a hook, a kiln fix via
-`/kiln:report`).
+say what is wrong and what will prevent it next time (a rule, a hook, an ion-repo fix via
+`/repo:report`).
 
 ## 5. With `--repo`: the whole repo, before a release
 
-Run by `/kiln:release` before the tag: the release note and the tag point to all of this.
+Run by `/repo:release` before the tag: the release note and the tag point to all of this.
 - **Published commits** of the release, `git log <previous tag>..<candidate>`: section 2 again.
   They can no longer be rewritten: the release note (`CHANGELOG.md`) is where to say clearly
   what a poor subject hides.
@@ -88,7 +88,7 @@ Run by `/kiln:release` before the tag: the release note and the tag point to all
   --sort=-committerdate refs/remotes/origin --format='%(refname:short) %(committerdate:relative) %(subject)'`):
   abandoned, open PR, in progress. Propose to delete the merged ones and to close or finish
   the abandoned ones; delete nothing on GitHub without the user's yes.
-- **Local branches and worktrees** already merged: `/kiln:cleanup`.
+- **Local branches and worktrees** already merged: `/repo:cleanup`.
 - **Unmerged worktrees and local branches**: list each one with the age of its last commit and
   whether it has uncommitted changes; flag as likely forgotten one untouched for more than two
   weeks, or with uncommitted changes. Ask what to do with each (finish, keep for later, delete

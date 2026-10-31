@@ -4,12 +4,12 @@
 paths:
   - "{{ fp }}**"
 ---
-<!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten. -->
+<!-- Written by ion-repo and kept current by `ion repo update`: do not edit, it would be overwritten. -->
 # Frontend: Nuxt 4 and Vue 3
 
 `{{ fp }}app/`: pages, components (`components/`), composables, styles (`assets/`), constants
-(`app/utils/constants.ts`){% if backend == 'django' %}, API types generated in `app/types/api.d.ts` (`kiln contract`){% endif %}.
-Run: `kiln dev`; check: `kiln check` (ESLint, `nuxt typecheck`).
+(`app/utils/constants.ts`){% if backend == 'django' %}, API types generated in `app/types/api.d.ts` (`ion repo contract`){% endif %}.
+Run: `ion repo dev`; check: `ion repo check` (ESLint, `nuxt typecheck`).
 
 ## Code
 

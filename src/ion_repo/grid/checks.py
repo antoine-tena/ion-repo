@@ -1,14 +1,14 @@
-"""The repo's own checks, which judge each converter of `kiln fix`: found, run, told apart.
+"""The repo's own checks, which judge each converter of `ion repo fix`: found, run, told apart.
 
 Found at the root and one folder down (`backend/`, `frontend/`: most repos of the training fleet
-keep their code there): `kiln check --all` in a kiln repo; elsewhere the lint, types and tests
-the manifests declare (ruff, mypy, pytest, or a Django project's `manage.py test`; the `lint`,
+keep their code there): `ion repo check --all` in an ion-repo repo; elsewhere the lint, types and
+tests the manifests declare (ruff, mypy, pytest, or a Django project's `manage.py test`; the `lint`,
 `typecheck` and `test` scripts of a package.json, run by npm, pnpm, yarn or bun, after its lock).
 Each one runs with a timeout: a test suite waiting for an absent database never hangs the fix.
 
 Before the first converter each check runs once. One whose tool is missing, already red or timed
 out cannot judge, and the summary names it with why; the green ones judge every converter. The
-output of a check a converter turned red is kept in the git folder, where `kiln score
+output of a check a converter turned red is kept in the git folder, where `ion repo score
 --roadmap` hands the gap to Claude with its log.
 """
 
@@ -30,7 +30,7 @@ TOOL_HINTS = {
     "yarn": "corepack enable yarn",
     "bun": "curl -fsSL https://bun.sh/install | bash",
     "npm": "Node.js 24: https://nodejs.org/en/download",
-    "kiln": "uv tool install keramos-kiln",
+    "ion-repo": "uv tool install ion-repo",
 }
 # Lock file, in search order, and the package manager that wrote it.
 NODE_LOCKS = (
@@ -43,8 +43,8 @@ NODE_SCRIPTS = ("lint", "typecheck", "test")
 MANIFESTS = ("pyproject.toml", "package.json", "manage.py")
 SKIPPED_FOLDERS = frozenset({"node_modules", "dist", "build", "venv"})
 LOGS = Path("kiln") / "fix"
-# The tag of the images `kiln fix` builds to prove a converter: overwritten at each build.
-BUILT_IMAGE = "localhost/kiln-fix-check:latest"
+# The tag of the images `ion repo fix` builds to prove a converter: overwritten at each build.
+BUILT_IMAGE = "localhost/ion-repo-fix-check:latest"
 
 GREEN, RED, MISSING, TIMEOUT = "green", "red", "missing", "timeout"
 
@@ -81,10 +81,10 @@ class Result:
 
 
 def find(root: Path) -> list[Check]:
-    """The repo's checks, the whole repo before and after alike: `kiln check` alone looks at the
+    """The repo's checks, the whole repo before and after alike: `ion repo check` alone looks at the
     branch's changes, and would blame a converter for the older debt of a file it touched."""
     if (root / ".copier-answers.yml").exists():
-        return [Check(("kiln", "check", "--all"))]
+        return [Check(("ion-repo", "check", "--all"))]
     folders = [
         ".",
         *sorted(
@@ -224,7 +224,7 @@ def keep_log(root: Path, rule: str, result: Result, branch: str = "") -> Path | 
         return None
     folder.mkdir(parents=True, exist_ok=True)
     path = folder / f"{rule}.log"
-    head = f"# kiln fix's commit, set aside: git switch {branch}\n" if branch else ""
+    head = f"# ion repo fix's commit, set aside: git switch {branch}\n" if branch else ""
     path.write_text(f"{head}$ {result.check}\n{result.log}", encoding="utf-8")
     return path
 
@@ -236,7 +236,7 @@ def forget_log(root: Path, rule: str) -> None:
 
 
 def reverted(root: Path) -> dict[str, Path]:
-    """The rules whose converter `kiln fix` had to undo, with the log of the check it broke."""
+    """The rules whose converter `ion repo fix` had to undo, with the log of the check it broke."""
     folder = logs_dir(root)
     if folder is None or not folder.is_dir():
         return {}

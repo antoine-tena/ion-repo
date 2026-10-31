@@ -30,7 +30,7 @@ class Repo:
         self.only: str | None = None
 
     def generated_files(self) -> set[str]:
-        """Files `.gitattributes` marks linguist-generated, new ones included: `kiln contract`
+        """Files `.gitattributes` marks linguist-generated, new ones included: `ion repo contract`
         writes openapi.json before anyone adds it. A pathspec `:(attr:…)` would miss a new
         file in a new folder (git does not walk into an untracked folder for it)."""
         files = self.git("ls-files", "-z", "--cached", "--others", "--exclude-standard")

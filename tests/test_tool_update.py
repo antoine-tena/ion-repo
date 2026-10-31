@@ -90,7 +90,7 @@ def test_an_up_to_date_tool_asks_nothing(
 
 @pytest.mark.parametrize(
     ("command", "variable"),
-    [("status", "CLAUDECODE"), ("status", "KILN_NO_UPDATE_CHECK"), ("doctor", None)],
+    [("status", "CLAUDECODE"), ("status", "ION_REPO_NO_UPDATE_CHECK"), ("doctor", None)],
 )
 def test_no_offer_in_claude_code_when_opted_out_or_in_doctor(
     monkeypatch: pytest.MonkeyPatch, command: str, variable: str | None
@@ -98,7 +98,7 @@ def test_no_offer_in_claude_code_when_opted_out_or_in_doctor(
     monkeypatch.setattr(sys.stdin, "isatty", lambda: True)
     monkeypatch.setattr(sys.stdout, "isatty", lambda: True)
     monkeypatch.setattr(tool_update, "install_source", lambda: "pypi")
-    for name in ("CLAUDECODE", "KILN_NO_UPDATE_CHECK"):
+    for name in ("CLAUDECODE", "ION_REPO_NO_UPDATE_CHECK"):
         monkeypatch.delenv(name, raising=False)
     if variable:
         monkeypatch.setenv(variable, "1")

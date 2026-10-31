@@ -1,10 +1,11 @@
-"""The databases a project's code needs on the machine, started by `kiln dev`, `check`, `install`.
+"""The databases a project's code needs on the machine, started by `ion repo dev`, `check`,
+`install`.
 
 They are the `db`, `postgres` and `redis` services of the project's compose file. A container
 already created (a stopped `annski-db` after a reboot) is restarted as it is, its data kept;
 otherwise `podman-compose up -d` creates it. Then each one with a health check is waited for, so
 that Django never meets a database still starting. Without podman, nothing is started. They
-outlive a Ctrl+C, ready for the next `kiln dev`; `kiln dev stop` stops them.
+outlive a Ctrl+C, ready for the next `ion repo dev`; `ion repo dev stop` stops them.
 """
 
 import re

@@ -10,7 +10,7 @@ from ion_repo.shell import KilnError
 
 
 def run_kiln(monkeypatch: pytest.MonkeyPatch, *arguments: str) -> int:
-    """`kiln …` dans ce processus ; renvoie le code de sortie (0 sans sys.exit)."""
+    """`ion-repo …` dans ce processus ; renvoie le code de sortie (0 sans sys.exit)."""
     monkeypatch.setattr(sys, "argv", ["kiln", *arguments])
     try:
         cli.main()
@@ -40,7 +40,7 @@ def test_a_command_help_is_drawn_like_the_home_screen(
 
     out = capsys.readouterr().out
     assert "Run the project locally" in out
-    assert "Usage  kiln dev [options] [{status,logs,stop}] [service]" in out
+    assert "Usage  ion repo dev [options] [{status,logs,stop}] [service]" in out
     assert "ARGUMENTS" in out
     assert "OPTIONS" in out
     assert "Logs: keep following" in out
@@ -83,7 +83,7 @@ def test_a_failed_command_ends_on_an_interrupted_recap(
     assert run_kiln(monkeypatch, "check") == cli.EXIT_FAILURE
     captured = capsys.readouterr()
     assert "Interrupted after" in captured.out
-    assert "kiln: échec de `uv sync`" in captured.err
+    assert "ion-repo: échec de `uv sync`" in captured.err
     ui._steps.clear()
 
 
@@ -98,7 +98,7 @@ def test_status_outside_a_terminal_is_plain_text(
     assert run_kiln(monkeypatch, "status") == 0
     out = capsys.readouterr().out
     assert "\033[" not in out
-    assert out.splitlines()[0].startswith("kiln v")
+    assert out.splitlines()[0].startswith("ion-repo v")
     assert "REPO" in out
 
 
@@ -115,7 +115,7 @@ def test_bash_completion_script_lists_commands_and_options(
     assert "--size" in out
     assert "--all" in out
     assert "--containers" in out
-    assert "complete -F _kiln_completion kiln" in out
+    assert "complete -F _kiln_completion ion-repo" in out
 
 
 @pytest.mark.parametrize(
@@ -170,10 +170,10 @@ def test_code_spans_of_a_release_note_show_in_colour_without_backticks(
     monkeypatch.setattr(ui, "is_styled", lambda stream=None: True)
     monkeypatch.setattr(ui, "_columns", lambda: 100)
 
-    ui.panel("What's new", ["- new answer (`ci_runner`), set by `kiln set ci_runner=github`."])
+    ui.panel("What's new", ["- new answer (`ci_runner`), set by `ion repo set ci_runner=github`."])
 
     out = capsys.readouterr().out
     text = re.sub(r"\033\[[\d;]*m", "", out)
     assert "`" not in text
-    assert "new answer (ci_runner), set by kiln set ci_runner=github." in text
+    assert "new answer (ci_runner), set by ion repo set ci_runner=github." in text
     assert ui.paint("ci_runner", ui.GLOW) in out and ui.paint("set", ui.GLOW) in out

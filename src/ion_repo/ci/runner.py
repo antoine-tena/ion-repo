@@ -1,10 +1,10 @@
-"""`kiln ci`: replays a commit's CI on this machine and keeps the verdict on the commit.
+"""`ion repo ci`: replays a commit's CI on this machine and keeps the verdict on the commit.
 
 For a repo whose GitHub CI does not run (minutes used up, repo without Actions): the commit is
 checked out in a detached worktree, outside the repo, its dependencies installed as on GitHub
 (frozen locks), then the jobs of `ci.yml` replayed. The verdict goes as a git note to origin,
-where the deployment script reads it. The worktree of a killed `kiln ci` (SIGKILL, closed window)
-keeps its launcher's PID file, and the next run removes it.
+where the deployment script reads it. The worktree of a killed `ion repo ci` (SIGKILL, closed
+window) keeps its launcher's PID file, and the next run removes it.
 """
 
 import os
@@ -39,9 +39,9 @@ def run_local_ci(
 ) -> Verdict:
     require_tools("git", "uv", "podman")
     if orphan_count := remove_orphan_containers():
-        say(f"{orphan_count} containers of an interrupted kiln ci removed")
+        say(f"{orphan_count} containers of an interrupted ion repo ci removed")
     if orphan_count := _remove_orphan_workspaces(root):
-        say(f"{orphan_count} worktrees of an interrupted kiln ci removed")
+        say(f"{orphan_count} worktrees of an interrupted ion repo ci removed")
     sha = capture(["git", "rev-parse", "--verify", f"{revision}^{{commit}}"], root)
     started_at, started = datetime.now().astimezone(), time.monotonic()
     workspace = _create_workspace(root, sha)
@@ -51,7 +51,10 @@ def run_local_ci(
         plans = [plan_job(job) for job in replayed]
         skipped = [(job.name, job.reason) for job in jobs if not job.is_replayable]
         skipped += [(name, "left out by --skip") for name in sorted(skipped_jobs)]
-        say(f"kiln ci {sha[:SHORT_SHA]}: {len(plans)} jobs replayed, {len(skipped)} not replayed")
+        say(
+            f"ion repo ci {sha[:SHORT_SHA]}: {len(plans)} jobs replayed, {len(skipped)} not "
+            f"replayed"
+        )
         outcomes = _prepare(plans, workspace) or run_lanes(plans, workspace)
     finally:
         _owner_file(workspace.root).unlink(missing_ok=True)
@@ -63,11 +66,11 @@ def run_local_ci(
 
 
 def show_verdict(root: Path, revision: str) -> bool:
-    """Shows the commit's `kiln ci` note; true if it says success."""
+    """Shows the commit's `ion repo ci` note; true if it says success."""
     sha = capture(["git", "rev-parse", "--verify", f"{revision}^{{commit}}"], root)
     note = read_verdict(root, sha)
     if note is None:
-        print(f"{sha[:SHORT_SHA]} was never replayed by kiln ci (kiln ci {revision}).")
+        print(f"{sha[:SHORT_SHA]} was never replayed by ion repo ci (ion repo ci {revision}).")
         return False
     print(note, end="")
     return note.startswith((SUCCESS_LINE, LEGACY_SUCCESS_LINE))
@@ -81,7 +84,7 @@ def _create_workspace(root: Path, sha: str) -> Workspace:
     log_dir.mkdir(parents=True)
     capture(["git", "worktree", "add", "--detach", str(worktree), sha], root)
     _owner_file(worktree).write_text(str(os.getpid()))
-    return Workspace(worktree, log_dir, f"kiln-ci-{name}")
+    return Workspace(worktree, log_dir, f"ion-repo-ci-{name}")
 
 
 def _repo_name(root: Path) -> str:
@@ -91,12 +94,12 @@ def _repo_name(root: Path) -> str:
 
 
 def _owner_file(worktree: Path) -> Path:
-    """PID of the `kiln ci` using the worktree, next to it; gone once the run is over."""
+    """PID of the `ion repo ci` using the worktree, next to it; gone once the run is over."""
     return worktree.with_name(f"{worktree.name}.pid")
 
 
 def _remove_orphan_workspaces(root: Path) -> int:
-    """Removes the repo's worktrees whose launching `kiln ci` is dead; returns their number.
+    """Removes the repo's worktrees whose launching `ion repo ci` is dead; returns their number.
 
     A worktree without a PID file (kept by --keep) is never touched.
     """

@@ -1,6 +1,6 @@
 ---
 name: resize
-description: Move a repo up or down kiln's sizes (tiny, small, medium, large) - what the new size brings or removes shown before the merge, the settings that go with it, kiln set on a branch, merged. Use when the user asks to change a project's size, or it outgrew its size or is heavier than it needs.
+description: Move a repo up or down ion-repo's sizes (tiny, small, medium, large) - what the new size brings or removes shown before the merge, the settings that go with it, ion repo set on a branch, merged. Use when the user asks to change a project's size, or it outgrew its size or is heavier than it needs.
 argument-hint: "[tiny|small|medium|large]"
 ---
 
@@ -10,7 +10,7 @@ the user in their language.
 ## 1. Where the repo stands
 
 1. Read the size in `.copier-answers.yml` (`size`). An old name is the same notch: `spark` =
-   tiny, `ember` = small, `flame` = medium, `blaze` = large (renamed in 0.4.10; `kiln set`
+   tiny, `ember` = small, `flame` = medium, `blaze` = large (renamed in 0.4.10; `ion repo set`
    converts it).
 2. Weigh the notch against what the project is, from its README and backlog:
    - **tiny**: a script, a personal tool, a one-off analysis;
@@ -23,8 +23,8 @@ the user in their language.
 
 ## 2. What changes, before anything merges
 
-Branch `chore/kiln-resize` in a worktree (skill `/kiln:worktree`), clean tree. Run there
-`kiln set size=<new>` together with the settings that go with it, each one asked to the user
+Branch `chore/ion-repo-resize` in a worktree (skill `/repo:worktree`), clean tree. Run there
+`ion repo set size=<new>` together with the settings that go with it, each one asked to the user
 first:
 - going to **medium** or **large**: `podman=true` (its default there), and for a Django backend
   in production `deploy=vps vps_host=… api_domain=… site_url=… deploy_branch=…`; on a server
@@ -36,7 +36,7 @@ first:
   rules of the upper notch go, list them.
 
 Then show the user what the notch did, from the diff (`git diff --stat`, then
-`git diff .claude/rules/kiln/ charter.toml .github/`): the rules added or removed (for medium,
+`git diff .claude/rules/ion-repo/ charter.toml .github/`): the rules added or removed (for medium,
 for instance, personal data covered by export and anonymisation in the same change, the frozen
 API contract, request correlation, antivirus on uploads), the CI jobs, the containers and the
 production files. Ask before going on; on a no, remove the worktree and the branch: nothing
@@ -45,14 +45,14 @@ reached `develop`.
 ## 3. Finish
 
 1. Conflicts (`<<<<<<< before updating`): keep the project's own version of what it built
-   (pages, config, README sections), take kiln's additions around it, and never a demo the
+   (pages, config, README sections), take ion-repo's additions around it, and never a demo the
    template brings to a new project (a health badge, an `/api` proxy that would shadow the
    front's own server routes). A binary file the project replaced (an icon) is kept as it was:
-   `git checkout <integration> -- <file>` if the update put kiln's back.
-2. Commit in batches of 10 files at most, grouped by theme (kiln's rules and settings, CI,
-   backend, containers, production, docs), then run the same `kiln set` again: it locks,
+   `git checkout <integration> -- <file>` if the update put ion-repo's back.
+2. Commit in batches of 10 files at most, grouped by theme (ion-repo's rules and settings, CI,
+   backend, containers, production, docs), then run the same `ion repo set` again: it locks,
    installs and runs every check. Commit the lock files it writes.
 3. Update the repo map of the project's `CLAUDE.md` for every folder the notch added or removed
    (`backend/`, `config/vps/`, `scripts/ops/`…).
-4. Merge into `develop` (skill `/kiln:merge`). Deploying is a separate step, through the
+4. Merge into `develop` (skill `/repo:merge`). Deploying is a separate step, through the
    project's `docs/operations/production.md`.

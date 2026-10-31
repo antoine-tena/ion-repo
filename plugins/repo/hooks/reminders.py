@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reminders: when to ask again whether to update kiln (the tool, or a repo).
+"""Reminders: when to ask again whether to update ion-repo (the tool, or a repo).
 
 Each question has a key (`tool`, or the root of a repo). It is asked at the first session where
 it applies, then, after each "no", again after 5, 10, 30 and 50 sessions in the place where it is

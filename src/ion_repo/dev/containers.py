@@ -1,4 +1,4 @@
-"""`kiln dev --containers`: the whole stack in podman, as in production, from its compose file.
+"""`ion repo dev --containers`: the whole stack in podman, as in production, from its compose file.
 
 The image of production rather than a place to code: what changes needs a new build. Podman
 keeps it in the background (`--foreground`: in the terminal); a marker in the state folder
@@ -53,7 +53,7 @@ def stop(root: Path) -> None:
 def _compose(root: Path) -> Path:
     compose = compose_file(root)
     if compose is None:
-        raise KilnError("no podman in this project: kiln set podman=true, on a branch")
+        raise KilnError("no podman in this project: ion repo set podman=true, on a branch")
     require_tools("podman", "podman-compose")
     return compose
 

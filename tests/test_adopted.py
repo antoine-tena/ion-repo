@@ -1,4 +1,5 @@
-"""An adopted repo's references to kiln's workflows, moved to the last public release (T-146)."""
+"""An adopted repo's references to ion-repo's workflows, moved to the last public release
+(T-146)."""
 
 import subprocess
 from pathlib import Path
@@ -13,9 +14,9 @@ name: CI
 on: push
 jobs:
   charter:
-    uses: antoine-tena/kiln/.github/workflows/charter.yml@v0.3.4  # kiln's charter
+    uses: antoine-tena/ion-repo/.github/workflows/charter.yml@v0.3.4  # ion-repo's charter
   backend:
-    uses: antoine-tena/kiln/.github/workflows/python.yml@develop
+    uses: antoine-tena/ion-repo/.github/workflows/python.yml@develop
     with:
       directory: backend
   own:
@@ -47,17 +48,19 @@ def test_only_kiln_references_move_to_the_release(repo: Path) -> None:
     text = (repo / ".github/workflows/ci.yml").read_text()
     assert changed == [".github/workflows/ci.yml"]
     assert adopted.quoted_refs(repo) == {"v0.4.0"}
-    assert "charter.yml@v0.4.0  # kiln's charter" in text
-    assert "actions/checkout@v5" in text  # not kiln's: untouched
+    assert "charter.yml@v0.4.0  # ion-repo's charter" in text
+    assert "actions/checkout@v5" in text  # not ion-repo's: untouched
     assert adopted.move_to_release(repo, "v0.4.0", fetch) == []
 
 
 def test_a_reference_pinned_by_sha_stays_pinned_at_the_release(repo: Path) -> None:
-    """`kiln fix` pins kiln's workflows too ([PINNED-ACTIONS]): the release's SHA, its tag
+    """`ion repo fix` pins ion-repo's workflows too ([PINNED-ACTIONS]): the release's SHA, its tag
     in the comment, read back as the release quoted."""
     old, new = "a" * 40, "b" * 40
     ci = repo / ".github/workflows/ci.yml"
-    ci.write_text(CI.replace("charter.yml@v0.3.4  # kiln's charter", f"charter.yml@{old} # v0.3.4"))
+    ci.write_text(
+        CI.replace("charter.yml@v0.3.4  # ion-repo's charter", f"charter.yml@{old} # v0.3.4")
+    )
     assert adopted.quoted_refs(repo) == {"v0.3.4", "develop"}
 
     adopted.move_to_release(repo, "v0.4.0", fetch, resolve={"v0.4.0": new}.__getitem__)
@@ -81,7 +84,7 @@ def test_kiln_update_in_an_adopted_repo_moves_the_tag_only(
     repo: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     git = ["git", "-C", str(repo)]
-    subprocess.run([*git, "init", "-q", "-b", "chore/kiln-update"], check=True)
+    subprocess.run([*git, "init", "-q", "-b", "chore/ion-repo-update"], check=True)
     subprocess.run([*git, "add", "-A"], check=True)
     subprocess.run([*git, "commit", "-q", "-m", "adopted"], check=True)
     monkeypatch.setattr(adopted, "latest_release", lambda candidates: "v0.4.0")
@@ -140,7 +143,7 @@ LEGACY_HOOKS = """\
 LEGACY_CI = """\
 jobs:
   schema:
-    uses: antoine-tena/kiln/.github/workflows/contrat-api.yml@v0.3.4
+    uses: antoine-tena/ion-repo/.github/workflows/contrat-api.yml@v0.3.4
     with:
       back: backend
       front: frontend

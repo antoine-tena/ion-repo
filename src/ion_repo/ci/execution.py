@@ -1,4 +1,4 @@
-"""Running the jobs of `kiln ci`: steps in series, one log per job, lanes in parallel.
+"""Running the jobs of `ion repo ci`: steps in series, one log per job, lanes in parallel.
 
 As on GitHub, a job stops at its first failed step (except a `should_always_run` step), and a
 failed job does not prevent the next ones. The `back` lane (pytest, the longest) runs beside the
@@ -34,7 +34,7 @@ PLAYWRIGHT_BROWSERS = Path.home() / ".cache" / "ms-playwright"
 # "C:\Users\…\lighthouse.N" in the current folder. This launcher translates the path back.
 WSL_CHROME = Path.home() / ".cache" / "kiln" / "chrome-wsl"
 WSL_CHROME_SCRIPT = """#!/usr/bin/env bash
-# Written by kiln ci: Linux Chromium launched by chrome-launcher under WSL (see execution.py).
+# Written by ion repo ci: Linux Chromium launched by chrome-launcher under WSL (see execution.py).
 args=()
 for arg in "$@"; do
   case "$arg" in

@@ -1,4 +1,4 @@
-"""`kiln contract`: the export chosen from the backend, the front types only when scripted."""
+"""`ion repo contract`: the export chosen from the backend, the front types only when scripted."""
 
 import subprocess
 from pathlib import Path

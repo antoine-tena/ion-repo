@@ -1,8 +1,8 @@
-"""Throwaway PostgreSQL and Redis for `kiln ci`, like kiln's `actions/services` action.
+"""Throwaway PostgreSQL and Redis for `ion repo ci`, like ion-repo's `actions/services` action.
 
-Free ports picked at launch and containers named after the commit: two `kiln ci` runs (or the
+Free ports picked at launch and containers named after the commit: two `ion repo ci` runs (or the
 machine's test database) never collide. Containers are removed on exit, failure included; those
-of a killed `kiln ci` (SIGKILL, closed window) carry its PID and the next run removes them.
+of a killed `ion repo ci` (SIGKILL, closed window) carry its PID and the next run removes them.
 """
 
 import os
@@ -40,8 +40,8 @@ def running_services(services: Services | None, prefix: str) -> Iterator[dict[st
 
 
 def remove_orphan_containers() -> int:
-    """Removes the containers whose launching `kiln ci` or `kiln check` is dead; returns their
-    number."""
+    """Removes the containers whose launching `ion repo ci` or `ion repo check` is dead; returns
+    their number."""
     listing = subprocess.run(
         ["podman", "ps", "-a", "--filter", f"label={OWNER_LABEL}",
          "--format", f'{{{{.Names}}}} {{{{index .Labels "{OWNER_LABEL}"}}}}'],

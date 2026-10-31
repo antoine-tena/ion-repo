@@ -1,4 +1,4 @@
-"""What `kiln new` says while it generates the project and once it exists."""
+"""What `ion repo new` says while it generates the project and once it exists."""
 
 from pathlib import Path
 
@@ -46,7 +46,7 @@ class GenerationStoppedError(Exception):
 def generate(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, *, terminal: bool
 ) -> dict[str, object]:
-    """The options `kiln new` hands Copier, in a terminal or not."""
+    """The options `ion repo new` hands Copier, in a terminal or not."""
     handed: dict[str, object] = {}
 
     def run_copy(*arguments: object, **options: object) -> None:
@@ -55,11 +55,11 @@ def generate(
 
     monkeypatch.setattr(copier, "run_copy", run_copy)
     monkeypatch.setattr(new, "require_tools", lambda *tools: None)
-    monkeypatch.setattr(new, "template_source", lambda template: "gh:antoine-tena/kiln")
+    monkeypatch.setattr(new, "template_source", lambda template: "gh:antoine-tena/ion-repo")
     monkeypatch.setattr(new, "template_revision", lambda source: "v0.4.1")
     monkeypatch.setattr(new, "follows_candidates", lambda: False)
     monkeypatch.setattr(ui, "is_styled", lambda stream=None: terminal)
-    monkeypatch.delenv("KILN_VERBOSE", raising=False)
+    monkeypatch.delenv("ION_REPO_VERBOSE", raising=False)
     request = NewProjectRequest(tmp_path / "demo", {}, None, False, False)
     with pytest.raises(GenerationStoppedError):
         create_project(request)

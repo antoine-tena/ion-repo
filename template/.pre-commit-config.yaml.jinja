@@ -1,12 +1,12 @@
 {%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
 # Guards and CI checks replayed before each commit.
 #
-# Installed once, at the root of the repo: kiln install (or: uv tool install pre-commit &&
+# Installed once, at the root of the repo: ion repo install (or: uv tool install pre-commit &&
 # pre-commit install). The hook holds for the main tree and every worktree. Replay everything:
 #   pre-commit run --all-files
-# Local hooks call the project's tools (uv) and `charter`, installed with kiln: fast linters on
+# Local hooks call the project's tools (uv) and `charter`, installed with ion-repo: fast linters on
 # the committed files alone. Typing, tests and the CI run only when a release goes out (skill
-# /kiln:release), never at a push to develop.
+# /repo:release), never at a push to develop.
 default_install_hook_types: [pre-commit]
 default_stages: [pre-commit]
 repos:
@@ -20,7 +20,7 @@ repos:
       - id: check-added-large-files
         args: [--maxkb=1024]
 {%- if large_files | default([]) %}
-        # Heavy files kept on purpose, by their exact path: `kiln set large_files=…`.
+        # Heavy files kept on purpose, by their exact path: `ion repo set large_files=…`.
         exclude: '^({{ large_files | map('replace', '.', '\\.') | join('|') }})$'
 {%- endif %}
       - id: check-merge-conflict

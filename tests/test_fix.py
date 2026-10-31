@@ -1,4 +1,4 @@
-"""`kiln fix` (T-126) and its first converters (T-127, T-128): one commit per rule on a work
+"""`ion repo fix` (T-126) and its first converters (T-127, T-128): one commit per rule on a work
 branch, undone when the checks turn red, nothing written by a dry run, and each converter
 closing its rule. The network (commit SHAs, digests) is faked."""
 
@@ -265,8 +265,10 @@ def test_black_line_length_is_carried_over_to_ruff(tmp_path: Path) -> None:
 
 
 def fix_branch(root: Path) -> str:
-    """The branch `kiln fix` left, the latest when there are several."""
-    branches = git(root, "for-each-ref", "--format=%(refname:short)", "refs/heads/kiln/").split()
+    """The branch `ion repo fix` left, the latest when there are several."""
+    branches = git(
+        root, "for-each-ref", "--format=%(refname:short)", "refs/heads/ion-repo/"
+    ).split()
     return sorted(branches, key=len)[-1] if branches else ""
 
 
@@ -281,7 +283,7 @@ def test_one_commit_per_rule_on_a_work_branch(tmp_path: Path) -> None:
     assert git(root, "branch", "--show-current").strip() == "main"
     assert git(root, "status", "--porcelain") == ""
     assert git(root, "worktree", "list").count("\n") == 1
-    assert fix_branch(root).startswith("kiln/fix-")
+    assert fix_branch(root).startswith("ion-repo/fix-")
     log = git(root, "log", "--format=%s%n%b", f"main..{fix_branch(root)}")
     assert "fix(NO-OBSOLETE-BACKPORTS): obsolete backports removed" in log
     assert "Source: https://pypi.org/project/typing/" in log and fix.UNVERIFIED in log
@@ -400,7 +402,7 @@ def test_a_converter_that_turns_the_checks_red_is_undone_and_handed_to_claude(
     assert "TS-EXPECT-ERROR" in [found.rule for found in report.roadmap()]
     capsys.readouterr()
     roadmap.show_roadmap(report)
-    assert f"kiln fix's commit broke a check, set aside: {log}" in capsys.readouterr().out
+    assert f"ion repo fix's commit broke a check, set aside: {log}" in capsys.readouterr().out
 
 
 @pytest.mark.parametrize(("built_before", "status"), [(True, "reverted"), (False, "fixed")])
@@ -433,10 +435,10 @@ def test_only_container_files_are_built(tmp_path: Path, monkeypatch: pytest.Monk
 
 
 def test_a_kiln_repo_is_checked_whole_before_and_after(tmp_path: Path) -> None:
-    # `kiln check` alone looks at the branch's changes: a converter touching a file with older
+    # `ion repo check` alone looks at the branch's changes: a converter touching a file with older
     # debt (a Dockerfile the charter bans) would be blamed for it and undone.
     root = make(tmp_path, {".copier-answers.yml": "_commit: v0.4.5\n"})
-    assert commands(root) == [("kiln", "check", "--all")]
+    assert commands(root) == [("ion-repo", "check", "--all")]
 
 
 def test_a_dry_run_writes_nothing(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
@@ -464,7 +466,7 @@ def test_a_dirty_tree_is_left_alone_and_the_fix_starts_from_the_last_commit(
 
 
 def test_a_second_run_takes_over_its_branch_or_gets_a_suffix(tmp_path: Path) -> None:
-    """A branch holding only `kiln fix` commits starts again from the last commit; one a person
+    """A branch holding only `ion repo fix` commits starts again from the last commit; one a person
     committed on is never touched."""
     root = make(tmp_path, CONVERTED["TS-EXPECT-ERROR"])
     fix.fix(root, only="TS-EXPECT-ERROR")
@@ -519,7 +521,7 @@ def test_docker_hub_images_are_asked_of_its_registry(name: str, expected: tuple[
 
 
 def test_kiln_update_converts_in_place_and_spares_frozen_files(tmp_path: Path) -> None:
-    """`kiln update`'s pass (T-159): the converters run in the tree, nothing committed, and a
+    """`ion repo update`'s pass (T-159): the converters run in the tree, nothing committed, and a
     frozen file comes out as it went in."""
     frozen = ".github/workflows/deploy.yml"
     unpinned = "jobs:\n  a:\n    steps:\n      - uses: actions/checkout@v4\n"
@@ -542,7 +544,7 @@ def test_kiln_update_names_a_converter_that_fails(
     unpinned = "jobs:\n  a:\n    steps:\n      - uses: actions/checkout@v4\n"
     root = make(tmp_path, {WORKFLOW: unpinned, "README.md": "# a\n"})
     assert "PINNED-ACTIONS" not in fix.convert_in_place(root, [])
-    assert "PINNED-ACTIONS left for kiln fix: GitHub unreachable" in capsys.readouterr().out
+    assert "PINNED-ACTIONS left for ion repo fix: GitHub unreachable" in capsys.readouterr().out
 
 
 INJECTED = """on: pull_request_target

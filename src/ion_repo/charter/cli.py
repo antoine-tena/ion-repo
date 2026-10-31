@@ -1,5 +1,5 @@
 """charter: checks a repo against the rules of its charter, declared in the `charter.toml` at its
-root. Installed with kiln, next to the `kiln` command (`charte`, its name before kiln 0.4.0,
+root. Installed with ion-repo, next to the `ion-repo` command (`charte`, its name before kiln 0.4.0,
 still works).
 
 A charter that nothing runs describes a project that does not exist. Two regimes, because a
@@ -19,7 +19,7 @@ Waivers: `kiln-waivers.toml` (see waivers.py) lifts a rule from the whole repo o
 paths, for a limited time; they are listed at each check.
 
 Usage: charter [check]      the rules of the charter (default)
-       charter file <path>… the bans on those files alone, fast (edit hook, kiln check)
+       charter file <path>… the bans on those files alone, fast (edit hook, ion repo check)
        charter types        mypy typing as a ratchet ([types])
        charter coverage     coverage floors of the backend ([coverage])
        charter --detail     value of each ratchet and floor, without judging
@@ -76,7 +76,7 @@ def _local_rules(repo: Repo) -> list[LocalRule]:
 
 
 def unverified_rules(repo: Repo) -> list[str]:
-    """Rules of the instructions applied in review (no check enforces them), as listed by kiln
+    """Rules of the instructions applied in review (no check enforces them), as listed by ion-repo
     in the file `unverified_rules` names."""
     relative = repo.config.get("unverified_rules")
     if not relative or not (repo.root / relative).is_file():
@@ -87,7 +87,7 @@ def unverified_rules(repo: Repo) -> list[str]:
 
 def waivers_of(repo: Repo, today: datetime.date | None = None) -> Waivers:
     """Waivers of `kiln-waivers.toml` as of `today`, checked against the rules and the files of
-    the repo; a rule of the grid counts (a false positive of `kiln score` dismissed on its
+    the repo; a rule of the grid counts (a false positive of `ion repo score` dismissed on its
     path)."""
     from ion_repo.grid.model import load_rules
 
@@ -197,7 +197,7 @@ def check(repo: Repo) -> int:
         print("\n\n".join(problems))
         print(
             "\nThe charter is the norm of this repo: fix the code, or amend the charter "
-            "explicitly (kiln waive for a deliberate deviation)." + in_review
+            "explicitly (ion repo waive for a deliberate deviation)." + in_review
         )
         return 1
     print("Checked rules of the charter: no violation, no ratchet exceeded." + in_review)
@@ -228,7 +228,7 @@ def check_file(repo: Repo, file: str) -> int:
     print("\n\n".join(problems))
     print(
         "\nFix the code, or waive the rule for this file if the deviation is deliberate: "
-        f'kiln waive <RULE> --paths {relative} --reason "…".'
+        f'ion repo waive <RULE> --paths {relative} --reason "…".'
     )
     return 1
 
@@ -270,7 +270,7 @@ def main() -> int:
 
 
 def run() -> None:
-    """Entry point of the `charter` command installed with kiln."""
+    """Entry point of the `charter` command installed with ion-repo."""
     sys.exit(main())
 
 

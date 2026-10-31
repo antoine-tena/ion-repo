@@ -1,7 +1,7 @@
-"""The few questions `kiln new` asks: what you are building, its size, the team's language.
+"""The few questions `ion repo new` asks: what you are building, its size, the team's language.
 
 Everything else takes its default (the stack follows from what you are building) or comes from
-an option; `kiln new --all-questions` asks the whole Copier questionnaire instead. The choices
+an option; `ion repo new --all-questions` asks the whole Copier questionnaire instead. The choices
 repeat those of `copier.yml`, which a test keeps in step.
 """
 

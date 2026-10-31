@@ -170,7 +170,7 @@ def _run(root: Path, command: tuple[str, ...]) -> bool:
 def _pytest(root: Path, step: Step, data: Path | None = None) -> dict[str, str] | None:
     """Each test's outcome (JUnit XML); None when nothing was collected. With `data`, the run
     goes under coverage, pytest started as its own script: the same import path as without."""
-    with tempfile.TemporaryDirectory(prefix="kiln-proof-") as scratch:
+    with tempfile.TemporaryDirectory(prefix="ion-repo-proof-") as scratch:
         report = Path(scratch) / "junit.xml"
         options = ("-q", "-p", "no:cacheprovider", f"--junitxml={report}")
         command: tuple[str, ...] = (*step.command, *options)
@@ -244,7 +244,7 @@ def coverage(root: Path, base: Baseline) -> dict[str, set[int]] | None:
     its run does not pass the same tests (then it measured something else)."""
     executed: dict[str, set[int]] = {}
     for step in (item for item in base.steps if item.per_test):
-        with tempfile.TemporaryDirectory(prefix="kiln-coverage-") as scratch:
+        with tempfile.TemporaryDirectory(prefix="ion-repo-coverage-") as scratch:
             data = Path(scratch) / "coverage"
             outcomes = _pytest(root, step, data) or {}
             wanted = {

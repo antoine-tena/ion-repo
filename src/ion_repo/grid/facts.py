@@ -1,5 +1,5 @@
 """What a repo is made of, read from its tracked files in milliseconds: the facts a rule's
-`applies` asks for (`django`, `github-actions`…). Any repo, made by kiln or not."""
+`applies` asks for (`django`, `github-actions`…). Any repo, made by ion-repo or not."""
 
 import codecs
 import functools
@@ -54,7 +54,7 @@ class Repo:
     facts: frozenset[str]
     # Python and JavaScript packages the repo declares, by their public names.
     dependencies: frozenset[str] = frozenset()
-    # Read once per run: a later read (after `kiln fix` writes) takes a new `read_repo`.
+    # Read once per run: a later read (after `ion repo fix` writes) takes a new `read_repo`.
     texts: dict[str, str] = field(default_factory=dict, compare=False, hash=False, repr=False)
     # What reading found: binary files, and texts that are not UTF-8 with their encoding.
     binaries: set[str] = field(default_factory=set, compare=False, hash=False, repr=False)

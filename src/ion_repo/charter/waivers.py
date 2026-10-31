@@ -1,5 +1,5 @@
-"""Waivers: deliberate deviations from a kiln rule, declared in `kiln-waivers.toml` at the root
-of the repo. kiln never generates nor rewrites that file.
+"""Waivers: deliberate deviations from an ion-repo rule, declared in `kiln-waivers.toml` at the root
+of the repo. ion-repo never generates nor rewrites that file.
 
 A waiver covers a rule (`rule`, an identifier of the charter), in the whole repo or in `paths`
 (git patterns), with a reason, an author and an expiry. Trust is earned: the first period lasts
@@ -124,7 +124,7 @@ def _read(entry: dict[str, Any], where: str, today: datetime.date, result: Waive
         return
     if today > waiver.until:
         result.errors.append(
-            f"{where}: expired on {waiver.until}: fix it, or renew it (`kiln waive --renew`, a "
+            f"{where}: expired on {waiver.until}: fix it, or renew it (`ion repo waive --renew`, a "
             f"new period of {max_days(waiver.renewals + 1)} days at most)"
         )
         return

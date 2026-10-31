@@ -1,4 +1,5 @@
-"""`kiln contract`: openapi.json exported from the Django code, then the front types ([OPENAPI])."""
+"""`ion repo contract`: openapi.json exported from the Django code, then the front types
+([OPENAPI])."""
 
 import json
 import os
@@ -18,7 +19,7 @@ EXPORT_COMMAND = [
     "--output",
     f"../{SCHEMA_FILE}",
 ]
-# A DRF backend kiln did not generate: drf-spectacular's own export, same file.
+# A DRF backend ion-repo did not generate: drf-spectacular's own export, same file.
 SPECTACULAR_COMMAND = [
     "uv",
     "run",
@@ -33,7 +34,7 @@ SPECTACULAR_COMMAND = [
 GENERATE_SCRIPT = "generate:api"
 GENERATE_COMMAND = ["pnpm", GENERATE_SCRIPT]
 # The export only reads the code: a dummy key will do when backend/.env is missing (worktree, CI).
-EXPORT_SECRET_KEY = "kiln-export-openapi"
+EXPORT_SECRET_KEY = "ion-repo-export-openapi"
 
 
 def has_api_contract(stack: Stack) -> bool:
@@ -52,21 +53,21 @@ def generate_api_contract(root: Path, stack: Stack) -> None:
     else:
         ui.note(
             f"{SCHEMA_FILE} written; no `{GENERATE_SCRIPT}` script in {stack.frontend_dir}/"
-            "package.json, so no front types: kiln's is "
+            "package.json, so no front types: ion-repo's is "
             f"`openapi-typescript ../{SCHEMA_FILE} -o app/types/api.d.ts`"
         )
 
 
 def export_command(backend: Path) -> list[str]:
-    """kiln's `export_openapi` (django-ninja), otherwise drf-spectacular's in a repo kiln did not
-    generate."""
+    """kiln's `export_openapi` (django-ninja), otherwise drf-spectacular's in a repo ion-repo did
+    not generate."""
     if any(backend.glob("*/management/commands/export_openapi.py")):
         return EXPORT_COMMAND
     manifest = backend / "pyproject.toml"
     if manifest.is_file() and "drf-spectacular" in manifest.read_text(encoding="utf-8"):
         return SPECTACULAR_COMMAND
     raise KilnError(
-        f"no OpenAPI export in {backend.name}/: neither kiln's `export_openapi` command "
+        f"no OpenAPI export in {backend.name}/: neither ion-repo's `export_openapi` command "
         "(django-ninja) nor drf-spectacular"
     )
 

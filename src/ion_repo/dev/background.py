@@ -1,8 +1,8 @@
-"""`kiln dev`: the processes left in the background, then `status`, `logs` and `stop`.
+"""`ion repo dev`: the processes left in the background, then `status`, `logs` and `stop`.
 
 Each process writes its output to `<label>.log` and its record (pid, port) to `<label>.json`, in
-`kiln-dev/` of the git folder of the worktree: never committed, one set per worktree. `kiln dev`
-returns once each server answers on its port (a process without a known port: once it has
+`ion-repo-dev/` of the git folder of the worktree: never committed, one set per worktree. `ion repo
+dev` returns once each server answers on its port (a process without a known port: once it has
 lasted a moment), and stops everything if one of them dies on the way, showing the end of its
 log.
 """
@@ -25,7 +25,7 @@ from ion_repo.dev.processes import runs_beyond_front, signal_group, spawn
 from ion_repo.shell import KilnError, capture, spinner_line
 from ion_repo.stack import Command, load_stack
 
-STATE_DIR = "kiln-dev"
+STATE_DIR = "ion-repo-dev"
 # Port each stack's server listens on, to know when it is ready and where to open it.
 DEV_PORTS = {
     "django": 8000,
@@ -95,9 +95,9 @@ def _holder(root: Path, port: int) -> str:
     for git_dir, record in _others_records(root):
         if record.get("port") == port and is_alive(record["pid"]):
             tree = _worktree_of(git_dir)
-            return f"kiln dev of {tree}: `kiln dev stop` there"
+            return f"ion repo dev of {tree}: `ion repo dev stop` there"
     process = _listener(port)
-    return f"{process}: stop it, then kiln dev" if process else "another process"
+    return f"{process}: stop it, then ion repo dev" if process else "another process"
 
 
 def _worktree_of(git_dir: Path) -> str:
@@ -138,7 +138,7 @@ def is_alive(pid: int) -> bool:
 
 
 def _is_zombie(pid: int) -> bool:
-    """Exited but not yet reaped by its parent (a process started by this very kiln)."""
+    """Exited but not yet reaped by its parent (a process started by this very ion-repo)."""
     try:
         stat = Path(f"/proc/{pid}/stat").read_text(encoding="utf-8")
     except OSError:
@@ -209,13 +209,13 @@ def _answers(family: socket.AddressFamily, host: str, port: int) -> bool:
 def show_status(root: Path) -> None:
     found = records(root)
     if not found:
-        ui.note("nothing runs in the background: kiln dev")
+        ui.note("nothing runs in the background: ion repo dev")
         return
     width = max(len(label) for label in found)
     for label, record in found.items():
         port = record.get("port")
         if not is_alive(record["pid"]):
-            state = ui.paint("stopped", ui.EMBER, bold=True) + f"  kiln dev logs {label}"
+            state = ui.paint("stopped", ui.EMBER, bold=True) + f"  ion repo dev logs {label}"
         elif port and not _listens(port):
             state = ui.paint("starting", ui.GLOW, bold=True)
         else:

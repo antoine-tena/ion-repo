@@ -1,6 +1,6 @@
-"""Converters of `kiln fix`: containers and runtimes (T-128, T-159).
+"""Converters of `ion repo fix`: containers and runtimes (T-128, T-159).
 
-Images are not built here: `kiln fix` builds an image a converter touched when podman or docker
+Images are not built here: `ion repo fix` builds an image a converter touched when podman or docker
 is there. Compose services are hardened only where podman proves they still start hardened, on a
 throwaway copy of the repo.
 """
@@ -328,8 +328,8 @@ def _podman_ready() -> bool:
 def _starts(root: Path, name: str, hardened: str, services: list[str]) -> set[str]:
     """The services podman keeps running, hardened, on a copy of the repo: their own project
     name, no fixed container name, so that nothing the user runs is touched."""
-    project = f"kiln-harden-{os.getpid()}"
-    with tempfile.TemporaryDirectory(prefix="kiln-harden-") as scratch:
+    project = f"ion-repo-harden-{os.getpid()}"
+    with tempfile.TemporaryDirectory(prefix="ion-repo-harden-") as scratch:
         copy = Path(scratch) / "repo"
         subprocess.run(
             ["git", "worktree", "add", "-q", "--detach", str(copy)],

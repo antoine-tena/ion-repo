@@ -1,9 +1,9 @@
-"""GitHub's verdict on a commit of kiln: a candidate is tagged, and promoted, only on green.
+"""GitHub's verdict on a commit of ion-repo: a candidate is tagged, and promoted, only on green.
 
 The checks of the machine (pytest, ruff) leave out what only GitHub runs: macOS and the
 end-to-end tests of release branches. A candidate was once cut over a red end-to-end run
-(v0.4.0-rc.1): `kiln version cut` now waits for that run, and `kiln version` and `promote` read
-its verdict.
+(v0.4.0-rc.1): `ion repo version cut` now waits for that run, and `ion repo version` and `promote`
+read its verdict.
 """
 
 import json
@@ -37,7 +37,7 @@ class CiRun:
 
 
 def latest_run(root: Path, commit: str) -> CiRun | None:
-    """The latest run of kiln's workflow on `commit`; None when there is none (or no gh)."""
+    """The latest run of ion-repo's workflow on `commit`; None when there is none (or no gh)."""
     if shutil.which("gh") is None:
         return None
     fields = "databaseId,status,conclusion,url"
@@ -69,7 +69,7 @@ def verdict(root: Path, commit: str) -> str:
 
 
 def wait_until_green(root: Path, commit: str, what: str) -> str:
-    """Waits for the run of kiln's workflow on `commit`, shown live; its URL when green, a
+    """Waits for the run of ion-repo's workflow on `commit`, shown live; its URL when green, a
     `KilnError` otherwise."""
     if shutil.which("gh") is None:
         raise KilnError(f"gh is needed to wait for the CI of {what}: https://cli.github.com")

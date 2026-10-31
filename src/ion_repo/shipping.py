@@ -1,4 +1,5 @@
-"""`kiln version cut` and `kiln version promote`: kiln's release in two commands (kiln's repo).
+"""`ion repo version cut` and `ion repo version promote`: ion-repo's release in two commands
+(ion-repo's repo).
 
 - **cut**, first run: branch `release/vX.Y.Z` from `origin/develop` in its own worktree, the
   `CHANGELOG.md` entry drafted from the commits since the last tag (breaking first), the number
@@ -10,7 +11,7 @@
   again.
 - **promote**: a candidate that proved itself (CI green, soaked, run by a repo), tag `vX.Y.Z`
   on its exact commit (its message is the changelog entry), merged into `main` and back into
-  `develop`, pushed; `pypi.yml` publishes the package and the GitHub Release. `kiln update
+  `develop`, pushed; `pypi.yml` publishes the package and the GitHub Release. `ion repo update
   --all` stays a separate step, with consent.
 """
 
@@ -45,7 +46,7 @@ ENTRY_HEADING = re.compile(r"^## v(\S+) — ", re.MULTILINE)
 SUBJECT = re.compile(r"^(?P<type>\w+)(?:\([^)]*\))?(?P<bang>!)?:\s*(?P<text>.+)$")
 # Commit types a user notices; the rest (docs, tests, chores) stays out of the notes.
 VISIBLE_TYPES = {"feat", "fix", "perf"}
-# A line of a commit's body that asks each repo for an action after `kiln update`.
+# A line of a commit's body that asks each repo for an action after `ion repo update`.
 AFTER_UPDATING_TRAILER = "After updating:"
 LOCK = ["uv", "lock", "-q"]
 CHECKS = (
@@ -67,7 +68,7 @@ def release_worktree(root: Path, version: str) -> Path:
 
 def _require_kiln_repo(root: Path) -> None:
     if not (root / VERSION_MODULE).is_file():
-        raise KilnError("kiln version runs in the kiln repo")
+        raise KilnError("ion repo version runs in the ion-repo repo")
     capture(["git", "fetch", "-q", "--tags", "origin"], root)
 
 
@@ -141,7 +142,7 @@ def _draft_release(root: Path, tree: Path, version: str, last: Tag | None) -> No
         ui.note("plugins bumped: " + ", ".join(bumped))
     ui.note(
         f"next: rewrite the v{version} entry of {CHANGELOG} there (delete the draft line), "
-        "commit, then `kiln version cut` again: checks, then tag -rc.1."
+        "commit, then `ion repo version cut` again: checks, then tag -rc.1."
     )
 
 
@@ -163,7 +164,7 @@ def _carry_open_releases(root: Path, tree: Path, version: str) -> None:
         if run_status(["git", "merge", "-q", "--no-ff", remote, "-m", message], tree) != 0:
             raise KilnError(
                 f"{remote} does not merge cleanly into release/v{version}: resolve it in {tree}, "
-                "commit, then `kiln version cut` again: it drafts the changelog entry"
+                "commit, then `ion repo version cut` again: it drafts the changelog entry"
             )
 
 
@@ -209,16 +210,16 @@ def bump_package(pyproject: Path, version: str) -> None:
     pyproject.write_text(bumped, "utf-8")
 
 
-# The public docs quote kiln's workflows at the release they describe.
-# The docs of each language: the README shows kiln, the reference holds everything.
+# The public docs quote ion-repo's workflows at the release they describe.
+# The docs of each language: the README shows ion-repo, the reference holds everything.
 DOCS_BY_LANGUAGE = (("README.md", "docs/reference.md"), ("README.fr.md", "docs/reference.fr.md"))
 READMES = tuple(name for docs in DOCS_BY_LANGUAGE for name in docs)
 DOCS_QUOTING_RELEASES = (*READMES, "CONTRIBUTING.md")
-DOCS_RELEASE_REF = re.compile(r"(antoine-tena/kiln/\S+?)@v\d+\.\d+\.\d+(?:-rc\.\d+)?\b")
+DOCS_RELEASE_REF = re.compile(r"(antoine-tena/ion-repo/\S+?)@v\d+\.\d+\.\d+(?:-rc\.\d+)?\b")
 
 
 def bump_docs(tree: Path, version: str) -> None:
-    """The docs' references to kiln's workflows move to the release being cut."""
+    """The docs' references to ion-repo's workflows move to the release being cut."""
     for name in DOCS_QUOTING_RELEASES:
         path = tree / name
         if path.is_file():
@@ -274,7 +275,7 @@ def _tag_candidate(root: Path, version: str, tags: list[Tag]) -> None:
             run(["git", "add", "-A", "plugins"], tree)
             run(["git", "commit", "-q", "-m", "chore(release): plugins of the fix bumped"], tree)
             ui.note("plugins bumped: " + ", ".join(bumped))
-    # The release worktree has its own environment, not the one `uv run kiln` may have set.
+    # The release worktree has its own environment, not the one `uv run ion-repo` may have set.
     env = {key: value for key, value in os.environ.items() if key != "VIRTUAL_ENV"}
     _redraw_images(tree, version, env)
     for check in CHECKS:
@@ -297,7 +298,9 @@ def _tag_candidate(root: Path, version: str, tags: list[Tag]) -> None:
     ui.step(f"Tag {name}")
     run(["git", "tag", "-a", name, "-m", f"Release candidate {name}"], tree)
     run(["git", "push", "-q", "origin", f"release/v{version}", name], tree)
-    ui.success(f"{name} pushed: the internal channel follows it (kiln update --all, with consent)")
+    ui.success(
+        f"{name} pushed: the internal channel follows it (ion repo update --all, with consent)"
+    )
 
 
 # A release whose READMEs truly have nothing new says why in its entry, with this marker.
@@ -306,7 +309,7 @@ README_UNCHANGED_MARKER = "<!-- readme: unchanged"
 
 def _require_readme_update(tree: Path, version: str, tags: list[Tag]) -> None:
     """The first candidate of a release changes the docs of each language, its README or its
-    reference: they describe everything kiln offers at the release it is (antoine, 19 October
+    reference: they describe everything ion-repo offers at the release it is (antoine, 19 October
     2026). A fix candidate (`-rc.2`…) may not."""
     if _last_candidate(version, tags) is not None:
         return
@@ -335,7 +338,7 @@ ASSETS = "docs/assets"
 
 def _redraw_images(tree: Path, version: str, env: dict[str, str]) -> None:
     """The README's images drawn again from the release being cut (its changelog entry shows in
-    `kiln update`'s box), committed when they changed."""
+    `ion repo update`'s box), committed when they changed."""
     if not (tree / SCREENSHOTS).is_file():
         return
     ui.step("README images")
@@ -387,7 +390,7 @@ def promote(root: Path, wanted: str | None = None, is_urgent: bool = False) -> N
     run(["git", "push", "-q", "origin", "develop"], tree)
     _remove_release_branch(root, version)
     ui.success(f"{name} promoted: pypi.yml publishes kiln-cli, keramos-kiln and the GitHub Release")
-    ui.note("then, with consent: kiln update --all")
+    ui.note("then, with consent: ion repo update --all")
 
 
 def pick_candidate(
@@ -414,7 +417,7 @@ def pick_candidate(
             return candidate
     raise KilnError(
         "no candidate ready: its CI green, a day of soak (two hours for fixes only) and a repo "
-        "updated to it (kiln version says what each one waits for)"
+        "updated to it (ion repo version says what each one waits for)"
     )
 
 

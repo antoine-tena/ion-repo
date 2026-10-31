@@ -4,7 +4,7 @@
 paths:
   - "{{ bp }}**"
 ---
-<!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten. -->
+<!-- Written by ion-repo and kept current by `ion repo update`: do not edit, it would be overwritten. -->
 # Backend: Java 25, Maven, no framework
 
 The JDK first: no framework, no library without a team decision ([NEW-DEPENDENCY]). Maven runs
@@ -12,8 +12,8 @@ through the wrapper `./mvnw` (nothing to install: it downloads the version pinne
 `.mvn/wrapper/`, checked by its SHA-256; it needs `unzip` on the machine).
 
 - Check: `./mvnw verify` in `{{ bdir }}` (compilation with blocking warnings, JUnit tests, JaCoCo
-  coverage floor), or `kiln check` at the root.
-- Run: `./mvnw -q package -DskipTests && java -jar target/{{ name }}-0.1.0.jar`{% if frontend in ['nuxt', 'next', 'astro', 'vite-react', 'streamlit', 'dash'] %}; `kiln dev` does
+  coverage floor), or `ion repo check` at the root.
+- Run: `./mvnw -q package -DskipTests && java -jar target/{{ name }}-0.1.0.jar`{% if frontend in ['nuxt', 'next', 'astro', 'vite-react', 'streamlit', 'dash'] %}; `ion repo dev` does
   it next to the front, with the variables of `{{ bp }}.env`{% endif %}.
 - Sources in `src/main/java`, tests in `src/test/java`, root package `{{ java_package }}`, one
   package per domain (`{{ java_package }}.<domain>`).

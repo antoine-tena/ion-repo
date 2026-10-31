@@ -1,9 +1,9 @@
-"""`kiln dev` in the foreground: the processes' output interleaved; Ctrl+C stops them all.
+"""`ion repo dev` in the foreground: the processes' output interleaved; Ctrl+C stops them all.
 
 Each line is prefixed by its process in color (`django   │ …`, `nuxt     │ …`). The processes
 keep their colors (`FORCE_COLOR`) and Python does not buffer (`PYTHONUNBUFFERED`). Closing the
 terminal stops them too: each leads its own process group, out of reach of the terminal's
-signals, so kiln stops them itself.
+signals, so ion-repo stops them itself.
 """
 
 import contextlib

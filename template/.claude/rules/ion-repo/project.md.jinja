@@ -7,13 +7,13 @@
 {%- set front_url = {'nuxt': 'http://localhost:3000', 'next': 'http://localhost:3000', 'astro': 'http://localhost:4321', 'vite-react': 'http://localhost:5173', 'streamlit': 'http://localhost:8501', 'dash': 'http://localhost:8050'}.get(frontend) %}
 {%- set python_dirs = ([bd] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + ([fd] if frontend in ['streamlit', 'dash'] else []) %}
 {%- set uses = [language_comments, language_commits, language_docs, language_tickets, language_ui] -%}
-<!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten.
-Project rules go in CLAUDE.md or in .claude/rules/ outside kiln/. -->
+<!-- Written by ion-repo and kept current by `ion repo update`: do not edit, it would be overwritten.
+Project rules go in CLAUDE.md or in .claude/rules/ outside ion-repo/. -->
 # {{ title }}: working here
 
 {{ description }}
 
-Size: **{{ size | capitalize }}**, {{ size_text }} (`kiln set size=…` changes it).
+Size: **{{ size | capitalize }}**, {{ size_text }} (`ion repo set size=…` changes it).
 {% if back_text and front_text -%}
 Backend {{ back_text }} {{ 'at the root' if bd == '.' else 'in `' ~ bdir ~ '`' }}, frontend {{ front_text }} {{ 'at the root' if fd == '.' else 'in `' ~ fdir ~ '`' }}.
 {%- elif back_text -%}
@@ -21,19 +21,19 @@ Backend {{ back_text }} {{ 'at the root' if bd == '.' else 'in `' ~ bdir ~ '`' }
 {%- elif front_text -%}
 Frontend {{ front_text }} {{ 'at the root' if fd == '.' else 'in `' ~ fdir ~ '`' }}.
 {%- else -%}
-No stack of kiln here: its common part only (CI, hooks, rules, charter).
+No stack of ion-repo here: its common part only (CI, hooks, rules, charter).
 {%- endif %}
-The repo is generated and kept current by [kiln](https://github.com/antoine-tena/kiln).
+The repo is generated and kept current by [ion-repo](https://github.com/antoine-tena/ion-repo).
 
 ## Commands
 
 {%- if front_url or backend in ['django', 'fastapi', 'data'] %}
-- `kiln dev`: start the dev servers
+- `ion repo dev`: start the dev servers
 {%- if backend in ['django', 'fastapi'] %} (API on http://localhost:8000/api/, docs on `/api/docs`
 {%- if front_url %}; {% else %}){% endif %}{% elif backend == 'data' %} (marimo notebooks on http://localhost:2718{% if front_url %}; {% else %}){% endif %}{% endif %}
 {%- if front_url %}{{ ' (' if backend not in ['django', 'fastapi', 'data'] }}front on {{ front_url }}){% endif %}.
-  From a Claude session, `kiln dev` (in the background, nothing asked; never `--foreground`, it
-  would hold the session), then `kiln dev logs [service]` to read the servers, `kiln dev status`, `kiln dev stop`. A worker or
+  From a Claude session, `ion repo dev` (in the background, nothing asked; never `--foreground`, it
+  would hold the session), then `ion repo dev logs [service]` to read the servers, `ion repo dev status`, `ion repo dev stop`. A worker or
   a background task goes in its folder's `Procfile.dev`, one `name: command` line.
 {%- endif %}
 {%- if backend == 'cli' %}
@@ -43,10 +43,10 @@ The repo is generated and kept current by [kiln](https://github.com/antoine-tena
 - `cd {{ bd }} && ./mvnw verify`: compile (warnings are errors), run JUnit, check coverage.
 {%- endif %}
 {%- set checks = (['ruff', 'mypy', 'pytest'] if python_dirs else []) + (['Maven'] if backend == 'java' else []) + (['ESLint', 'type checks'] if frontend in ['nuxt', 'next', 'vite-react'] else ['ESLint', '`astro check`'] if frontend == 'astro' else []) %}
-- `kiln check`: {% if checks %}every check of the stack ({{ checks | join(', ') }}), then `charter`{% else %}`charter`, the rules of `charter.toml`{% endif %}.
+- `ion repo check`: {% if checks %}every check of the stack ({{ checks | join(', ') }}), then `charter`{% else %}`charter`, the rules of `charter.toml`{% endif %}.
   Run it before saying a change is done.
 {%- if backend == 'django' and frontend == 'nuxt' %}
-- `kiln contract`: export `openapi.json` from the Django code and regenerate the front's types
+- `ion repo contract`: export `openapi.json` from the Django code and regenerate the front's types
   (`{{ fp }}app/types/api.d.ts`), after any change to a route or a schema; commit both.
 {%- endif %}
 {%- if python_dirs %}
@@ -55,8 +55,8 @@ The repo is generated and kept current by [kiln](https://github.com/antoine-tena
 {%- if frontend in ['nuxt', 'next', 'astro', 'vite-react'] %}
 - A JavaScript dependency: `pnpm add <package>` {{ 'at the root' if fd == '.' else 'in `' ~ fdir ~ '`' }} (`-D` for a tool); never npm.
 {%- endif %}
-- `kiln update`: kiln's improvements and compatible dependency upgrades, on a branch, checks
-  included; `kiln set key=value` changes a setting of the project (stack, team, podman…).
+- `ion repo update`: ion-repo's improvements and compatible dependency upgrades, on a branch, checks
+  included; `ion repo set key=value` changes a setting of the project (stack, team, podman…).
 
 ## Language
 
@@ -80,12 +80,12 @@ The repo is generated and kept current by [kiln](https://github.com/antoine-tena
 
 - `docs/backlog/` is the only up-to-date list of work: `backlog.md` (open tickets `T-NN` by
   priority, how to write them in its `README.md`), `done.md` (closed ones), `rejected.md` (what was turned down), `urgent.md`
-  (what only a human of the team can do). Skill `/kiln:backlog`.
+  (what only a human of the team can do). Skill `/repo:backlog`.
 - `.claude/`: committed, `settings.json`, `skills/` (the project's own skills), `rules/`,
   `hooks/` (the scripts of its own hooks) and `plans/` (plan mode's plans); local, ignored by
   git, `settings.local.json`, `worktrees/`, `memory/` and `sessions/`.
 - `charter.toml`: the checked rules and their budgets; `kiln-waivers.toml`: deliberate
-  deviations; `.copier-answers.yml`: the project's settings for kiln (changed by `kiln set`,
+  deviations; `.copier-answers.yml`: the project's settings for ion-repo (changed by `ion repo set`,
   never by hand).
 {%- if deploy == 'vps' %}
 - `docs/operations/production.md`: deployment, rollback, backups.
@@ -94,11 +94,11 @@ The repo is generated and kept current by [kiln](https://github.com/antoine-tena
 ## Git
 
 - **[NO-COMMIT-ON-MAIN]** Never commit on `main` nor on `develop`: always a dedicated branch,
-  preferably in its own worktree (`/kiln:worktree`, under `.claude/worktrees/`), so that two
-  sessions never cross in the main tree. It is merged into `develop` by `/kiln:merge`, directly:
+  preferably in its own worktree (`/repo:worktree`, under `.claude/worktrees/`), so that two
+  sessions never cross in the main tree. It is merged into `develop` by `/repo:merge`, directly:
   no pull request nor approval required (a PR stays possible to ask for an opinion). Enforced by
-  the `no-commit-to-branch` pre-commit hook, kiln's branch guard, and GitHub rulesets (`develop`
-  can be neither deleted nor force-pushed; `main` only takes releases, through `/kiln:release`).
+  the `no-commit-to-branch` pre-commit hook, ion-repo's branch guard, and GitHub rulesets (`develop`
+  can be neither deleted nor force-pushed; `main` only takes releases, through `/repo:release`).
 - **[BRANCHES]** Prefixes `feat/`, `fix/`, `refactor/`, `test/`, `chore/`, `docs/`; lowercase,
   no spaces (`feat/station-map`).
 - **[COMMITS]** Small and atomic: {% if level >= 1 %}10 files at most, {% endif %}a title of 50
@@ -106,11 +106,11 @@ The repo is generated and kept current by [kiln](https://github.com/antoine-tena
   `refactor:`, `style:`, `docs:`, `perf:`, `test:`, `build:`, `ci:`, `chore:`, `revert:`;
   `fix(map): …`){% if backend in ['django', 'fastapi'] %}; a migration commit never mixes schema
   and business logic{% endif %}. Whether a commit says Claude helped (`Co-Authored-By: Claude`)
-  is each machine's choice (`kiln set ai_trailers=disclose|never`, kiln's branch guard enforces
+  is each machine's choice (`ion repo set ai_trailers=disclose|never`, ion-repo's branch guard enforces
   it); never a `Claude-Session:` line, never `--author`: the author stays the one of
   `git config`.
 - **[MERGE]** Merge commits (`git merge --no-ff`), never squash nor rebase onto the integration
-  branch; then the branch goes, local and remote, with its worktree (`/kiln:merge`).
+  branch; then the branch goes, local and remote, with its worktree (`/repo:merge`).
 
 ## Way of working
 

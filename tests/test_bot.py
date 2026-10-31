@@ -1,5 +1,5 @@
-"""`kiln bot` (T-59): kiln-bot's run on `kiln/bot`, one pull request's body, nothing when nothing
-changed, a person's commits never reset. The network is faked."""
+"""`ion repo bot` (T-59): kiln-bot's run on `kiln/bot`, one pull request's body, nothing when
+nothing changed, a person's commits never reset. The network is faked."""
 
 import subprocess
 from pathlib import Path
@@ -49,7 +49,7 @@ def test_the_week_s_fixes_become_one_pull_request_body(tmp_path: Path) -> None:
     assert proposal.before is not None and proposal.after is not None
     assert proposal.changed and proposal.after > proposal.before
     text = (tmp_path / "body.md").read_text()
-    assert text.startswith(f"## kiln score: {proposal.before} → {proposal.after} (+")
+    assert text.startswith(f"## ion repo score: {proposal.before} → {proposal.after} (+")
     assert "- **fix(TS-EXPECT-ERROR): " in text and " · Score: " in text
     # On kiln/bot, the user's tree and branch untouched.
     assert git(root, "branch", "--show-current").strip() == "main"

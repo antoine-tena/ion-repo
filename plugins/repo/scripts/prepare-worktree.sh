@@ -2,7 +2,7 @@
 # Prepares a new worktree: copies the local files ignored by git (.env, .env.local…) from the
 # main tree, then installs the JavaScript dependencies of each lockfile.
 # Python dependencies are not installed: `uv run` creates the venv on demand.
-# A repo that needs more adds .claude/worktree-setup.sh, run afterwards by /kiln:worktree.
+# A repo that needs more adds .claude/worktree-setup.sh, run afterwards by /repo:worktree.
 set -euo pipefail
 worktree="$(cd "$1" && pwd)"
 main_tree="$(dirname "$(git -C "$worktree" rev-parse --path-format=absolute --git-common-dir)")"

@@ -1,6 +1,6 @@
 ---
 name: good-first-issues
-description: Keep a small stock of `good first issue` issues open on GitHub, drawn from the backlog for outside contributors; nothing posted without the user's yes. Use when the user asks for good first issues or to attract contributors, or when /kiln:contribution has just merged a PR that closed one.
+description: Keep a small stock of `good first issue` issues open on GitHub, drawn from the backlog for outside contributors; nothing posted without the user's yes. Use when the user asks for good first issues or to attract contributors, or when /repo:contribution has just merged a PR that closed one.
 argument-hint: "[target number | off]"
 ---
 
@@ -14,20 +14,20 @@ than left as a sign of a project nobody follows.
 It lives in the "How to use" section of `docs/backlog/backlog.md`, one line:
 
     - **Good first issues**: keep 3 open on GitHub, reserved for outside contributors (skill
-      `/kiln:good-first-issues`); their tickets have **Owner**: `contributor — #NN`.
+      `/repo:good-first-issues`); their tickets have **Owner**: `contributor — #NN`.
 
 - No line: the repo does not do this. Say so and offer to start (`$ARGUMENTS` a number, or the
   user's yes to 3); the line goes in on the work branch with the first issues.
 - `$ARGUMENTS` a number: change the target in the line. `off`: remove the line; the open issues
   stay, their tickets go back to `**Owner**: —` only if the user says so.
-- A repo without `docs/backlog/backlog.md`: skill `/kiln:backlog` first.
+- A repo without `docs/backlog/backlog.md`: skill `/repo:backlog` first.
 
 ## 1. Count what is open
 
     gh issue list --label "good first issue" --state open --json number,title,assignees,createdAt,updatedAt,comments
 
 Match each issue to its ticket in the backlog (`**Owner**: contributor — #NN`) and fix any drift:
-- an issue closed or merged whose ticket is still open: close the ticket (`/kiln:backlog done`),
+- an issue closed or merged whose ticket is still open: close the ticket (`/repo:backlog done`),
   crediting the contributor (`… — fixed by @login in #PR`);
 - an open issue with no ticket (opened by hand): fine, it counts;
 - an issue with no activity for three months and no one on it: propose closing it with a
@@ -80,13 +80,13 @@ after an explicit yes:
 
     gh issue create --title "…" --body-file <file> --label "good first issue" --label "…"
 
-Then, on the work branch (a worktree, skill `/kiln:worktree`), set each ticket's **Owner** to
+Then, on the work branch (a worktree, skill `/repo:worktree`), set each ticket's **Owner** to
 `contributor — #NN`, add the setting line if it was missing, commit
-(`docs(backlog): good first issues #NN, #NN`), and merge (`/kiln:merge`).
+(`docs(backlog): good first issues #NN, #NN`), and merge (`/repo:merge`).
 
 ## Reserved tickets
 
 A ticket whose **Owner** is `contributor — #NN` is left for outside contributors: never
-proposed as next (`/kiln:backlog`), never fixed by us, even in ten minutes, even in passing.
+proposed as next (`/repo:backlog`), never fixed by us, even in ten minutes, even in passing.
 The exceptions are the user's decision: they need it now, or it turned out not to fit (then
 close the issue with an explanation and give the ticket back).

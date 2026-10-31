@@ -1,4 +1,4 @@
-"""`kiln doctor`: diagnosis of this machine and the current repo, with the command that fixes.
+"""`ion repo doctor`: diagnosis of this machine and the current repo, with the command that fixes.
 
 Three levels: ✓ fine, ! to look at (optional tool missing, repo behind), ✗ blocking (required
 tool missing, gh logged out). The command fails while a blocking point remains. Nothing is
@@ -18,7 +18,7 @@ from ion_repo.config import UserConfig, config_path, detect_system, load_config
 from ion_repo.install import (
     BASE_PLUGIN,
     SYSTEM_HINTS,
-    kiln_plugin_enabled,
+    base_plugin_enabled,
     moved_from,
     pnpm_behind,
 )
@@ -106,7 +106,7 @@ def workstation_findings(config: UserConfig, stack: Stack | None) -> list[Findin
             fix=SYSTEM_HINTS["java"][system],
             version_command=["java", "-version"],
         ),
-        _tool("pre-commit", required=False, fix="kiln install (in a repo)"),
+        _tool("pre-commit", required=False, fix="ion repo install (in a repo)"),
         _kiln_tool(),
         _claude_plugin(),
         _config(config),
@@ -137,7 +137,7 @@ def _tool(
 def _github() -> Finding:
     if shutil.which("gh") is None:
         hint = INSTALL_HINTS["gh"]
-        return Finding(Level.WARN, "gh", "missing (kiln new creates the GitHub repo)", hint)
+        return Finding(Level.WARN, "gh", "missing (ion repo new creates the GitHub repo)", hint)
     status = _completed(["gh", "auth", "status"])
     if status is None or status.returncode != 0:
         login = f"gh auth login (enter the code at {GITHUB_LOGIN_URL})"
@@ -157,7 +157,7 @@ def _kiln_tool() -> Finding:
     current = installed_version()
     latest = _latest_release()
     if latest is None:
-        return Finding(Level.OK, "kiln", f"{current} (no published release, or offline)")
+        return Finding(Level.OK, "ion-repo", f"{current} (no published release, or offline)")
     current_version, latest_version = release_version(current.split()[0]), release_version(latest)
     if (
         current_version is not None
@@ -165,24 +165,24 @@ def _kiln_tool() -> Finding:
         and current_version < latest_version
     ):
         upgrade = upgrade_command(latest)
-        return Finding(Level.WARN, "kiln", f"{current}, {latest} available", upgrade)
-    return Finding(Level.OK, "kiln", f"{current} (latest release: {latest})")
+        return Finding(Level.WARN, "ion-repo", f"{current}, {latest} available", upgrade)
+    return Finding(Level.OK, "ion-repo", f"{current} (latest release: {latest})")
 
 
 def _claude_plugin() -> Finding:
-    if kiln_plugin_enabled():
+    if base_plugin_enabled():
         return Finding(Level.OK, "Claude plugin", f"{BASE_PLUGIN} enabled")
     return Finding(
         Level.WARN,
         "Claude plugin",
         f"{BASE_PLUGIN} not enabled on this machine",
-        "kiln install --machine",
+        "ion repo install --machine",
     )
 
 
 def _config(config: UserConfig) -> Finding:
     if config.system is None:
-        return Finding(Level.WARN, "configuration", "system not recorded", "kiln install")
+        return Finding(Level.WARN, "configuration", "system not recorded", "ion repo install")
     if not config.code_dir.is_dir():
         return Finding(
             Level.WARN,
@@ -210,7 +210,7 @@ def repo_findings(root: Path, stack: Stack | None) -> list[Finding]:
         findings.append(
             Finding(Level.OK, "backend/.env", "present")
             if env_file.exists()
-            else Finding(Level.FAIL, "backend/.env", "missing", "kiln install")
+            else Finding(Level.FAIL, "backend/.env", "missing", "ion repo install")
         )
     return findings
 
@@ -221,7 +221,9 @@ def _template(root: Path) -> Finding:
             return Finding(Level.OK, "template", "kiln's own repo (the template's source)")
         if charter_path(root) is not None:
             return Finding(Level.OK, "template", "adopted repo (charter without template)")
-        return Finding(Level.WARN, "template", "not a kiln repo", "kiln new, or kiln adopt")
+        return Finding(
+            Level.WARN, "template", "not an ion-repo repo", "ion repo new, or ion repo adopt"
+        )
     commit = str(read_answers(root).get("_commit", "?"))
     latest = _latest_release()
     current_version = release_version(commit)
@@ -233,7 +235,7 @@ def _template(root: Path) -> Finding:
             Level.WARN,
             "template",
             f"{commit}, {latest} available",
-            "kiln update, on a branch (skill /kiln:update)",
+            "ion repo update, on a branch (skill /repo:update)",
         )
     return Finding(Level.OK, "template", f"{commit} (up to date)")
 
@@ -255,9 +257,9 @@ def _hook(root: Path) -> Finding:
     if path.exists():
         return Finding(Level.OK, "pre-commit", "hook installed")
     if not (root / ".pre-commit-config.yaml").exists():
-        # kiln install has nothing to install: the config comes with the template.
-        return Finding(Level.WARN, "pre-commit", "no .pre-commit-config.yaml", "kiln adopt")
-    return Finding(Level.WARN, "pre-commit", "hook missing", "kiln install")
+        # ion repo install has nothing to install: the config comes with the template.
+        return Finding(Level.WARN, "pre-commit", "no .pre-commit-config.yaml", "ion repo adopt")
+    return Finding(Level.WARN, "pre-commit", "hook missing", "ion repo install")
 
 
 def _venv(venv: Path, label: str) -> Finding:
@@ -265,7 +267,7 @@ def _venv(venv: Path, label: str) -> Finding:
     if created_in is None:
         return _installed(venv, label, "uv sync")
     return Finding(
-        Level.FAIL, label, f"venv created in {created_in}: its tools fail", "kiln install"
+        Level.FAIL, label, f"venv created in {created_in}: its tools fail", "ion repo install"
     )
 
 
@@ -279,7 +281,7 @@ def _pnpm(directory: Path, label: str) -> Finding:
 def _installed(path: Path, label: str, fix: str) -> Finding:
     if path.exists():
         return Finding(Level.OK, label, "dependencies installed")
-    return Finding(Level.WARN, label, "dependencies missing", f"kiln install (or {fix})")
+    return Finding(Level.WARN, label, "dependencies missing", f"ion repo install (or {fix})")
 
 
 # --- Tools ---

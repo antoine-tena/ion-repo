@@ -1,4 +1,4 @@
-"""`kiln update`: brings in the changes of the template, then updates the dependencies."""
+"""`ion repo update`: brings in the changes of the template, then updates the dependencies."""
 
 import datetime
 import re
@@ -18,6 +18,7 @@ from ion_repo.contract import generate_api_contract
 from ion_repo.deps import lock_dependencies, sync_dependencies, update_dependencies
 from ion_repo.frozen import frozen_files, report_frozen_drift
 from ion_repo.grid.fix import convert_in_place
+from ion_repo.ion_names import convert_ion_names
 from ion_repo.rules import write_unverified_rules
 from ion_repo.shell import (
     KilnError,
@@ -42,14 +43,21 @@ from ion_repo.versions import (
 )
 
 PROTECTED_BRANCHES = ("main", "master", "develop")
-UPDATE_BRANCH = "chore/kiln-update"
+UPDATE_BRANCH = "chore/ion-repo-update"
 # Start of a conflict left by Copier (`git merge-file`).
 CONFLICT_MARKER = "<<<<<<< before updating"
-# A reusable workflow of kiln cited at a tag: `antoine-tena/kiln/….yml@v0.3.1`.
+# A reusable workflow of ion-repo cited at a tag: `antoine-tena/ion-repo/….yml@v0.3.1` (`kiln/`
+# before the Ion family).
 # `…/charter.yml@v0.4.1`, or `…/charter.yml@<sha> # v0.4.1` once pinned: the tag is in the comment.
-KILN_WORKFLOW_REF = re.compile(r"(antoine-tena/kiln/\S+?)@(\S+)(?:[ \t]+#[ \t]*(\S+))?")
-# Former address of the template (init-repo, renamed kiln): GitHub redirects, still replaced.
-LEGACY_TEMPLATE_SOURCES = ("https://github.com/antoine-tena/init-repo.git",)
+ION_REPO_WORKFLOW_REF = re.compile(
+    r"(antoine-tena/(?:ion-repo|kiln)/\S+?)@(\S+)(?:[ \t]+#[ \t]*(\S+))?"
+)
+# Former addresses of the template (init-repo, renamed kiln, renamed ion-repo): GitHub redirects,
+# still replaced.
+LEGACY_TEMPLATE_SOURCES = (
+    "https://github.com/antoine-tena/init-repo.git",
+    "https://github.com/antoine-tena/kiln.git",
+)
 
 
 def update_project(
@@ -67,8 +75,8 @@ def update_project(
 
         update_adopted(root)
         ui.note(
-            "adopted before kiln 0.4.6: kiln adopt lays the rest of the template, "
-            "then kiln update serves it in full"
+            "adopted before kiln 0.4.6: ion repo adopt lays the rest of the template, "
+            "then ion repo update serves it in full"
         )
         if should_check:
             check_project(root)
@@ -87,7 +95,7 @@ def update_project(
             # What follows reads these files (pnpm-workspace.yaml, pyproject.toml): stopped here.
             ui.note(
                 f"conflicts left by the template in {', '.join(conflicted)}: resolve them "
-                "(both sides often hold), commit, then kiln update --no-template for the "
+                "(both sides often hold), commit, then ion repo update --no-template for the "
                 "dependencies (it needs a clean tree)"
             )
             report_changes(root)
@@ -101,7 +109,7 @@ def update_project(
     generate_api_contract(root, stack)
     write_unverified_rules(root, stack)
     if should_update_template:
-        # What the template leaves to the repo (SHAs, digests, a lock): closed like kiln fix.
+        # What the template leaves to the repo (SHAs, digests, a lock): closed like ion repo fix.
         convert_in_place(root, [*frozen_files(root), *kept_of(root)])
     report_changes(root)
     if should_check:
@@ -109,8 +117,8 @@ def update_project(
 
 
 def check_tool_not_older(root: Path) -> None:
-    """Refuses to take a repo back to a version of kiln older than the one it comes from
-    (updated by a teammate with a newer kiln): the tool must be upgraded first."""
+    """Refuses to take a repo back to a version of ion-repo older than the one it comes from
+    (updated by a teammate with a newer ion-repo): the tool must be upgraded first."""
     if _template_source(root) != DEFAULT_TEMPLATE_SOURCE:
         return
     project_ref = template_commit(root)
@@ -118,22 +126,23 @@ def check_tool_not_older(root: Path) -> None:
     project, tool = release_version(project_ref), release_version(tool_tag or "")
     if project is not None and tool is not None and project > tool:
         raise KilnError(
-            f"this repo follows kiln {project_ref}, newer than the installed tool ({tool_tag}): "
+            f"this repo follows ion-repo {project_ref}, newer than the installed tool "
+            f"({tool_tag}): "
             f"{upgrade_command(tag_of(project_ref) or project_ref)}"
         )
 
 
 def mention_newer_release() -> None:
-    """A version of kiln newer than the tool is out: say so, with the command."""
+    """A version of ion-repo newer than the tool is out: say so, with the command."""
     tool = release_version(tool_release_tag() or "")
     latest = latest_release()
     newer = release_version(latest or "")
     if tool is not None and newer is not None and newer > tool and latest is not None:
-        ui.note(f"kiln {latest} is out: {upgrade_command(latest)}, then kiln update.")
+        ui.note(f"ion-repo {latest} is out: {upgrade_command(latest)}, then ion repo update.")
 
 
 def is_adopted(root: Path) -> bool:
-    """Brought under kiln by `kiln adopt`: a charter, no Copier answers to replay."""
+    """Brought under ion-repo by `ion repo adopt`: a charter, no Copier answers to replay."""
     return not (root / ANSWERS_FILE).exists() and any(
         (root / name).is_file() for name in ("charter.toml", "charte.toml")
     )
@@ -167,6 +176,8 @@ def apply_template(root: Path, answers: Mapping[str, object] | None = None) -> N
     source = _template_source(root)
     for converted in migrations.convert(root, previous_answers, source, template_revision(source)):
         ui.note(f"kiln 0.4: {converted}.")
+    for converted in convert_ion_names(root):
+        ui.note(f"ion-repo: {converted}.")
     resolve_kiln_ref_conflicts(root)
     replace_legacy_source(root)
     if migrate_legacy_backlog(root):
@@ -177,7 +188,7 @@ def apply_template(root: Path, answers: Mapping[str, object] | None = None) -> N
 
 
 def resolve_kiln_ref_conflicts(root: Path) -> None:
-    """Conflicts born of the `@<tag>` of kiln's workflows alone: merged again without it.
+    """Conflicts born of the `@<tag>` of ion-repo's workflows alone: merged again without it.
 
     A promoted tag sits on the commit of its last candidate (`v0.3.1` = `v0.3.1-rc.1`); Copier
     renders the old version under the name `git describe` gives it, the promoted one, and no
@@ -199,9 +210,9 @@ def resolve_kiln_ref_conflicts(root: Path) -> None:
         # everywhere, without touching a longer tag that extends it.
         rendered_tag = re.escape(rendered_refs.pop())
         aligned_base = re.sub(rf"{rendered_tag}(?![\w.-])", project_refs.pop(), base)
-        # Pinned by kiln fix (`@<sha> # v0.4.1`): the old render takes the pin, the new render
+        # Pinned by ion repo fix (`@<sha> # v0.4.1`): the old render takes the pin, the new render
         # wins the merge, and the update's converters pin it again.
-        aligned_base = KILN_WORKFLOW_REF.sub(rf"\g<1>@{project_spellings.pop()}", aligned_base)
+        aligned_base = ION_REPO_WORKFLOW_REF.sub(rf"\g<1>@{project_spellings.pop()}", aligned_base)
         merged = _merge_cleanly(aligned_base, ours, theirs)
         if merged is not None:
             (root / name).write_text(merged)
@@ -210,12 +221,14 @@ def resolve_kiln_ref_conflicts(root: Path) -> None:
 
 
 def _kiln_refs(text: str) -> set[str]:
-    return {match.group(3) or match.group(2) for match in KILN_WORKFLOW_REF.finditer(text)}
+    return {match.group(3) or match.group(2) for match in ION_REPO_WORKFLOW_REF.finditer(text)}
 
 
 def _kiln_spellings(text: str) -> set[str]:
-    """What follows the `@` of kiln's workflows: `v0.4.1`, or `<sha> # v0.4.1` once pinned."""
-    return {match.group(0)[len(match.group(1)) + 1 :] for match in KILN_WORKFLOW_REF.finditer(text)}
+    """What follows the `@` of ion-repo's workflows: `v0.4.1`, or `<sha> # v0.4.1` once pinned."""
+    return {
+        match.group(0)[len(match.group(1)) + 1 :] for match in ION_REPO_WORKFLOW_REF.finditer(text)
+    }
 
 
 def _index_stage(root: Path, stage: int, name: str) -> str | None:
@@ -276,7 +289,7 @@ def template_commit(root: Path) -> str:
 
 
 def show_release_notes(root: Path, previous: str, current: str) -> None:
-    """Frame with what is new in each version passed, from kiln's changelog; what the repo must
+    """Frame with what is new in each version passed, from ion-repo's changelog; what the repo must
     do after updating becomes a ticket of its backlog."""
     notes = notes_between(previous, current, read_changelog())
     if not notes:
@@ -284,7 +297,7 @@ def show_release_notes(root: Path, previous: str, current: str) -> None:
     lines: list[str] = []
     for release in notes:
         lines += [f"{release.tag}  {release.date}".rstrip(), *release.lines, ""]
-    ui.panel(f"What's new in kiln: {previous or '?'} → {current}", lines[:-1])
+    ui.panel(f"What's new in ion-repo: {previous or '?'} → {current}", lines[:-1])
     if ticket := add_after_update_ticket(root, notes, today=datetime.date.today().isoformat()):
         ui.note(f"to do right after this update: {ticket} in docs/backlog/backlog.md")
 
@@ -298,13 +311,14 @@ def check_working_branch(root: Path, work_branch: str = UPDATE_BRANCH) -> None:
 def require_under_kiln(root: Path) -> None:
     if not (root / ANSWERS_FILE).exists() and not is_adopted(root):
         raise KilnError(
-            f"no {ANSWERS_FILE} nor charter: this repo is not under kiln (kiln adopt brings it)"
+            f"no {ANSWERS_FILE} nor charter: this repo is not under ion-repo (ion repo adopt "
+            f"brings it)"
         )
 
 
 def leave_protected_branch(root: Path, work_branch: str) -> None:
     """On `main`, `master` or `develop`, the work branch is opened in place (clean tree checked
-    first): kiln never writes on an integration branch, and the user has nothing to type."""
+    first): ion-repo never writes on an integration branch, and the user has nothing to type."""
     current = capture(["git", "branch", "--show-current"], root)
     if current not in PROTECTED_BRANCHES:
         return
@@ -328,7 +342,7 @@ def report_changes(root: Path) -> None:
     print()
     ui.note(
         "Review the diff (conflicts marked <<<<<<<), commit, then merge into develop "
-        "(skill /kiln:merge)."
+        "(skill /repo:merge)."
     )
 
 

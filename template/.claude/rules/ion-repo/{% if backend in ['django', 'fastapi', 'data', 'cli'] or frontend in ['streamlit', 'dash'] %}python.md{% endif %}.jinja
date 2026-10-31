@@ -2,7 +2,7 @@
 paths:
   - "**/*.py"
 ---
-<!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten. -->
+<!-- Written by ion-repo and kept current by `ion repo update`: do not edit, it would be overwritten. -->
 # Python
 
 - **[MODERN-PYTHON]** Python 3.12+ syntax: PEP 695 generics (`def first[T](items: list[T]) -> T`,
@@ -14,4 +14,4 @@ paths:
 - **[STRICT-TYPING]** mypy `strict` on every module; no `# type: ignore` without a precise error
   code and a reason.
 - Tooling: ruff (lint and format) and mypy run through `uv run` in the project's directory; the
-  edit hook runs ruff on each file Claude writes, `kiln check` runs everything.
+  edit hook runs ruff on each file Claude writes, `ion repo check` runs everything.

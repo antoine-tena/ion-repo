@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""One status line for every folder, in kiln's colors (stone and fire).
+"""One status line for every folder, in ion-repo's colors (stone and fire).
 
-The style is chosen per machine (`kiln set statusline=…`, read in `~/.config/kiln/config.toml`):
+The style is chosen per machine (`ion repo set statusline=…`, read in `~/.config/kiln/config.toml`):
 - `plain` (default): three lines, repo, session (model, gauges, duration), then the tasks
   and the other signals sorted by importance (environment, the machine's RAM and CPU);
 - `band`: the same on a soot band, important signals as solid pills;
 - `classic`: one line per labeled domain (REPO, SESSION, TASKS, ENV, the last one with RAM and
   CPU);
 - `classic-band`: the same on a band;
-- `none` and `custom`: nothing here (`kiln set` removes or leaves Claude Code's `statusLine`).
+- `none` and `custom`: nothing here (`ion repo set` removes or leaves Claude Code's `statusLine`).
 The names of before kiln 0.4.0 (`sobre`, `bandeau`, `classique`, `classique-fond`, `aucune`,
 `perso`) are still read. `--style <name>` forces a style, for a preview.
 
@@ -58,7 +58,7 @@ DAYS = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 FALLBACK_COLUMNS = 160  # width assumed when the terminal's is unknown
 CLAUDE_MARGIN = 4  # columns Claude Code keeps around the status line
 
-# kiln's stone and fire palette (src/kiln/ui.py), copied: the script runs without kiln.
+# ion-repo's stone and fire palette (src/ion_repo/ui.py), copied: the script runs without ion-repo.
 STONE_LIGHT, STONE, STONE_DARK = (185, 185, 180), (140, 140, 135), (95, 95, 92)
 BRICK, FIRE, EMBER = (180, 75, 35), (247, 150, 40), (205, 50, 35)
 GLOW, WHITE, SOOT = (255, 225, 120), (255, 255, 255), (25, 25, 25)
@@ -220,7 +220,7 @@ def window_tokens(raw: object) -> int:
 
 def compaction_point(window: int, project: str, model: str) -> int:
     """Where Claude Code compacts: `CLAUDE_CODE_AUTO_COMPACT_WINDOW`, otherwise `autoCompactWindow`
-    (kiln's `compact_window`), the local settings over the project's over the user's, in each
+    (ion-repo's `compact_window`), the local settings over the project's over the user's, in each
     the model's own (saved by `/autocompact`) first; otherwise the whole window. A launch's
     `--autocompact` is not seen."""
     point = window_tokens(os.environ.get("CLAUDE_CODE_AUTO_COMPACT_WINDOW"))
@@ -505,9 +505,9 @@ def collect_repo(status: Status, cwd: str, top: str) -> str:
     if prod:
         status.env.append([Item("prod"), *prod])
 
-    # CI of the integration branch: replayed on the machine by `kiln ci` (`statusline.ci locale`,
-    # verdict in the git note refs/notes/ci, ⏳ while its worktree exists), else GitHub (unless
-    # `statusline.ci false`)
+    # CI of the integration branch: replayed on the machine by `ion repo ci` (`statusline.ci
+    # locale`, verdict in the git note refs/notes/ci, ⏳ while its worktree exists), else GitHub
+    # (unless `statusline.ci false`)
     if opt(main, "ci") == "locale":
         sha = sh("git", "-C", main, "rev-parse", "-q", "--verify", f"origin/{integ}")
         note = (
@@ -961,7 +961,7 @@ def render(status: Status, style: str, columns: int) -> list[str]:
 
 
 def chosen_style() -> str:
-    """`--style <name>`, else the `statusline` key of kiln's machine settings."""
+    """`--style <name>`, else the `statusline` key of ion-repo's machine settings."""
     if "--style" in sys.argv[1:-1]:
         style = sys.argv[sys.argv.index("--style") + 1]
     else:

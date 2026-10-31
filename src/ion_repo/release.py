@@ -1,16 +1,16 @@
-"""`kiln version`: where kiln's releases stand, and what to ship next (kiln's own repo).
+"""`ion repo version`: where ion-repo's releases stand, and what to ship next (ion-repo's own repo).
 
 - **Number** (CLAUDE.md, Versions): in 0.x, each release bumps the patch, breaking ones
   included, like Claude Code; the minor only moves for a decided milestone
-  (`kiln version --minor`). From 1.0, strict semver, like Next.js: breaking → major,
+  (`ion repo version --minor`). From 1.0, strict semver, like Next.js: breaking → major,
   `feat` → minor, the rest → patch.
 - **Promotion**: a candidate (`vX.Y.Z-rc.N`, the last of its version) goes public once it has
   proved itself, on facts: GitHub's CI of its commit green, then a day of soak since its tag and
-  at least one repo of the code folder updated to it (`kiln update` runs that repo's checks).
+  at least one repo of the code folder updated to it (`ion repo update` runs that repo's checks).
   A candidate of fixes only (no `feat`, nothing breaking since the last public release) takes
   the short lane: two hours, no repo required. The soak restarts at each `-rc.N`.
 
-Read only: `kiln version cut` and `kiln version promote` (shipping.py) tag and merge.
+Read only: `ion repo version cut` and `ion repo version promote` (shipping.py) tag and merge.
 """
 
 import datetime
@@ -57,7 +57,7 @@ class Evidence:
 
 def show_release_status(root: Path, *, milestone: bool = False) -> None:
     if not (root / VERSION_MODULE).is_file():
-        raise KilnError("kiln version runs in the kiln repo")
+        raise KilnError("ion repo version runs in the ion-repo repo")
     capture(["git", "fetch", "-q", "--tags", "origin"], root)
     tags = read_tags(root)
     public = [tag for tag in tags if not tag.version.is_prerelease]
@@ -88,7 +88,7 @@ def show_release_status(root: Path, *, milestone: bool = False) -> None:
         detail = f"{len(subjects)} commits since {last.name}" if last else "first release"
         print(f"    v{proposed}-rc.1  {ui.paint(f'({detail})', ui.STONE)}")
         if Version(proposed).major == 0 and not milestone:
-            print(f"    {ui.paint('a milestone? kiln version --minor', ui.STONE)}")
+            print(f"    {ui.paint('a milestone? ion repo version --minor', ui.STONE)}")
     else:
         print(f"    {ui.paint('nothing new on develop', ui.STONE)}")
     cut = {Version(tag.version.base_version) for tag in tags}
@@ -99,7 +99,7 @@ def show_release_status(root: Path, *, milestone: bool = False) -> None:
         for ticket in left:
             print(f"    {ui.paint('·', ui.STONE)} {ticket}")
         if not left:
-            print(f"    {ui.paint('nothing left: kiln version cut', ui.MOSS)}")
+            print(f"    {ui.paint('nothing left: ion repo version cut', ui.MOSS)}")
     print()
 
 
@@ -164,7 +164,7 @@ def promotion_verdict(
         lane = "fixes only, " if found.is_fixes_only else ""
         return f"soaking ({lane}{_hours(left)} left)", False
     if not found.users and not found.is_fixes_only:
-        return "soaked, but no repo runs it yet: kiln update --all", False
+        return "soaked, but no repo runs it yet: ion repo update --all", False
     return f"ready: promote to v{candidate.version.base_version}", True
 
 

@@ -49,7 +49,7 @@ Only then:
   then `gh api -X POST repos/{owner}/{repo}/actions/runs/<id>/approve`, for each new push.
 - **The integration branch first**: before blaming the PR for a red check, look at the last
   run on the integration branch (`gh run list --branch develop --limit 3`). If it is red
-  too, the failure is the repo's: fix it there (own branch, `/kiln:merge`), then bring the
+  too, the failure is the repo's: fix it there (own branch, `/repo:merge`), then bring the
   PR up to date; never ask the contributor to fix what they did not break.
 - **Locally**: in a worktree of its own, never the main tree:
   `git fetch origin pull/<n>/head:pr-<n>`, then
@@ -166,11 +166,11 @@ branch (`develop` if it exists, else the default branch; retarget with
   (`It will be in the next release`).
 - Credit in the changelog: the line of the change in the next release's entry ends with
   `(#<n>, thanks @<login>)`; if the repo writes `CHANGELOG.md` at release time
-  (`/kiln:release`), note it in the backlog (`/kiln:backlog`) so it is not forgotten.
+  (`/repo:release`), note it in the backlog (`/repo:backlog`) so it is not forgotten.
 - A first contribution that went well: suggest a next one if an issue labelled
   `good first issue` fits, in one line, without insisting.
 - The PR closed a `good first issue`: close its ticket in the backlog, crediting them, and
-  offer to open the next one (`/kiln:good-first-issues`).
+  offer to open the next one (`/repo:good-first-issues`).
 - If the user wants to be quick next time, say what would have helped (a PR template line, a
   rule in `CONTRIBUTING.md`) and offer to add it.
 

@@ -1,4 +1,4 @@
-"""Rules of the charter that no check enforces, listed again by kiln at each `set` and `update`.
+"""Rules of the charter that no check enforces, listed again by ion-repo at each `set` and `update`.
 
 A rule is checked when `charter.toml` cites it (`id = "…"`) or when a CI tool holds it (mypy,
 strict TypeScript, locked dependencies, audit, pre-commit). Every other rule, read in the
@@ -15,7 +15,7 @@ from ion_repo.renames import rule_id
 from ion_repo.stack import PNPM_FRONTENDS, Stack
 
 DEFAULT_UNVERIFIED_RULES_FILE = Path("scripts") / "ci" / "unverified-rules.txt"
-# Where the rules are written: kiln's rules (`.claude/rules/`), and the `CLAUDE.md` files that
+# Where the rules are written: ion-repo's rules (`.claude/rules/`), and the `CLAUDE.md` files that
 # held them before kiln 0.4.0 (adopted repos still do).
 INSTRUCTION_FILES = ("CLAUDE.md", "backend/CLAUDE.md", "frontend/CLAUDE.md")
 RULES_DIR = Path(".claude") / "rules"
@@ -30,7 +30,7 @@ MAVEN_VERIFIED = frozenset({"NO-RAW-TYPES", "TESTS"})
 
 HEADER = """\
 # Rules of the instructions that no check enforces: applied in review.
-# File listed again by kiln (set, update) from the instructions and charter.toml: to take a rule
+# File listed again by ion-repo (set, update) from the instructions and charter.toml: to take a rule
 # out, give it a check in charter.toml, or amend it where it is written.
 """
 

@@ -1,4 +1,4 @@
-"""What `kiln dev` asks in a terminal: what to run, then whether to follow the logs.
+"""What `ion repo dev` asks in a terminal: what to run, then whether to follow the logs.
 
 A small project (one or two processes) runs everything without a question. From three on (a
 backend, a front, a worker…), a menu offers everything, the last choice, the front alone (on the
@@ -16,7 +16,7 @@ from ion_repo import ui
 from ion_repo.shell import KilnError
 from ion_repo.stack import FRONTEND_DIR, Command
 
-# From this many processes on, kiln asks what to run.
+# From this many processes on, ion-repo asks what to run.
 MENU_THRESHOLD = 3
 # Not a `.json`: the background takes those for the records of its processes.
 SELECTION_FILE = "last-selection"
@@ -108,7 +108,9 @@ def prefers_containers(compose: str, services: list[str], state: Path, ask: Ask)
         last = "containers"
     default = "c" if last == "containers" else "m"
     print(f"\n{ui.paint(f'{compose} runs {", ".join(services)} too.', bold=True)}")
-    print(f"  {ui.paint('c', ui.FIRE)}  in podman, as compose.yaml says (kiln dev --containers)")
+    print(
+        f"  {ui.paint('c', ui.FIRE)}  in podman, as compose.yaml says (ion repo dev --containers)"
+    )
     print(f"  {ui.paint('m', ui.FIRE)}  package.json's scripts on the machine")
     while True:
         reply = ask(f"Choice [{default}]: ").strip().lower() or default

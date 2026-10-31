@@ -1,4 +1,4 @@
-"""`kiln pause` without a name: names proposed from the work at hand."""
+"""`ion repo pause` without a name: names proposed from the work at hand."""
 
 import subprocess
 from pathlib import Path

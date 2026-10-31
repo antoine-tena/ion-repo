@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """PreToolUse (Bash): refuses a `git commit` on a main branch (main, master, develop), a
 `Claude-Session:` line (a link nobody else can open), and a `Co-Authored-By: Claude` line on a
-machine set to `kiln set ai_trailers=never`: once pushed to the integration branch, it cannot be
+machine set to `ion repo set ai_trailers=never`: once pushed to the integration branch, it cannot be
 erased.
 
-Two exceptions: the commit that creates the repo (no commit anywhere yet), the one `kiln new`
+Two exceptions: the commit that creates the repo (no commit anywhere yet), the one `ion repo new`
 makes on main; the commit that concludes a merge in progress (MERGE_HEAD present), for example
 after resolving a conflict of `git merge --no-ff`.
 
@@ -34,7 +34,7 @@ def git_config(directory: str, key: str) -> str:
 
 
 def trailers_choice() -> str:
-    """The machine's `ai_trailers` (kiln's `config.toml`), `disclose` by default."""
+    """The machine's `ai_trailers` (ion-repo's `config.toml`), `disclose` by default."""
     base = os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config"
     with contextlib.suppress(OSError, ValueError, KeyError):
         return str(tomllib.loads((Path(base) / "kiln/config.toml").read_text())["ai_trailers"])
@@ -73,7 +73,7 @@ if targets:
     if SIGNATURE.search(message):
         print(
             "Commit refused: no Claude-Session: in a commit message, and no "
-            "Co-Authored-By: Claude on this machine (kiln set ai_trailers=never). Remove them.",
+            "Co-Authored-By: Claude on this machine (ion repo set ai_trailers=never). Remove them.",
             file=sys.stderr,
         )
         sys.exit(2)

@@ -1,4 +1,5 @@
-"""`kiln update` with conflicts left by the template: stopped before anything reads the files."""
+"""`ion repo update` with conflicts left by the template: stopped before anything reads the
+files."""
 
 from pathlib import Path
 

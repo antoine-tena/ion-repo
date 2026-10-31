@@ -1,4 +1,4 @@
-"""`kiln waive`: lists, adds or renews a waiver of `kiln-waivers.toml`.
+"""`ion repo waive`: lists, adds or renews a waiver of `kiln-waivers.toml`.
 
 The command fills in what one forgets by hand (author, dates, tier) and refuses what `charter`
 would refuse. It only touches the entry concerned: the rest of the file, comments included,
@@ -23,8 +23,8 @@ from ion_repo.shell import KilnError
 RULE_ID = re.compile(r"[A-Z0-9+-]+")
 TIERS = ", ".join(map(str, TIERS_DAYS[:-1])) + f" then {TIERS_DAYS[-1]}"
 HEADER = f"""\
-# This repo's waivers of kiln's rules ([WAIVERS]), checked by `charter`.
-# kiln never rewrites this file; `kiln waive` adds or renews an entry.
+# This repo's waivers of ion-repo's rules ([WAIVERS]), checked by `charter`.
+# ion-repo never rewrites this file; `ion repo waive` adds or renews an entry.
 # Duration at most: {TIERS} days, next tier at each renewal.
 """
 
@@ -42,7 +42,7 @@ class WaiveRequest:
 def show_waivers(root: Path) -> None:
     waivers = waivers_of(_repo(root))
     if not (waivers.actives or waivers.errors):
-        ui.note(f"No waiver ({WAIVERS_FILE}). To add one: kiln waive <RULE> --reason …")
+        ui.note(f"No waiver ({WAIVERS_FILE}). To add one: ion repo waive <RULE> --reason …")
         return
     lines = [
         f"- {w.label}: {w.reason} ({w.by}, until {w.until or 'never'}, {w.renewals} renewal(s))"
@@ -105,7 +105,7 @@ def waive(root: Path, request: WaiveRequest, today: datetime.date | None = None)
         raise KilnError("waiver refused: " + "; ".join(problems))
     ui.note(
         f"{request.target} waived until {until} ({WAIVERS_FILE}, to commit). If the rule is "
-        "wrong for everyone: skill /kiln:report, then --upstream <link>."
+        "wrong for everyone: skill /repo:report, then --upstream <link>."
     )
 
 

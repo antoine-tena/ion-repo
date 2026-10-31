@@ -5,7 +5,7 @@ ruff for a .py (the nearest `.venv/bin/ruff` going up), ESLint with cache for a 
 (the nearest `node_modules/.bin/eslint`), then the repo's charter: `charter file`, the bans on
 the edited file alone (ratchets and floors run at commit and in CI), if it has a `charter.toml`
 (`charte.toml` before kiln 0.4), otherwise the script named by
-`KILN_CHARTER_SCRIPT` (`PROJET_CHARTE` before 0.4; path relative to the root of the repo) in its
+`ION_REPO_CHARTER_SCRIPT` (`PROJET_CHARTE` before 0.4; path relative to the root of the repo) in its
 `.claude/settings.json`. A charter violation is reported once, then again when it changes:
 ongoing debt does not repeat its report at every edit. Works in a worktree too. Exit 2 = the
 report is sent back to the agent; without the tool installed, stay quiet.
@@ -63,13 +63,17 @@ def charter_command(path: Path) -> tuple[list[str], Path] | None:
     if not top:
         return None
     if any((Path(top) / name).exists() for name in CHARTER_FILES):
-        # `charter` comes with kiln (uv tool install kiln-cli) and checks the edited file only;
+        # `charter` comes with ion-repo (uv tool install kiln-cli) and checks the edited file only;
         # `charte`, its name before 0.4.0, only knows the whole repo.
         if engine := shutil.which("charter"):
             return ([engine, "file", str(path)], Path(top))
         engine = shutil.which("charte")
         return ([engine], Path(top)) if engine else None
-    script = os.environ.get("KILN_CHARTER_SCRIPT") or os.environ.get("PROJET_CHARTE")
+    script = (
+        os.environ.get("ION_REPO_CHARTER_SCRIPT")
+        or os.environ.get("KILN_CHARTER_SCRIPT")
+        or os.environ.get("PROJET_CHARTE")
+    )
     if not script or not (Path(top) / script).exists():
         return None
     return ([sys.executable, str(Path(top) / script)], Path(top))

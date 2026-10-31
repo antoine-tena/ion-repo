@@ -1,10 +1,10 @@
-"""An adopted repo's names of kiln 0.3, moved to today's by `kiln update`, before they go.
+"""An adopted repo's names of kiln 0.3, moved to today's by `ion repo update`, before they go.
 
-A repo adopted before kiln 0.4.0 still carries what kiln named in French: its `charte.toml`, the
+A repo adopted before kiln 0.4.0 still carries what ion-repo named in French: its `charte.toml`, the
 `charte` command in its hooks, the workflows `charte.yml`, `contrat-api.yml`, `securite.yml` and
-their inputs. kiln reads them for now; `kiln update` converts them while it still can. Only what
-belongs to kiln changes: the identifiers of the repo's own rules (`id = "TAILLE-FICHIER"`) are
-cited by its instructions and stay; its prose is its own, listed for a reread, never rewritten.
+their inputs. ion-repo reads them for now; `ion repo update` converts them while it still can. Only
+what belongs to ion-repo changes: the identifiers of the repo's own rules (`id = "TAILLE-FICHIER"`)
+are cited by its instructions and stay; its prose is its own, listed for a reread, never rewritten.
 """
 
 import re
@@ -22,7 +22,9 @@ WORKFLOW_DIR = Path(".github") / "workflows"
 LEGACY_ENTRY = re.compile(r"^(\s*entry:\s*['\"]?)charte(?![\w-])(\s+(\w+))?")
 LEGACY_ACTIONS = {"couverture": "coverage", "verifier": "check"}
 LEGACY_WORKFLOW = re.compile(
-    r"(antoine-tena/kiln/\.github/workflows/)(" + "|".join(map(re.escape, RELAYS)) + r")\.yml@"
+    r"(antoine-tena/(?:ion-repo|kiln)/\.github/workflows/)("
+    + "|".join(map(re.escape, RELAYS))
+    + r")\.yml@"
 )
 INPUT_KEY = re.compile(r"^(\s+)([\w-]+)(\s*:)")
 # What the repo's prose may still cite, for the list to reread.
@@ -45,7 +47,7 @@ def convert_legacy_names(root: Path) -> list[str]:
     folder = root / WORKFLOW_DIR
     workflows = sorted([*folder.glob("*.yml"), *folder.glob("*.yaml")]) if folder.is_dir() else []
     done += [
-        f"{path.relative_to(root)}: kiln's workflows and their inputs"
+        f"{path.relative_to(root)}: ion-repo's workflows and their inputs"
         for path in workflows
         if _rewrite(path, _workflows)
     ]

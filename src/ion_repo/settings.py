@@ -1,4 +1,4 @@
-"""`kiln set`: shows or changes a repo's settings (team, frameworks, podman…).
+"""`ion repo set`: shows or changes a repo's settings (team, frameworks, podman…).
 
 The repo is rendered again with the new answers, without overwriting local changes: a removed
 framework takes its files away, an added framework brings its own, then the lock files, the
@@ -85,7 +85,7 @@ def show_settings(root: Path) -> None:
         if key in answers:
             print(f"{ui.paint(f'{key:<{width}}', ui.STONE)}  {answers[key]}")
     print()
-    ui.note("Change: kiln set key=value [key=value…], on a branch, clean tree.")
+    ui.note("Change: ion repo set key=value [key=value…], on a branch, clean tree.")
 
 
 def parse_assignments(assignments: list[str]) -> dict[str, object]:
@@ -117,7 +117,7 @@ def _scalar(raw_value: str) -> object:
 def apply_settings(root: Path, assignments: list[str]) -> None:
     changes = parse_assignments(assignments)
     require_tools("git", "uv")
-    check_working_branch(root, "chore/kiln-set")
+    check_working_branch(root, "chore/ion-repo-set")
     step("Settings: " + ", ".join(f"{key}={value}" for key, value in changes.items()))
     previous_stack = load_stack(root)
     apply_template(root, changes)
@@ -164,7 +164,7 @@ def stop_on_conflicts(root: Path) -> None:
         raise KilnError(
             "settings applied, conflicts left to resolve by hand: "
             + ", ".join(conflicted)
-            + ". Resolve them, commit, then run the same `kiln set` again"
+            + ". Resolve them, commit, then run the same `ion repo set` again"
             " to lock, install and check."
         )
 

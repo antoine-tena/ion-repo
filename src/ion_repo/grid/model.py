@@ -1,7 +1,7 @@
-"""The grid: what kiln holds as the best way to work today, one small TOML file per rule.
+"""The grid: what ion-repo holds as the best way to work today, one small TOML file per rule.
 
-Everything else reads it: `kiln grid` shows it, `kiln score` measures a repo against it, `kiln
-fix` closes what a script can close, and Claude gets the rest. A rule lives in
+Everything else reads it: `ion repo grid` shows it, `ion repo score` measures a repo against it,
+`ion-repo fix` closes what a script can close, and Claude gets the rest. A rule lives in
 `rules/<theme>/<RULE-ID>.toml` and sits on two axes, its theme (what it speaks of) and its scope
 (whom it applies to), with a level (the Technology Radar's adopt, trial, assess, hold) and a
 regime (strict, ratchet, review). Authority comes from sources, weighed in the doctrine's order:
@@ -85,14 +85,15 @@ class Rule:
     sources: tuple[Source, ...]
     applies: tuple[str, ...]  # facts the repo must have (`ion_repo.grid.facts`); empty: always
     detector: Mapping[str, object]
-    fixer: str  # name of a converter of `kiln fix`; "" when only judgment fixes it
+    fixer: str  # name of a converter of `ion repo fix`; "" when only judgment fixes it
     since: str
     switch_when: str = ""
-    charter_rule: str = ""  # the charter rule that enforces it in kiln's repos
+    charter_rule: str = ""  # the charter rule that enforces it in ion-repo's repos
     detectable: str = "script"  # script, approximate (the script flags, Claude confirms), judgment
     fixable: str = "judgment"  # script (a converter can), judgment
     settings: Mapping[str, str] = field(default_factory=dict)
-    # An unscored rule whose gap `kiln score` still shows, as advice, to the repos it applies to.
+    # An unscored rule whose gap `ion repo score` still shows, as advice, to the repos it applies
+    # to.
     advice: bool = False
     path: Path = Path()
 

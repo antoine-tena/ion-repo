@@ -32,7 +32,7 @@ def test_formula_pins_the_lock_and_kiln_by_hash() -> None:
     assert f"      copier==9.18.2 --hash=sha256:{'cd' * 32} --hash=sha256:{'ef' * 32}\n" in text
     assert f"      kiln-cli==0.4.5 --hash=sha256:{SHA}\n" in text
     assert "\\" not in text.split("<<~EOS")[1].split("EOS")[0]
-    assert '"#{bin}/kiln --version"' in text
+    assert '"#{bin}/ion-repo --version"' in text
 
 
 def test_the_lock_gives_every_runtime_dependency() -> None:
@@ -47,9 +47,9 @@ def test_the_lock_gives_every_runtime_dependency() -> None:
 @pytest.mark.parametrize(
     ("prefix", "tag", "command"),
     [
-        ("/opt/homebrew/Cellar/kiln/0.4.4/libexec", "v0.4.5", "brew upgrade kiln"),
-        ("/opt/homebrew/Cellar/kiln/0.4.4/libexec", "v0.4.5-rc.1", "git+"),
-        ("/home/me/.local/share/uv/tools/keramos-kiln", "v0.4.5", "keramos-kiln==0.4.5"),
+        ("/opt/homebrew/Cellar/ion-repo/0.4.4/libexec", "v0.4.5", "brew upgrade kiln"),
+        ("/opt/homebrew/Cellar/ion-repo/0.4.4/libexec", "v0.4.5-rc.1", "git+"),
+        ("/home/me/.local/share/uv/tools/ion-repo", "v0.4.5", "ion-repo==0.4.5"),
     ],
 )
 def test_a_tool_from_the_tap_upgrades_through_brew(
@@ -69,7 +69,7 @@ class FakeDistribution:
         return None
 
 
-@pytest.mark.parametrize("name", ["kiln-cli", "keramos-kiln"])
+@pytest.mark.parametrize("name", ["kiln-cli", "ion-repo"])
 def test_a_pypi_tool_upgrades_under_the_name_it_was_installed_with(
     monkeypatch: pytest.MonkeyPatch, name: str
 ) -> None:

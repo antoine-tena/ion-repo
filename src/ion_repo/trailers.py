@@ -1,8 +1,8 @@
 """Whether Claude's commits and pull requests say Claude helped: a choice of each machine.
 
-`kiln set ai_trailers=disclose|never` (asked at the first `kiln install`, "choose for me"
+`ion repo set ai_trailers=disclose|never` (asked at the first `ion repo install`, "choose for me"
 meaning disclose). `never` empties the `attribution` of `~/.claude/settings.json`, so Claude Code
-writes no `Co-Authored-By: Claude`, and kiln's branch guard refuses one; `disclose` leaves
+writes no `Co-Authored-By: Claude`, and ion-repo's branch guard refuses one; `disclose` leaves
 Claude Code's default. `Claude-Session:` is refused either way: a link nobody else can open.
 """
 
@@ -37,7 +37,7 @@ def apply_trailers_choice(choice: str, settings_path: Path | None = None) -> str
         settings["attribution"] = dict(NO_ATTRIBUTION)
         message = f"attribution emptied in {path}: no Co-Authored-By: Claude."
     else:
-        # Only kiln's own value goes: an attribution the user wrote stays.
+        # Only ion-repo's own value goes: an attribution the user wrote stays.
         if settings.get("attribution") != NO_ATTRIBUTION:
             return "Claude's commits and pull requests say Claude helped."
         del settings["attribution"]
@@ -60,11 +60,11 @@ def ask_trailers() -> str:
 
 
 def ensure_trailers(config: UserConfig) -> UserConfig:
-    """Asked once, at the first `kiln install`, then kept in the machine settings."""
+    """Asked once, at the first `ion repo install`, then kept in the machine settings."""
     if config.ai_trailers in TRAILER_CHOICES:
         return config
     updated = replace(config, ai_trailers=ask_trailers())
     print(apply_trailers_choice(str(updated.ai_trailers)))
     save_config(updated)
-    print(f"Choice saved in {config_path()} (change: kiln set ai_trailers=…).")
+    print(f"Choice saved in {config_path()} (change: ion repo set ai_trailers=…).")
     return updated

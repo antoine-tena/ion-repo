@@ -187,7 +187,7 @@ prepare_caddy_log() {
 }
 
 # The server's Caddyfile imports one file per site from /etc/caddy/sites/, so that several projects
-# share the server. kiln writes that Caddyfile only when it is Caddy's default or its own former
+# share the server. ion-repo writes that Caddyfile only when it is Caddy's default or its own former
 # one (the whole site in the Caddyfile); a Caddyfile someone else wrote is never touched.
 ensure_caddy_import() {
   grep -qE '^\s*import\s+(/etc/caddy/)?sites/\*' "$CADDY_MAIN" 2> /dev/null && return 0

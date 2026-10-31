@@ -5,7 +5,7 @@ argument-hint: "[vN] [develop commit]"
 ---
 
 A release is the only state that goes to production: `develop` integrates without full CI
-(`/kiln:merge`), the release runs every check. Git Flow: a `release/vN` branch from `develop`
+(`/repo:merge`), the release runs every check. Git Flow: a `release/vN` branch from `develop`
 only takes fixes from then on, then merges into `main` (tag `vN`) and back into `develop`. An
 urgent production fix follows the same path from `main`'s latest tag, on `hotfix/vN.M`.
 
@@ -16,32 +16,32 @@ Read it first. Stop if the repo has no production `main`. Talk to the user in th
 Never switch the branch of the main tree: each branch in `.claude/worktrees/<name>`
 (`release-vN`, `main`).
 
-## kiln's own repo
+## ion-repo's own repo
 No production there: the tag publishes. Two commands replace the steps below.
-1. `kiln version`: the candidates, the number proposed, the tickets of the plan still open.
-2. `kiln version cut` (`--minor` for a milestone decided by its owner): branch
+1. `ion repo version`: the candidates, the number proposed, the tickets of the plan still open.
+2. `ion repo version cut` (`--minor` for a milestone decided by its owner): branch
    `release/vX.Y.Z` in `.claude/worktrees/release-vX.Y.Z`, the `CHANGELOG.md` entry drafted from
    the commits, the numbers bumped. Rewrite the entry for users there (breaking changes first,
-   each with its conversion by `kiln update`; keep the `- **After updating**: …` lines, which
-   `kiln update` turns into a ticket of each repo's backlog), delete the draft line, commit; then
-   `kiln version cut` again: full checks, tag `-rc.N` pushed. A fix of the candidate: a `fix:`
+   each with its conversion by `ion repo update`; keep the `- **After updating**: …` lines, which
+   `ion repo update` turns into a ticket of each repo's backlog), delete the draft line, commit; then
+   `ion repo version cut` again: full checks, tag `-rc.N` pushed. A fix of the candidate: a `fix:`
    commit on the branch, then `cut` again.
-3. `kiln version promote` when `kiln version` says a candidate is ready (`--urgent`, only when
+3. `ion repo version promote` when `ion repo version` says a candidate is ready (`--urgent`, only when
    its owner asks: no soak nor repo, its CI green still required): tag on its exact commit,
    merged into `main` and `develop`; `pypi.yml` publishes the package and the GitHub Release.
-4. `kiln update --all` only with the user's yes.
+4. `ion repo update --all` only with the user's yes.
 
 ## 1. Choose
 - `git fetch origin --tags`. Previous release: `git describe --tags --abbrev=0 origin/main`.
 - Candidate commit: the argument, otherwise `origin/develop`. For an urgent fix: the latest tag,
   plus only the fix's commits (`git cherry-pick`).
-- Number: the argument, otherwise what the project's `CLAUDE.md` sets (kiln itself: the next
+- Number: the argument, otherwise what the project's `CLAUDE.md` sets (ion-repo itself: the next
   patch, breaking ones included, the minor only for a milestone decided by its owner,
-  `kiln version` proposes it), otherwise `vN+1` when there are features (`feat`), `vN.M+1` when
+  `ion repo version` proposes it), otherwise `vN+1` when there are features (`feat`), `vN.M+1` when
   there are only fixes.
 - Changes: `git log --first-parent --format='%h %s' <previous>..<candidate>`. If the user leaves
   a piece of work out, take an older candidate rather than undoing code on the release.
-- Review the repo (`/kiln:review --repo`): commits published since the previous release, remote
+- Review the repo (`/repo:review --repo`): commits published since the previous release, remote
   branches left on GitHub, tags. The release note says clearly what a poor commit subject hides.
 
 ## 2. Cut the release
@@ -66,7 +66,7 @@ neither a piece of work left out nor a feature behind a flag that stays off. Oth
 on the release and **have the user approve the text**.
 
 ## 5. Full checks
-`kiln ci release/vN` (or GitHub's CI on the branch): every job. On a failure, fix on the release,
+`ion repo ci release/vN` (or GitHub's CI on the branch): every job. On a failure, fix on the release,
 commit, run again, until green. Also give the jobs that were not replayed.
 
 ## 6. Go-ahead
@@ -80,7 +80,7 @@ git -C .claude/worktrees/main merge --no-ff release/vN -m "Release vN: <summary>
 git -C .claude/worktrees/main tag -a vN -m "Release vN" -m "<changes, one line each>"
 git push origin main vN && git worktree remove .claude/worktrees/main
 ```
-The commit of `main` holds the files of the release: the deployment script accepts the `kiln ci`
+The commit of `main` holds the files of the release: the deployment script accepts the `ion repo ci`
 verdict of the release (`green-ci.sh`), without replaying CI.
 
 ## 8. Deploy
@@ -90,11 +90,11 @@ logs for a few minutes (the project's diagnosis skill if any), the announcement 
 something breaks: back to the previous release through the project's procedure, and say so.
 No deployment configured (no `scripts/ops/deploy-*.sh`, nothing in `CLAUDE.md`): the release ends
 at the tag on `main`; say so and skip to the next step.
-A command published on PyPI (`.github/workflows/pypi.yml`, `kiln set pypi_name=…`): the pushed
+A command published on PyPI (`.github/workflows/pypi.yml`, `ion repo set pypi_name=…`): the pushed
 tag is the deployment, version `N` taken from `vN`. Follow the run (`gh run watch`), then check
 `https://pypi.org/project/<pypi_name>/N/`; a red run names its failing step. The first tag needs
 either a PyPI token in the secret `PYPI_TOKEN` of the `pypi` environment ("Entire account" to
-create the project, `/kiln:token`), or the publisher declared on PyPI
+create the project, `/repo:token`), or the publisher declared on PyPI
 (https://pypi.org/manage/account/publishing/: repository, workflow `pypi.yml`, environment
 `pypi`); a version on PyPI can never be uploaded again, so a broken one is fixed by the next tag.
 

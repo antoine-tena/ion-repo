@@ -296,7 +296,7 @@ def python_dependencies(repo: Repo) -> tuple[list[Candidate], list[Skipped]]:
     if shutil.which("uvx") is None:
         return found, skipped
     for folder in proof.projects(repo.root, repo.files, "pyproject.toml"):
-        with tempfile.TemporaryDirectory(prefix="kiln-deptry-") as scratch:
+        with tempfile.TemporaryDirectory(prefix="ion-repo-deptry-") as scratch:
             report = Path(scratch) / "deptry.json"
             _run(["uvx", "deptry", ".", "--json-output", str(report)], repo.root / folder)
             try:

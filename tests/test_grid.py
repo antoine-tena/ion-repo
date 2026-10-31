@@ -510,7 +510,7 @@ def test_kiln_grid_lists_and_shows(
 
     assert run_kiln(monkeypatch, "grid", "pinned-actions") == 0
     shown = capsys.readouterr().out
-    assert "docs.github.com" in shown and "kiln waive PINNED-ACTIONS" in shown
+    assert "docs.github.com" in shown and "ion repo waive PINNED-ACTIONS" in shown
 
 
 def test_an_unknown_rule_suggests_the_close_ones() -> None:
@@ -526,7 +526,10 @@ def test_a_rule_names_only_charter_rules_kiln_knows() -> None:
     template = Path(__file__).resolve().parent.parent / "template"
     known = {
         found
-        for path in [*template.glob(".claude/rules/kiln/*.jinja"), template / "charter.toml.jinja"]
+        for path in [
+            *template.glob(".claude/rules/ion-repo/*.jinja"),
+            template / "charter.toml.jinja",
+        ]
         for found in re.findall(r"\[([A-Z0-9+-]{3,})\]|id = \"([A-Z0-9+-]+)\"", path.read_text())
         for found in found
         if found
@@ -541,7 +544,7 @@ def test_drafts_wait_behind_their_level(
     assert run_kiln(monkeypatch, "grid") == 0
     default = capsys.readouterr().out
     assert "PINNED-ACTIONS" in default and "SEALED-DOMAIN" not in default
-    assert "kiln grid --level assess" in default
+    assert "ion repo grid --level assess" in default
 
     assert run_kiln(monkeypatch, "grid", "--level", "assess") == 0
     assert "SEALED-DOMAIN" in capsys.readouterr().out

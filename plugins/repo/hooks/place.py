@@ -79,7 +79,7 @@ def context(cwd: Path) -> str:
     if len(repos) > MAX_LISTED:
         listed += f" and {len(repos) - MAX_LISTED} more"
     return (
-        f"kiln [WRONG-PLACE]: this session was started in {cwd}, which is not a git repo. "
+        f"ion-repo [WRONG-PLACE]: this session was started in {cwd}, which is not a git repo. "
         f"Repos below it: {listed}. When a task belongs to one of them, named or not (judge from "
         "what it will touch), and is more than reading or a small edit, do not start it: answer "
         "with only this, in the user's language, and stop - first a bold line saying the task is "

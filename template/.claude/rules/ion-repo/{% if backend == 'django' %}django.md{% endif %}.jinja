@@ -4,11 +4,11 @@
 paths:
   - "{{ bp }}**"
 ---
-<!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten. -->
+<!-- Written by ion-repo and kept current by `ion repo update`: do not edit, it would be overwritten. -->
 # Backend: Django and Django Ninja
 
 `{{ bp }}config/`: settings, URLs, Ninja API (`api.py`), middlewares, health probes; one Django
-app per business domain. Run: `kiln dev`; check: `kiln check`.
+app per business domain. Run: `ion repo dev`; check: `ion repo check`.
 
 ## API
 
@@ -85,7 +85,7 @@ app per business domain. Run: `kiln dev`; check: `kiln check`.
   language; no technical detail (trace, SQL, class name) leaves in production.
 {%- if frontend == 'nuxt' %}
 - **[OPENAPI]** The OpenAPI schema is generated from the backend code and committed
-  (`openapi.json`) at each API change (`kiln contract`).
+  (`openapi.json`) at each API change (`ion repo contract`).
 - **[CONTRACT-DRIFT]** CI fails when the backend schema changes without the front's generated
   TypeScript types being regenerated and compatible.
 {%- endif %}

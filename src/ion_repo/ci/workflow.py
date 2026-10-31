@@ -1,6 +1,6 @@
-"""Reading a project's `ci.yml`: its jobs, and what `kiln ci` can replay of them.
+"""Reading a project's `ci.yml`: its jobs, and what `ion repo ci` can replay of them.
 
-`ci.yml` remains the only description of the CI. A job calling a reusable workflow of kiln is
+`ci.yml` remains the only description of the CI. A job calling a reusable workflow of ion-repo is
 replayed with the same parameters (`with:`); a job written in the project is if it only does
 `run:` steps after the checkout. The others are listed as not replayed: the verdict says so.
 """
@@ -14,9 +14,11 @@ import yaml
 from ion_repo.shell import KilnError
 
 CI_WORKFLOW = Path(".github/workflows/ci.yml")
-KILN_WORKFLOW = re.compile(r"antoine-tena/kiln/\.github/workflows/(?P<name>[\w-]+)\.yml@")
+ION_REPO_WORKFLOW = re.compile(
+    r"antoine-tena/(?:ion-repo|kiln)/\.github/workflows/(?P<name>[\w-]+)\.yml@"
+)
 CHECKOUT_ACTION = "actions/checkout@"
-# Reusable workflows of kiln that `kiln ci` can replay (see jobs.py).
+# Reusable workflows of ion-repo that `ion repo ci` can replay (see jobs.py).
 REPLAYABLE_WORKFLOWS = frozenset(
     {"django", "api-contract", "charter", "pnpm", "security", "secrets"}
     | {"contrat-api", "charte", "securite"}  # names before kiln 0.4.0
@@ -26,7 +28,7 @@ INLINE_KIND = "inline"
 
 @dataclass(frozen=True)
 class Job:
-    """A job of `ci.yml`: its kind (kiln workflow, `inline`, or empty) and its parameters."""
+    """A job of `ci.yml`: its kind (ion-repo workflow, `inline`, or empty) and its parameters."""
 
     name: str
     kind: str
@@ -61,9 +63,9 @@ def parse_job(name: str, definition: object) -> Job:
 
 
 def _reusable_job(name: str, uses: str, raw_inputs: object) -> Job:
-    match = KILN_WORKFLOW.search(uses)
+    match = ION_REPO_WORKFLOW.search(uses)
     if match is None:
-        return Job(name, "", reason=f"workflow hors kiln ({uses})")
+        return Job(name, "", reason=f"workflow hors ion-repo ({uses})")
     kind = match["name"]
     if kind not in REPLAYABLE_WORKFLOWS:
         return Job(name, kind, reason=f"workflow {kind} not replayed locally yet")

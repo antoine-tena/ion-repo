@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-HOOK = Path(__file__).resolve().parent.parent / "plugins/kiln/hooks/branch_guard.py"
+HOOK = Path(__file__).resolve().parent.parent / "plugins/repo/hooks/branch_guard.py"
 
 
 def run_hook(command: str, cwd: Path, trailers: str = "never") -> subprocess.CompletedProcess[str]:
@@ -72,7 +72,7 @@ def test_commit_on_develop_is_refused(tmp_path: Path) -> None:
 
 
 def test_commit_that_creates_the_repo_passes_on_main(tmp_path: Path) -> None:
-    """The first commit, as `kiln new` makes it; the next one on main is refused."""
+    """The first commit, as `ion repo new` makes it; the next one on main is refused."""
     subprocess.run(["git", "init", "-q", "-b", "main", str(tmp_path)], check=True)
     assert run_hook('git commit -m "chore: initial commit"', tmp_path).returncode == 0
     first_commit(tmp_path)

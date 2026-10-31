@@ -1,4 +1,4 @@
-"""`kiln score` (T-46): any repo measured against the grid, the same number twice, nothing
+"""`ion repo score` (T-46): any repo measured against the grid, the same number twice, nothing
 written, waivers apart, and what the grid does not know listed. `--roadmap` (T-129): what needs
 judgment handed to Claude with its places, a false positive dismissed on its path, a gap proven
 closed by `--rule`, tickets written once."""
@@ -203,7 +203,7 @@ def test_json_badge_and_screen(
     monkeypatch.setattr(sys, "argv", ["kiln", "score", str(root)])
     cli.main()
     screen = capsys.readouterr().out
-    assert "kiln score" in screen and "NOQA-CODES" in screen and "app.py:1" in screen
+    assert "ion repo score" in screen and "NOQA-CODES" in screen and "app.py:1" in screen
 
 
 def test_the_score_closes_a_screen_long_with_gaps(
@@ -304,5 +304,5 @@ def test_write_turns_items_into_tickets_once(tmp_path: Path) -> None:
 def test_without_a_backlog_write_says_how_to_get_one(tmp_path: Path) -> None:
     root = make(tmp_path, LEGACY)
 
-    with pytest.raises(KilnError, match="kiln adopt"):
+    with pytest.raises(KilnError, match="ion repo adopt"):
         roadmap.write_tickets(root, score.score_repo(root))

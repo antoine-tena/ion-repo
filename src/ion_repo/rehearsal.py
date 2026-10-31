@@ -1,10 +1,10 @@
-"""`kiln update --rehearse`: the update played on a throwaway clone, the repo left untouched.
+"""`ion repo update --rehearse`: the update played on a throwaway clone, the repo left untouched.
 
 Measured on a copy first, never in the repo itself: annway's update to v0.4.0-rc.1 failed on a
 copy in two minutes (T-147), where it would have failed halfway through the real one. The
 clone takes the repo's last commit and its ignored `.env*` files; the update runs there with
 its checks, and only the outcome comes back: files changed, conflicts, failure. A clone that
-failed is kept for a look; a repo not under kiln is refused before any clone.
+failed is kept for a look; a repo not under ion-repo is refused before any clone.
 """
 
 import shutil
@@ -17,7 +17,7 @@ from ion_repo import ui
 from ion_repo.shell import KilnError, capture, run, step
 from ion_repo.update import conflicted_files, require_under_kiln, update_project
 
-REHEARSAL_BRANCH = "chore/kiln-update-rehearsal"
+REHEARSAL_BRANCH = "chore/ion-repo-update-rehearsal"
 # The local files ignored by git that the checks may need, as `prepare-worktree.sh` copies them.
 ENV_PATTERNS = ("*.env", "*.env.*", ".env", ".env.*")
 

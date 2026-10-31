@@ -1,7 +1,7 @@
 {% from "macros.jinja" import db_port -%}
 {%- set base = name | replace('-', '_') -%}
 {%- set front_port = {'nuxt': 3000, 'next': 3000, 'astro': 4321, 'vite-react': 4173, 'streamlit': 8501, 'dash': 8050}.get(frontend) -%}
-# The project's stack under podman: `kiln dev --containers` (podman-compose up --build); `kiln dev`
+# The project's stack under podman: `ion repo dev --containers` (podman-compose up --build); `ion repo dev`
 # starts only its database and runs the code on the machine.
 # Images built from the root of the repo (`.containerignore`); never docker.
 name: {{ name }}
@@ -39,7 +39,7 @@ services:
       POSTGRES_DB: {{ base }}
     volumes:
       - db-data:/var/lib/postgresql/data
-    # For the code run on the machine by `kiln dev`, on the loopback only.
+    # For the code run on the machine by `ion repo dev`, on the loopback only.
     ports:
       - "127.0.0.1:{{ db_port(name) }}:5432"
     healthcheck:

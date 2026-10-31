@@ -5,8 +5,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 MARKETPLACE = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text())
 PLUGINS = [plugin["name"] for plugin in MARKETPLACE["plugins"]]
-# Ce qui renvoie à un skill (`/kiln:merge`) : la charte et les fichiers générés, les plugins
-# eux-mêmes, les messages de la commande, la documentation, les consignes de kiln.
+# Ce qui renvoie à un skill (`/repo:merge`) : la charte et les fichiers générés, les plugins
+# eux-mêmes, les messages de la commande, la documentation, les consignes d'ion-repo.
 CITING = (
     "template",
     "plugins",

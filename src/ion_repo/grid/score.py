@@ -1,4 +1,4 @@
-"""`kiln score`: any repo measured against the grid in seconds, without a token.
+"""`ion repo score`: any repo measured against the grid in seconds, without a token.
 
 Each scored rule (level `adopt`) whose facts the repo has runs its detector; a rule with nothing
 to look at (`n/a`) or outside the repo's stacks is left out of the count, and a waived one
@@ -26,7 +26,7 @@ from ion_repo.grid.model import PILLARS, Rule, load_rules
 # The version of the `--json` output; it only goes up when a field changes meaning or leaves.
 SCHEMA = 1
 PASSED, FAILED, WAIVED, LEFT_OUT = "pass", "fail", "waived", "n/a"
-BY_SCRIPT, BY_JUDGMENT = "kiln fix", "by judgment (Claude Code)"
+BY_SCRIPT, BY_JUDGMENT = "ion repo fix", "by judgment (Claude Code)"
 TOP_GAPS = 3
 SHOWN_LOCATIONS = 3
 NOT_COVERED = ": not covered by the grid yet"
@@ -130,7 +130,7 @@ class Report:
     misfired: tuple[str, ...] = ()  # rules waived again and again: they may not fit
     advice: tuple[Finding, ...] = ()  # gaps of unscored rules, shown apart
     not_utf8: tuple[str, ...] = ()  # texts read in another encoding: `path (cp1252)`
-    reverted: tuple[str, ...] = ()  # rules whose converter `kiln fix` had to undo
+    reverted: tuple[str, ...] = ()  # rules whose converter `ion repo fix` had to undo
     schema: int = SCHEMA
     checked: str = field(default_factory=lambda: datetime.date.today().isoformat())
 
@@ -147,7 +147,7 @@ class Report:
         )[:TOP_GAPS]
 
     def roadmap(self) -> list[Finding]:
-        """What no converter closes, for Claude (a converter `kiln fix` had to undo included):
+        """What no converter closes, for Claude (a converter `ion repo fix` had to undo included):
         every rule weighs the same in the score, so the sure gaps first, then the smallest
         (fewest places to open), to confirm last."""
         return sorted(
@@ -171,7 +171,7 @@ def compared(before: Report, after: Report) -> list[str]:
         if after.score is not None and before.score is not None
         else ""
     )
-    lines = [f"**kiln score: {before.score} → {after.score}{delta}**"]
+    lines = [f"**ion repo score: {before.score} → {after.score}{delta}**"]
     if closed:
         lines += ["", "Closed: " + ", ".join(f"`{rule}`" for rule in closed)]
     if opened:
@@ -337,7 +337,7 @@ def badge(report: Report) -> str:
         else "red"
     )
     image = f"https://img.shields.io/badge/kiln_score-{value}-{color}"
-    return f"[![kiln score]({image})](https://github.com/antoine-tena/kiln)"
+    return f"[![ion repo score]({image})](https://github.com/antoine-tena/ion-repo)"
 
 
 def as_json(report: Report) -> str:
@@ -349,7 +349,7 @@ def as_json(report: Report) -> str:
 
 def show(report: Report, *, every: bool = False) -> None:
     score = "n/a" if report.score is None else f"{report.score}/100"
-    title = ui.paint("kiln score", ui.FIRE, bold=True)
+    title = ui.paint("ion repo score", ui.FIRE, bold=True)
     print(f"\n  {title}  {ui.paint(score, ui.GLOW, bold=True)}")
     pillars = [f"{pillar} {value}" for pillar, value in report.pillars.items() if value is not None]
     print(ui.paint(f"  {'  ·  '.join(pillars)}", ui.STONE_LIGHT))
@@ -395,8 +395,8 @@ def show(report: Report, *, every: bool = False) -> None:
         for line in (*report.uncovered, *report.misfired):
             print(ui.paint(f"    {line}", ui.STONE))
     hint = "" if every else "--all for every rule and location · "
-    print(ui.paint(f"\n  {hint}kiln grid <ID> for a rule in full", ui.STONE))
-    print(ui.paint('  A deviation this repo accepts: kiln waive <ID> --reason "…"', ui.STONE))
+    print(ui.paint(f"\n  {hint}ion repo grid <ID> for a rule in full", ui.STONE))
+    print(ui.paint('  A deviation this repo accepts: ion repo waive <ID> --reason "…"', ui.STONE))
     if report.gaps:
         # An old repo's gaps run to a hundred lines: the score, said again where the eye ends.
         gaps = f"{len(report.gaps)} gap{'s' if len(report.gaps) > 1 else ''}"

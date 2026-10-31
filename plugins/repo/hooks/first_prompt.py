@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""UserPromptSubmit: at the first prompt of a session where kiln offers an update, shows the logo
-of kiln in color with the update on offer, right before Claude asks the question.
+"""UserPromptSubmit: at the first prompt of a session where ion-repo offers an update, shows the
+logo of ion-repo in color with the update on offer, right before Claude asks the question.
 
 `session_start.py` leaves the notice in `~/.local/state/kiln/notices/<session id>`; it is shown
 once, then removed. Silent in every other case.

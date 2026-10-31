@@ -1,9 +1,10 @@
-"""Names that changed when kiln went English (0.4.0): each old French name → its new name; and
-the sizes, named after the fire of the kiln until 0.4.10 (`ember` → `small`).
+"""Names that changed when kiln went English (0.4.0): each old French name → its new name; the
+sizes, named after the fire of the kiln until 0.4.10 (`ember` → `small`); and kiln's own names,
+when it became ion-repo in the Ion family (31 October 2026: `/kiln:merge` → `/repo:merge`).
 
-kiln keeps reading the old names wherever a project may still carry them: an adopted repo that
-`kiln update` never converts (its `charte.toml`), a waiver written before 0.4.0, a comment that
-cites a rule. `kiln update` rewrites them in the projects kiln generated.
+ion-repo keeps reading the old names wherever a project may still carry them: an adopted repo that
+`ion repo update` never converts (its `charte.toml`), a waiver written before 0.4.0, a comment
+that cites a rule. `ion repo update` rewrites them in the projects it generated.
 """
 
 from collections.abc import Mapping
@@ -86,7 +87,9 @@ RULE_IDS: Mapping[str, str] = {
     "PLANCHER": "FLOOR",
     "PYTHON-MODERNE": "MODERN-PYTHON",
     "REACT-MODERNE": "MODERN-REACT",
-    "REMONTER-A-KILN": "REPORT-TO-KILN",
+    "REMONTER-A-KILN": "REPORT-TO-ION-REPO",
+    # kiln became ion-repo (31 October 2026).
+    "REPORT-TO-KILN": "REPORT-TO-ION-REPO",
     "RENVOIS-AUDIT": "AUDIT-REFERENCES",
     "REPRISE": "RETRIES",
     "REPRODUCTIBLE": "REPRODUCIBLE",
@@ -268,3 +271,26 @@ MACHINE_VALUES: Mapping[str, Mapping[str, str]] = {
 def machine_value(key: str, value: str) -> str:
     """A machine setting's value under its current name (`interne` → `internal`)."""
     return MACHINE_VALUES.get(key, {}).get(value, value)
+
+
+# kiln became ion-repo (31 October 2026): its plugin `kiln@kiln` is `repo@ion-repo`, the stack
+# plugins move to the `ion-repo` catalogue, its skills are `/repo:…`, its variables `ION_REPO_…`,
+# its rules in a project `.claude/rules/ion-repo/`.
+STACK_PLUGINS = ("django", "nuxt", "vps", "stripe", "serena")
+ION_PLUGINS: Mapping[str, str] = {
+    "kiln@kiln": "repo@ion-repo",
+    "base@kiln": "repo@ion-repo",
+    "repo@kiln": "repo@ion-repo",
+    **{f"{name}@kiln": f"{name}@ion-repo" for name in STACK_PLUGINS},
+}
+ION_SKILLS = (
+    "adopt", "backlog", "cleanup", "contribution", "good-first-issues", "merge", "modernize",
+    "pause", "prompt", "release", "report", "resize", "review", "token", "update", "worktree",
+)  # fmt: skip
+ION_VARIABLES = (
+    "PROJECT", "BACKEND_DIR", "FRONTEND_DIR", "TEST_ENV", "VPS", "VPS_DIR", "VPS_BACKUPS", "SITE",
+    "API_HEALTH", "PROD_DOC", "CHARTER_SCRIPT", "TEMPLATE", "VERBOSE", "NO_UPDATE_CHECK",
+    "PG_CONTAINER", "PG_PORT", "PG_USER", "PG_DATABASE", "PG_READ_ROLE", "PG_IMAGE",
+)  # fmt: skip
+LEGACY_RULES_DIR = ".claude/rules/kiln"
+RULES_DIR = ".claude/rules/ion-repo"

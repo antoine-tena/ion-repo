@@ -1,4 +1,4 @@
-"""Converters of `kiln fix`: what an existing CI lacks, and an `.env` left in git (T-173).
+"""Converters of `ion repo fix`: what an existing CI lacks, and an `.env` left in git (T-173).
 
 The text of a workflow is edited in place, line by line, as in `ci`; YAML is parsed to find the
 lines, never dumped back. A missing job (lint, tests, audit) comes as a workflow of its own, next

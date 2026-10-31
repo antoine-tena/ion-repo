@@ -1,4 +1,4 @@
-"""`kiln fix`: every gap a script can close, closed on a work branch, with proof.
+"""`ion repo fix`: every gap a script can close, closed on a work branch, with proof.
 
 Each commit is proven: the rule's detector runs again (`fixed` when it passes, `partial` when a
 gap is left), the whole grid is compared before and after (a converter that turns another rule
@@ -6,10 +6,10 @@ red is undone), and the repo's checks judge it. A rule a converter brings into p
 now needs an audit) joins the run. Each commit says the points it won.
 
 The converters run in a throwaway worktree from the last commit: the user's tree, and its
-uncommitted changes, are never touched; only the branch `kiln/fix-<date>` remains.
+uncommitted changes, are never touched; only the branch `ion-repo/fix-<date>` remains.
 
 The repo's own checks (`checks`) run before and after each converter: one that turns them red is
-undone and reported, never left in a commit, its log kept for `kiln score --roadmap`. One commit
+undone and reported, never left in a commit, its log kept for `ion repo score --roadmap`. One commit
 per rule, its message giving the why and the source. `--dry-run` shows the plan and the diff on a
 throwaway worktree, the repo untouched.
 """
@@ -41,7 +41,7 @@ SCRATCH = Path.home() / ".cache" / "kiln" / "worktrees"
 # dependencies (linked) and the local settings (copied). Python's are made by `uv run` itself.
 LINKED = ("node_modules",)
 COPIED = (".env", ".env.local")
-# A commit of `kiln fix`: a branch holding only these is updated rather than doubled.
+# A commit of `ion repo fix`: a branch holding only these is updated rather than doubled.
 FIX_SUBJECT = re.compile(r"^fix\([A-Z0-9-]+\): ")
 
 
@@ -77,7 +77,7 @@ def plan(root: Path, only: str | None = None) -> list[Rule]:
         wanted = only.upper()
         named = [rule for rule in load_rules() if rule.id == wanted]
         if not named:
-            raise KilnError(f"no rule {only}: kiln grid lists them")
+            raise KilnError(f"no rule {only}: ion repo grid lists them")
         if not named[0].is_scored and named[0].fixer in FIXERS:
             return named
         rules = [rule for rule in rules if rule.id == wanted]
@@ -111,7 +111,7 @@ def fix(
 def _announce(root: Path, only: str | None) -> list[Rule]:
     rules = plan(root, only)
     if not rules:
-        ui.note("Nothing a script can close here: kiln score lists what is left for judgment.")
+        ui.note("Nothing a script can close here: ion repo score lists what is left for judgment.")
         return []
     ui.step(f"{len(rules)} rule(s) a script can close: {', '.join(rule.id for rule in rules)}")
     reaching = [rule.id for rule in rules if FIXERS[rule.fixer].network]
@@ -157,10 +157,10 @@ def _fixable_gaps(report: score.Report) -> list[Rule]:
 
 
 def _branch(root: Path, base: str = "") -> tuple[str, bool]:
-    """Today's branch (or `base`), and whether it is taken over: one holding only `kiln fix`
+    """Today's branch (or `base`), and whether it is taken over: one holding only `ion repo fix`
     commits, and checked out nowhere, starts again from the last commit (what kiln-bot updates);
-    any other gets a suffix (`kiln/fix-2026-10-24-2`)."""
-    base = base or f"kiln/fix-{datetime.date.today().isoformat()}"
+    any other gets a suffix (`ion-repo/fix-2026-10-24-2`)."""
+    base = base or f"ion-repo/fix-{datetime.date.today().isoformat()}"
     checked_out = {
         line.removeprefix("branch refs/heads/")
         for line in git(root, "worktree", "list", "--porcelain").splitlines()
@@ -181,7 +181,7 @@ def scratch_worktree(root: Path, *options: str, ref: str = "HEAD") -> Iterator[P
     """A worktree of the last commit out of the user's tree (`options`: `--detach`, or `-b`
     and a branch), with what the checks need from the tree; removed afterwards, its branch kept."""
     SCRATCH.mkdir(parents=True, exist_ok=True)
-    scratch = Path(tempfile.mkdtemp(prefix="kiln-fix-", dir=SCRATCH))
+    scratch = Path(tempfile.mkdtemp(prefix="ion-repo-fix-", dir=SCRATCH))
     copy = scratch / "repo"
     try:
         git(root, "worktree", "add", "-q", *options, str(copy), ref)
@@ -206,7 +206,7 @@ def _bring_local_files(root: Path, copy: Path) -> None:
 
 
 def convert_in_place(root: Path, spared: list[str]) -> list[str]:
-    """`kiln update`'s pass: the same converters, after the template, left in the tree with its
+    """`ion repo update`'s pass: the same converters, after the template, left in the tree with its
     changes for the review the update asks for; no branch, no commit. The `spared` files (frozen,
     kept) come out as they went in. A converter that fails is named and skipped. Returns the
     rules converted."""
@@ -218,7 +218,7 @@ def convert_in_place(root: Path, spared: list[str]) -> list[str]:
         try:
             changed = FIXERS[rule.fixer].convert(read_repo(root))
         except Exception as error:  # a converter's bug never stops the update
-            ui.note(f"{rule.id} left for kiln fix: {_failure(error)}")
+            ui.note(f"{rule.id} left for ion repo fix: {_failure(error)}")
             continue
         if set(changed) - set(spared):
             converted.append(rule.id)
@@ -229,7 +229,7 @@ def convert_in_place(root: Path, spared: list[str]) -> list[str]:
         elif path.is_file():
             path.unlink()
     if converted:
-        ui.note(f"Converted after the template (kiln fix's converters): {', '.join(converted)}")
+        ui.note(f"Converted after the template (ion repo fix's converters): {', '.join(converted)}")
     return converted
 
 
@@ -267,7 +267,7 @@ def _apply(
     ]
     if broken:
         _reset(root)
-        note = f"turned {', '.join(broken)} red: undone (a converter bug, to report to kiln)"
+        note = f"turned {', '.join(broken)} red: undone (a converter bug, to report to ion-repo)"
         return Outcome(rule.id, REVERTED, tuple(changed), note), report
     failure = None if unverified else checks.first_failure(root, judges)
     builds = checks.image_builds(root, changed)
@@ -283,7 +283,7 @@ def _apply(
     message = _message(rule, fixer.summary, report.score, after.score)
     if failure is not None:
         aside = _set_aside(root, rule, branch, failure, message)
-        note = f"`{failure.check}` turned red: set aside on {aside} (kiln score --roadmap)"
+        note = f"`{failure.check}` turned red: set aside on {aside} (ion repo score --roadmap)"
         return Outcome(rule.id, REVERTED, tuple(changed), note), report
     checks.forget_log(root, rule.id)
     proven = [*map(str, judges), *(str(build) for build in builds if not unverified)]
@@ -298,7 +298,7 @@ def _apply(
 def _message(rule: Rule, summary: str, before: int | None, after: int | None) -> tuple[str, str]:
     """The subject and body of a converter's commit: why, the source, the points won."""
     source = rule.sources[0].url if rule.sources else ""
-    body = f"{rule.why}\n\nSource: {source}\nRule: kiln grid {rule.id}"
+    body = f"{rule.why}\n\nSource: {source}\nRule: ion repo grid {rule.id}"
     if before is not None and after is not None:
         body += f"\nScore: {before} → {after} ({after - before:+d})"
     return f"fix({rule.id}): {summary}", body
@@ -308,7 +308,7 @@ def _set_aside(
     root: Path, rule: Rule, branch: str, failure: checks.Result, message: tuple[str, str]
 ) -> str:
     """A converter that turns the repo's checks red leaves the batch, never dropped: committed
-    on a branch of its own with the failing output, the log kept for `kiln score --roadmap`."""
+    on a branch of its own with the failing output, the log kept for `ion repo score --roadmap`."""
     aside, _ = _branch(root, f"{branch}-{rule.id.lower()}")
     log = checks.keep_log(root, rule.id, failure, aside)
     red = f"Red: `{failure.check}`, its output in {log}" if log else f"Red: `{failure.check}`"
@@ -329,7 +329,7 @@ def _failure(error: Exception) -> str:
         error, (UnicodeError, yaml.YAMLError)
     ):
         return str(error)
-    return f"converter bug ({type(error).__name__}: {error}), to report to kiln"
+    return f"converter bug ({type(error).__name__}: {error}), to report to ion-repo"
 
 
 def _reset(root: Path) -> None:
@@ -375,7 +375,7 @@ def _dry_run(copy: Path, rules: list[Rule]) -> list[Outcome]:
         git(copy, "commit", "-q", "--allow-empty", "-m", rule.id)
         status = FIXED if diff else UNCHANGED
         outcomes.append(Outcome(rule.id, status, tuple(changed), "dry run"))
-    ui.note("Dry run: nothing written. kiln fix to apply.")
+    ui.note("Dry run: nothing written. ion repo fix to apply.")
     return outcomes
 
 
@@ -395,8 +395,8 @@ def _summary(
         f"{found.rule}: {found.status}{_points(found)}{f' ({found.note})' if found.note else ''}"
         for found in outcomes
     ]
-    lines.append(f"score: {before} → {after} (kiln score for what is left to judgment)")
+    lines.append(f"score: {before} → {after} (ion repo score for what is left to judgment)")
     if unverified:
         lines.append(f"{unverified}: read each commit before merging")
     lines += [f"not judging: {reason}" for reason in unusable]
-    ui.panel(f"kiln fix on {branch}", lines)
+    ui.panel(f"ion repo fix on {branch}", lines)

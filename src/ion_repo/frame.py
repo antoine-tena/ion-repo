@@ -1,8 +1,10 @@
-"""`kiln frame`: the two rules that frame a Keramos tool's skill answer, at the terminal's width.
+"""`ion-repo frame`: the two rules that frame an Ion tool's skill answer, at the terminal's width.
 
-Claude's Bash has no terminal (COLUMNS empty, `tput cols` says 80), but the terminal is still
-there, held by an ancestor: the shell's parents are walked up to the first whose standard input
-is a terminal, whose size is then read. Without one (a cloud session), 80 columns.
+The tool is named by its word (`learn`), whatever its plugin is called: `ion-learn`, or its name
+before the Ion family (`grog`). Claude's Bash has no terminal (COLUMNS empty, `tput cols` says 80),
+but the terminal is still there, held by an ancestor: the shell's parents are walked up to the
+first whose standard input is a terminal, whose size is then read. Without one (a cloud session),
+80 columns.
 """
 
 import os
@@ -16,6 +18,24 @@ MARGIN = 6
 RULE = "═"
 MIN_FILL = 3
 PROC = Path("/proc")
+FAMILY = "ion"
+# A tool's repo, package and command are `ion-<word>`; its plugin is the word alone.
+TOOL_PREFIX = "ion-"
+# The tools' names before the Ion family (Keramos, until 31 October 2026), and the family's.
+FORMER_NAMES = {
+    "kiln": "repo",
+    "slake": "render",
+    "cone": "score",
+    "grog": "learn",
+    "seal": "deal",
+    "hearth": "host",
+    "saggar": "secure",
+    "glaze": "design",
+    "wedge": "media",
+    "stylus": "words",
+    "raku": "launch",
+    "keramos": "ion",
+}
 
 
 def frame(tool: str, skill: str, width: int | None = None) -> None:
@@ -23,9 +43,16 @@ def frame(tool: str, skill: str, width: int | None = None) -> None:
         print(line)
 
 
+def tool_word(plugin: str) -> str:
+    """The word of a tool, from its plugin's name: `ion-learn`, `grog` and `learn` give `learn`."""
+    word = plugin.removeprefix(TOOL_PREFIX)
+    return FORMER_NAMES.get(word, word)
+
+
 def rules(tool: str, skill: str, width: int) -> tuple[str, str]:
-    head = f"{RULE * 2} ◆ keramos · {tool} "
-    foot = f" /{tool}:{skill} {RULE * 2}"
+    word = tool_word(tool)
+    head = f"{RULE * 2} ◆ {FAMILY} · {word} "
+    foot = f" /{word}:{skill} {RULE * 2}"
     return (
         head + RULE * max(MIN_FILL, width - len(head)),
         RULE * max(MIN_FILL, width - len(foot)) + foot,

@@ -4,9 +4,9 @@ description: Pick the next ticket of docs/backlog/backlog.md, add one (bug, impr
 argument-hint: "[T-NN | new <what> | start T-NN | done T-NN | plan]"
 ---
 
-In a repo without `docs/backlog/backlog.md`, say so and offer to set it up: a kiln repo has it
-by default (`kiln update` brings it to an older repo, and moves an old `docs/a-faire/` there);
-elsewhere, copy the structure of kiln's template (`template/docs/backlog/`).
+In a repo without `docs/backlog/backlog.md`, say so and offer to set it up: an ion-repo repo has it
+by default (`ion repo update` brings it to an older repo, and moves an old `docs/a-faire/` there);
+elsewhere, copy the structure of ion-repo's template (`template/docs/backlog/`).
 
 `docs/backlog/backlog.md` is the **only** up-to-date list of open work, ordered by priority
 (🔴 critical, 🟠 important, 🟡 normal, ⚪ background), with `Next free: T-NN` in its header.
@@ -36,7 +36,7 @@ archived report.
 
 **No argument**: propose the next 3 tickets in section order (critical first), following the
 north star in the header and skipping `blocked` tickets, those owned by another account,
-and those reserved for outside contributors (**Owner**: `contributor — #NN`, skill `/kiln:good-first-issues`); for each, the ID, one sentence, the
+and those reserved for outside contributors (**Owner**: `contributor — #NN`, skill `/repo:good-first-issues`); for each, the ID, one sentence, the
 effort, and the owner. List separately the blocked tickets waiting for the user themselves.
 Quickly check in the code that the ticket is not already done (the locations quoted are hints,
 often stale).
@@ -44,7 +44,7 @@ often stale).
 **With an ID**: if its **Owner** is another account, stop there: show the ticket, say whose
 it is and that they take it (or hand it over by changing the owner). Otherwise show the full ticket (and the archive lines it quotes), find the files involved
 in the current code, propose a short plan, then create the branch (in a worktree, skill
-`/kiln:worktree`) and set the status to `in progress — branch …`.
+`/repo:worktree`) and set the status to `in progress — branch …`.
 
 **`new <what>`**: add a ticket with the `Next free: T-NN` ID of the header (then increment
 it), the type that fits (`idea` when nothing is decided yet), `todo`, today's date as
@@ -90,7 +90,7 @@ groupings freely each time, as long as the result follows these rules.
   Inserting or merging releases renumbers the later ones. A release whose candidate is tagged is frozen: no ticket enters or leaves it.
 - **Breaking changes** (CLI, `copier.yml` questions, generated tree, workflow inputs, skill and
   hook names, charter rule IDs) are flagged `⚠ breaking` on the release: they open its release
-  note and need their conversion in `kiln update`.
+  note and need their conversion in `ion repo update`.
 
 Format of the section, one block per release, in order:
 
@@ -102,7 +102,7 @@ Format of the section, one block per release, in order:
 Tickets stay in their priority sections; the release section only quotes ID, short title and
 effort. After writing, show the user the releases (name, tickets, why) and what moved since
 the last plan; they reshuffle by asking. A repo that shows this section as a public roadmap
-(`scripts/roadmap.py`, as kiln does) has it redrawn after every change to the section.
+(`scripts/roadmap.py`, as ion-repo does) has it redrawn after every change to the section.
 
 An ID is never reused. Changes are committed on the work branch, never on the integration
 branch. Never copy a ticket into `rejected.md` without an explicit decision from the user.

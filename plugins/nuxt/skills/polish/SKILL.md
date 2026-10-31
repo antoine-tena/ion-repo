@@ -9,7 +9,7 @@ Page: `$ARGUMENTS`. Apply the project's visual direction skill if it has one (`d
 or equivalent) and the frontend rules (`.claude/rules/`, `CLAUDE.md` of the frontend).
 Project skills: !`ls .claude/skills 2>/dev/null | tr '\n' ' '`
 
-1. **Prepare**: work on a dedicated `style/…` branch, in its worktree (skill `/kiln:worktree`).
+1. **Prepare**: work on a dedicated `style/…` branch, in its worktree (skill `/repo:worktree`).
    Start the frontend with the project's dev skill (`dev`) if nothing listens on its port.
 2. **Capture** with this plugin's Playwright MCP server (configurable through `/mcp`), or the
    `/nuxt:preview` skill, screenshots in the scratchpad: the page at 1440 px and 375 px, at the

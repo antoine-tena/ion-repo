@@ -1,9 +1,9 @@
-"""`kiln set` outside a repo (or `kiln set --machine`): the settings of this machine.
+"""`ion repo set` outside a repo (or `ion repo set --machine`): the settings of this machine.
 
-They live in `~/.config/kiln/config.toml`: system, default GitHub owner and team of `kiln new`,
-code directory of `kiln status` and `kiln update --all`, release channel, Claude Code's status
-line, whether Claude's commits say Claude helped, the repos `kiln update --all` leaves alone.
-Keys and values of before kiln 0.4.0 (`canal=interne`) are still accepted.
+They live in `~/.config/kiln/config.toml`: system, default GitHub owner and team of `ion repo new`,
+code directory of `ion repo status` and `ion repo update --all`, release channel, Claude Code's
+status line, whether Claude's commits say Claude helped, the repos `ion repo update --all` leaves
+alone. Keys and values of before kiln 0.4.0 (`canal=interne`) are still accepted.
 """
 
 from dataclasses import replace
@@ -43,13 +43,13 @@ MACHINE_KEYS = (
 def show_machine(config: UserConfig) -> None:
     statusline = config.statusline or DEFAULT_STATUSLINE
     values = {
-        "system": config.system or "(asked at the first kiln install)",
+        "system": config.system or "(asked at the first ion repo install)",
         "owner": config.owner or "(none)",
         "team": ", ".join(config.team) or "(none)",
         "code_dir": str(config.code_dir),
         "channel": (
             f"{config.channel} (public: promoted releases; internal: candidates too; "
-            "beta: kiln's develop, live)"
+            "beta: ion-repo's develop, live)"
         ),
         "statusline": f"{statusline} ({' / '.join(STATUSLINE_CHOICES)})",
         "ai_trailers": (
@@ -57,7 +57,7 @@ def show_machine(config: UserConfig) -> None:
             "requests say Claude helped; never: they don't)"
         ),
         "frozen_repos": (
-            f"{', '.join(config.frozen_repos) or '(none)'} (left alone by kiln update --all)"
+            f"{', '.join(config.frozen_repos) or '(none)'} (left alone by ion repo update --all)"
         ),
     }
     width = max(len(key) for key in MACHINE_KEYS)
@@ -65,12 +65,12 @@ def show_machine(config: UserConfig) -> None:
     for key in MACHINE_KEYS:
         print(f"{ui.paint(f'{key:<{width}}', ui.STONE)}  {values[key]}")
     print()
-    ui.note("Change: kiln set key=value [key=value…] (e.g. kiln set team=alice,bob).")
-    ui.note("A repo's settings: go into the repo, then kiln set.")
+    ui.note("Change: ion repo set key=value [key=value…] (e.g. ion repo set team=alice,bob).")
+    ui.note("A repo's settings: go into the repo, then ion repo set.")
 
 
 def only_machine_keys(assignments: list[str]) -> bool:
-    """Keys that only exist for the machine (`statusline=…`, `channel=…`): `kiln set` in a repo
+    """Keys that only exist for the machine (`statusline=…`, `channel=…`): `ion repo set` in a repo
     applies them to the machine rather than refusing them."""
     from ion_repo.settings import SETTABLE_KEYS
 
@@ -133,5 +133,5 @@ def run_machine(assignments: list[str]) -> None:
             ui.note(apply_trailers_choice(config.ai_trailers))
         if config.channel == BETA_CHANNEL != previous.channel:
             command = beta_install_command(config.code_dir)
-            ui.note(f"Beta channel: make the tool kiln's develop now: {command}")
+            ui.note(f"Beta channel: make the tool ion-repo's develop now: {command}")
     show_machine(config)

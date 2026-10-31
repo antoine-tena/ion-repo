@@ -1,5 +1,5 @@
-"""`kiln install`: sets up a machine after the clone, by stack; outside a repo (or with
-`--machine`), sets up kiln for the whole machine. Safe to run again."""
+"""`ion repo install`: sets up a machine after the clone, by stack; outside a repo (or with
+`--machine`), sets up ion-repo for the whole machine. Safe to run again."""
 
 import json
 import os
@@ -29,11 +29,14 @@ from ion_repo.versions import PYPI_NAME
 CLAUDE_DIR = Path.home() / ".claude"
 CLAUDE_SETTINGS = CLAUDE_DIR / "settings.json"
 KNOWN_MARKETPLACES = CLAUDE_DIR / "plugins" / "known_marketplaces.json"
-MARKETPLACE = "kiln"
-MARKETPLACE_SOURCE = "antoine-tena/kiln"
-BASE_PLUGIN = "kiln@kiln"
-# Its name before kiln 0.4, until Claude Code applies the catalogue's renames.
-LEGACY_BASE_PLUGIN = "base@kiln"
+MARKETPLACE = "ion-repo"
+MARKETPLACE_SOURCE = "antoine-tena/ion-repo"
+# The catalogue before the Ion family (kiln, until 31 October 2026): `install --machine` moves it.
+LEGACY_MARKETPLACE = "kiln"
+BASE_PLUGIN = "repo@ion-repo"
+# Its names before (`base` before kiln 0.4, then `kiln`), until Claude Code applies the
+# catalogue's renames.
+LEGACY_BASE_PLUGINS = ("kiln@kiln", "repo@kiln", "base@kiln")
 
 SECRET_KEY_VARIABLE = "DJANGO_SECRET_KEY"
 SECRET_KEY_BYTES = 50
@@ -111,31 +114,47 @@ def install_git_hooks(root: Path) -> None:
 
 
 def install_machine() -> None:
-    """kiln in every repo and every Claude session of the machine: the CLI as a uv tool, the
-    kiln plugin at user scope, the machine settings. Only what is missing is done."""
+    """ion-repo in every repo and every Claude session of the machine: the CLI as a uv tool, the
+    ion-repo plugin at user scope, the machine settings. Only what is missing is done."""
     config = ensure_system(load_config())
     require_tools("uv")
-    if shutil.which("kiln") is None:
-        step("kiln command (uv tool)")
+    # A tool installed as kiln-cli already brings `ion-repo`, or only `kiln` before its upgrade.
+    if shutil.which("ion-repo") is None and shutil.which("kiln") is None:
+        step("ion-repo command (uv tool)")
         run(["uv", "tool", "install", PYPI_NAME], Path.cwd())
     if shutil.which("claude") is None:
-        ui.note("Claude Code not found: install it, then run kiln install again for the plugins.")
+        ui.note("Claude Code not found: install it, then ion repo install again for the plugins.")
     else:
-        if MARKETPLACE not in _json_file(KNOWN_MARKETPLACES):
-            step("kiln catalogue of Claude Code plugins")
-            run(["claude", "plugin", "marketplace", "add", MARKETPLACE_SOURCE], Path.cwd())
-        if not kiln_plugin_enabled():
+        known = _json_file(KNOWN_MARKETPLACES)
+        if MARKETPLACE not in known:
+            source = marketplace_source(known.get(LEGACY_MARKETPLACE))
+            if LEGACY_MARKETPLACE in known:
+                # Removed first: Claude Code knows a folder by its path, under its old name.
+                step("kiln's catalogue of Claude Code plugins becomes ion-repo's")
+                run(["claude", "plugin", "marketplace", "remove", LEGACY_MARKETPLACE], Path.cwd())
+            step("ion-repo catalogue of Claude Code plugins")
+            run(["claude", "plugin", "marketplace", "add", source], Path.cwd())
+        if not base_plugin_enabled(legacy=False):
             step(f"{BASE_PLUGIN} plugin, for every Claude session")
             run(["claude", "plugin", "install", BASE_PLUGIN, "--scope", "user"], Path.cwd())
     ensure_trailers(ensure_statusline(config))
-    ui.success("kiln is set up on this machine. Check it: kiln doctor")
+    ui.success("ion-repo is set up on this machine. Check it: ion repo doctor")
 
 
-def kiln_plugin_enabled() -> bool:
+def marketplace_source(legacy: object) -> str:
+    """Where the catalogue comes from: the folder kiln's was added from (a checkout, read live),
+    otherwise GitHub."""
+    source = legacy.get("source") if isinstance(legacy, dict) else None
+    if isinstance(source, dict) and source.get("source") == "directory" and source.get("path"):
+        return str(source["path"])
+    return MARKETPLACE_SOURCE
+
+
+def base_plugin_enabled(*, legacy: bool = True) -> bool:
+    """The repo plugin enabled at user scope; `legacy`: under one of its names of before too."""
     plugins = _json_file(CLAUDE_SETTINGS).get("enabledPlugins")
-    return isinstance(plugins, dict) and bool(
-        plugins.get(BASE_PLUGIN) or plugins.get(LEGACY_BASE_PLUGIN)
-    )
+    names = (BASE_PLUGIN, *LEGACY_BASE_PLUGINS) if legacy else (BASE_PLUGIN,)
+    return isinstance(plugins, dict) and any(plugins.get(name) for name in names)
 
 
 def _json_file(path: Path) -> dict[str, object]:
@@ -148,14 +167,14 @@ def _json_file(path: Path) -> dict[str, object]:
 
 def launch_hint(stack: Stack, command_name: object) -> str:
     """What to run first: the dev servers, the build, the tool, or only the checks of a repo
-    adopted without a stack of kiln."""
+    adopted without a stack of ion-repo."""
     if stack.dev_commands():
-        return "Run the project: kiln dev"
+        return "Run the project: ion repo dev"
     if stack.maven_dir is not None:
         return f"Run the project: {_in(stack.maven_dir, f'{MAVEN_WRAPPER} verify')}"
     if stack.backend == "cli":
         return f"Run the project: {_in(stack.backend_dir, f'uv run {command_name} --help')}"
-    return "Check the project: kiln check"
+    return "Check the project: ion repo check"
 
 
 def _in(directory: str, command: str) -> str:

@@ -157,8 +157,8 @@ def test_backend_tests_take_the_databases_of_the_ci_job(tmp_path: Path) -> None:
     workflows = tmp_path / ".github" / "workflows"
     workflows.mkdir(parents=True)
     (workflows / "ci.yml").write_text(
-        "jobs:\n  quality:\n    uses: antoine-tena/kiln/.github/workflows/charte.yml@v0.3.4\n"
-        "  backend:\n    uses: antoine-tena/kiln/.github/workflows/django.yml@v0.3.4\n"
+        "jobs:\n  quality:\n    uses: antoine-tena/ion-repo/.github/workflows/charte.yml@v0.3.4\n"
+        "  backend:\n    uses: antoine-tena/ion-repo/.github/workflows/django.yml@v0.3.4\n"
         "    with:\n      base: club\n      redis: docker.io/library/redis:8-alpine\n"
         "      env: |\n        DEBUG=True\n"
     )
@@ -308,7 +308,7 @@ def test_unknown_key_is_refused() -> None:
 
 
 def test_rules_checked_by_the_charter_are_verified(tmp_path: Path) -> None:
-    rules = tmp_path / ".claude/rules/kiln"
+    rules = tmp_path / ".claude/rules/ion-repo"
     rules.mkdir(parents=True)
     (rules / "django.md").write_text("- **[NO-SIGNALS]** a\n- **[GENERIC-NAMES]** b\n")
     (tmp_path / "charter.toml").write_text('[bans.django-signals]\nid = "NO-SIGNALS"\n')
@@ -335,7 +335,7 @@ def test_legacy_template_source_is_replaced(tmp_path: Path) -> None:
 
     replace_legacy_source(tmp_path)
 
-    assert "_src_path: https://github.com/antoine-tena/kiln.git" in answers.read_text()
+    assert "_src_path: https://github.com/antoine-tena/ion-repo.git" in answers.read_text()
 
 
 def _venv_with_script(venv: Path, created_in: Path) -> None:
@@ -494,10 +494,10 @@ def test_machine_config_of_before_kiln_0_4_is_read(
     assert config.code_dir == Path("/srv")
 
 
-CHANGELOG = """# Nouveautés de kiln
+CHANGELOG = """# Nouveautés d'ion-repo
 
 ## v0.5.0 — 2026-12-01
-- kiln doctor
+- ion repo doctor
 
 ## v0.4.1 — 2026-11-10
 - correctif de la bannière
@@ -519,7 +519,7 @@ def test_update_shows_the_releases_it_crosses() -> None:
     assert [n.tag for n in notes_between("v0.4.0", "v0.5.0", CHANGELOG)] == ["v0.5.0", "v0.4.1"]
     assert [n.tag for n in notes_between("f611f82", "v0.4.0", CHANGELOG)] == ["v0.4.0"]
     assert notes_between("v0.5.0", "v0.5.0", CHANGELOG) == []
-    assert notes_between("v0.4.0", "v0.5.0", CHANGELOG)[0].lines == ["- kiln doctor"]
+    assert notes_between("v0.4.0", "v0.5.0", CHANGELOG)[0].lines == ["- ion repo doctor"]
 
 
 def test_a_candidate_already_carries_its_release_notes() -> None:
@@ -567,14 +567,14 @@ def test_doctor_without_a_chosen_system_detects_it(monkeypatch: pytest.MonkeyPat
 
 
 def test_doctor_knows_kilns_own_repo(tmp_path: Path) -> None:
-    # kiln is the template's source: no answers, no charter, and not a stranger's repo (T-362).
+    # ion-repo is the template's source: no answers, no charter, and not a stranger's repo (T-362).
     (tmp_path / "template").mkdir()
     (tmp_path / "copier.yml").write_text("_subdirectory: template\n")
     stranger = repo_findings(tmp_path, None)[0]
     (tmp_path / "pyproject.toml").write_text('[project]\nname = "kiln-cli"\n')
     kiln = repo_findings(tmp_path, None)[0]
 
-    assert (stranger.level, stranger.detail) == (Level.WARN, "not a kiln repo")
+    assert (stranger.level, stranger.detail) == (Level.WARN, "not an ion-repo repo")
     assert kiln.level is Level.OK
     assert "kiln's own repo" in kiln.detail
 
@@ -605,7 +605,7 @@ def test_a_candidate_is_promoted_once_it_has_proved_itself() -> None:
     assert not ready and "soaking (21 h left)" in verdict
     # Soaked but run by no repo of the machine: it has verified nothing yet.
     verdict, ready = promotion_verdict(day_old, Evidence("success"), now)
-    assert not ready and "kiln update --all" in verdict
+    assert not ready and "ion repo update --all" in verdict
     # Fixes only: two hours, no repo required.
     assert promotion_verdict(young, Evidence("success", is_fixes_only=True), now)[1]
     assert promotion_verdict(young, Evidence("success"), now, is_urgent=True)[1]
@@ -665,7 +665,7 @@ def test_promoted_candidate_does_not_conflict_on_kiln_workflow_refs(
     tmp_path: Path, local_edit: str, pinned: bool
 ) -> None:
     """Le tag promu pose sur le commit de sa candidate : Copier rend l'ancienne version sous le
-    nom promu, et seul le `@<tag>` des workflows de kiln différerait du projet (T-18). Une
+    nom promu, et seul le `@<tag>` des workflows d'ion-repo différerait du projet (T-18). Une
     vraie modification locale au même endroit reste un conflit à arbitrer. Épinglé par SHA
     (`@<sha> # <tag>`), le SHA ne change pas à la promotion : seul le tag du commentaire."""
     ref = (
@@ -680,8 +680,8 @@ def test_promoted_candidate_does_not_conflict_on_kiln_workflow_refs(
 
     def release(tag: str, steps: str) -> None:
         (template / "ci.yml.jinja").write_text(
-            "# version de kiln ({{ _copier_answers._commit }})\n"
-            "jobs:\n  python:\n    uses: antoine-tena/kiln/.github/workflows/python.yml"
+            "# version d'ion-repo ({{ _copier_answers._commit }})\n"
+            "jobs:\n  python:\n    uses: antoine-tena/ion-repo/.github/workflows/python.yml"
             f"@{ref}\n" + steps
         )
         git(template, "add", "-A")
@@ -725,8 +725,8 @@ class _FakeDistribution:
         return self._direct_url if name == "direct_url.json" else None
 
 
-GITHUB = '{"url": "https://github.com/antoine-tena/kiln", "vcs_info": {"vcs": "git", '
-FOLDER = '{"url": "file:///home/me/kiln", "dir_info": {}}'
+GITHUB = '{"url": "https://github.com/antoine-tena/ion-repo", "vcs_info": {"vcs": "git", '
+FOLDER = '{"url": "file:///home/me/ion-repo", "dir_info": {}}'
 
 
 @pytest.mark.parametrize(
@@ -779,7 +779,8 @@ def test_a_tool_that_is_not_a_release_updates_no_repo(
     assert tool_release_tag() is None
     assert installed_version() == shown
     with pytest.raises(
-        KilnError, match=r"not a release .*git\+https://github.com/antoine-tena/kiln@v0.4.0-rc.1"
+        KilnError,
+        match=r"not a release .*git\+https://github.com/antoine-tena/ion-repo@v0.4.0-rc.1",
     ):
         template_revision(DEFAULT_TEMPLATE_SOURCE)
     assert template_revision("/un/dossier/local") == "HEAD"
@@ -811,9 +812,11 @@ def test_the_beta_channel_installs_the_checkout_of_the_code_directory(tmp_path: 
 
     assert apply_machine(UserConfig(), ["channel=beta"]).channel == "beta"
     assert "@develop" in beta_install_command(tmp_path)
-    (tmp_path / "kiln/src/kiln").mkdir(parents=True)
-    (tmp_path / "kiln/src/kiln/versions.py").write_text("")
-    assert beta_install_command(tmp_path) == f"uv tool install --force --editable {tmp_path}/kiln"
+    (tmp_path / "ion-repo/src/ion_repo").mkdir(parents=True)
+    (tmp_path / "ion-repo/src/ion_repo/versions.py").write_text("")
+    assert (
+        beta_install_command(tmp_path) == f"uv tool install --force --editable {tmp_path}/ion-repo"
+    )
 
 
 def test_the_beta_channel_finds_the_checkout_in_a_folder_of_the_code_directory(
@@ -821,11 +824,11 @@ def test_the_beta_channel_finds_the_checkout_in_a_folder_of_the_code_directory(
 ) -> None:
     from ion_repo.versions import beta_install_command
 
-    (tmp_path / "tools/kiln/src/kiln").mkdir(parents=True)
-    (tmp_path / "tools/kiln/src/kiln/versions.py").write_text("")
-    expected = f"uv tool install --force --editable {tmp_path}/tools/kiln"
+    (tmp_path / "tools/ion-repo/src/ion_repo").mkdir(parents=True)
+    (tmp_path / "tools/ion-repo/src/ion_repo/versions.py").write_text("")
+    expected = f"uv tool install --force --editable {tmp_path}/tools/ion-repo"
     assert beta_install_command(tmp_path) == expected
-    (tmp_path / "kiln").symlink_to(tmp_path / "tools/kiln")
+    (tmp_path / "kiln").symlink_to(tmp_path / "tools/ion-repo")
     assert beta_install_command(tmp_path) == expected
 
 
@@ -834,9 +837,9 @@ def test_the_beta_channel_finds_the_checkout_in_a_tool_folder_of_a_family(
 ) -> None:
     from ion_repo.versions import beta_install_command
 
-    (tmp_path / "family/kiln/kiln/src/kiln").mkdir(parents=True)
-    (tmp_path / "family/kiln/kiln/src/kiln/versions.py").write_text("")
-    expected = f"uv tool install --force --editable {tmp_path}/family/kiln/kiln"
+    (tmp_path / "family/ion-repo/ion-repo/src/ion_repo").mkdir(parents=True)
+    (tmp_path / "family/ion-repo/ion-repo/src/ion_repo/versions.py").write_text("")
+    expected = f"uv tool install --force --editable {tmp_path}/family/ion-repo/ion-repo"
     assert beta_install_command(tmp_path) == expected
 
 
@@ -875,7 +878,7 @@ def test_the_package_records_the_commit_it_is_built_from(tmp_path: Path) -> None
     subprocess.run(["uv", "build", "-q", "--wheel", "-o", str(tmp_path), str(REPO)], check=True)
     wheel = next(tmp_path.glob("*.whl"))
     with zipfile.ZipFile(wheel) as archive:
-        recorded = json.loads(archive.read("kiln/_build.json"))
+        recorded = json.loads(archive.read("ion_repo/_build.json"))
     head = subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True)
     # What git says of the checkout: a tag and a distance, or the bare commit in a shallow
     # clone without tags (GitHub's CI).
@@ -911,7 +914,7 @@ def test_without_gh_the_project_is_created_without_github(
 
     assert github.can_publish() is False
     assert github.login() is None
-    assert "kiln publish" in capsys.readouterr().out
+    assert "ion repo publish" in capsys.readouterr().out
 
 
 def test_backing_services_reads_db_and_redis_of_the_services_only(tmp_path: Path) -> None:
@@ -970,7 +973,7 @@ def test_pnpm_install_frozen_only_with_a_lockfile(tmp_path: Path) -> None:
 
 
 def test_a_kiln_workflow_pinned_by_kiln_fix_follows_the_template(tmp_path: Path) -> None:
-    """`@<sha> # v0.4.10` (kiln fix) against the old render `@v0.4.10` and the new `@v0.4.11`:
+    """`@<sha> # v0.4.10` (ion repo fix) against the old render `@v0.4.10` and the new `@v0.4.11`:
     no conflict left, the new tag taken, for the update's converters to pin again (T-159)."""
     from ion_repo.update import CONFLICT_MARKER, resolve_kiln_ref_conflicts
 
@@ -984,7 +987,7 @@ def test_a_kiln_workflow_pinned_by_kiln_fix_follows_the_template(tmp_path: Path)
             check=True,
         ).stdout.strip()
 
-    uses = "    uses: antoine-tena/kiln/.github/workflows/charter.yml@"
+    uses = "    uses: antoine-tena/ion-repo/.github/workflows/charter.yml@"
     base = f"# kiln v0.4.10\njobs:\n  a:\n{uses}v0.4.10\n"
     ours = f"# kiln v0.4.10\njobs:\n  a:\n{uses}{'a' * 40} # v0.4.10\n"
     theirs = f"# kiln v0.4.11\njobs:\n  a:\n{uses}v0.4.11\n"
@@ -1001,6 +1004,6 @@ def test_a_kiln_workflow_pinned_by_kiln_fix_follows_the_template(tmp_path: Path)
 
 def test_an_npm_folder_installs_with_npm_and_no_pnpm_lock(tmp_path: Path) -> None:
     # An adopted npm repo: pnpm would write a pnpm-lock.yaml next to its package-lock.json,
-    # leaving the tree dirty (kiln update --all then stopped on it).
+    # leaving the tree dirty (ion repo update --all then stopped on it).
     (tmp_path / "package-lock.json").write_text("{}\n")
     assert pnpm_install_command(tmp_path) == ["npm", "ci"]

@@ -20,8 +20,19 @@ def step(title: str) -> None:
     ui.step(title)
 
 
+ENV_PREFIX = "ION_REPO_"
+# The variables' prefix before the Ion family (kiln until 31 October 2026), still read.
+LEGACY_ENV_PREFIX = "KILN_"
 # Full output of the commands, without the spinner (diagnosis).
-VERBOSE_VARIABLE = "KILN_VERBOSE"
+VERBOSE_VARIABLE = "ION_REPO_VERBOSE"
+
+
+def environment(variable: str) -> str | None:
+    """An `ION_REPO_…` variable of the environment, or the `KILN_…` it was called before."""
+    value = os.environ.get(variable)
+    if value is None and variable.startswith(ENV_PREFIX):
+        value = os.environ.get(LEGACY_ENV_PREFIX + variable.removeprefix(ENV_PREFIX))
+    return value
 
 
 def run(
@@ -67,12 +78,12 @@ def run_status(
 
 def shows_spinner() -> bool:
     """Whether a spinner replaces what runs: in a terminal, unless the full output is asked for."""
-    return ui.is_styled() and not os.environ.get(VERBOSE_VARIABLE)
+    return ui.is_styled() and not environment(VERBOSE_VARIABLE)
 
 
 @contextmanager
 def spinner_line(label: str) -> Iterator[None]:
-    """Work done in kiln itself shown like a command: the spinner, then ✓ or ✗ and its
+    """Work done in ion-repo itself shown like a command: the spinner, then ✓ or ✗ and its
     duration."""
     spinner = ui.Spinner(label)
     spinner.start()
@@ -86,7 +97,7 @@ def spinner_line(label: str) -> Iterator[None]:
 
 @contextmanager
 def output_to(log: Path) -> Iterator[TextIO]:
-    """Everything written meanwhile, by kiln and the commands it runs (pre-commit's hooks
+    """Everything written meanwhile, by ion-repo and the commands it runs (pre-commit's hooks
     included), goes to `log`, as outside a terminal; yields the terminal, for one line of
     progress."""
     sys.stdout.flush()
@@ -94,7 +105,7 @@ def output_to(log: Path) -> Iterator[TextIO]:
     saved = os.dup(1), os.dup(2)
     terminal = os.fdopen(os.dup(saved[0]), "w")
     try:
-        # Line by line, so that kiln's lines and its commands' stay in order.
+        # Line by line, so that ion-repo's lines and its commands' stay in order.
         with log.open("w", buffering=1) as written:
             os.dup2(written.fileno(), 1)
             os.dup2(written.fileno(), 2)
@@ -153,7 +164,7 @@ def repo_root(start: Path) -> Path:
     try:
         return Path(capture(["git", "rev-parse", "--show-toplevel"], start))
     except KilnError:
-        raise KilnError(f"{start} is not in a git repo: go into a repo, or kiln new") from None
+        raise KilnError(f"{start} is not in a git repo: go into a repo, or ion repo new") from None
 
 
 # Git's background housekeeping, off while Copier works in its throwaway repos: a detached

@@ -1,4 +1,4 @@
-"""What `kiln update` converts when a project crosses kiln 0.4.0, the release that went English.
+"""What `ion repo update` converts when a project crosses kiln 0.4.0, the release that went English.
 
 Copier carries the project's own changes onto the new template, but it cannot know that a key,
 a file or a rule was renamed: left alone, it would ask the new questions again, delete the

@@ -1,8 +1,8 @@
-"""`kiln bot`: kiln-bot's weekly run (T-59), "Dependabot for your methods".
+"""`ion repo bot`: kiln-bot's weekly run (T-59), "Dependabot for your methods".
 
-On the branch `kiln/bot`, started again from the last commit at each run: in a kiln repo
-`kiln update` first (the template, then the converters after it), then `kiln fix`, each commit
-proven. What it brings becomes the body of one pull request kept up to date by the reusable
+On the branch `kiln/bot`, started again from the last commit at each run: in an ion-repo repo
+`ion repo update` first (the template, then the converters after it), then `ion repo fix`, each
+commit proven. What it brings becomes the body of one pull request kept up to date by the reusable
 workflow `bot.yml`: the score before and after, and the why of each commit. Nothing when nothing
 changed. The user's tree is never touched: everything happens in throwaway worktrees.
 """
@@ -19,9 +19,9 @@ from ion_repo.stack import ANSWERS_FILE
 
 BRANCH = "kiln/bot"
 # What kiln-bot commits: a branch holding anything else is a person's work, never reset.
-BOT_SUBJECT = re.compile(r"^(fix\([A-Z0-9-]+\)|chore\(kiln\)): ")
-GRID_URL = "https://github.com/antoine-tena/kiln/blob/develop/docs/reference.md"
-UPDATE_SUBJECT = "chore(kiln): kiln update to {version}"
+BOT_SUBJECT = re.compile(r"^(fix\([A-Z0-9-]+\)|chore\(ion-repo\)): ")
+GRID_URL = "https://github.com/antoine-tena/ion-repo/blob/develop/docs/reference.md"
+UPDATE_SUBJECT = "chore(ion-repo): ion-repo update to {version}"
 WORKFLOWS = ".github/workflows/"
 
 
@@ -57,7 +57,7 @@ def run(root: Path, *, update: bool = True, workflows: bool = True) -> Proposal:
     ]
     if not commits:
         fix.git(root, "branch", "-D", BRANCH)
-        ui.note("kiln-bot: nothing to propose, the repo is as kiln would make it.")
+        ui.note("kiln-bot: nothing to propose, the repo is as ion-repo would make it.")
         return Proposal(before, before, [], notes)
     return Proposal(before, _score_of(root, BRANCH), commits, notes, rebuilt=bool(left_out))
 
@@ -116,7 +116,7 @@ def _score_of(root: Path, ref: str) -> int | None:
 
 
 def _update(root: Path) -> list[str]:
-    """`kiln update` on the branch, committed as one commit; what stops it is said in the pull
+    """`ion repo update` on the branch, committed as one commit; what stops it is said in the pull
     request, never half applied."""
     from ion_repo.update import conflicted_files, template_commit, update_project
 
@@ -131,15 +131,15 @@ def _update(root: Path) -> list[str]:
             )
         except (KilnError, OSError, subprocess.CalledProcessError) as error:
             fix._reset(copy)
-            return [f"`kiln update` did not run: {error}"]
+            return [f"`ion repo update` did not run: {error}"]
         if conflicted_files(copy):
             fix._reset(copy)
-            return ["`kiln update` leaves conflicts to resolve by hand: run it in a session"]
+            return ["`ion repo update` leaves conflicts to resolve by hand: run it in a session"]
         if not fix.git(copy, "status", "--porcelain"):
             return []
         fix.git(copy, "add", "--all")
         subject = UPDATE_SUBJECT.format(version=template_commit(copy) or "the latest release")
-        body = "The template's changes, then the converters of `kiln fix` after it."
+        body = "The template's changes, then the converters of `ion repo fix` after it."
         fix.git(copy, "commit", "-q", "-m", subject, "-m", body)
     return []
 
@@ -149,9 +149,9 @@ def body(proposal: Proposal) -> str:
     before, after = proposal.before, proposal.after
     delta = f" ({after - before:+d})" if before is not None and after is not None else ""
     lines = [
-        f"## kiln score: {before} → {after}{delta}",
+        f"## ion repo score: {before} → {after}{delta}",
         "",
-        f"Each commit closes a rule of [kiln's grid]({GRID_URL}), proven: its rule passes again"
+        f"Each commit closes a rule of [ion-repo's grid]({GRID_URL}), proven: its rule passes again"
         " and no other rule turned red; the repo's own checks judged it where the commit says"
         " `Checked:`, none could where it says `unverified`.",
         "",
@@ -168,7 +168,7 @@ def body(proposal: Proposal) -> str:
         lines += ["", "### Left for a person", *(f"- {note}" for note in proposal.notes)]
     lines += [
         "",
-        "Opened by kiln-bot (`kiln bot`), started again from the default branch every run:"
+        "Opened by kiln-bot (`ion repo bot`), started again from the default branch every run:"
         " merge it as a whole, or close it to skip this week.",
     ]
     return "\n".join(lines) + "\n"

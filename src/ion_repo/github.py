@@ -65,15 +65,15 @@ def login() -> str | None:
 
 def can_publish() -> bool:
     """Can GitHub be reached to create the repo? Without gh, or outside a terminal without a
-    login, kiln goes without and says so (`kiln publish` will do it later); in a terminal, the
-    login is offered."""
+    login, ion-repo goes without and says so (`ion repo publish` will do it later); in a terminal,
+    the login is offered."""
     if shutil.which("gh") is None:
-        ui.note(f"GitHub: no gh, repo not created. Later: {INSTALL_GH}, then kiln publish.")
+        ui.note(f"GitHub: no gh, repo not created. Later: {INSTALL_GH}, then ion repo publish.")
         return False
     if _is_logged_in():
         return True
     if not sys.stdin.isatty():
-        ui.note("GitHub: gh is not logged in, repo not created. Later: kiln publish.")
+        ui.note("GitHub: gh is not logged in, repo not created. Later: ion repo publish.")
         return False
     ensure_logged_in()
     return True
@@ -86,7 +86,7 @@ def ensure_logged_in() -> None:
     if not sys.stdin.isatty():
         raise KilnError(
             f"gh is not logged in to GitHub: run `gh auth login --web` ({LOGIN_URL}), "
-            "or `kiln new … --no-github`"
+            "or `ion repo new … --no-github`"
         )
     step(f"GitHub: login (open {LOGIN_URL} and enter the code shown)")
     run(["gh", "auth", "login", "--web", "--git-protocol", "https"], Path.cwd(), live=True)
@@ -122,7 +122,7 @@ def _gh_put(root: Path, endpoint: str, *fields: str) -> None:
 
 
 def _enable_security_updates(root: Path, repository: str) -> None:
-    """Dependabot only offers security fixes; the rest goes through kiln update."""
+    """Dependabot only offers security fixes; the rest goes through ion repo update."""
     _gh_put(root, f"repos/{repository}/vulnerability-alerts")
     _gh_put(root, f"repos/{repository}/automated-security-fixes")
 

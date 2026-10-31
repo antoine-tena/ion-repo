@@ -3,11 +3,11 @@
 paths:
   - "{{ fp }}**"
 ---
-<!-- Written by kiln and kept current by `kiln update`: do not edit, it would be overwritten. -->
+<!-- Written by ion-repo and kept current by `ion repo update`: do not edit, it would be overwritten. -->
 # Frontend: Streamlit
 
 `{{ fp }}app.py`: entry point; `{{ fp }}dashboard/`: pages, layout and constants;
-`{{ fp }}tests/`: tests. Run: `kiln dev` (or `uv run streamlit run app.py`); check: `kiln check`.
+`{{ fp }}tests/`: tests. Run: `ion repo dev` (or `uv run streamlit run app.py`); check: `ion repo check`.
 
 - **[PAGES]** `app.py` only calls a page of `dashboard/`; one page per module
   (`dashboard/<page>.py`) exposing a `render_<page>()` function. Several pages go through

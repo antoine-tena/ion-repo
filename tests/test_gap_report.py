@@ -1,4 +1,4 @@
-"""What the grid does not know, told to kiln with the user's yes (T-38)."""
+"""What the grid does not know, told to ion-repo with the user's yes (T-38)."""
 
 import json
 import subprocess
@@ -78,7 +78,7 @@ def test_an_open_issue_for_the_same_gap_gets_a_thumbs_up_instead(repo: Path, gh:
         "api",
         "-X",
         "POST",
-        "repos/antoine-tena/kiln/issues/77/reactions",
+        "repos/antoine-tena/ion-repo/issues/77/reactions",
         "-f",
         "content=+1",
     ) in gh.calls
@@ -99,4 +99,4 @@ def test_without_gh_a_prefilled_link_is_given(monkeypatch: pytest.MonkeyPatch) -
 
     said = gap_report.tell("PHP: not covered by the grid yet")
 
-    assert "https://github.com/antoine-tena/kiln/issues/new?title=Grid+gap%3A+PHP" in said
+    assert "https://github.com/antoine-tena/ion-repo/issues/new?title=Grid+gap%3A+PHP" in said

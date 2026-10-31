@@ -1,9 +1,9 @@
 """The forge's settings of a repo, read through the CLI already logged in (`gh`), never a token.
 
 What a repo's files cannot say: the protection of its default branch, secret scanning, Dependabot
-alerts, private vulnerability reporting. `kiln score` reads them when `gh` is installed and
+alerts, private vulnerability reporting. `ion repo score` reads them when `gh` is installed and
 logged in with admin rights on the repo, and leaves their rules out otherwise ("unknown"), never
-a failure for lack of a token. The token stays `gh`'s: kiln neither reads, stores nor prints it.
+a failure for lack of a token. The token stays `gh`'s: ion-repo neither reads, stores nor prints it.
 A read is cached a day per repo (`--online` reads again), and skipped in CI: a setting's detail
 never reaches a public log, only the score and the rule IDs leave the machine.
 """

@@ -1,4 +1,4 @@
-"""`kiln waive` : ajout et renouvellement d'une dérogation dans `kiln-waivers.toml`."""
+"""`ion repo waive` : ajout et renouvellement d'une dérogation dans `kiln-waivers.toml`."""
 
 import datetime
 import subprocess

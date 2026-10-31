@@ -1,4 +1,4 @@
-"""Converters of `kiln fix`: Python (T-128)."""
+"""Converters of `ion repo fix`: Python (T-128)."""
 
 import re
 import shutil

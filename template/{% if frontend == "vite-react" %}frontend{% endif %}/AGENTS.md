@@ -1,7 +1,7 @@
 ## Development
 
-`kiln dev` runs `vite` (http://localhost:5173) and keeps it in the background; `kiln dev logs`,
-`kiln dev stop`.
+`ion repo dev` runs `vite` (http://localhost:5173) and keeps it in the background; `ion repo dev logs`,
+`ion repo dev stop`.
 
 ## Documentation
 

@@ -1,15 +1,15 @@
 {%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
-{# The kiln release the project comes from: its workflows are cited at that release's commit,
-    its tag in a comment ([PINNED-ACTIONS]: a tag can move, a SHA cannot), and `kiln update`
+{# The ion-repo release the project comes from: its workflows are cited at that release's commit,
+    its tag in a comment ([PINNED-ACTIONS]: a tag can move, a SHA cannot), and `ion repo update`
     moves both forward. A promoted tag sits on its last candidate's commit: the SHA stays. A
-    template taken outside a release (kiln's development) cites develop. #}
+    template taken outside a release (ion-repo's development) cites develop. #}
 {%- set kiln_commit = _copier_answers._commit | default('') | string %}
 {%- set kiln_ref = kiln_commit if (kiln_commit.startswith('v') and '-g' not in kiln_commit) else 'develop' -%}
 {%- set kiln_pin = (_copier_conf.vcs_ref_hash ~ ' # ' ~ kiln_ref) if kiln_ref != 'develop' else 'develop' -%}
 name: CI
 
-# The reusable workflows live in kiln (antoine-tena/kiln, public), cited at the kiln release the
-# project comes from ({{ kiln_ref }}): `kiln update` moves them to the next one. The project only
+# The reusable workflows live in ion-repo (antoine-tena/ion-repo, public), cited at the ion-repo release the
+# project comes from ({{ kiln_ref }}): `ion repo update` moves them to the next one. The project only
 # keeps its parameters here.
 on:
 {%- if ci_runner | default('github') == 'github' %}
@@ -17,22 +17,22 @@ on:
   push:
     branches: [ "release/**" ]
 {%- else %}
-  # The CI of each push runs on the machine (`kiln ci`, verdict kept as a git note): no GitHub
+  # The CI of each push runs on the machine (`ion repo ci`, verdict kept as a git note): no GitHub
   # minutes. On GitHub, by hand: Actions, CI, Run workflow. Back on each push:
-  # `kiln set ci_runner=github`.
+  # `ion repo set ci_runner=github`.
   workflow_dispatch:
 {%- endif %}
   # Callable from another workflow of the repo.
   workflow_call:
 
-# [WORKFLOW-PERMISSIONS]: the token reads the repo, nothing more; kiln's workflows need no more.
+# [WORKFLOW-PERMISSIONS]: the token reads the repo, nothing more; ion-repo's workflows need no more.
 permissions:
   contents: read
 
 jobs:
 {%- if backend == 'django' %}
   backend:
-    uses: antoine-tena/kiln/.github/workflows/django.yml@{{ kiln_pin }}
+    uses: antoine-tena/ion-repo/.github/workflows/django.yml@{{ kiln_pin }}
     with:
       database: {{ name | replace('-', '_') }}
       env: |
@@ -40,19 +40,19 @@ jobs:
         DJANGO_DEBUG=True
 {%- elif backend in ['fastapi', 'data', 'cli'] %}
   backend:
-    uses: antoine-tena/kiln/.github/workflows/python.yml@{{ kiln_pin }}
+    uses: antoine-tena/ion-repo/.github/workflows/python.yml@{{ kiln_pin }}
     with:
       directory: {{ bd }}
 {%- elif backend == 'java' %}
   backend:
-    uses: antoine-tena/kiln/.github/workflows/maven.yml@{{ kiln_pin }}
+    uses: antoine-tena/ion-repo/.github/workflows/maven.yml@{{ kiln_pin }}
     with:
       directory: {{ bd }}
 {%- endif %}
 {%- if frontend in ['nuxt', 'next', 'astro', 'vite-react'] %}
 
   frontend:
-    uses: antoine-tena/kiln/.github/workflows/pnpm.yml@{{ kiln_pin }}
+    uses: antoine-tena/ion-repo/.github/workflows/pnpm.yml@{{ kiln_pin }}
     with:
 {%- if fd != 'frontend' %}
       directory: {{ fd }}
@@ -67,14 +67,14 @@ jobs:
 {%- elif frontend in ['streamlit', 'dash'] %}
 
   frontend:
-    uses: antoine-tena/kiln/.github/workflows/python.yml@{{ kiln_pin }}
+    uses: antoine-tena/ion-repo/.github/workflows/python.yml@{{ kiln_pin }}
     with:
       directory: {{ fd }}
 {%- endif %}
 {%- if backend == 'django' and frontend == 'nuxt' %}
 
   api-contract:
-    uses: antoine-tena/kiln/.github/workflows/api-contract.yml@{{ kiln_pin }}
+    uses: antoine-tena/ion-repo/.github/workflows/api-contract.yml@{{ kiln_pin }}
     with:
 {%- if bd != 'backend' %}
       backend: {{ bd }}
@@ -87,18 +87,18 @@ jobs:
 {%- endif %}
 
   charter:
-    uses: antoine-tena/kiln/.github/workflows/charter.yml@{{ kiln_pin }}
+    uses: antoine-tena/ion-repo/.github/workflows/charter.yml@{{ kiln_pin }}
 
   # [SECRETS]: gitleaks searches the whole history, with no organisation licence.
   secrets-scan:
-    uses: antoine-tena/kiln/.github/workflows/secrets.yml@{{ kiln_pin }}
+    uses: antoine-tena/ion-repo/.github/workflows/secrets.yml@{{ kiln_pin }}
 
 {%- set uv_dirs = ([bd] if backend not in ['none', 'java'] else []) + ([fd] if frontend in ['streamlit', 'dash'] else []) %}
 {%- set pnpm_dir = fd if frontend in ['nuxt', 'next', 'astro', 'vite-react'] else '' %}
 {%- if uv_dirs or pnpm_dir or backend == 'java' %}
 
   security:
-    uses: antoine-tena/kiln/.github/workflows/security.yml@{{ kiln_pin }}
+    uses: antoine-tena/ion-repo/.github/workflows/security.yml@{{ kiln_pin }}
     with:
       uv: "{{ uv_dirs | join(' ') }}"
       pnpm: "{{ pnpm_dir }}"
@@ -109,7 +109,7 @@ jobs:
 {%- if podman %}
 
   containers:
-    uses: antoine-tena/kiln/.github/workflows/infra.yml@{{ kiln_pin }}
+    uses: antoine-tena/ion-repo/.github/workflows/infra.yml@{{ kiln_pin }}
     with:
       containerfiles: "{{ (([(bp ~ 'Containerfile')] if backend not in ['none', 'cli', 'java'] else []) + ([(fp ~ 'Containerfile')] if frontend != 'none' else [])) | join(' ') }}"
       compose: compose.yaml

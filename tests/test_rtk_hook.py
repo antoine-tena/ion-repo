@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-HOOK = Path(__file__).resolve().parent.parent / "plugins/kiln/hooks/rtk.py"
+HOOK = Path(__file__).resolve().parent.parent / "plugins/repo/hooks/rtk.py"
 
 # Stand-in for `rtk hook claude`: prefixes every command with `rtk`, like the real one does
 # for git, tests or builds.

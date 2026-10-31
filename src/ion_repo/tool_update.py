@@ -1,10 +1,10 @@
 """The update of the tool, offered after a command typed in a terminal.
 
-In Claude Code, the session start hook asks (`plugins/kiln/hooks/session_start.py`); here, a
+In Claude Code, the session start hook asks (`plugins/repo/hooks/session_start.py`); here, a
 command typed by hand ends with the offer when a newer release exists on the machine's channel.
 GitHub is asked at most once a day; after a "no", the same release is offered again a week
 later. Never outside a terminal, inside Claude Code, for a tool installed from a checkout (its
-developer), or with `KILN_NO_UPDATE_CHECK=1`.
+developer), or with `ION_REPO_NO_UPDATE_CHECK=1`.
 
 State: `~/.local/state/kiln/tool-update.json`.
 """
@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 from ion_repo import ui
+from ion_repo.shell import environment
 from ion_repo.versions import (
     install_source,
     installed_version,
@@ -30,7 +31,7 @@ STATE_DIR = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "stat
 STATE_PATH = STATE_DIR / "kiln" / "tool-update.json"
 CHECK_INTERVAL = 24 * 3600
 REFUSAL_DELAY = 7 * 24 * 3600
-OPT_OUT_VARIABLE = "KILN_NO_UPDATE_CHECK"
+OPT_OUT_VARIABLE = "ION_REPO_NO_UPDATE_CHECK"
 # Set by Claude Code in the commands it runs: its own hook asks there.
 CLAUDE_CODE_VARIABLE = "CLAUDECODE"
 # `doctor` already reports a late tool; `completion` is read by the shell.
@@ -61,7 +62,7 @@ def should_check(command: str | None) -> bool:
         and sys.stdin.isatty()
         and sys.stdout.isatty()
         and not os.environ.get(CLAUDE_CODE_VARIABLE)
-        and not os.environ.get(OPT_OUT_VARIABLE)
+        and not environment(OPT_OUT_VARIABLE)
         and install_source() != "folder"
     )
 
@@ -96,7 +97,7 @@ def offer(command: str | None, *, now: float | None = None) -> None:
         return
     upgrade = upgrade_command(tag)
     print()
-    ui.note(f"kiln {tag} is available (this machine has {installed_version()}).")
+    ui.note(f"ion-repo {tag} is available (this machine has {installed_version()}).")
     try:
         answer = input(f"Update now ({upgrade})? [Y/n] ").strip().lower()
     except EOFError, KeyboardInterrupt:
@@ -106,7 +107,9 @@ def offer(command: str | None, *, now: float | None = None) -> None:
         state.pop("refused", None)
         save(state)
         if subprocess.run(upgrade, shell=True, check=False).returncode == 0:
-            ui.success(f"kiln {tag} installed. In each repo: kiln update (skill /kiln:update).")
+            ui.success(
+                f"ion-repo {tag} installed. In each repo: ion repo update (skill /repo:update)."
+            )
         return
     state.update(refused=tag, refused_at=now)
     save(state)

@@ -10,20 +10,20 @@ from typing import Any
 
 import pytest
 
-HOOK_PATH = Path(__file__).resolve().parent.parent / "plugins/kiln/hooks/session_start.py"
+HOOK_PATH = Path(__file__).resolve().parent.parent / "plugins/repo/hooks/session_start.py"
 CHANGELOG = """# Changes
 
 ## v0.4.0 — 2026-10-20
 - **Breaking**: the charter is in English.
-- `kiln new` asks fewer questions.
+- `ion repo new` asks fewer questions.
 
 ## v0.3.5 — 2026-10-17
-- Faster `kiln status`.
+- Faster `ion repo status`.
 
 ## v0.3.4 — 2026-10-16
 - **Cassant** : old change, already applied.
 """
-KILN_ANSWERS = "_commit: 8e6427b\n_src_path: https://github.com/antoine-tena/kiln.git\n"
+ION_REPO_ANSWERS = "_commit: 8e6427b\n_src_path: https://github.com/antoine-tena/ion-repo.git\n"
 
 
 def load_hook() -> ModuleType:
@@ -36,7 +36,7 @@ def load_hook() -> ModuleType:
 
 @pytest.fixture
 def hook(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> ModuleType:
-    """The hook on a fake kiln repo, without real network or installed tool."""
+    """The hook on a fake ion-repo repo, without real network or installed tool."""
     module = load_hook()
     monkeypatch.setattr(module, "git_root", lambda cwd: tmp_path / "myapp")
     monkeypatch.setattr(module, "kiln_repo", lambda cwd: (tmp_path / "myapp", "8e6427b"))
@@ -52,21 +52,23 @@ def released(tag: str = "v0.4.0", commit: str = "nouveau") -> Callable[[], tuple
 def test_answers_are_read_without_yaml() -> None:
     hook = load_hook()
 
-    assert hook.answer(KILN_ANSWERS, "_commit") == "8e6427b"
-    assert hook.answer(KILN_ANSWERS, "_src_path") == "https://github.com/antoine-tena/kiln.git"
-    assert hook.answer(KILN_ANSWERS, "absent") == ""
+    assert hook.answer(ION_REPO_ANSWERS, "_commit") == "8e6427b"
+    assert (
+        hook.answer(ION_REPO_ANSWERS, "_src_path") == "https://github.com/antoine-tena/ion-repo.git"
+    )
+    assert hook.answer(ION_REPO_ANSWERS, "absent") == ""
 
 
 def test_an_update_merged_on_the_integration_branch_is_not_offered_again(
     tmp_path: Path,
 ) -> None:
-    # A branch cut before a teammate merged `kiln update` into develop (#50).
+    # A branch cut before a teammate merged `ion repo update` into develop (#50).
     def git(*args: str) -> None:
         subprocess.run(["git", "-C", str(tmp_path), *args], check=True, capture_output=True)
 
     git("init", "-q", "-b", "develop")
     answers = tmp_path / ".copier-answers.yml"
-    answers.write_text(KILN_ANSWERS.replace("8e6427b", "v0.4.4-63-gb2b0bb5"))
+    answers.write_text(ION_REPO_ANSWERS.replace("8e6427b", "v0.4.4-63-gb2b0bb5"))
     git("add", ".")
     git("commit", "-qm", "update")
     git("update-ref", "refs/remotes/origin/develop", "HEAD")
@@ -107,16 +109,16 @@ def test_after_four_refusals_uninstalling_is_offered(hook: ModuleType) -> None:
         hook.reminders.record(state, hook.TOOL_KEY, "no")
     state["questions"]["tool"]["next"] = 0
 
-    assert "Uninstall kiln" in hook.instructions(".", state, release=released())
+    assert "Uninstall ion-repo" in hook.instructions(".", state, release=released())
 
 
 def test_repo_question_follows_a_tool_update(hook: ModuleType) -> None:
     message = hook.instructions(".", {}, release=released())
 
-    assert "The kiln tool installed" in message
+    assert "The ion-repo tool installed" in message
     assert "Once the tool is updated successfully" in message
-    assert "`/kiln:update` with the argument `tool`" in message
-    assert "`/kiln:update` with the argument `repo`" in message
+    assert "`/repo:update` with the argument `tool`" in message
+    assert "`/repo:update` with the argument `repo`" in message
 
 
 def test_refused_tool_update_also_silences_the_repo(hook: ModuleType) -> None:
@@ -134,7 +136,7 @@ def test_up_to_date_tool_asks_only_for_the_repo(
 
     message = hook.instructions(".", {}, release=released())
 
-    assert message.startswith("kiln v0.4.0 is out; myapp starts from 8e6427b")
+    assert message.startswith("ion-repo v0.4.0 is out; myapp starts from 8e6427b")
     monkeypatch.setattr(hook, "kiln_repo", lambda cwd: (Path("myapp"), "v0.4.0"))
     assert hook.instructions(".", {}, release=released()) == ""
 
@@ -198,16 +200,16 @@ def test_a_pypi_install_is_read_from_its_metadata(
     assert hook.is_tool_outdated(("pypi", "v0.4.0"), "v0.4.1", "abc")
 
 
-def test_a_keramos_kiln_install_is_found_and_upgraded_under_its_name(
+def test_an_ion_repo_install_is_found_and_upgraded_under_its_name(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     hook = load_hook()
-    fake_tool(tmp_path, "keramos-kiln", "keramos_kiln-0.4.0.dist-info", None)
+    fake_tool(tmp_path, "ion-repo", "ion_repo-0.4.0.dist-info", None)
     uv_tool_dir(hook, tmp_path, monkeypatch)
 
     assert hook.installed_kiln() == ("pypi", "v0.4.0")
     assert hook.tool_update_command(("pypi", "v0.4.0"), "v0.4.1").startswith(
-        'uv tool install --force "keramos-kiln==0.4.1" && '
+        'uv tool install --force "ion-repo==0.4.1" && '
     )
 
 
@@ -240,7 +242,7 @@ def test_the_old_kiln_tool_is_still_found_and_removed_on_update(
     command = hook.tool_update_command(("directory", "v0.3.4-105-gd800ca1"), "v0.4.0-rc.1")
     assert command.startswith(
         'uv tool uninstall kiln && uv tool install --force "git+https://github.com/'
-        'antoine-tena/kiln@v0.4.0-rc.1"'
+        'antoine-tena/ion-repo@v0.4.0-rc.1"'
     )
 
 
@@ -251,12 +253,10 @@ def test_promoted_versions_come_from_pypi_and_candidates_from_github(
     uv_tool_dir(hook, tmp_path, monkeypatch)
 
     assert hook.tool_update_command(("pypi", "v0.4.0"), "v0.4.1").startswith(
-        'uv tool install --force "keramos-kiln==0.4.1" && '
+        'uv tool install --force "ion-repo==0.4.1" && '
     )
-    assert hook.tool_update_command(None, "v0.4.1").startswith(
-        'uv tool install --force "keramos-kiln'
-    )
-    assert '"git+https://github.com/antoine-tena/kiln@v0.5.0-rc.1"' in hook.tool_update_command(
+    assert hook.tool_update_command(None, "v0.4.1").startswith('uv tool install --force "ion-repo')
+    assert '"git+https://github.com/antoine-tena/ion-repo@v0.5.0-rc.1"' in hook.tool_update_command(
         ("pypi", "v0.4.1"), "v0.5.0-rc.1"
     )
 
@@ -280,9 +280,9 @@ def test_the_user_sees_the_logo_above_the_question(
     assert found is not None
     assert found.notice.startswith("\n")
     assert hook.render_logo()[0].rstrip() in found.notice
-    assert "kiln v0.4.0\x1b[0m  \x1b[38;2;140;140;135mupdate available" in found.notice
+    assert "ion-repo v0.4.0\x1b[0m  \x1b[38;2;140;140;135mupdate available" in found.notice
     assert "breaking\x1b[0m The charter is in English" in found.notice
-    assert "kiln new asks fewer questions" in found.notice
+    assert "ion repo new asks fewer questions" in found.notice
 
 
 def test_without_colors_the_notice_is_one_line(
@@ -296,8 +296,8 @@ def test_without_colors_the_notice_is_one_line(
 
     assert found is not None
     assert found.notice == (
-        "kiln v0.4.0 · update available · The charter is in English · "
-        "kiln new asks fewer questions · Faster kiln status"
+        "ion-repo v0.4.0 · update available · The charter is in English · "
+        "ion repo new asks fewer questions · Faster ion repo status"
     )
 
 
@@ -330,17 +330,17 @@ def test_changes_are_shortened_to_a_headline() -> None:
     hook = load_hook()
 
     assert hook.headline("**Cassant** : le suivi passe en anglais") == "Le suivi passe en anglais"
-    assert hook.headline("`kiln` répond en 0,12 s (commandes à la demande)") == (
-        "kiln répond en 0,12 s"
+    assert hook.headline("`ion-repo` répond en 0,12 s (commandes à la demande)") == (
+        "ion-repo répond en 0,12 s"
     )
-    assert hook.headline("Le modèle suit l'outil installé : `kiln update` applique…") == (
+    assert hook.headline("Le modèle suit l'outil installé : `ion repo update` applique…") == (
         "Le modèle suit l'outil installé"
     )
-    assert hook.headline("`kiln waive` : ajoute une dérogation") == (
-        "kiln waive : ajoute une dérogation"
+    assert hook.headline("`ion repo waive` : ajoute une dérogation") == (
+        "ion repo waive : ajoute une dérogation"
     )
-    long = "`kiln new` sans `gh`, ou hors terminal sans connexion, crée le projet en local"
-    assert hook.headline(long) == "kiln new sans gh, ou hors terminal sans connexion…"
+    long = "`ion repo new` sans `gh`, ou hors terminal sans connexion, crée le projet en local"
+    assert hook.headline(long) == "ion repo new sans gh, ou hors terminal sans connexion…"
 
 
 def test_fixes_come_after_the_other_changes() -> None:
@@ -355,10 +355,10 @@ def test_fixes_come_after_the_other_changes() -> None:
 def test_the_question_only_says_the_move(hook: ModuleType) -> None:
     message = hook.instructions(".", {}, release=released())
 
-    assert '"Update kiln to v0.4.0?"' in message
+    assert '"Update ion-repo to v0.4.0?"' in message
     assert '"Update myapp from 8e6427b to v0.4.0?"' in message
     assert "the charter is in English" not in message
-    assert 'If "Update": skill `/kiln:update` with the argument `tool`' in message
+    assert 'If "Update": skill `/repo:update` with the argument `tool`' in message
 
 
 def test_breaking_changes_of_skipped_releases_only() -> None:
@@ -379,7 +379,7 @@ def test_a_checkout_copy_is_up_to_date_only_when_it_is_the_release(
         tmp_path,
         "kiln-cli",
         "kiln_cli-0.4.0.dist-info",
-        '{"url": "file:///src/kiln", "dir_info": {}}',
+        '{"url": "file:///src/ion_repo", "dir_info": {}}',
     )
     uv_tool_dir(hook, tmp_path, monkeypatch)
 
@@ -387,8 +387,8 @@ def test_a_checkout_copy_is_up_to_date_only_when_it_is_the_release(
     assert hook.installed_kiln() == ("directory", "")
     assert hook.is_tool_outdated(("directory", ""), "v0.4.0-rc.1", "c1")
 
-    (site / "kiln").mkdir()
-    (site / "kiln/_build.json").write_text('{"describe": "v0.3.4-105-gd800ca1"}')
+    (site / "ion_repo").mkdir()
+    (site / "ion_repo/_build.json").write_text('{"describe": "v0.3.4-105-gd800ca1"}')
     install = hook.installed_kiln()
     assert install == ("directory", "v0.3.4-105-gd800ca1")
     assert hook.is_tool_outdated(install, "v0.4.0-rc.1", "c1")
@@ -470,7 +470,7 @@ def test_a_run_github_never_started_is_not_a_failure_to_fix(
     fake_ci(hook, monkeypatch, [ci_run("CI", "completed", "failure", "Merge")], steps=0)
     said = hook.red_ci(tmp_path)
     assert said.startswith("The CI of `develop` did not run: GitHub started none of the jobs of CI")
-    assert "nothing to fix" in said and "kiln ci" in said and "is red" not in said
+    assert "nothing to fix" in said and "ion repo ci" in said and "is red" not in said
 
 
 def test_the_red_ci_is_only_said_in_repos_kiln_looks_after(tmp_path: Path) -> None:
@@ -478,8 +478,8 @@ def test_the_red_ci_is_only_said_in_repos_kiln_looks_after(tmp_path: Path) -> No
     subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
 
     assert not hook.follows_kiln(tmp_path)
-    (tmp_path / "src/kiln").mkdir(parents=True)
-    (tmp_path / "src/kiln/versions.py").write_text("")
+    (tmp_path / "src/ion_repo").mkdir(parents=True)
+    (tmp_path / "src/ion_repo/versions.py").write_text("")
     assert hook.follows_kiln(tmp_path)
 
 
@@ -496,7 +496,7 @@ def test_a_red_local_ci_is_read_from_its_git_note(tmp_path: Path) -> None:
     assert hook.red_ci(repo) == ""  # never replayed: nothing to say
     note = ["notes", "--ref=refs/notes/ci", "add", "-f", "-m"]
     subprocess.run([*git, *note, "kiln ci: failure\nbackend: tests", "origin/develop"], check=True)
-    assert hook.red_ci(repo).startswith("The CI of `develop` is red: `kiln ci` failed")
+    assert hook.red_ci(repo).startswith("The CI of `develop` is red: `ion repo ci` failed")
     subprocess.run([*git, *note, "kiln ci: success", "origin/develop"], check=True)
     assert hook.red_ci(repo) == ""
 
@@ -518,17 +518,17 @@ def test_every_start_recalls_that_errors_may_come_from_kiln(
 
 def test_skill_frame_has_kiln_frame_draw_cornerless_rules() -> None:
     hook = load_hook()
-    assert "`kiln frame <tool> <skill>`" in hook.SKILL_FRAME
+    assert "`ion-repo frame <plugin> <skill>`" in hook.SKILL_FRAME
     assert not set("╔╗╚╝") & set(hook.SKILL_FRAME)
 
 
 def beta_machine(
     hook: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, place: str = "kiln"
 ) -> Path:
-    """A machine on the beta channel, with kiln's checkout in its code directory, at `place`."""
+    """A machine on the beta channel, with ion-repo's checkout in its code directory, at `place`."""
     checkout = tmp_path / "code" / place
-    (checkout / "src/kiln").mkdir(parents=True)
-    (checkout / "src/kiln/versions.py").write_text("")
+    (checkout / "src/ion_repo").mkdir(parents=True)
+    (checkout / "src/ion_repo/versions.py").write_text("")
     config = tmp_path / "config.toml"
     config.write_text(f'channel = "beta"\ncode_dir = "{tmp_path / "code"}"\n')
     monkeypatch.setattr(hook, "CONFIG_PATH", config)
@@ -557,7 +557,7 @@ def test_on_the_beta_channel_the_checkout_may_sit_in_a_folder_of_the_code_direct
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     hook = load_hook()
-    checkout = beta_machine(hook, tmp_path, monkeypatch, place="tools/kiln")
+    checkout = beta_machine(hook, tmp_path, monkeypatch, place="tools/ion-repo")
     fake_tool(
         tmp_path / "uv-tools",
         "kiln-cli",
@@ -602,7 +602,7 @@ def test_on_the_beta_channel_without_checkout_the_tool_follows_github_develop(
 
     assert not hook.is_beta_tool_outdated(("git", "c2"))
     assert hook.is_beta_tool_outdated(("git", "c1"))
-    assert "git+https://github.com/antoine-tena/kiln@develop" in hook.tool_update_command(
+    assert "git+https://github.com/antoine-tena/ion-repo@develop" in hook.tool_update_command(
         ("git", "c1"), ""
     )
 
@@ -610,24 +610,25 @@ def test_on_the_beta_channel_without_checkout_the_tool_follows_github_develop(
 def test_tool_update_moves_an_installed_plugin_to_the_marketplace_version(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    # `claude plugin install` is a no-op for a plugin already installed (#58).
+    # `claude plugin install` is a no-op for a plugin already installed (#58); `install
+    # --machine` installs it when missing, kiln's catalogue moved to ion-repo's.
     hook = load_hook()
     uv_tool_dir(hook, tmp_path, monkeypatch)
 
     command = hook.tool_update_command(("pypi", "v0.4.0"), "v0.4.1")
     assert command.endswith(
-        "claude plugin install kiln@kiln --scope user && "
-        "claude plugin update kiln@kiln --scope user"
+        "ion-repo install --machine && claude plugin marketplace update ion-repo "
+        "&& claude plugin update repo@ion-repo --scope user"
     )
 
 
-# --- sessions kept by /kiln:pause (T-344) -----------------------------------------------------
+# --- sessions kept by /repo:pause (T-344) -----------------------------------------------------
 
 
 def test_a_paused_session_is_listed_at_the_next_start_then_leaves_the_list(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """`kiln pause` writes the place; the next start lists it; resumed, or its branch deleted,
+    """`ion repo pause` writes the place; the next start lists it; resumed, or its branch deleted,
     it is gone."""
     from ion_repo import pause
 
@@ -649,7 +650,7 @@ def test_a_paused_session_is_listed_at_the_next_start_then_leaves_the_list(
     capsys.readouterr()
 
     shown = hook.paused_sessions({"source": "startup", "session_id": "new"})
-    assert shown.startswith("Paused sessions (/kiln:pause):")
+    assert shown.startswith("Paused sessions (/repo:pause):")
     assert "⏸ cart: totals  (shop · feat/cart, 1 min ago)" in shown
     assert "    next: merge feat/cart\n    claude --resume aaa" in shown
 
@@ -675,6 +676,6 @@ def test_on_the_beta_channel_the_checkout_may_sit_in_a_tool_folder_of_a_family(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     hook = load_hook()
-    checkout = beta_machine(hook, tmp_path, monkeypatch, place="family/kiln/kiln")
+    checkout = beta_machine(hook, tmp_path, monkeypatch, place="family/ion-repo/ion-repo")
 
     assert hook.kiln_checkout() == checkout

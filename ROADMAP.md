@@ -2,28 +2,28 @@
 
 [Français](ROADMAP.fr.md)
 
-Where kiln is going, and in what order. This page is drawn from
+Where ion-repo is going, and in what order. This page is drawn from
 [the backlog](docs/backlog/backlog.md#-releases), where every open ticket has its release (the 1,070
-[kiln score ideas](docs/backlog/backlog.md#-kiln-score-the-thesis) included, made tickets),
+[ion repo score ideas](docs/backlog/backlog.md#-ion-repo-score-the-thesis) included, made tickets),
 and it is redrawn whenever the plan changes. Numbers are planned, not promised: a release is
 fixed once its candidate is tagged. What already shipped is in the [changelog](CHANGELOG.md).
 
-## How kiln ships
+## How ion-repo ships
 
-- A release every two days. Each one runs first as a candidate on kiln's own repos: 24 hours when
+- A release every two days. Each one runs first as a candidate on ion-repo's own repos: 24 hours when
   it brings something new, 2 hours when it only fixes, and none at all for a security fix.
 - In `0.x`, every release bumps the patch, breaking changes included: they open the release note,
-  and `kiln update` converts them in your repo. The minor moves only at a milestone, in the release
+  and `ion repo update` converts them in your repo. The minor moves only at a milestone, in the release
   that reaches it: the work leading there ships under the minor before, so the stacks of v0.8.0
   come as v0.7.x. Strict semver starts at 1.0.
-- One maintainer writes kiln with Claude Code, about 25 hours of session a week. The plan carries
+- One maintainer writes ion-repo with Claude Code, about 25 hours of session a week. The plan carries
   no dates for now: the public launch has none yet.
 
 ## Milestones
 
 | Milestone | What it means for you | Expected |
 |---|---|---|
-| v0.5.0 | Any Django or Nuxt repo, made by kiln or not, scored against the grid in seconds, then brought up to it by script wherever a script can. The public launch, once v0.5.0 holds its bar. | not dated |
+| v0.5.0 | Any Django or Nuxt repo, made by ion-repo or not, scored against the grid in seconds, then brought up to it by script wherever a script can. The public launch, once v0.5.0 holds its bar. | not dated |
 | v0.6.0 | Claude Code closes on its own the gaps a script leaves, each one proven by the score. | not dated |
 | v0.7.0 | Every repo of an organisation (a university, an association network, a 50-person company) scored without cloning, its gaps ranked across the repos. | not dated |
 | v0.8.0 | Every common stack scored and fixed by script: Java and Kotlin, C# and .NET, PHP, C and C++, Go, Rust, Ruby, mobile apps, games, R and Elixir, each with its most used frameworks. | not dated |
@@ -37,7 +37,7 @@ first stack that differs, and 1.0 promises it will not.
 
 Each release in the order it ships: what it brings, why its work goes together, and how much of
 the backlog it takes (its tickets). Something missing, or wanted sooner?
-[Open an issue](https://github.com/antoine-tena/kiln/issues): the plan moves with what people ask for.
+[Open an issue](https://github.com/antoine-tena/ion-repo/issues): the plan moves with what people ask for.
 
 <!-- roadmap:start: drawn from docs/backlog/backlog.md by scripts/roadmap.py -->
 

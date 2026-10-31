@@ -1,11 +1,11 @@
-"""Versions of kiln: three-number semver, `vMAJOR.MINOR.PATCH`.
+"""Versions of ion-repo: three-number semver, `vMAJOR.MINOR.PATCH`.
 
 In 0.x, each release bumps the patch, breaking ones included (`0.3.4 → 0.3.5`); the minor only
 moves for a milestone (CLAUDE.md, Versions). Two channels: a release first ships as a candidate
-(`v0.3.5-rc.1`), followed by the machines on the `internal` channel (`kiln set
+(`v0.3.5-rc.1`), followed by the machines on the `internal` channel (`ion repo set
 channel=internal`); it is promoted (`v0.3.5`, merged into `main`) when the next one is ready.
 The `public` channel, the default, only sees promoted releases. Each release has its entry in
-`CHANGELOG.md`, which `kiln update` shows when moving from one version to the next.
+`CHANGELOG.md`, which `ion repo update` shows when moving from one version to the next.
 """
 
 import json
@@ -21,7 +21,7 @@ from packaging.version import InvalidVersion, Version
 
 from ion_repo.config import BETA_CHANNEL, INTERNAL_CHANNEL, load_config
 
-KILN_GIT_URL = "https://github.com/antoine-tena/ion-repo"
+ION_REPO_GIT_URL = "https://github.com/antoine-tena/ion-repo"
 # Package name on PyPI, in the Ion family's `ion-<tool>`; `kiln-cli` (kiln's name until 31 October
 # 2026) is published beside it with the same code until the testers have moved, `keramos-kiln` was
 # its planned name, `kiln` came before PyPI.
@@ -74,11 +74,11 @@ def follows_candidates() -> bool:
 
 
 def is_beta() -> bool:
-    """Does this machine run kiln's `develop` (`beta` channel)?"""
+    """Does this machine run ion-repo's `develop` (`beta` channel)?"""
     return load_config().channel == BETA_CHANNEL
 
 
-def latest_release(source: str = KILN_GIT_URL, *, candidates: bool | None = None) -> str | None:
+def latest_release(source: str = ION_REPO_GIT_URL, *, candidates: bool | None = None) -> str | None:
     """Tag of the repo's latest release, candidates included on the `internal` channel; None
     without network or release."""
     if candidates is None:
@@ -141,17 +141,17 @@ def upgrade_command(version: str) -> str:
         return "brew upgrade kiln"
     if source == "pypi" and release is not None and not release.is_prerelease:
         return f'uv tool install --force "{installed_pypi_name()}=={release}"'
-    return f'uv tool install --force "git+{KILN_GIT_URL}@{version}"'
+    return f'uv tool install --force "git+{ION_REPO_GIT_URL}@{version}"'
 
 
 def beta_install_command(code_dir: Path) -> str:
-    """Command that makes the tool kiln's `develop` (`beta` channel): the checkout of the code
+    """Command that makes the tool ion-repo's `develop` (`beta` channel): the checkout of the code
     directory installed editable, read live (each merge into `develop` is there at once),
     otherwise GitHub's `develop`."""
     checkout = kiln_checkout(code_dir)
     if checkout is not None:
         return f"uv tool install --force --editable {checkout}"
-    return f'uv tool install --force "git+{KILN_GIT_URL}@develop"'
+    return f'uv tool install --force "git+{ION_REPO_GIT_URL}@develop"'
 
 
 def kiln_checkout(code_dir: Path) -> Path | None:
@@ -171,7 +171,7 @@ def kiln_checkout(code_dir: Path) -> Path | None:
 
 
 def tool_release_tag() -> str | None:
-    """Tag of the kiln release the installed tool is: the template is taken there, never newer
+    """Tag of the ion-repo release the installed tool is: the template is taken there, never newer
     nor older, since the conversions from one version to the next live in its code. None when
     the tool is not exactly a release (a checkout ahead of its tag or with changes, a branch):
     no template matches its code."""
@@ -189,7 +189,7 @@ def installed_build() -> str | None:
     - PyPI: `v` + the package version (a PEP 440 pre-release `0.4.0rc1` is `v0.4.0-rc.1`);
     - GitHub (`uv tool install git+…@<ref>`): the requested tag, otherwise the installed commit;
     - folder (`uv tool install <checkout>`): a copy taken at install time, which recorded its
-      commit (`kiln/_build.json`, by `hatch_build.py`); editable (`uv run` in a checkout): the
+      commit (`ion_repo/_build.json`, by `hatch_build.py`); editable (`uv run` in a checkout): the
       checkout itself, read live.
 
     None when the tool cannot say (package not found, folder copy from before the record)."""

@@ -1,4 +1,4 @@
-"""Local steps of each reusable workflow of kiln, for `kiln ci`.
+"""Local steps of each reusable workflow of ion-repo, for `ion repo ci`.
 
 Each planner follows, step by step, the workflow of the same name in `.github/workflows/`, with
 its defaults (DEFAULTS, which tests/test_ci.py compares with the files). A workflow that changes

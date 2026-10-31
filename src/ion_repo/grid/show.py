@@ -1,4 +1,4 @@
-"""`kiln grid`: the rules kiln holds as the best, listed or shown one by one."""
+"""`ion repo grid`: the rules ion-repo holds as the best, listed or shown one by one."""
 
 import difflib
 
@@ -9,7 +9,7 @@ from ion_repo.shell import KilnError
 LEVEL_COLORS = {"adopt": ui.MOSS, "trial": ui.FIRE, "assess": ui.STONE, "hold": ui.EMBER}
 
 
-# Shown by default: what kiln stands behind today. Drafts (assess) and dropped practices (hold)
+# Shown by default: what ion-repo stands behind today. Drafts (assess) and dropped practices (hold)
 # are asked for by level.
 DEFAULT_LEVELS = frozenset({"adopt", "trial"})
 
@@ -32,7 +32,7 @@ def list_rules(*, theme: str | None, scope: str | None, level: str | None) -> No
     if not rules:
         print(ui.paint("  no rule matches", ui.STONE))
         if hidden:
-            print(ui.paint(f"  {hidden} assessed or held: kiln grid --level assess", ui.STONE))
+            print(ui.paint(f"  {hidden} assessed or held: ion repo grid --level assess", ui.STONE))
         return
     width = max(len(rule.id) for rule in rules)
     current = ""
@@ -43,9 +43,13 @@ def list_rules(*, theme: str | None, scope: str | None, level: str | None) -> No
         level = ui.paint(f"{rule.level:<6}", LEVEL_COLORS[rule.level])
         print(f"    {rule.id:<{width}}  {level}  {rule.title}")
     scored = sum(rule.is_scored for rule in rules)
-    print(ui.paint(f"\n  {len(rules)} rules, {scored} scored (adopt). kiln grid <ID>", ui.STONE))
+    print(
+        ui.paint(f"\n  {len(rules)} rules, {scored} scored (adopt). ion repo grid <ID>", ui.STONE)
+    )
     if hidden:
-        print(ui.paint(f"  {hidden} more, assessed or held: kiln grid --level assess", ui.STONE))
+        print(
+            ui.paint(f"  {hidden} more, assessed or held: ion repo grid --level assess", ui.STONE)
+        )
 
 
 def show_rule(rule_id: str) -> None:
@@ -66,7 +70,7 @@ def find_rule(rule_id: str) -> Rule:
     words = set(wanted.split("-"))
     close = [rule.id for rule in rules if words & set(rule.id.split("-"))]
     close = close or difflib.get_close_matches(wanted, [rule.id for rule in rules], n=3)
-    hint = f" (did you mean {', '.join(close)}?)" if close else ": kiln grid lists them"
+    hint = f" (did you mean {', '.join(close)}?)" if close else ": ion repo grid lists them"
     raise KilnError(f"no rule {rule_id}{hint}")
 
 
@@ -79,10 +83,13 @@ def describe(rule: Rule) -> list[tuple[str, str]]:
         ("regime", rule.regime),
         ("profiles", ", ".join(rule.profiles)),
         ("detected", _detector_label(rule)),
-        ("fixed", f"kiln fix ({rule.fixer})" if rule.fixer else "by judgment (Claude, roadmap)"),
+        (
+            "fixed",
+            f"ion repo fix ({rule.fixer})" if rule.fixer else "by judgment (Claude, roadmap)",
+        ),
     ]
     if rule.charter_rule:
-        lines.append(("charter", f"[{rule.charter_rule}] in kiln's repos"))
+        lines.append(("charter", f"[{rule.charter_rule}] in ion-repo's repos"))
     if rule.switch_when:
         lines.append(("switches", rule.switch_when))
     lines += [("setting", f"{key}: {value}") for key, value in rule.settings.items()]
@@ -90,7 +97,7 @@ def describe(rule: Rule) -> list[tuple[str, str]]:
         ("source", f"{source.url} ({source.kind}, checked {source.checked})")
         for source in rule.sources
     ]
-    lines.append(("waive", f'kiln waive {rule.id} --reason "why this repo differs"'))
+    lines.append(("waive", f'ion repo waive {rule.id} --reason "why this repo differs"'))
     return lines
 
 

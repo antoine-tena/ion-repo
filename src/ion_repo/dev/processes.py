@@ -1,4 +1,4 @@
-"""What `kiln dev` runs on the machine: the stack's servers and each folder's `Procfile.dev`.
+"""What `ion repo dev` runs on the machine: the stack's servers and each folder's `Procfile.dev`.
 
 A `Procfile.dev` (the format of foreman and of Rails' `bin/dev`) lists one process per line,
 `name: command`, run in its folder (`backend/`, `frontend/` or the root) through `sh -c`: a Celery
