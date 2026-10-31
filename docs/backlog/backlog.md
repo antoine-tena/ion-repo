@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-403.**
+**Next free: T-404.**
 
 ---
 
@@ -873,6 +873,19 @@ and the plugin; no test saw them, the first real `ion repo update` did.
 - [ ] `test_template.py` refuses, in a render and in `plugins/`: a skill under the catalog's name
   (`/ion-repo:`), a plugin id `ion-repo@ion-repo`, a version of ion-repo below the rename.
 - [ ] After any bulk replacement, the same kind of check: what the replacement must never produce.
+
+### T-403 · Install lines back to the Ion names once they are on PyPI
+- **Type**: task
+- **Status**: todo
+- **Opened**: 2026-10-31
+- **Effort**: XS · **Owner**: — · **Due**: —
+- **Origin**: README check of the family, 2026-10-31
+
+`ion-repo` and `ion-sh` are not on PyPI yet (404), so the READMEs give `kiln-cli` and `kiln install`,
+and `ion/ion`'s README installs from a clone.
+- [ ] Once `ion-repo` and `ion-sh` are published: `template/README.md.jinja`, `README.md`,
+  `README.fr.md`, `TOOL_HINTS` in `grid/checks.py`, then `ion repo update` on the repos.
+- [ ] `ion/ion`'s `README.md` back to `uv tool install ion-sh`.
 
 ### T-399 · The names ion-repo still keeps from kiln
 - **Type**: improvement

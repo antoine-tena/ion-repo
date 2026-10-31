@@ -34,6 +34,14 @@ def test_only_kiln_repos_are_found(tmp_path: Path) -> None:
     assert found == ["ancien", "projet"]
 
 
+def test_a_frozen_repo_is_not_found(tmp_path: Path) -> None:
+    frozen = make_repo(tmp_path / "temoin", "https://github.com/antoine-tena/ion-repo.git")
+    (frozen / fleet.FROZEN_MARKER).touch()
+    make_repo(tmp_path / "projet", "https://github.com/antoine-tena/ion-repo.git")
+
+    assert [repo.root.name for repo in find_repos(tmp_path)] == ["projet"]
+
+
 def test_adopted_repo_has_a_charter_but_no_answers(tmp_path: Path) -> None:
     generated = make_repo(tmp_path / "genere", "https://github.com/antoine-tena/ion-repo.git")
     (generated / "charte.toml").touch()

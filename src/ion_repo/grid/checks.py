@@ -30,7 +30,7 @@ TOOL_HINTS = {
     "yarn": "corepack enable yarn",
     "bun": "curl -fsSL https://bun.sh/install | bash",
     "npm": "Node.js 24: https://nodejs.org/en/download",
-    "ion-repo": "uv tool install ion-repo",
+    "ion-repo": "uv tool install kiln-cli",
 }
 # Lock file, in search order, and the package manager that wrote it.
 NODE_LOCKS = (
