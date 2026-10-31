@@ -57,7 +57,8 @@ step 4. Talk to the user in their language.
    A plugin read from a local folder (`readFromFolder`, ion-repo on antoine's machine) gets the same
    commands: harmless when its version hasn't moved.
 7. No CI to wait for: it runs only on the release branch, before `main` (`/repo:release`).
-   Sum up: merge commit, files touched, linters run. Suggest `/clear`, in one line, only when
+   Report in the `repo` plugin's `debrief` format (`output-styles/debrief.md`). Suggest `/clear`
+   under its **◆ Your turn**, in one line, only when
    it saves something: a long session, or the user moving to an unrelated subject (every
    message re-reads the whole conversation; the work is in git and in the backlog). After a
    short session, or when the next task continues the same subject (a fresh session would

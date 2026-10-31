@@ -26,6 +26,7 @@ full before starting; it takes precedence over what follows.
 3. **Frontend**: `scripts/ops/deploy-frontend.sh`, with no untracked file in the frontend directory.
    A Streamlit or Dash front without an API deploys only this way, to the VPS (its image, no
    database), and runs the smoke test itself.
-4. Summarize: deployed commit, result of the health probe
-   (`curl -s -o /dev/null -w '%{http_code}' $ION_REPO_API_HEALTH`) and of the smoke test. If
-   something is wrong: skill `/vps:prod-logs`.
+4. Check the health probe (`curl -s -o /dev/null -w '%{http_code}' $ION_REPO_API_HEALTH`) and
+   the smoke test, then report in the `repo` plugin's `debrief` format
+   (`output-styles/debrief.md`): a failure is a `Broken:` line, and `/vps:prod-logs` the first
+   step under **◆ Next**.

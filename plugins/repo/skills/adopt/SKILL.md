@@ -26,6 +26,6 @@ Talk to the user in their language.
 
 ## Sum up
 
-Stack found (and where: a framework at the root has ion-repo's files follow it there), files laid,
-files kept, size, debt found and what was done about it. Two frameworks at the root: one is
-taken, the other gets the common part only; say so. From now on `ion repo update` keeps the repo current, sparing what it keeps.
+In the `repo` plugin's `debrief` format (`output-styles/debrief.md`): the stack found and the
+debt left among its points; two frameworks at the root, one taken and the other given the
+common part only, is one of them.

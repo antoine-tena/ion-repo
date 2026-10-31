@@ -99,5 +99,6 @@ Run by `/repo:release` before the tag: the release note and the tag point to all
 
 ## 6. Summary
 
-Verdict in one line (clean / tidied / to fix by the user), then what was rewritten (old and new
-tip), what is left and why.
+In the `repo` plugin's `debrief` format (`output-styles/debrief.md`), its result sentence the
+verdict: clean, tidied, or to fix by the user. Run inside `/repo:merge` or `/repo:release`, the
+verdict is one line and the debrief comes at their end.
