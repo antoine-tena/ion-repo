@@ -73,5 +73,5 @@ releases remain what goes out to others.
 **Other repos**: generated repos cite ion-repo's workflows at the exact tag they start from
 (`ci.yml`), and `ion repo update` moves it forward. On antoine's machine a release stops at the
 candidate or at the promotion: neither run nor offer `ion repo update --all` (nor `--rehearse`); a
-candidate is checked through the witness repo (`antoine-tena/kiln-rehearsal`) and local copies,
+candidate is checked through the witness repo (`antoine-tena/ion-repo-rehearsal`) and local copies,
 and antoine updates his repos himself.
