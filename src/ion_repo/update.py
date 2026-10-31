@@ -19,6 +19,7 @@ from ion_repo.deps import lock_dependencies, sync_dependencies, update_dependenc
 from ion_repo.frozen import frozen_files, report_frozen_drift
 from ion_repo.grid.fix import convert_in_place
 from ion_repo.ion_names import convert_ion_names
+from ion_repo.moved_dirs import Renaming, move_renamed_dirs, renaming_of
 from ion_repo.rules import write_unverified_rules
 from ion_repo.shell import (
     KilnError,
@@ -178,6 +179,14 @@ def apply_template(root: Path, answers: Mapping[str, object] | None = None) -> N
         ui.note(f"kiln 0.4: {converted}.")
     for converted in convert_ion_names(root):
         ui.note(f"ion-repo: {converted}.")
+    if renaming := renaming_of(previous_answers, migrations.raw_answers(root)):
+        spared = [*frozen_files(root), *kept_of(root)]
+        ref = template_revision(source)
+        for moved in move_renamed_dirs(
+            root, renaming, previous_answers, source, ref, spared=spared
+        ):
+            ui.note(f"Renamed: {moved}.")
+        settle_rename_conflicts(root, renaming)
     resolve_kiln_ref_conflicts(root)
     replace_legacy_source(root)
     if migrate_legacy_backlog(root):
@@ -229,6 +238,21 @@ def _kiln_spellings(text: str) -> set[str]:
     return {
         match.group(0)[len(match.group(1)) + 1 :] for match in ION_REPO_WORKFLOW_REF.finditer(text)
     }
+
+
+def settle_rename_conflicts(root: Path, renaming: Renaming) -> None:
+    """A conflict born of the rename alone (a test rewritten by the project that imports the old
+    package) has nothing to decide: merged again with the old render and the project under the
+    new names, and kept if clean."""
+    for name in conflicted_files(root):
+        stages = [_index_stage(root, stage, name) for stage in (1, 2, 3)]
+        if None in stages:
+            continue
+        base, ours, theirs = (str(text) for text in stages)
+        merged = _merge_cleanly(renaming.words(base), renaming.words(ours), theirs)
+        if merged is not None:
+            (root / name).write_text(merged)
+            run(["git", "reset", "-q", "--", name], root)
 
 
 def _index_stage(root: Path, stage: int, name: str) -> str | None:

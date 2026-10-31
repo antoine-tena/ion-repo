@@ -33,7 +33,7 @@ folder or a module.
   `github.py`, `rules.py` (unchecked rules), `statusline.py`, `versions.py` (tags, channels,
   release log, tool version), `frozen.py` (files frozen by `kiln-waivers.toml`, spared by
   `update`), `renames.py` (pre-0.4.0 names and their English names, kiln's names before ion-repo),
-  `ion_names.py` (kiln's names in a project rewritten by `ion repo update`), `banner.py` (banner,
+  `ion_names.py` (kiln's names in a project rewritten by `ion repo update`), `moved_dirs.py` (a project renamed: its package's and plugin's folders merged at their new paths), `banner.py` (banner,
   welcome screen), `ui.py` (stone-and-fire palette, steps, spinner, summary, success, errors),
   `shell.py`, `config.py` (`~/.config/kiln/config.toml`), `trailers.py` (`ion repo set ai_trailers`:
   whether Claude's commits say Claude helped, Claude Code's `attribution`).
@@ -101,7 +101,7 @@ folder or a module.
   their tag (before each candidate).
 - `tests/`: `test_template.py` (the template rendered for each stack), `test_cli.py` (the
   command: welcome, errors, summary, output outside a terminal, old names), `test_questions.py`
-  (`ion repo new`'s questions), `test_new.py` (what `ion repo new` says at the end), `test_contract.py` (`ion repo contract`'s export, a dirty tree named), `test_pause.py` (`ion repo pause`'s proposed names), `test_frame.py` (`ion repo frame`'s widths), `test_update_conflicts.py` (`ion repo update` stopped by a template's conflict), `test_grid.py` (the
+  (`ion repo new`'s questions), `test_new.py` (what `ion repo new` says at the end), `test_contract.py` (`ion repo contract`'s export, a dirty tree named), `test_pause.py` (`ion repo pause`'s proposed names), `test_frame.py` (`ion repo frame`'s widths), `test_update_conflicts.py` (`ion repo update` stopped by a template's conflict), `test_moved_dirs.py` (a project renamed), `test_grid.py` (the
   grid), `test_score.py` (`ion repo score`), `test_gap_report.py` (reports of the grid's gaps), `test_forge.py` (GitHub settings through a
   fake `gh`),
   `test_fix.py` (`ion repo fix` and its conversions), `test_adopted.py` (adopted repos),
