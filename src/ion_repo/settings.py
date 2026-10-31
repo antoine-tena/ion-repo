@@ -7,6 +7,7 @@ dependencies and the list of unverified rules follow.
 
 import shutil
 import subprocess
+from collections.abc import Mapping
 from pathlib import Path
 
 import yaml  # fourni par copier
@@ -14,6 +15,7 @@ import yaml  # fourni par copier
 from ion_repo import renames, ui
 from ion_repo.check import check_project
 from ion_repo.deps import lock_dependencies, sync_dependencies
+from ion_repo.moved_dirs import default_plugin_name
 from ion_repo.rules import write_unverified_rules
 from ion_repo.shell import KilnError, require_tools, step
 from ion_repo.stack import (
@@ -121,7 +123,7 @@ def apply_settings(root: Path, assignments: list[str]) -> None:
     check_working_branch(root, "chore/ion-repo-set")
     step("Settings: " + ", ".join(f"{key}={value}" for key, value in changes.items()))
     previous_stack = load_stack(root)
-    apply_template(root, changes)
+    apply_template(root, follow_plugin_name(read_answers(root), changes))
     stack = load_stack(root)
     remove_replaced_artifacts(root, previous_stack, stack)
     remove_starter_files(root, previous_stack, stack, tracked=_tracked_files(root))
@@ -134,6 +136,19 @@ def apply_settings(root: Path, assignments: list[str]) -> None:
     write_unverified_rules(root, stack)
     report_changes(root)
     check_project(root)
+
+
+def follow_plugin_name(
+    answers: Mapping[str, object], changes: dict[str, object]
+) -> dict[str, object]:
+    """A new `name` brings its plugin along, unless the plugin was named apart from the project."""
+    new_name = changes.get("name")
+    plugin = answers.get("plugin_name")
+    if not isinstance(new_name, str) or "plugin_name" in changes or not plugin:
+        return changes
+    if plugin != default_plugin_name(str(answers.get("name", ""))):
+        return changes
+    return {**changes, "plugin_name": default_plugin_name(new_name)}
 
 
 def _tracked_files(root: Path) -> set[str]:
