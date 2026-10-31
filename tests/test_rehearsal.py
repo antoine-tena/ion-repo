@@ -1,4 +1,4 @@
-"""`kiln update --rehearse`: the update on a throwaway clone, the repo untouched (T-150)."""
+"""`ion repo update --rehearse`: the update on a throwaway clone, the repo untouched (T-150)."""
 
 import subprocess
 import tempfile
@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from kiln import rehearsal
-from kiln.shell import KilnError
+from ion_repo import rehearsal
+from ion_repo.shell import KilnError
 
 
 def git(cwd: Path, *args: str) -> str:
@@ -78,6 +78,6 @@ def test_a_failed_rehearsal_keeps_its_clone_and_says_why(
 
 def test_a_repo_not_under_kiln_is_refused_before_any_clone(tmp_path: Path, repo: Path) -> None:
     (repo / ".copier-answers.yml").unlink()
-    with pytest.raises(KilnError, match="not under kiln"):
+    with pytest.raises(KilnError, match="not under ion-repo"):
         rehearsal.rehearse(repo, should_update_deps=False, allow_major=False)
     assert list((tmp_path / "tmp").iterdir()) == []

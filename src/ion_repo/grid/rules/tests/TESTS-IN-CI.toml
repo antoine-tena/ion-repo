@@ -1,0 +1,30 @@
+id = "TESTS-IN-CI"
+title = "The CI runs the tests"
+pillar = "methods"
+theme = "tests"
+scope = { kind = "universal" }
+level = "adopt"
+regime = "strict"
+profiles = ["solo", "association", "company", "university", "enterprise"]
+why = "Tests that do not run on each change stop proving anything."
+applies = []
+detectable = "script"
+fixable = "script"
+fixer = "add_test_job"
+since = "0.4.2"
+
+[detector]
+kind = "regex"
+files = [".github/workflows/*.yml", ".github/workflows/*.yaml", ".gitlab-ci.yml", ".circleci/config.yml", ".forgejo/workflows/*.yml", "azure-pipelines.yml", "bitbucket-pipelines.yml", "Jenkinsfile"]
+pattern = '''(pytest|manage\.py test|vitest|jest|playwright test|(npm|pnpm|yarn|bun) (run )?test|\bava\b|mocha|node --test|go test|gotestsum|cargo (test|nextest)|mvnw?\b|gradlew?\b|\btox\b|\bnox\b|(ion[ -]repo|kiln) check|unittest|rspec|rake (spec|test)|dotnet test|phpunit|\bpest\b|artisan test|mix test|(flutter|dart|swift|deno) test|\bctest\b|make (test|check)|antoine-tena/(ion-repo|kiln)/\.github/workflows/(django|python|pnpm|maven)\.yml)'''
+expect = "match"
+
+[[sources]]
+url = "https://github.com/ossf/scorecard/blob/main/docs/checks.md"
+kind = "advisory"
+checked = 2026-10-20
+
+[[sources]]
+url = "https://docs.pytest.org/en/stable/"
+kind = "docs"
+checked = 2026-10-20

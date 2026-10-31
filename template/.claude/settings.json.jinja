@@ -2,17 +2,17 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "env": {
-    "KILN_PROJECT": "{{ name }}",
-    "KILN_BACKEND_DIR": "{{ bd if backend != 'none' else '' }}",
-    "KILN_FRONTEND_DIR": "{{ fd if frontend != 'none' else '' }}",
-    "KILN_TEST_ENV": "{{ (bp ~ '.env') if backend in ['django', 'fastapi'] else '' }}"
+    "ION_REPO_PROJECT": "{{ name }}",
+    "ION_REPO_BACKEND_DIR": "{{ bd if backend != 'none' else '' }}",
+    "ION_REPO_FRONTEND_DIR": "{{ fd if frontend != 'none' else '' }}",
+    "ION_REPO_TEST_ENV": "{{ (bp ~ '.env') if backend in ['django', 'fastapi'] else '' }}"
 {%- if deploy == 'vps' %},
-    "KILN_VPS": "{{ vps_host }}",
-    "KILN_VPS_DIR": "/opt/{{ name }}",
-    "KILN_VPS_BACKUPS": "/root/backups",
-    "KILN_SITE": "{{ site_url }}",
-    "KILN_API_HEALTH": "{{ prod_health_url or 'https://' ~ api_domain ~ '/api/health' }}",
-    "KILN_PROD_DOC": "docs/operations/production.md"
+    "ION_REPO_VPS": "{{ vps_host }}",
+    "ION_REPO_VPS_DIR": "/opt/{{ name }}",
+    "ION_REPO_VPS_BACKUPS": "/root/backups",
+    "ION_REPO_SITE": "{{ site_url }}",
+    "ION_REPO_API_HEALTH": "{{ prod_health_url or 'https://' ~ api_domain ~ '/api/health' }}",
+    "ION_REPO_PROD_DOC": "docs/operations/production.md"
 {%- endif %}
   },
 {#- The settings key, not CLAUDE_CODE_AUTO_COMPACT_WINDOW: the variable would override
@@ -20,18 +20,18 @@
 {%- if compact_window < 1000000 %}
   "autoCompactWindow": {{ compact_window }},
 {%- endif %}
-{#- kiln's marketplace, on GitHub (public repository), at `main`, the state of its latest release:
+{#- ion-repo's marketplace, on GitHub (public repository), at `main`, the state of its latest release:
     Claude Code offers it with its plugins to whoever opens the repo, then updates them in the
     background at each launch (autoUpdate, off by default for a third-party marketplace). A
-    "kiln" marketplace already installed from a local directory keeps its source. #}
+    "ion-repo" marketplace already installed from a local directory keeps its source. #}
 {#- Plans written in plan mode stay with the repo, reviewed and committed with the branch
     (Claude Code's default, `~/.claude/plans/`, is outside every repo). #}
   "plansDirectory": ".claude/plans",
   "extraKnownMarketplaces": {
-    "kiln": {
+    "ion-repo": {
       "source": {
         "source": "github",
-        "repo": "antoine-tena/kiln",
+        "repo": "antoine-tena/ion-repo",
         "ref": "main"
       },
       "autoUpdate": true
@@ -50,7 +50,7 @@
     }
 {%- endif %}
   },
-{%- set plugins = ['kiln@kiln'] + ([name ~ '@' ~ name] if own_plugin else []) + (['django@kiln'] if backend == 'django' else []) + (['nuxt@kiln'] if frontend == 'nuxt' else []) + (['vps@kiln'] if deploy == 'vps' else []) + (['serena@kiln'] if serena else []) %}
+{%- set plugins = ['repo@ion-repo'] + ([name ~ '@' ~ name] if own_plugin else []) + (['django@ion-repo'] if backend == 'django' else []) + (['nuxt@ion-repo'] if frontend == 'nuxt' else []) + (['vps@ion-repo'] if deploy == 'vps' else []) + (['serena@ion-repo'] if serena else []) %}
   "enabledPlugins": {
 {%- for plugin in plugins %}
     "{{ plugin }}": true{{ "," if not loop.last }}

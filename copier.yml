@@ -1,13 +1,13 @@
-# kiln's project template. Files live in template/, and only `.jinja` files are rendered (Vue,
+# ion-repo's project template. Files live in template/, and only `.jinja` files are rendered (Vue,
 # React and Astro templates keep their braces). A directory named `{% if … %}name{% endif %}`
 # exists only when its condition holds: that is how each framework brings its files, and how
-# `kiln set` removes them when the project changes framework.
+# `ion repo set` removes them when the project changes framework.
 _subdirectory: template
 _templates_suffix: .jinja
 _answers_file: .copier-answers.yml
 _min_copier_version: "9.4"
-# Files the project owns: kiln writes them once, then never touches them again. The favicons are
-# binary: an update cannot merge the project's own one, it would put kiln's back.
+# Files the project owns: ion-repo writes them once, then never touches them again. The favicons are
+# binary: an update cannot merge the project's own one, it would put ion-repo's back.
 _skip_if_exists:
   - CLAUDE.md
   - frontend/public/favicon.ico
@@ -15,7 +15,7 @@ _skip_if_exists:
   - frontend/app/favicon.ico
 
 # First question: the size of the project, four notches from tiny to large. It chooses how much
-# ceremony the project gets (rules, CI, containers), and changes later with `kiln set size=…`.
+# ceremony the project gets (rules, CI, containers), and changes later with `ion repo set size=…`.
 size:
   type: str
   help: How big are the stakes?
@@ -44,7 +44,7 @@ description:
 
 # The language of the team: the conversation with Claude, the docs, commit messages, comments
 # and the texts users read. Code identifiers are English whatever the answer, and so are the
-# instructions kiln writes for Claude.
+# instructions ion-repo writes for Claude.
 language:
   type: str
   help: Language of the team
@@ -95,7 +95,7 @@ language_ui:
   default: "{{ language }}"
   when: "{{ language_custom }}"
 
-# kiln fills the owner and the team in (machine settings, else the account gh is logged in
+# ion-repo fills the owner and the team in (machine settings, else the account gh is logged in
 # with); empty, the project has no team in its README. CODEOWNERS only from two people: alone,
 # it would only ask the owner to review the bots' pull requests.
 owner:
@@ -108,17 +108,17 @@ team:
   help: GitHub logins of the team (reviewers), as a YAML list
   default: "[{{ owner }}]"
 
-# A repo brought under kiln by `kiln adopt`: the files it already had, which the template would
+# A repo brought under ion-repo by `ion repo adopt`: the files it already had, which the template would
 # have written (README.md, its own CI…), and its own code folders; neither backend nor frontend
-# is then needed. kiln never writes them, at adoption nor at `kiln update`. Never asked: only
-# `kiln adopt` answers it, and a repo that `kiln new` generated does not record it.
+# is then needed. ion-repo never writes them, at adoption nor at `ion repo update`. Never asked: only
+# `ion repo adopt` answers it, and a repo that `ion repo new` generated does not record it.
 kept:
   type: yaml
   default: "[]"
   when: "{{ kept | length > 0 }}"
 
-# Where the backend and the front live: `backend/` and `frontend/` in a repo kiln generated, the
-# root (`.`) in a repo adopted with its code there. Written by `kiln adopt`, never asked; kept in
+# Where the backend and the front live: `backend/` and `frontend/` in a repo ion-repo generated, the
+# root (`.`) in a repo adopted with its code there. Written by `ion repo adopt`, never asked; kept in
 # the answers only when it differs.
 backend_dir:
   type: str
@@ -131,7 +131,7 @@ frontend_dir:
   when: "{{ (frontend_dir | default('frontend')) != 'frontend' }}"
 
 # The project type only advises: it preselects the backend and the frontend below, which stay
-# free. Table of advice: kiln's README, "What you get".
+# free. Table of advice: ion-repo's README, "What you get".
 project_type:
   type: str
   help: What are you building? (it suggests the stack)
@@ -179,7 +179,7 @@ frontend:
 
 podman:
   type: bool
-  help: Podman containers (Containerfile, compose.yaml, PostgreSQL)? Later with `kiln set podman=true`.
+  help: Podman containers (Containerfile, compose.yaml, PostgreSQL)? Later with `ion repo set podman=true`.
   default: "{{ size in ['medium', 'large'] and not (backend in ['cli', 'java'] and frontend == 'none') }}"
   # A command-line tool, or a Java backend without a framework, has no server to put in a
   # container yet; its front, if any, does.
@@ -188,19 +188,19 @@ podman:
 
 # A command-line tool that also ships its own Claude Code plugin: `plugins/<name>/` (manifest, a
 # first skill), its catalog `.claude-plugin/marketplace.json`, enabled in the repo's own sessions.
-# Later with `kiln set claude_plugin=true`.
+# Later with `ion repo set claude_plugin=true`.
 claude_plugin:
   type: bool
-  help: Ship a Claude Code plugin with the command (skills, hooks)? Later with `kiln set claude_plugin=true`.
+  help: Ship a Claude Code plugin with the command (skills, hooks)? Later with `ion repo set claude_plugin=true`.
   default: false
   when: "{{ backend == 'cli' }}"
 
 # A command-line tool published on PyPI under this name (`.github/workflows/pypi.yml`, at each
 # release tag `vN`); the command keeps the project's name. Empty: not published. Later with
-# `kiln set pypi_name=<name>`.
+# `ion repo set pypi_name=<name>`.
 pypi_name:
   type: str
-  help: Name on PyPI, if the command is published there (empty if not). Later with `kiln set pypi_name=<name>`.
+  help: Name on PyPI, if the command is published there (empty if not). Later with `ion repo set pypi_name=<name>`.
   default: ""
   when: "{{ backend == 'cli' }}"
   validator: >-
@@ -217,18 +217,18 @@ java_package:
     {% if not (java_package | regex_search('^[a-z][a-z0-9_]*([.][a-z][a-z0-9_]*)+$')) %}A Java package: lowercase words separated by dots (com.example.app).{% endif %}
 
 # Calendar notions (today, a day, the bounds of a period) are computed in this time zone; storage
-# stays in UTC. kiln proposes the machine's.
+# stays in UTC. ion-repo proposes the machine's.
 timezone:
   type: str
   help: Time zone of the project's calendar notions (IANA name)
   default: UTC
 
-# Serena (plugin serena@kiln): read-only symbol navigation, so that Claude Code reads a function
+# Serena (plugin serena@ion-repo): read-only symbol navigation, so that Claude Code reads a function
 # rather than a whole file. Pays off on a big codebase (thousands of files); elsewhere its index
 # and tool definitions cost more than they bring.
 serena:
   type: bool
-  help: Serena for Claude Code (symbol navigation, big codebases)? Later with `kiln set serena=true`.
+  help: Serena for Claude Code (symbol navigation, big codebases)? Later with `ion repo set serena=true`.
   default: false
 
 # Claude Code compacts a conversation when its context reaches this many tokens. Every message
@@ -244,7 +244,7 @@ compact_window:
 # Production on a server of one's own: `vps` adds config/vps/ (Caddy, production stack, switch
 # with rollback, tested backups), scripts/ops/ and docs/operations/. For a Django backend, or a
 # Streamlit or Dash front without an API (its own image, no database), served by podman. Later
-# with `kiln set deploy=vps`.
+# with `ion repo set deploy=vps`.
 deploy:
   type: str
   help: Production deployment?
@@ -269,7 +269,7 @@ api_domain:
   when: "{{ deploy == 'vps' and backend == 'django' }}"
 
 # A server shared with other projects keeps its own ports: the stack takes these on 127.0.0.1,
-# free on that server. Later with `kiln set vps_port=… vps_db_port=…`.
+# free on that server. Later with `ion repo set vps_port=… vps_db_port=…`.
 vps_port:
   type: int
   help: Port of the API on the server (127.0.0.1; another one if a project already uses it)
@@ -295,7 +295,7 @@ deploy_branch:
   when: "{{ deploy == 'vps' }}"
 
 # Nuxt front on Vercel: `vercel` adds scripts/ops/deploy-frontend.sh, which only deploys a pushed
-# commit whose CI is green. Later with `kiln set frontend_deploy=vercel`.
+# commit whose CI is green. Later with `ion repo set frontend_deploy=vercel`.
 frontend_deploy:
   type: str
   help: Frontend deployment?
@@ -307,7 +307,7 @@ frontend_deploy:
   validator: >-
     {% if frontend_deploy == 'vercel' and frontend in ['streamlit', 'dash'] %}Vercel cannot host a Streamlit or Dash app: it needs a long-running Python server with websockets.{% endif %}
 
-# Work tracking, in every repo: docs/backlog/ (skill kiln:backlog).
+# Work tracking, in every repo: docs/backlog/ (skill repo:backlog).
 north_star:
   type: str
   help: The goal that orders the priorities of docs/backlog/ (north star)
@@ -319,22 +319,22 @@ created:
   default: "{{ '%Y-%m-%d' | strftime }}"
 
 # Where the CI of each push runs. A private repo on GitHub's free plan has 2,000 minutes a
-# month (a macOS minute counts ten): its CI runs on the machine, `kiln ci`, verdict kept as a git
-# note. A public repo runs on GitHub, free and unlimited. `kiln new` and `kiln update` pick it
+# month (a macOS minute counts ten): its CI runs on the machine, `ion repo ci`, verdict kept as a git
+# note. A public repo runs on GitHub, free and unlimited. `ion repo new` and `ion repo update` pick it
 # from the repo's visibility when the answer is missing.
 ci_runner:
   type: str
   help: Where does the CI of each push run?
   choices:
-    "On this machine, with kiln ci (no GitHub minutes: a private repo)": local
+    "On this machine, with ion repo ci (no GitHub minutes: a private repo)": local
     "On GitHub (free and unlimited for a public repo)": github
   default: local
 
-# kiln-bot (T-59): `kiln update` then `kiln fix` as one pull request, on a schedule. Off by
-# default: on a private repo each run spends GitHub minutes. Set with `kiln set update_bot=weekly`.
+# kiln-bot (T-59): `ion repo update` then `ion repo fix` as one pull request, on a schedule. Off by
+# default: on a private repo each run spends GitHub minutes. Set with `ion repo set update_bot=weekly`.
 update_bot:
   type: str
-  help: kiln-bot, the grid's fixes and kiln's updates as a pull request?
+  help: kiln-bot, the grid's fixes and ion-repo's updates as a pull request?
   choices:
     "Off": "off"
     "Every Monday": weekly
@@ -344,14 +344,14 @@ update_bot:
 
 # Heavy files the repo keeps on purpose (a site's film, a model's weights), by their exact path
 # from the root: pre-commit's 1 MB ceiling lets them through, and only them. Set with
-# `kiln set large_files=frontend/public/film.mp4,…`, never asked; kept in the answers when set.
+# `ion repo set large_files=frontend/public/film.mp4,…`, never asked; kept in the answers when set.
 large_files:
   type: yaml
   default: "[]"
   when: "{{ large_files | length > 0 }}"
 
-# Claude Code's status line (kiln plugin): settings set as `git config statusline.*` by
-# `kiln install`, `kiln new` and `kiln set`, never by hand.
+# Claude Code's status line (ion-repo plugin): settings set as `git config statusline.*` by
+# `ion repo install`, `ion repo new` and `ion repo set`, never by hand.
 statusline_ci:
   type: bool
   help: Show the state of CI in Claude Code's status line?

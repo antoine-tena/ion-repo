@@ -1,4 +1,4 @@
-"""The GitHub settings `kiln score` reads through `gh` (T-158, T-186): answers of a fake `gh`,
+"""The GitHub settings `ion repo score` reads through `gh` (T-158, T-186): answers of a fake `gh`,
 admin rights required, a day of cache, nothing in CI, never a token."""
 
 import shutil
@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from kiln.grid import forge
+from ion_repo.grid import forge
 
 SLUG = "acme/app"
 REPO = {

@@ -1,0 +1,63 @@
+{%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
+{%- set level = {'tiny': 0, 'small': 1, 'medium': 2, 'large': 3}[size] -%}
+---
+paths:
+  - "{{ fp }}**"
+---
+<!-- Written by ion-repo and kept current by `ion repo update`: do not edit, it would be overwritten. -->
+# Frontend: Next.js 16 and React 19
+
+`{{ fp }}app/`: routes (App Router); `{{ fp }}components/`: components; `{{ fp }}lib/`: API
+client and constants (`constants.ts`). Read `{{ fp }}AGENTS.md` before using a Next.js API.
+Run: `ion repo dev`; check: `ion repo check` (ESLint, `tsc`).
+
+## Code
+
+- **[STRICT-TS]** Strict TypeScript in every `.ts` and `.tsx`.
+- **[NO-ANY]** No `any`: `unknown`, then a type narrowing (ESLint rule).
+- **[ASYNC-AWAIT]** `async/await` with `try/catch` only; `.then().catch()` chains are banned.
+- **[MODERN-REACT]** React 19 / Next.js 16 (App Router): actions for mutations, `use()` and
+  `Suspense` for asynchronous code. Never a class component, never `useEffect` to load data.
+- **[SERVER-FIRST]** Server components by default. `"use client"` only for a component that
+  handles an interaction (state, event, browser API), as low as possible in the tree: a whole
+  page is never a client component.
+- **[EXPLICIT-IMPORTS]** Imports through the `@/` alias (`@/components/…`, `@/lib/…`), never a
+  relative path that climbs (`../../`).
+- **[API-CALLS]** Components never call the API directly: they go through a typed function of
+  `lib/` (`lib/api.ts`) that validates the response before returning it.
+- **[MUTATIONS]** A write goes through a server action (`"use server"`) that validates its
+  inputs, never through a `fetch` written in a client component.
+- **[UI-STATES]** Every screen that loads data handles the three states explicitly: loading
+  (`Suspense` or `loading.tsx`), error (`error.tsx`, an understandable message, never "Error."
+  alone) and empty list.
+- **[ACCESSIBILITY]** Every field has an associated `<label>`, every icon button an `aria-label`,
+  every informative image an `alt` (`next/image`). Everything works with the keyboard and focus
+  stays visible.
+- **[TEST-DENSITY]** The front's test density never drops: its floor in `charter.toml` is raised
+  as it goes up (floor).
+
+## Styling
+
+- **[STYLE-1]** No CSS Modules nor inline {% raw %}`style={{ }}`{% endraw %}: Tailwind in `className`.
+- **[STYLE-2]** **Tailwind by default**, right in the JSX. Separate CSS only for a multi-step
+  animation, a native browser element or a black-box third-party component.
+- **[STYLE-3]** `app/globals.css` is the only CSS file: it imports Tailwind and holds the theme
+  tokens (`@theme`). A component writes the class of a token, never an arbitrary value that
+  copies it (`text-[0.7rem]`).
+- **[STYLE-5]** Banned: bursts of arbitrary classes, `@apply` to rebuild a component (that is a
+  React component's job), `!important` except to override a third-party library that forces it.
+{%- if level >= 2 %}
+
+## Performance and quality
+
+- **[CORE-WEB-VITALS]** Budgets at the 75th percentile, on mobile: **LCP < 2.5 s**,
+  **INP < 200 ms**, **CLS < 0.1**. A regression beyond them blocks the release.
+- **[JS-BUDGET]** A JavaScript budget per page, checked at build time; every heavy library is
+  loaded on demand (`next/dynamic`).
+- **[MODERN-IMAGES]** Images through `next/image`, in AVIF/WebP, sized, loaded lazily below the
+  first screen.
+- **[E2E-JOURNEYS]** Critical journeys have a Playwright end-to-end test, run in CI against a full
+  stack.
+- **[AUTOMATED-ACCESSIBILITY]** Main pages pass an automated `axe-core` check; target
+  **WCAG 2.2 level AA**.
+{%- endif %}

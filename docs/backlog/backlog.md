@@ -832,6 +832,23 @@ packs (T-69). From here, strict semver: breaking → major, `feat` → minor.
 
 ## 🟠 Important
 
+### T-399 · The names ion-repo still keeps from kiln
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-31
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: kiln became ion-repo (31 October 2026); the rename moved the command, the package,
+  the plugin, the template's rules, skills, variables and plugin ids, and kept these on purpose
+
+Still named after kiln, each read where it is today: the machine's storage
+(`~/.config/kiln/config.toml`, `~/.local/state/kiln/`, `~/.cache/kiln/`), the git config keys
+(`kiln.update-check`, `kiln.branch-guard`, `kiln.rtk`, `kiln.report-gaps`), the CI's git note
+(`kiln ci: success`), `kiln-waivers.toml` in every repo, kiln-bot (its workflow `kiln-bot.yml`,
+its branch `kiln/bot`, `KILN_BOT_TOKEN`), kiln's own CI `kiln.yml`, the images
+`docs/assets/kiln-*` and the two recorded demos, which type `kiln` (the alias). Each moves with a
+fallback read of the old name, and `ion repo update` converts what a repo carries; the demos are
+re-recorded at the next candidate that shows them.
+
 ### T-396 · `kiln version promote` crashes when run from the release worktree
 - **Type**: bug
 - **Status**: todo

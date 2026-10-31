@@ -8,7 +8,7 @@ import copier
 import pytest
 import yaml
 
-from kiln.grid import score
+from ion_repo.grid import score
 
 TEMPLATE_DIR = Path(__file__).resolve().parent.parent
 ANSWERS = {
@@ -94,12 +94,12 @@ def test_every_stack_follows_its_code_to_the_root(
             ".pre-commit-config.yaml",
             "charter.toml",
             "CLAUDE.md",
-            ".claude/rules/kiln/project.md",
+            ".claude/rules/ion-repo/project.md",
         )
     }
     for name, text in texts.items():
         assert not re.search(r"(?<![\w.-])(backend|frontend)/", text), name
-    assert "at the root" in texts[".claude/rules/kiln/project.md"]
+    assert "at the root" in texts[".claude/rules/ion-repo/project.md"]
     tomllib.loads(texts["charter.toml"])
     ci = yaml.safe_load(texts[".github/workflows/ci.yml"])
     yaml.safe_load(texts[".pre-commit-config.yaml"])
@@ -142,16 +142,16 @@ def test_size_sets_podman_default(tmp_path: Path, size: str, has_podman: bool) -
 
     answers = yaml.safe_load((project_dir / ".copier-answers.yml").read_text())
     assert (answers["size"], answers["podman"]) == (size, has_podman)
-    project_rules = (project_dir / ".claude/rules/kiln/project.md").read_text()
+    project_rules = (project_dir / ".claude/rules/ion-repo/project.md").read_text()
     assert f"**{size.capitalize()}**" in project_rules
 
 
 def test_every_repo_reproduces_first_and_links_directly(tmp_path: Path) -> None:
-    project_rules = (generate(tmp_path / "demo") / ".claude/rules/kiln/project.md").read_text()
+    project_rules = (generate(tmp_path / "demo") / ".claude/rules/ion-repo/project.md").read_text()
 
     assert "**[REPRODUCE-FIRST]**" in project_rules
     assert "**[DIRECT-LINKS]**" in project_rules
-    assert "kiln set ai_trailers=disclose|never" in project_rules
+    assert "ion repo set ai_trailers=disclose|never" in project_rules
 
 
 @pytest.mark.parametrize(
@@ -160,11 +160,11 @@ def test_every_repo_reproduces_first_and_links_directly(tmp_path: Path) -> None:
 def test_project_rules_name_only_the_stack_there_is(
     tmp_path: Path, backend: str, frontend: str
 ) -> None:
-    # A front alone, or a repo adopted without a stack of kiln: no empty check list, no "None".
+    # A front alone, or a repo adopted without a stack of ion-repo: no empty check list, no "None".
     kept = ["src"] if frontend == "none" else []
     project_dir = generate(tmp_path / "demo", backend=backend, frontend=frontend, kept=kept)
 
-    project_rules = (project_dir / ".claude/rules/kiln/project.md").read_text()
+    project_rules = (project_dir / ".claude/rules/ion-repo/project.md").read_text()
     assert not re.search(r"of the stack \((?!\w)", project_rules)
     assert "None" not in project_rules
 
@@ -217,7 +217,7 @@ def test_fastapi_front_keeps_its_plain_fetch(tmp_path: Path) -> None:
 def test_data_stack_accepts_numeric_arrays_and_trained_models(tmp_path: Path) -> None:
     project_dir = generate(tmp_path / "demo", backend="data", frontend="streamlit")
 
-    rules = (project_dir / ".claude/rules/kiln/data.md").read_text()
+    rules = (project_dir / ".claude/rules/ion-repo/data.md").read_text()
     assert rules.startswith('---\npaths:\n  - "backend/**"\n---\n')
     assert "NumPy" in rules
     assert "`data/models/`" in rules
@@ -267,7 +267,7 @@ def test_tool_project_gets_a_command_line_package(tmp_path: Path) -> None:
     pyproject = tomllib.loads((project_dir / "backend/pyproject.toml").read_text())
     assert pyproject["project"]["scripts"] == {"demo": "demo.cli:main"}
     assert (project_dir / "backend/demo/cli.py").is_file()
-    assert "[THIN-CLI]" in (project_dir / ".claude/rules/kiln/cli.md").read_text()
+    assert "[THIN-CLI]" in (project_dir / ".claude/rules/ion-repo/cli.md").read_text()
     assert not (project_dir / "compose.yaml").exists()
     python_lines = [
         line
@@ -332,7 +332,7 @@ def test_tool_project_ships_no_plugin_by_default(tmp_path: Path) -> None:
     assert not (project_dir / ".claude-plugin").exists()
     assert not (project_dir / "backend/tests/test_plugin.py").exists()
     settings = json.loads((project_dir / ".claude/settings.json").read_text())
-    assert list(settings["extraKnownMarketplaces"]) == ["kiln"]
+    assert list(settings["extraKnownMarketplaces"]) == ["ion-repo"]
 
 
 def test_java_backend_gets_a_maven_project(tmp_path: Path) -> None:
@@ -349,16 +349,16 @@ def test_java_backend_gets_a_maven_project(tmp_path: Path) -> None:
     assert (backend_dir / "mvnw").stat().st_mode & 0o111
     wrapper = (backend_dir / ".mvn/wrapper/maven-wrapper.properties").read_text()
     assert "distributionSha256Sum=" in wrapper
-    assert "[MODERN-JAVA]" in (project_dir / ".claude/rules/kiln/java.md").read_text()
+    assert "[MODERN-JAVA]" in (project_dir / ".claude/rules/ion-repo/java.md").read_text()
     workflow = yaml.safe_load((project_dir / ".github/workflows/ci.yml").read_text())
     assert workflow["jobs"]["backend"]["uses"].startswith(
-        "antoine-tena/kiln/.github/workflows/maven.yml@"
+        "antoine-tena/ion-repo/.github/workflows/maven.yml@"
     )
     # The Maven project audited alone (OSV-Scanner), nothing for uv or pnpm.
     assert workflow["jobs"]["security"]["with"] == {"uv": "", "pnpm": "", "maven": "backend"}
     charter = tomllib.loads((project_dir / "charter.toml").read_text())
     assert ".java" in charter["ratchets"]["file-size"]["suffixes"]
-    charter_rules = (project_dir / ".claude/rules/kiln/charter.md").read_text()
+    charter_rules = (project_dir / ".claude/rules/ion-repo/charter.md").read_text()
     booleans_rule = charter_rules.split("**[BOOLEANS]**", 1)[1].split("\n- ", 1)[0]
     assert "in Java" in booleans_rule
     assert "Python" not in booleans_rule
@@ -368,13 +368,13 @@ def test_team_gets_kiln_marketplace_and_plugin(tmp_path: Path) -> None:
     project_dir = generate(tmp_path / "demo", backend="java", frontend="none")
 
     settings = json.loads((project_dir / ".claude/settings.json").read_text())
-    assert settings["extraKnownMarketplaces"]["kiln"]["source"] == {
+    assert settings["extraKnownMarketplaces"]["ion-repo"]["source"] == {
         "source": "github",
-        "repo": "antoine-tena/kiln",
+        "repo": "antoine-tena/ion-repo",
         "ref": "main",
     }
-    assert settings["extraKnownMarketplaces"]["kiln"]["autoUpdate"] is True
-    assert settings["enabledPlugins"] == {"kiln@kiln": True}
+    assert settings["extraKnownMarketplaces"]["ion-repo"]["autoUpdate"] is True
+    assert settings["enabledPlugins"] == {"repo@ion-repo": True}
 
 
 def test_sessions_compact_at_400k(tmp_path: Path) -> None:
@@ -434,7 +434,7 @@ def test_a_released_template_pins_its_workflows_to_its_version(
 def test_a_released_project_scores_100_on_kiln_grid(
     tmp_path: Path, released: tuple[Path, str], backend: str, frontend: str, deploy: str
 ) -> None:
-    """kiln asks of others' repos what it generates: a new project has no gap to close."""
+    """ion-repo asks of others' repos what it generates: a new project has no gap to close."""
     podman = (backend, frontend) in PODMAN_STACKS
     project_dir = generate_released(
         released,
@@ -447,7 +447,7 @@ def test_a_released_project_scores_100_on_kiln_grid(
 
     report = score.score_repo(project_dir)
 
-    # The lockfiles are written by `kiln new` right after the template (`lock_dependencies`).
+    # The lockfiles are written by `ion repo new` right after the template (`lock_dependencies`).
     expected = {"LOCKED-DEPENDENCIES"}
     if backend == "none" and frontend in ("nuxt", "next", "astro"):
         expected.add("TESTS-PRESENT")  # a front alone has no test yet (T-160)
@@ -513,7 +513,7 @@ def test_a_project_without_owner_has_no_codeowners_nor_team(tmp_path: Path) -> N
 
 
 def rule_files(project_dir: Path) -> set[str]:
-    return {path.name for path in (project_dir / ".claude/rules/kiln").glob("*.md")}
+    return {path.name for path in (project_dir / ".claude/rules/ion-repo").glob("*.md")}
 
 
 def test_the_size_chooses_the_rules(tmp_path: Path) -> None:
@@ -522,20 +522,20 @@ def test_the_size_chooses_the_rules(tmp_path: Path) -> None:
 
     assert rule_files(tiny) == {"project.md", "charter.md", "python.md", "cli.md"}
     assert rule_files(large) >= {"django.md", "nuxt.md", "production.md", "security.md"}
-    django_rules = (large / ".claude/rules/kiln/django.md").read_text()
+    django_rules = (large / ".claude/rules/ion-repo/django.md").read_text()
     assert "[RLS]" in django_rules and "[OUTBOX]" in django_rules
     small_django = generate(tmp_path / "small", size="small")
-    assert "[OUTBOX]" not in (small_django / ".claude/rules/kiln/django.md").read_text()
+    assert "[OUTBOX]" not in (small_django / ".claude/rules/ion-repo/django.md").read_text()
 
 
 def test_rules_load_by_path_and_claude_md_stays_short(tmp_path: Path) -> None:
     project_dir = generate(tmp_path / "demo")
 
     for name in ("django.md", "nuxt.md", "python.md"):
-        text = (project_dir / ".claude/rules/kiln" / name).read_text()
+        text = (project_dir / ".claude/rules/ion-repo" / name).read_text()
         assert text.startswith("---\npaths:\n"), name
     for name in ("project.md", "charter.md"):
-        assert not (project_dir / ".claude/rules/kiln" / name).read_text().startswith("---")
+        assert not (project_dir / ".claude/rules/ion-repo" / name).read_text().startswith("---")
     assert len((project_dir / "CLAUDE.md").read_text().splitlines()) < 60
     assert not (project_dir / "backend/CLAUDE.md").exists()
 
@@ -544,7 +544,9 @@ def test_the_project_language_rules_what_people_read(tmp_path: Path) -> None:
     french = generate(tmp_path / "fr", language="fr", backend="fastapi", frontend="streamlit")
     english = generate(tmp_path / "en", backend="fastapi", frontend="streamlit")
 
-    assert "Talk with the user in French" in (french / ".claude/rules/kiln/project.md").read_text()
+    assert (
+        "Talk with the user in French" in (french / ".claude/rules/ion-repo/project.md").read_text()
+    )
     assert "## Démarrage rapide" in (french / "README.md").read_text()
     assert "## Quick start" in (english / "README.md").read_text()
     french_texts = (french / "frontend/dashboard/constants.py").read_text()
@@ -557,7 +559,7 @@ def test_a_language_per_use(tmp_path: Path) -> None:
         tmp_path / "demo", language="fr", language_custom=True, language_commits="en"
     )
 
-    project_rules = (project_dir / ".claude/rules/kiln/project.md").read_text()
+    project_rules = (project_dir / ".claude/rules/ion-repo/project.md").read_text()
     assert "English" in project_rules.split("Commit messages:", 1)[1][:12]
 
 
@@ -604,6 +606,6 @@ def test_kiln_bot_runs_on_its_schedule_and_is_off_by_default(
     workflow = yaml.safe_load((project / ".github/workflows/kiln-bot.yml").read_text())
     assert workflow[True]["schedule"] == [{"cron": cron}]
     job = workflow["jobs"]["bot"]
-    assert job["uses"].startswith("antoine-tena/kiln/.github/workflows/bot.yml@")
+    assert job["uses"].startswith("antoine-tena/ion-repo/.github/workflows/bot.yml@")
     assert job["secrets"] == {"token": "${{ secrets.KILN_BOT_TOKEN }}"}
     assert f"update_bot: {bot}" in (project / ".copier-answers.yml").read_text()

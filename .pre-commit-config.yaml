@@ -1,6 +1,6 @@
-# Contrôles de kiln rejoués par git, comme dans les repos générés.
+# Contrôles d'ion-repo rejoués par git, comme dans les repos générés.
 #
-# Installation, une fois, à la racine : kiln install  (ou : uvx pre-commit install)
+# Installation, une fois, à la racine : ion repo install  (ou : uvx pre-commit install)
 # Le crochet vaut pour l'arbre principal et tous les worktrees. Tout rejouer :
 #   pre-commit run --all-files
 # Seulement ruff, sur les fichiers commités : typage, tests et CI ne tournent qu'à la release.

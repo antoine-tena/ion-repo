@@ -1,4 +1,4 @@
-"""Dash entry point: `uv run python app.py` (or `kiln dev`)."""
+"""Dash entry point: `uv run python app.py` (or `ion repo dev`)."""
 
 from dashboard.layout import create_app
 

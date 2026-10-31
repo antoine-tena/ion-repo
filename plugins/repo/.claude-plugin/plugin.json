@@ -1,0 +1,8 @@
+{
+  "name": "repo",
+  "version": "0.14.0",
+  "description": "For every project: worktrees, merge, release, cleanup, ion-repo updates, size changes, defects reported to ion-repo, contributor PRs, good first issues, service tokens, branch guard, protected files, per-file charter check, context7",
+  "author": {
+    "name": "antoine-tena"
+  }
+}

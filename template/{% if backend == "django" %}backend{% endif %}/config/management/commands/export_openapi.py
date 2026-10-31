@@ -1,6 +1,6 @@
 """Exports the OpenAPI schema of the API ([OPENAPI]), source of the frontend's types.
 
-Run by `kiln contract` (`--output ../openapi.json`); `--check` is for CI.
+Run by `ion repo contract` (`--output ../openapi.json`); `--check` is for CI.
 """
 
 import json

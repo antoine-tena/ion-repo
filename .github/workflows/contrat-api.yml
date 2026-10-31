@@ -1,7 +1,7 @@
 name: API contract (former name)
 
 # Name of api-contract.yml before kiln 0.4.0, with its inputs of that time, kept for the repos
-# that call kiln's workflows at `develop`. Runs api-contract.yml at this same commit.
+# that call ion-repo's workflows at `develop`. Runs api-contract.yml at this same commit.
 on:
   workflow_call:
     inputs:

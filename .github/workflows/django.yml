@@ -51,28 +51,28 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      # kiln at the exact version of this workflow: its actions and the charter command come
+      # ion-repo at the exact version of this workflow: its actions and the charter command come
       # from there (removed at once, so that the project's checks never see it).
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          repository: antoine-tena/kiln
+          repository: antoine-tena/ion-repo
           ref: ${{ job.workflow_sha || 'develop' }}
-          path: .kiln
-      - uses: ./.kiln/actions/charter
+          path: .ion-repo
+      - uses: ./.ion-repo/actions/charter
         with:
           ref: ${{ job.workflow_sha || 'develop' }}
 
-      - uses: ./.kiln/actions/services
+      - uses: ./.ion-repo/actions/services
         with:
           database: ${{ inputs.base || inputs.database }}
           postgres: ${{ inputs.postgres }}
           redis: ${{ inputs.redis }}
-      - name: Remove kiln from the project directory
+      - name: Remove ion-repo from the project directory
         # Its charter action is set aside: setup-uv's post step reads it again at the end.
         run: |
-          cp -r .kiln/actions/charter "$RUNNER_TEMP/kiln-charter-action"
-          rm -rf .kiln
+          cp -r .ion-repo/actions/charter "$RUNNER_TEMP/ion-repo-charter-action"
+          rm -rf .ion-repo
 
       - name: Project variables
         if: inputs.env != ''
@@ -123,6 +123,6 @@ jobs:
 
       # Once the project's checks are done: the charter action back for setup-uv's post step,
       # which otherwise fails the job ("Can't find 'action.yml'").
-      - name: kiln's charter action back
+      - name: ion-repo's charter action back
         if: always()
-        run: mkdir -p .kiln/actions && cp -r "$RUNNER_TEMP/kiln-charter-action" .kiln/actions/charter
+        run: mkdir -p .ion-repo/actions && cp -r "$RUNNER_TEMP/ion-repo-charter-action" .ion-repo/actions/charter

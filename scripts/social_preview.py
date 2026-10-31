@@ -4,7 +4,7 @@
 
 `docs/assets/social-preview.svg` is drawn by `scripts/screenshots.py` (checked by the tests);
 this renders it in Chromium at 1280 by 640 pixels into `docs/assets/social-preview.png`,
-uploaded by hand as no API takes it: https://github.com/antoine-tena/kiln/settings, "Social
+uploaded by hand as no API takes it: https://github.com/antoine-tena/ion-repo/settings, "Social
 preview". Run `uv run --with playwright playwright install chromium` first if Chromium is
 missing.
 """

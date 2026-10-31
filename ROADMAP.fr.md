@@ -2,30 +2,30 @@
 
 [English](ROADMAP.md)
 
-Où va kiln, et dans quel ordre. Cette page est tirée [du backlog](docs/backlog/backlog.md#-releases),
+Où va ion-repo, et dans quel ordre. Cette page est tirée [du backlog](docs/backlog/backlog.md#-releases),
 où chaque ticket ouvert a sa version (les 1 070
-[idées de kiln score](docs/backlog/backlog.md#-kiln-score-the-thesis) comprises, devenues des
+[idées de ion repo score](docs/backlog/backlog.md#-ion-repo-score-the-thesis) comprises, devenues des
 tickets), et elle
 est redessinée à chaque changement du plan. Les numéros sont prévus, pas promis : une version est
 arrêtée dès que sa candidate est taguée. Ce qui est déjà sorti est dans le [journal](CHANGELOG.md).
 
-## Comment kiln sort ses versions
+## Comment ion-repo sort ses versions
 
-- Une version tous les deux jours. Chacune tourne d'abord en candidate sur les repos de kiln :
+- Une version tous les deux jours. Chacune tourne d'abord en candidate sur les repos d'ion-repo :
   24 heures quand elle apporte du neuf, 2 heures quand elle ne fait que corriger, aucune attente
   pour une faille de sécurité.
 - En `0.x`, chaque version monte le correctif, changements cassants compris : ils ouvrent la note
-  de version, et `kiln update` les convertit dans votre repo. La mineure ne monte qu'à une étape,
+  de version, et `ion repo update` les convertit dans votre repo. La mineure ne monte qu'à une étape,
   dans la version qui l'atteint : le travail qui y mène sort sous la mineure d'avant, si bien que
   les stacks de la v0.8.0 arrivent en v0.7.x. Le semver strict commence à la 1.0.
-- Un seul mainteneur écrit kiln avec Claude Code, environ 25 heures de session par semaine. Le plan
+- Un seul mainteneur écrit ion-repo avec Claude Code, environ 25 heures de session par semaine. Le plan
   ne porte pas de dates pour l'instant : le lancement public n'en a pas encore.
 
 ## Étapes
 
 | Étape | Ce que ça change pour vous | Prévue |
 |---|---|---|
-| v0.5.0 | N'importe quel repo Django ou Nuxt, créé par kiln ou non, noté face à la grille en quelques secondes, puis mis à niveau par script partout où un script le peut. Le lancement public, une fois que la v0.5.0 tient sa barre. | pas de date |
+| v0.5.0 | N'importe quel repo Django ou Nuxt, créé par ion-repo ou non, noté face à la grille en quelques secondes, puis mis à niveau par script partout où un script le peut. Le lancement public, une fois que la v0.5.0 tient sa barre. | pas de date |
 | v0.6.0 | Claude Code comble seul les écarts qu'un script laisse, chacun prouvé par la note. | pas de date |
 | v0.7.0 | Tous les repos d'une organisation (une université, un réseau d'associations, une entreprise de 50 personnes) notés sans les cloner, leurs écarts classés d'un repo à l'autre. | pas de date |
 | v0.8.0 | Chaque stack courante notée et corrigée par script : Java et Kotlin, C# et .NET, PHP, C et C++, Go, Rust, Ruby, applications mobiles, jeux, R et Elixir, chacune avec ses frameworks les plus utilisés. | pas de date |
@@ -40,7 +40,7 @@ Toutes les stacks viennent avant la 1.0, exprès : un format éprouvé sur deux 
 Chaque version dans l'ordre où elle sort : ce qu'elle apporte, pourquoi son travail va ensemble,
 et ce qu'elle prend du backlog (ses tickets). Le détail est repris tel quel du backlog, tenu en
 anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
-[Ouvrez une issue](https://github.com/antoine-tena/kiln/issues) : le plan bouge avec ce qu'on lui demande.
+[Ouvrez une issue](https://github.com/antoine-tena/ion-repo/issues) : le plan bouge avec ce qu'on lui demande.
 
 <!-- roadmap:start: drawn from docs/backlog/backlog.md by scripts/roadmap.py -->
 

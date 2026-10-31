@@ -1,35 +1,12 @@
 #!/usr/bin/env python3
-"""PreToolUse (Edit/Write/NotebookEdit): protects secrets, tokens, lockfiles and archives.
+"""Former path of the kiln plugin (before ion-repo, 31 October 2026), still called by sessions
+started before the rename: runs plugins/repo/hooks/protect_files.py."""
 
-These files are not edited by hand.
-"""
-
-import json
-import os
-import re
+import runpy
 import sys
+from pathlib import Path
 
-path = json.load(sys.stdin).get("tool_input", {}).get("file_path") or ""
-name = os.path.basename(path)
-LOCKFILES = {
-    "uv.lock",
-    "poetry.lock",
-    "pnpm-lock.yaml",
-    "package-lock.json",
-    "yarn.lock",
-    "bun.lockb",
-    "Cargo.lock",
-}
-
-if "/docs/_archive/" in path:
-    reason = "docs/_archive/ is closed"
-elif re.fullmatch(r"\.env(\..*)?", name) and not name.endswith((".example", ".sample")):
-    reason = "secrets file"
-elif re.search(r"/\.[\w-]+/token$", path):
-    reason = "service token: the user pastes it themselves"
-elif name in LOCKFILES:
-    reason = "lockfile: go through the package manager"
-else:
-    sys.exit(0)
-print(f"Edit refused ({reason}): {path}", file=sys.stderr)
-sys.exit(2)
+script = Path(__file__).resolve().parents[2] / "repo" / "hooks" / "protect_files.py"
+sys.path.insert(0, str(script.parent))
+sys.argv[0] = str(script)
+runpy.run_path(str(script), run_name="__main__")

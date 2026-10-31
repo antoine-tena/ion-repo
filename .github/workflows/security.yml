@@ -2,7 +2,7 @@ name: Dependency security
 
 # Fails as long as a dependency known to be vulnerable stays in place: `uv audit` for each uv
 # project, `pnpm audit` for each pnpm front, OSV-Scanner for a Maven project. Upgrades go through
-# Dependabot and `kiln update`; GitHub's security alerts stay on.
+# Dependabot and `ion repo update`; GitHub's security alerts stay on.
 on:
   workflow_call:
     inputs:

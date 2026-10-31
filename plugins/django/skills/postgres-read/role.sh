@@ -4,8 +4,8 @@
 # read-only transactions by default.
 set -euo pipefail
 . "${CLAUDE_PLUGIN_ROOT:-$(dirname "$0")/../..}/scripts/pg-env.sh"
-role="$KILN_PG_READ_ROLE"
-podman exec -i "$KILN_PG_CONTAINER" psql -v ON_ERROR_STOP=1 -U "$KILN_PG_USER" -d postgres <<SQL
+role="$ION_REPO_PG_READ_ROLE"
+podman exec -i "$ION_REPO_PG_CONTAINER" psql -v ON_ERROR_STOP=1 -U "$ION_REPO_PG_USER" -d postgres <<SQL
 DO \$\$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$role') THEN
@@ -17,4 +17,4 @@ ALTER ROLE $role NOSUPERUSER NOCREATEDB NOCREATEROLE;
 ALTER ROLE $role SET default_transaction_read_only = on;
 GRANT pg_read_all_data, pg_monitor TO $role;
 SQL
-echo "postgres_mcp_role_ready container=$KILN_PG_CONTAINER role=$role"
+echo "postgres_mcp_role_ready container=$ION_REPO_PG_CONTAINER role=$role"

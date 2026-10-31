@@ -1,8 +1,8 @@
 blank_issues_enabled: true
 contact_links:
   - name: Questions and discussions
-    url: https://github.com/antoine-tena/kiln/discussions
-    about: Ask how to do something, share what you built with kiln.
+    url: https://github.com/antoine-tena/ion-repo/discussions
+    about: Ask how to do something, share what you built with ion-repo.
   - name: Security vulnerability
-    url: https://github.com/antoine-tena/kiln/security/advisories/new
+    url: https://github.com/antoine-tena/ion-repo/security/advisories/new
     about: Please report vulnerabilities privately.

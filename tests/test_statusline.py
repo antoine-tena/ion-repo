@@ -1,4 +1,5 @@
-"""Status line : le choix du poste (`kiln set statusline=…`) et le script du plugin `kiln`."""
+"""Status line : le choix du poste (`ion repo set statusline=…`) et le script du plugin
+`ion-repo`."""
 
 import importlib.util
 import json
@@ -9,18 +10,18 @@ from typing import Any
 
 import pytest
 
-from kiln.config import UserConfig, load_config, save_config
-from kiln.machine import apply_machine, only_machine_keys
-from kiln.shell import KilnError
-from kiln.statusline import (
+from ion_repo.config import UserConfig, load_config, save_config
+from ion_repo.machine import apply_machine, only_machine_keys
+from ion_repo.shell import KilnError
+from ion_repo.statusline import (
     REFRESH_SECONDS,
     apply_statusline_choice,
     ensure_statusline,
     is_kiln_statusline,
 )
-from kiln.trailers import apply_trailers_choice, ensure_trailers
+from ion_repo.trailers import apply_trailers_choice, ensure_trailers
 
-SCRIPT = Path(__file__).parent.parent / "plugins" / "kiln" / "scripts" / "statusline.py"
+SCRIPT = Path(__file__).parent.parent / "plugins" / "repo" / "scripts" / "statusline.py"
 OWN = {"type": "command", "command": "~/bin/ma-ligne.sh"}
 X = "\u00d7"  # signe de multiplication des compteurs
 
@@ -35,11 +36,11 @@ def load_script() -> ModuleType:
 
 @pytest.fixture
 def home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    """Un poste avec le catalogue kiln déclaré là où Claude Code le range."""
+    """Un poste avec le catalogue ion-repo déclaré là où Claude Code le range."""
     monkeypatch.setenv("HOME", str(tmp_path))
     kiln = tmp_path / "kiln"
-    (kiln / "plugins" / "kiln" / "scripts").mkdir(parents=True)
-    (kiln / "plugins" / "kiln" / "scripts" / "statusline.py").write_text("")
+    (kiln / "plugins" / "repo" / "scripts").mkdir(parents=True)
+    (kiln / "plugins" / "repo" / "scripts" / "statusline.py").write_text("")
     plugins = tmp_path / ".claude" / "plugins"
     plugins.mkdir(parents=True)
     (plugins / "known_marketplaces.json").write_text(
@@ -54,7 +55,7 @@ def settings(home: Path) -> dict[str, Any]:
 
 
 def test_machine_keys_set_in_a_repo_go_to_the_machine() -> None:
-    # `kiln set statusline=custom` in a repo was refused: only repo keys were known there (#47).
+    # `ion repo set statusline=custom` in a repo was refused: only repo keys were known there (#47).
     assert only_machine_keys(["statusline=custom"])
     assert only_machine_keys(["channel=beta", "statusline=band"])
     assert not only_machine_keys(["team=a"])  # a repo key as well: the repo's
@@ -147,7 +148,11 @@ def test_none_removes_the_statusline(home: Path) -> None:
 def test_switching_styles_keeps_the_kiln_command(home: Path) -> None:
     (home / ".claude" / "settings.json").write_text(
         json.dumps(
-            {"statusLine": {"command": 'python3 "$HOME/kiln/plugins/base/scripts/statusline.py"'}}
+            {
+                "statusLine": {
+                    "command": 'python3 "$HOME/ion-repo/plugins/base/scripts/statusline.py"'
+                }
+            }
         )
     )
 
@@ -161,7 +166,11 @@ def test_the_kiln_statusline_reruns_on_a_timer(home: Path) -> None:
     # lus en arrière-plan attendent le message suivant.
     (home / ".claude" / "settings.json").write_text(
         json.dumps(
-            {"statusLine": {"command": 'python3 "$HOME/kiln/plugins/kiln/scripts/statusline.py"'}}
+            {
+                "statusLine": {
+                    "command": 'python3 "$HOME/ion-repo/plugins/repo/scripts/statusline.py"'
+                }
+            }
         )
     )
 
@@ -173,7 +182,11 @@ def test_the_kiln_statusline_reruns_on_a_timer(home: Path) -> None:
 def test_a_set_up_machine_gets_the_timer_at_install(home: Path) -> None:
     (home / ".claude" / "settings.json").write_text(
         json.dumps(
-            {"statusLine": {"command": 'python3 "$HOME/kiln/plugins/base/scripts/statusline.py"'}}
+            {
+                "statusLine": {
+                    "command": 'python3 "$HOME/ion-repo/plugins/base/scripts/statusline.py"'
+                }
+            }
         )
     )
 
@@ -195,7 +208,13 @@ def test_overview_finds_the_repos_two_folders_down(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     script = load_script()
-    for repo in ("annski", "family/kiln/kiln", "family/seal/seal", "_archive/old", "a/b/c/deep"):
+    for repo in (
+        "annski",
+        "family/ion-repo/ion-repo",
+        "family/seal/seal",
+        "_archive/old",
+        "a/b/c/deep",
+    ):
         (tmp_path / repo / ".git").mkdir(parents=True)
     monkeypatch.setattr(
         script, "git_state", lambda path: Path(path).relative_to(tmp_path).as_posix()
@@ -203,7 +222,11 @@ def test_overview_finds_the_repos_two_folders_down(
 
     script.scan(str(tmp_path))
 
-    assert json.loads(capsys.readouterr().out) == ["annski", "family/kiln/kiln", "family/seal/seal"]
+    assert json.loads(capsys.readouterr().out) == [
+        "annski",
+        "family/ion-repo/ion-repo",
+        "family/seal/seal",
+    ]
 
 
 def test_secret_scan_ignores_rendered_examples(tmp_path: Path) -> None:

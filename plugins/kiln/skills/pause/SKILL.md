@@ -1,18 +1,9 @@
 ---
 name: pause
-description: Keep this session's place before leaving it open or closing the computer - its name, where it stopped, the next step - so the next session start, in any repo, lists it with the command that resumes it. Use when the user says they stop, pause, come back later, or asks which session to resume.
-argument-hint: "[what this session is about]"
+description: Former name of /repo:pause (kiln became ion-repo on 31 October 2026), for sessions started before the rename.
 ---
 
-Talk to the user in their language; a few seconds, nothing else touched.
-
-1. In a few words, what this session works on (`$ARGUMENTS` if given): the task, the ticket if
-   there is one (`T-170: kiln fix proves each commit`). Then the next step, one concrete
-   sentence someone resuming cold can act on (`merge feat/fix-proof once the tests pass`).
-2. Uncommitted work stays where it is: say which worktree holds it, never commit or stash it on
-   your own to pause.
-3. `kiln pause "<name>" --next "<next step>"`, from the repo of the work (its worktree).
-4. Tell the user it is kept, with what the command printed: the next session start lists it
-   above the first prompt (name, age, next step, `claude --resume <id>`); `/rename <name>` also
-   shows it under that name in Claude Code's `/resume` picker. Once resumed, or its branch merged
-   and deleted, it leaves the list.
+kiln is now ion-repo: this skill is `/repo:pause`. Read
+`${CLAUDE_PLUGIN_ROOT}/../repo/skills/pause/SKILL.md` and follow it exactly, with the same
+arguments (`$ARGUMENTS`); where it names `${CLAUDE_PLUGIN_ROOT}`, use the `plugins/repo` folder
+next to this one.

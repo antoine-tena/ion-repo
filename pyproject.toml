@@ -1,7 +1,7 @@
 [project]
-# Sur PyPI, `kiln` est pris : la distribution s'appelle kiln-cli, la commande reste `kiln`. `pypi.yml`
-# publie le même code sous `keramos-kiln`, le nom de la famille Keramos, qui la remplacera.
-name = "kiln-cli"
+# ion-repo, l'outil de la famille Ion qui tient les repos (kiln jusqu'au 31 octobre 2026). `pypi.yml`
+# publie le même code sous `kiln-cli`, son ancien nom, le temps que ses testeurs passent au nouveau.
+name = "ion-repo"
 version = "0.4.10"
 description = "Claude Code's workshop: start every new project, and rescue every old one, like a senior engineer would — even if you're not one."
 # README.md, its relative images and links made absolute for PyPI (fancy-pypi-readme, below).
@@ -27,25 +27,26 @@ requires-python = ">=3.14"
 dependencies = ["copier>=9.4,<10", "packaging>=24"]
 
 [project.urls]
-Homepage = "https://github.com/antoine-tena/kiln"
-Changelog = "https://github.com/antoine-tena/kiln/blob/develop/CHANGELOG.md"
-Issues = "https://github.com/antoine-tena/kiln/issues"
+Homepage = "https://github.com/antoine-tena/ion-repo"
+Changelog = "https://github.com/antoine-tena/ion-repo/blob/develop/CHANGELOG.md"
+Issues = "https://github.com/antoine-tena/ion-repo/issues"
 
 [project.scripts]
+ion-repo = "ion_repo.cli:main"
+# Its name before the Ion family, an alias that says the new one (`src/kiln/`), for its testers;
+# `kiln-cli` too, so that `uvx kiln-cli new` works without `--from`.
 kiln = "kiln.cli:main"
-# Même commande sous le nom du paquet, pour que `uvx kiln-cli new` marche sans `--from`.
 kiln-cli = "kiln.cli:main"
-keramos-kiln = "kiln.cli:main"
-charter = "kiln.charter.cli:run"
+charter = "ion_repo.charter.cli:run"
 # Its name before kiln 0.4.0, still called by adopted repos and older generated ones.
-charte = "kiln.charter.cli:run"
+charte = "ion_repo.charter.cli:run"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/kiln"]
+packages = ["src/ion_repo", "src/kiln"]
 
 # Le journal des versions voyage avec l'outil : `kiln update` en montre les nouveautés.
 [tool.hatch.build.targets.wheel.force-include]
-"CHANGELOG.md" = "kiln/CHANGELOG.md"
+"CHANGELOG.md" = "ion_repo/CHANGELOG.md"
 
 # The commit the tool is built from (`kiln/_build.json`): a folder install says what it is.
 [tool.hatch.build.targets.wheel.hooks.custom]
@@ -65,11 +66,11 @@ path = "README.md"
 
 [[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
 pattern = '(src|srcset)="(?!https?://)([^"]+)"'
-replacement = '\1="https://raw.githubusercontent.com/antoine-tena/kiln/v$HFPR_VERSION/\2"'
+replacement = '\1="https://raw.githubusercontent.com/antoine-tena/ion-repo/v$HFPR_VERSION/\2"'
 
 [[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
 pattern = '\]\((?!https?://|#)([^)\s]+)\)'
-replacement = '](https://github.com/antoine-tena/kiln/blob/v$HFPR_VERSION/\1)'
+replacement = '](https://github.com/antoine-tena/ion-repo/blob/v$HFPR_VERSION/\1)'
 
 [dependency-groups]
 dev = [

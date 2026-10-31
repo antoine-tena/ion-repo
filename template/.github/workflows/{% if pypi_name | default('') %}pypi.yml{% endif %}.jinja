@@ -1,13 +1,13 @@
 {%- set bd = backend_dir | default('backend') %}{%- set bp = '' if bd == '.' else bd ~ '/' -%}
 name: PyPI
 
-# Publishes {{ pypi_name }} on PyPI at each release tag `vN` (`/kiln:release`), its version taken
+# Publishes {{ pypi_name }} on PyPI at each release tag `vN` (`/repo:release`), its version taken
 # from the tag; the command stays `{{ name }}`. Either a PyPI token in the secret `PYPI_TOKEN` of
-# the `pypi` environment (`/kiln:token`; "Entire account" to create the project at the first tag,
+# the `pypi` environment (`/repo:token`; "Entire account" to create the project at the first tag,
 # scoped to it afterwards), or, without it, trusted publishing: PyPI trusts this workflow and the
 # `pypi` environment, declared once at https://pypi.org/manage/account/publishing/. PyPI refuses a
-# reusable workflow as a trusted publisher: this one stays in the repo, written by kiln. Off with
-# `kiln set pypi_name=`.
+# reusable workflow as a trusted publisher: this one stays in the repo, written by ion-repo. Off with
+# `ion repo set pypi_name=`.
 on:
   push:
     tags: [ "v[0-9]*" ]
