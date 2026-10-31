@@ -29,7 +29,9 @@ is old and must be checked** against the current code; they are never edited.
     Why, what to do (as a `- [ ]` checklist when there are several steps), where to look.
 
 - **ID** `T-NN`: stable, never reused, quoted as is in commits and branches. The next free one
-  is written at the top of [backlog.md](backlog.md) (`Next free: T-NN`).
+  is written at the top of [backlog.md](backlog.md) (`Next free: T-NN`). A bare `T-NN` always
+  means a ticket of this repo; a ticket of another repo is cited with that repo's name
+  (`ion-repo#T-400`).
 - **Type**, one of: `bug` (something is broken); `improvement` (it works, it could work
   better); `idea` (nothing exists yet, to be explored); `task` (work that is neither: a release,
   a decision, a check).
