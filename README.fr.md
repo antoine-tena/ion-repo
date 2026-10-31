@@ -80,11 +80,14 @@ pour la rejouer.
 ## Installation
 
 ```sh
-uv tool install kiln-cli     # la commande est ion-repo ; uv installe Python 3.14 s'il manque
-ion repo install                 # hors d'un repo : le plugin Claude Code d'ion-repo dans chaque session
+uv tool install kiln-cli     # uv installe Python 3.14 s'il manque
+kiln install                 # hors d'un repo : le plugin Claude Code d'ion-repo dans chaque session
 ```
 
-Avec Homebrew : `brew install antoine-tena/ion-repo/ion-repo`. Ou pour essayer sans rien installer :
+La version publiée répond encore à `kiln`, son ancien nom : plus bas, lire `kiln` pour `ion repo`
+jusqu'à l'arrivée d'`ion-repo` et d'`ion-sh` sur PyPI, à la prochaine release.
+
+Avec Homebrew : `brew install antoine-tena/ion/kiln`. Ou pour essayer sans rien installer :
 `uvx kiln-cli new mon-app` pour un nouveau repo, `uvx kiln-cli adopt` dans un repo que vous
 avez déjà. macOS, Linux et Windows par WSL ;
 [pnpm](https://pnpm.io/) pour les fronts JavaScript, [podman](https://podman.io/) pour les
@@ -160,8 +163,8 @@ conteneurs, tests…) et sa portée (universelle, un langage, un framework, un o
 pourquoi, cite des sources pesées dans un ordre fixe (documentation officielle, alertes de
 sécurité, études mesurées, données d'adoption, blogs) et porte un niveau du Technology Radar de
 Thoughtworks : adopter, essayer, évaluer, abandonner. Seules les règles adoptées comptent :
-40 (chaîne d'approvisionnement, CI, conteneurs, tests, normes de code, sécurité de Django et de
-Vue), chacune passée sur deux vrais repos pour traquer les faux positifs ; 95 brouillons
+43 (chaîne d'approvisionnement, CI, conteneurs, tests, normes de code, sécurité de Django et de
+Vue), chacune passée sur deux vrais repos pour traquer les faux positifs ; 96 brouillons
 attendent derrière `ion repo grid --level assess`.
 Chaque règle notée a un repo qui la respecte et un qui l'enfreint.
 

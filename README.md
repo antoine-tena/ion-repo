@@ -73,11 +73,14 @@ today with tests first, then closes each gap in its own commit, proven by `ion r
 ## Install
 
 ```sh
-uv tool install kiln-cli     # the command is ion-repo; uv fetches Python 3.14 if needed
-ion repo install                 # outside a repo: ion-repo's Claude Code plugin in every session
+uv tool install kiln-cli     # uv fetches Python 3.14 if needed
+kiln install                 # outside a repo: ion-repo's Claude Code plugin in every session
 ```
 
-With Homebrew: `brew install antoine-tena/ion-repo/ion-repo`. Or try it without installing anything:
+The published release still answers to `kiln`, under its former name: below, read `kiln` for
+`ion repo` until `ion-repo` and `ion-sh` reach PyPI at the next release.
+
+With Homebrew: `brew install antoine-tena/ion/kiln`. Or try it without installing anything:
 `uvx kiln-cli new my-app` for a new repo, `uvx kiln-cli adopt` in one you already have. macOS,
 Linux and Windows through WSL;
 [pnpm](https://pnpm.io/) for JavaScript fronts, [podman](https://podman.io/) for containers.
@@ -149,8 +152,8 @@ One small TOML file per rule, on two axes: its theme (supply chain, containers, 
 scope (universal, a language, a framework, a tool). Each says why, cites sources weighed in a
 fixed order (official docs, security advisories, measured studies, adoption data, blogs) and
 carries a level from Thoughtworks' Technology Radar: adopt, trial, assess, hold. Only adopted
-rules count: 40 of them (supply chain, CI, containers, tests, code standards, Django and Vue
-security), each run on two real repos for false positives; 95 drafts wait behind
+rules count: 43 of them (supply chain, CI, containers, tests, code standards, Django and Vue
+security), each run on two real repos for false positives; 96 drafts wait behind
 `ion repo grid --level assess`.
 Each scored rule ships with a repo that passes it and one that fails it.
 
