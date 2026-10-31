@@ -2,7 +2,7 @@
 
 The plugin every ion-repo project enables (`repo@ion-repo`).
 
-- `skills/`: the `/ion-repo:…` skills (`worktree`, `merge`, `release`, `cleanup`, `review`,
+- `skills/`: the `/repo:…` skills (`worktree`, `merge`, `release`, `cleanup`, `review`,
   `backlog`, `update`, `adopt`, `report`, `token`, `contribution`, `good-first-issues`).
 - `hooks/`: the hooks (`hooks.json` says when each one fires): branch guard, protected files,
   check of the edited file, rtk, update offer at session start (`reminders.py` paces it).
