@@ -1,111 +1,46 @@
 ---
 name: backlog
-description: Pick the next ticket of docs/backlog/backlog.md, add one (bug, improvement, idea, task), record one as started or done, or plan the next releases. Use when the user asks what to do next, wants to note a task or an idea, after starting or finishing a ticket, or to plan the next versions.
+description: Picks, adds, starts, closes tickets in docs/backlog/backlog.md; plans releases. Use for what to do next, noting a task or idea, a ticket started or finished, planning versions.
 argument-hint: "[T-NN | new <what> | start T-NN | done T-NN | plan]"
 ---
 
-In a repo without `docs/backlog/backlog.md`, say so and offer to set it up: an ion-repo repo has it
-by default (`ion repo update` brings it to an older repo, and moves an old `docs/a-faire/` there);
-elsewhere, copy the structure of ion-repo's template (`template/docs/backlog/`).
+No `docs/backlog/backlog.md`: say so, offer setup (`ion repo update` brings it, moves old `docs/a-faire/`; elsewhere copy ion-repo's `template/docs/backlog/`).
 
-`docs/backlog/backlog.md` is the **only** up-to-date list of open work, ordered by priority
-(🔴 critical, 🟠 important, 🟡 normal, ⚪ background), with `Next free: T-NN` in its header.
-`docs/backlog/done.md` logs the closed tickets, `docs/backlog/rejected.md` what was turned down:
-open them only to write in them or when asked about past work, never to pick a ticket. The
-"How to use" section of `docs/backlog/README.md` wins if it differs from what follows; read it
-when unsure. Do not read the whole `backlog.md`: start from the overview below, then read only
-the tickets involved (`grep -n` their heading, then `Read` with an offset).
+`backlog.md`: only open-work list, by priority (🔴 critical, 🟠 important, 🟡 normal, ⚪ background), `Next free: T-NN` in header. `done.md`, `rejected.md`: open only to write or when asked about past work. "How to use" in `docs/backlog/README.md` wins on conflict; read if unsure. Never read all of `backlog.md`: overview `grep -E '^(## |### T-|- \*\*Status)' docs/backlog/backlog.md`, then only involved tickets (`grep -n` heading, `Read` with offset).
 
-A bare `T-NN` always means a ticket of the repo it is written in; a ticket of another repo is
-cited with that repo's name, `ion-repo#T-400`. Numbers are never changed for this.
+Bare `T-NN`: this repo; other repo: `ion-repo#T-400`. IDs never change or get reused.
 
-A ticket: a `### T-NN · Title` heading, then the lines `- **Type**:`, `- **Status**:`,
-`- **Opened**: YYYY-MM-DD`, `- **Effort**: … · **Owner**: … · **Due**: …`, `- **Origin**: …`,
-then the details (`- [ ]` boxes). Types: `bug`, `improvement`, `idea`, `task`. Statuses:
-`todo`, `in progress — branch <name>, since YYYY-MM-DD`, `blocked — waiting for <who or what>`,
-`to verify — <where>`. **Owner**: `—` (free), `@login` (reserved for that GitHub account), a
-first name (reserved for that person too, login not written yet), or `contributor — #NN`; never
-`Claude`: an agent is not an owner. The user's account is `gh api user --jq .login` (otherwise
-`git config user.name`); a ticket owned by **anyone else** is their work: never plan, start or
-code it, even partly, and say who to ask. **Only the user's own login is ever written**: when it
-appears in no **Owner** but first names do, ask once which first name is theirs and replace that
-one alone by their `@login` (on a branch); the others write theirs in their own session. Never
-write, guess or ask for another member's login. Overview:
-`grep -E '^(## |### T-|- \*\*Status)' docs/backlog/backlog.md`.
+Ticket: `### T-NN · Title`, then `- **Type**:`, `- **Status**:`, `- **Opened**: YYYY-MM-DD`, `- **Effort**: … · **Owner**: … · **Due**: …`, `- **Origin**: …`, details (`- [ ]`). Types: `bug`, `improvement`, `idea`, `task`. Statuses: `todo`, `in progress — branch <name>, since YYYY-MM-DD`, `blocked — waiting for <who or what>`, `to verify — <where>`.
 
-`docs/_archive/` is **read** when a ticket points to lines of an archived report, but
-everything in it is old: check it against the current code before acting. Never edit an
-archived report.
+**Owner**: `—` (free), `@login`, a first name (reserved, login unknown), `contributor — #NN`; never `Claude`. User: `gh api user --jq .login` (else `git config user.name`). Ticket owned by **anyone else**: never plan, start or code it, even partly; say who to ask. **Write only the user's own login**: if absent from every **Owner** while first names appear, ask once which is theirs, replace that one alone (on a branch). Never write, guess or ask another member's login.
 
-**No argument**: propose the next 3 tickets in section order (critical first), following the
-north star in the header and skipping `blocked` tickets, those owned by another account,
-and those reserved for outside contributors (**Owner**: `contributor — #NN`, skill `/repo:good-first-issues`); for each, the ID, one sentence, the
-effort, and the owner. List separately the blocked tickets waiting for the user themselves.
-Quickly check in the code that the ticket is not already done (the locations quoted are hints,
-often stale).
+`docs/_archive/`: read when a ticket cites it; old, check against current code; never edit.
 
-**With an ID**: if its **Owner** is another account, stop there: show the ticket, say whose
-it is and that they take it (or hand it over by changing the owner). Otherwise show the full ticket (and the archive lines it quotes), find the files involved
-in the current code, propose a short plan, then create the branch (in a worktree, skill
-`/repo:worktree`) and set the status to `in progress — branch …`.
+**No argument**: next 3 tickets in section order, following the header's north star, skipping `blocked`, other owners, `contributor — #NN` (`/repo:good-first-issues`); each: ID, one sentence, effort, owner. List separately tickets blocked on the user. Check quickly in code that each isn't already done (quoted locations are often stale).
 
-**`new <what>`**: add a ticket with the `Next free: T-NN` ID of the header (then increment
-it), the type that fits (`idea` when nothing is decided yet), `todo`, today's date as
-`Opened`, in the section matching its priority (⚪ background for an idea still to explore).
-If the backlog has a `## 🚀 Releases` section, also place the ticket in the release where it
-fits best, **whatever its position**: a new idea may join v0.4.1 while v0.5.3 is the last
-planned one; create a release only when none fits, following the rules of `plan`.
+**ID**: other owner: stop, show ticket, say whose (they take it or hand over). Else show full ticket and cited archive lines, find files in current code, propose a short plan, create the branch (`/repo:worktree`), set `in progress — branch …`.
 
-**`start T-NN`**: refused on a ticket owned by another account (see above); otherwise set the
-**Status** line to `in progress — branch <name>, since YYYY-MM-DD`, and a free **Owner** (`—`)
-to the user's `@login`.
+**`new <what>`**: `Next free` ID (then increment), fitting type (`idea` if undecided), `todo`, today as `Opened`, section by priority (⚪ for an idea to explore). If `## 🚀 Releases` exists, place it in the best-fitting release **whatever its position**; new release only if none fits, per `plan`.
 
-**`done T-NN`**: remove the ticket from its section and add at the **top** of the log of
-`done.md` (under its introduction) a line `- **YYYY-MM-DD** · T-NN · Title — what was done (branch) · opened YYYY-MM-DD`. A
-half-done ticket stays in place: tick the steps done, write what is left. Keep the style and
-tone of the file. Remove the ticket from `## 🚀 Releases` too; a release left empty means it is
-ready for its candidate: say so.
+**`start T-NN`**: refused if other owner; else set `in progress — branch <name>, since YYYY-MM-DD`, free **Owner** becomes the user's `@login`.
 
-**`plan`**: put **every** open ticket into a planned release, written straight into the
-`## 🚀 Releases` section just above 🔴 critical (create it if missing), then show the plan. Read
-every open ticket (priority, effort, status, `blocked — waiting for …`, what it touches) and the
-versioning rules of the repo's `CLAUDE.md`. The plan is a living draft, not a queue: redo the
-groupings freely each time, as long as the result follows these rules.
-- **Every ticket has a release.** No leftover pile: background work, debt and ideas go into the
-  release whose theme they serve; a ticket blocked on the user goes into the release it makes
-  sense in, marked `(blocked: <who>)`; a ticket waiting for another one comes in the same
-  release or a later one.
-- **A release is a real grouping.** Its tickets share one outcome a user can notice or a
-  milestone it unblocks, and its name says that outcome in a few words
-  (`v0.4.1 · Nothing to trip on for a beginner`), never a list of contents or `misc`. Look for
-  links across priorities: a 🟡 ticket that completes a 🟠 one goes with it.
-- **No useless release.** A release that only holds a stray XS ticket or a vague theme is
-  merged into a neighbour; a release too big to ship within the cadence the repo's
-  `CLAUDE.md` sets (about a week when it says nothing) is split along a real seam. Urgent fixes (a 🔴 bug) may stand alone.
-  Work whose tickets only hold what is known today (one ecosystem after another, rules still to
-  write) is sized from what comparable work took, said in the release line, never from its boxes.
-- **Order**: what blocks first, then 🔴 then 🟠 then the rest; within that, the release that
-  makes the north star of the header closest comes first.
-- **Numbers are planned, not promised.** In 0.x each release bumps the patch; a group that
-  forms a milestone may be proposed as a minor bump, saying why in the release line: the user
-  decides (until then keep the patch number). The minor goes to the release that reaches the
-  milestone, never to the one that starts its work: what leads to a v0.8.0 milestone is v0.7.x.
-  Inserting or merging releases renumbers the later ones. A release whose candidate is tagged is frozen: no ticket enters or leaves it.
-- **Breaking changes** (CLI, `copier.yml` questions, generated tree, workflow inputs, skill and
-  hook names, charter rule IDs) are flagged `⚠ breaking` on the release: they open its release
-  note and need their conversion in `ion repo update`.
+**`done T-NN`**: remove from its section; add at **top** of `done.md`'s log (under intro) `- **YYYY-MM-DD** · T-NN · Title — what was done (branch) · opened YYYY-MM-DD`. Half done stays: tick steps, write what's left. Keep file's style. Remove from `## 🚀 Releases`; an emptied release is ready for its candidate: say so.
 
-Format of the section, one block per release, in order:
+**`plan`**: put **every** open ticket in a planned release, written in `## 🚀 Releases` just above 🔴 (create if missing), then show it. Read every open ticket (priority, effort, status, blockers, what it touches) and the versioning rules of `CLAUDE.md`. Living draft: regroup freely within these rules.
+- **Every ticket has a release.** Background, debt, ideas join the theme they serve; blocked on user: where it makes sense, marked `(blocked: <who>)`; dependent ticket: same or later release.
+- **Real grouping.** One outcome a user notices or a milestone unblocked; name says it (`v0.4.1 · Nothing to trip on for a beginner`), never contents or `misc`. Link across priorities: 🟡 completing 🟠 goes with it.
+- **No useless release.** Stray XS or vague theme: merge into a neighbour. Too big for `CLAUDE.md`'s cadence (default about a week): split along a real seam. A 🔴 bug may stand alone. Work known only partly today (one ecosystem after another, rules to write): size from comparable work, stated in the release line, never from its boxes.
+- **Order**: blockers, then 🔴, 🟠, rest; within that, closest to the north star first.
+- **Numbers planned, not promised.** 0.x: each release bumps patch; a milestone may propose a minor, saying why: user decides (patch until then). Minor goes to the release reaching the milestone, never the one starting it (leading to v0.8.0 is v0.7.x). Inserting or merging renumbers later ones. Candidate tagged: frozen, no ticket in or out.
+- **Breaking** (CLI, `copier.yml` questions, generated tree, workflow inputs, skill and hook names, charter rule IDs): flag `⚠ breaking`; opens the release note, needs conversion in `ion repo update`.
+
+Per release, in order:
 
     ### v0.4.1 · Nothing to trip on for a beginner
     Why these go together, in one sentence. ⚠ breaking: the size question goes away.
     - T-39 · Start light, grow with the repo (M)
     - T-42 · The git flow grows with the size (M)
 
-Tickets stay in their priority sections; the release section only quotes ID, short title and
-effort. After writing, show the user the releases (name, tickets, why) and what moved since
-the last plan; they reshuffle by asking. A repo that shows this section as a public roadmap
-(`scripts/roadmap.py`, as ion-repo does) has it redrawn after every change to the section.
+Tickets stay in priority sections; this section quotes ID, short title, effort. After writing, show releases (name, tickets, why) and what moved; user reshuffles by asking. Public roadmap repo (`scripts/roadmap.py`, as ion-repo): redraw after every change.
 
-An ID is never reused. Changes are committed on the work branch, never on the integration
-branch. Never copy a ticket into `rejected.md` without an explicit decision from the user.
+Commit on the work branch, never integration. Never copy to `rejected.md` without the user's explicit decision.

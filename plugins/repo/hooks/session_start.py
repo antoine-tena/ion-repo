@@ -70,36 +70,22 @@ STARTUP_SOURCE = "startup"
 # Said at every start, /clear and compaction included, in any repo: an error that ion-repo caused
 # often surfaces elsewhere (a Django traceback because `ion repo dev` did not start the database).
 ERROR_ORIGIN = (
-    "ion-repo [REPORT-TO-ION-REPO]: when something fails (a command, a test, a check, a server "
-    "that "
-    "crashes, a CI run), ask yourself before fixing it whether the cause lies in ion-repo - the "
-    "ion-repo "
-    "or charter command (ion repo dev, ion repo check, ion repo ci...), a file ion-repo generated, "
-    "a rule of its "
-    "charter, a skill or hook of an ion-repo plugin, a reusable workflow - even when the error "
-    "shows "
-    "up elsewhere. If it does, tell the user, and fix it in ion-repo, never in the repo where it "
-    "showed (ion repo update would undo it): in ion-repo's own repo when this machine has it, "
-    "otherwise "
-    "report it with /repo:report, only with the user's agreement."
+    "ion-repo [REPORT-TO-ION-REPO]: on any failure (command, test, check, server, CI), first ask "
+    "if the cause is in ion-repo (ion-repo or charter command, generated file, charter rule, "
+    "plugin skill or hook, reusable workflow), even if it shows elsewhere. If so, tell the user "
+    "and fix it in ion-repo, never where it showed (`ion repo update` would undo it): in its repo "
+    "if on this machine, else /repo:report with the user's agreement."
 )
 # Said at every start too: the answer of an Ion tool's skill stands out in the terminal, between
 # two double lines as wide as the terminal (no corners: Markdown can't close a box's sides), which
 # `ion-repo frame` draws since Claude's Bash can't see the terminal's width.
 SKILL_FRAME = (
-    "Ion [SKILL-FRAME]: an answer given by a skill of an Ion tool (sell, count, hire, rescue, "
+    "Ion [SKILL-FRAME]: frame the final answer of an Ion tool's skill (sell, count, hire, rescue, "
     "repo, render, score, learn, deal, host, secure, design, media, words, launch, maintain, "
-    "measure, show, and any later one; a plugin may still be named ion-<word>, or by its name "
-    "before the Ion family: kiln, slake, cone, grog, seal, hearth, saggar, glaze, wedge, stylus, "
-    "raku) is framed once the skill has done its work; any other answer is not, nor a question, "
-    "a stop or a refusal met along the way. Run `ion-repo frame <plugin> <skill>` first: it "
-    "prints two lines as wide as the terminal, under the tool's word. Write the first in a code "
-    "block without a language, then the answer in ordinary Markdown (bold, lists, sections), then "
-    "the second in a code block without a language. Copy them as printed, never by hand. For "
-    "/learn:summary:\n"
-    "```\n══ ◆ ion · learn ═══…═══\n```\n"
-    "...\n"
-    "```\n═══…═══ /learn:summary ══\n```"
+    "measure, show, any later one, ion-<word>; old names kiln, slake, cone, grog, seal, hearth, "
+    "saggar, glaze, wedge, stylus, raku). Never frame other answers, questions, stops, refusals. "
+    "First run `ion-repo frame <plugin> <skill>`: copy its 2 lines verbatim, each in a code block "
+    "without language, around the ordinary Markdown answer."
 )
 TOOL_KEY = reminders.TOOL_KEY
 LEGACY_PLUGIN_LINK = Path(".claude") / "kiln"
