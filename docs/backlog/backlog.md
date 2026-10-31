@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-398.**
+**Next free: T-403.**
 
 ---
 
@@ -832,6 +832,48 @@ packs (T-69). From here, strict semver: breaking → major, `feat` → minor.
 
 ## 🟠 Important
 
+### T-400 · `ion repo update` stopped by a conflict never runs the converters
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-10-31
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: session bc540ab5 (kiln becomes ion-repo), 2026-10-31, by /learn:distill
+
+`update_project` returns at the first conflict, before `convert_in_place`; the documented next
+step, `--no-template`, skips it too (`if should_update_template`). So the template's unpinned
+`uses: …@develop` replaces a pinned SHA and `PINNED-ACTIONS` fails until someone runs `ion repo
+fix`. Seen on all 18 family repos, closed by calling the function by hand.
+- [ ] After the conflicts are resolved and committed, the next `ion repo update` runs the
+  converters, whatever its flags.
+- [ ] A test: an update with a conflict, then the follow-up, ends pinned.
+
+### T-401 · Updating a family of repos, stopping only at real conflicts
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-31
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: session bc540ab5 (kiln becomes ion-repo), 2026-10-31, by /learn:distill
+
+`ion repo update --all` merges straight away. Moving 18 repos needed three throwaway scripts:
+update each on a branch in its worktree, settle the conflicts that differ only by a name, check,
+then merge, push and clean up. The middle ground is missing.
+- [ ] A mode that prepares every repo on its branch, reports each one (conflicts left, check), and
+  merges only those that are clean, after a yes.
+- [ ] `frozen_repos` respected, as `--all` does.
+
+### T-402 · A test against the half-renamed forms in the template
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-10-31
+- **Effort**: XS · **Owner**: — · **Due**: —
+- **Origin**: session bc540ab5 (kiln becomes ion-repo), 2026-10-31, by /learn:distill
+
+The bulk rename of kiln left `/ion-repo:…`, `.claude/ion-repo` and `ion-repo 0.3` in the template
+and the plugin; no test saw them, the first real `ion repo update` did.
+- [ ] `test_template.py` refuses, in a render and in `plugins/`: a skill under the catalog's name
+  (`/ion-repo:`), a plugin id `ion-repo@ion-repo`, a version of ion-repo below the rename.
+- [ ] After any bulk replacement, the same kind of check: what the replacement must never produce.
+
 ### T-399 · The names ion-repo still keeps from kiln
 - **Type**: improvement
 - **Status**: todo
@@ -1426,6 +1468,9 @@ ignores a leading `cd` (`git -C` got through). It should judge the repo the comm
 Seen again by grog (30 October 2026): three refusals over two sessions, one in a throwaway copy
 on a `test/…` branch whose commit was refused with "never commit on develop".
 
+Same family, seen on 31 October 2026 (session bc540ab5): `git checkout -b x; git commit` sent as one
+command is refused on `main`, since the guard reads the branch before the command runs.
+
 ### T-168 · A repo from `kiln new` + `gh repo create --push` has no CI workflow on GitHub
 - **Type**: bug
 - **Status**: todo
@@ -1668,6 +1713,10 @@ still being written. Filing it afterwards is the need, not avoiding the restart.
   append the tail to the head. The `memory/` of a project folder whose path no longer exists moves
   too (MEMORY.md lines merged). Project folder names start with `-`: shell tools take them for
   options, so work in Python or with `./`. Keep a journal of the moves to undo them.
+- [ ] Learned by moving the Ion family on 2026-10-31: a folder moved under open sessions also needs
+  its worktrees repaired (`git worktree repair`), editable tools reinstalled, `.venv` dropped, the
+  paths in `~/.claude` rewritten, a forward left at the old path. A symlink between project folders
+  makes one session appear twice: `ion learn digest <id>` then refuses it as ambiguous.
 
 ### T-386 · Sessions named on their own: at the branch, then at the ticket
 - **Type**: improvement
