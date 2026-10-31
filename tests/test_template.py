@@ -292,6 +292,35 @@ def test_tool_project_can_ship_its_claude_code_plugin(tmp_path: Path) -> None:
     assert (project_dir / "backend/tests/test_plugin.py").is_file()
 
 
+def test_plugin_is_named_without_the_ion_prefix(tmp_path: Path) -> None:
+    project_dir = generate(
+        tmp_path / "ion-demo", name="ion-demo", project_type="cli", claude_plugin=True
+    )
+
+    marketplace = json.loads((project_dir / ".claude-plugin/marketplace.json").read_text())
+    assert marketplace["name"] == "ion-demo"
+    assert marketplace["plugins"][0]["name"] == "demo"
+    assert marketplace["plugins"][0]["source"] == "./plugins/demo"
+    assert not (project_dir / "plugins/ion-demo").exists()
+    manifest = project_dir / "plugins/demo/.claude-plugin/plugin.json"
+    assert json.loads(manifest.read_text())["name"] == "demo"
+    settings = json.loads((project_dir / ".claude/settings.json").read_text())
+    assert settings["enabledPlugins"]["demo@ion-demo"] is True
+    assert "/demo:…" in (project_dir / "plugins/demo/README.md").read_text()
+    answers = yaml.safe_load((project_dir / ".copier-answers.yml").read_text())
+    assert answers["plugin_name"] == "demo"
+
+
+def test_plugin_name_can_be_set(tmp_path: Path) -> None:
+    project_dir = generate(
+        tmp_path / "demo", project_type="cli", claude_plugin=True, plugin_name="other"
+    )
+
+    assert (project_dir / "plugins/other/.claude-plugin/plugin.json").is_file()
+    settings = json.loads((project_dir / ".claude/settings.json").read_text())
+    assert settings["enabledPlugins"]["other@demo"] is True
+
+
 def test_tool_project_can_be_published_on_pypi(tmp_path: Path) -> None:
     project_dir = generate(tmp_path / "demo", project_type="cli", pypi_name="keramos-demo")
 

@@ -45,6 +45,7 @@ SETTABLE_KEYS = (
     "frontend",
     "podman",
     "claude_plugin",
+    "plugin_name",
     "pypi_name",
     "java_package",
     "timezone",

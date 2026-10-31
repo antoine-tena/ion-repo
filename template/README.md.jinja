@@ -55,7 +55,7 @@ Puis ouvrir {{ open_url }}.
   et la façon de travailler, pour les humains comme pour les agents.
 - `.vscode/` : réglages et extensions recommandées, partagés par toute l'équipe.
 {%- if claude_plugin | default(false) %}
-- `plugins/{{ name }}/` et `.claude-plugin/marketplace.json` : le plugin Claude Code de la
+- `plugins/{{ plugin_name }}/` et `.claude-plugin/marketplace.json` : le plugin Claude Code de la
   commande, et le catalogue qui le publie.
 {%- endif %}
 {%- if podman %}
@@ -219,7 +219,7 @@ Then open {{ open_url }}.
   and the way of working, for humans and agents alike.
 - `.vscode/`: settings and recommended extensions, shared by the whole team.
 {%- if claude_plugin | default(false) %}
-- `plugins/{{ name }}/` and `.claude-plugin/marketplace.json`: the command's Claude Code
+- `plugins/{{ plugin_name }}/` and `.claude-plugin/marketplace.json`: the command's Claude Code
   plugin, and the catalog that publishes it.
 {%- endif %}
 {%- if podman %}
