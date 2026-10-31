@@ -16,6 +16,9 @@ open them only to write in them or when asked about past work, never to pick a t
 when unsure. Do not read the whole `backlog.md`: start from the overview below, then read only
 the tickets involved (`grep -n` their heading, then `Read` with an offset).
 
+A bare `T-NN` always means a ticket of the repo it is written in; a ticket of another repo is
+cited with that repo's name, `ion-repo#T-400`. Numbers are never changed for this.
+
 A ticket: a `### T-NN · Title` heading, then the lines `- **Type**:`, `- **Status**:`,
 `- **Opened**: YYYY-MM-DD`, `- **Effort**: … · **Owner**: … · **Due**: …`, `- **Origin**: …`,
 then the details (`- [ ]` boxes). Types: `bug`, `improvement`, `idea`, `task`. Statuses:
