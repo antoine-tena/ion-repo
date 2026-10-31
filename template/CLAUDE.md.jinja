@@ -3,15 +3,9 @@
 
 {{ description }}
 
-<!-- This file belongs to the project: ion-repo wrote it once and never changes it. ion-repo's rules live
-in .claude/rules/ion-repo/ and are kept current by `ion repo update`. Write here what Claude cannot
-guess about this project, and keep it under 200 lines: every session reads it. -->
-
 ## Repo map
 
-Where to look, so as not to explore: read it before opening files, and update it in the commit
-that adds, moves or removes a directory, a domain or an entry point. One line per place, what
-it holds; no copy of the code.
+Read before exploring; update in the commit changing a folder, domain or entry point.
 
 {% if backend == 'django' -%}
 - `{{ bp }}config/`: settings (`settings.py`), URLs (`urls.py`), Ninja API (`api.py`),
@@ -51,10 +45,7 @@ it holds; no copy of the code.
 - `config/vps/`, `scripts/ops/`: deployment and operations; how-to in
   [`docs/operations/production.md`](docs/operations/production.md).
 {% endif -%}
-- `docs/backlog/`: the work to do; `charter.toml`: the checked rules; `.claude/rules/ion-repo/`:
-  ion-repo's rules for Claude.
+- `docs/backlog/`; `charter.toml`; `.claude/rules/ion-repo/`.
 
 ## Notes
 
-<!-- Decisions, conventions and pitfalls of this project that Claude cannot guess from the code:
-"we never call X directly, always through Y", "the staging database is reset every night"… -->

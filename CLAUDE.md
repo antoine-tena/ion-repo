@@ -1,181 +1,40 @@
-# ion-repo: working instructions
+# ion-repo
 
-Claude Code's workshop: knowledge, guardrails, ways of working and keeping repos up to date
-(Copier template, `ion-repo` command, `charter` engine, Claude Code plugins, reusable workflows).
-Everything generic to repos lives here: a defect in a generated file is fixed in `template/`,
-then `ion repo update` in the repo. Overview in [`README.md`](README.md) (French:
-[`README.fr.md`](README.fr.md)), every detail in [`docs/reference.md`](docs/reference.md)
-([`docs/reference.fr.md`](docs/reference.fr.md)).
+Copier template, `ion-repo` command, `charter` engine, Claude Code plugins, reusable workflows. Generic to repos lives here: generated-file defect → fix `template/`, then `ion repo update`. Overview `README.md`/`.fr.md`; detail `docs/reference.md`/`.fr.md`.
 
 ## Repo map
 
-Where to look instead of exploring; keep it current in the commit that adds, moves or removes a
-folder or a module.
-
-- `src/ion_repo/`: the command. `cli.py` (arguments; 0.3 names accepted by `modernize`); one command
-  per module: `new.py` (questions in `questions.py`), `adopt.py` (`ion repo adopt`, an existing repo:
-  the template rendered without overwriting a file, the files kept listed under `kept` in
-  `.copier-answers.yml` and never written by `ion repo update`), `install.py`, `dev/` (`ion repo dev`:
-  `processes.py` the stack's servers and `Procfile.dev`, `backing.py` the compose databases in
-  podman, `menu.py` what to run and the logs offered, `background.py` background, `status`,
-  `logs`, `stop`, `foreground.py` `--foreground`, `containers.py` `--containers`), `check.py`,
-  `settings.py` (`ion repo set`, the settable keys), `machine.py` (`ion repo set` outside a repo: machine
-  settings), `waive.py` (`ion repo waive`), `pause.py` (`ion repo pause`, a session's place kept, T-344), `frame.py` (`ion repo frame`, the rules of an Ion tool's skill answer at the terminal's width), `bot.py` (`ion repo bot`, kiln-bot's run on `kiln/bot`, T-59; its public test bench
-  `antoine-tena/kiln-bot-test` calls `bot.yml`, `score.yml` and `charter.yml`), `update.py`, `contract.py`, `release.py`
-  (`ion repo version`), `shipping.py` (`ion repo version cut` and `promote`), `github_ci.py` (GitHub CI's
-  verdict on a commit, awaited by `cut` and `promote`), `doctor.py` (machine and repo diagnosis),
-  `tool_update.py` (tool update offered after a command typed outside Claude Code), `fleet.py`
-  (`status`, `update --all`), `adopted.py` (a repo adopted before 0.4.6, a charter without
-  answers: only its ion-repo workflow tag moves to the latest public release, until `ion repo adopt`
-  completes it, T-146), `adopted_names.py` (adopted repo: its kiln 0.3 names converted by
-  `ion repo update`), `rehearsal.py` (`ion repo update --rehearse`, the update on a throwaway clone);
-  core: `stack.py` (stack read from `.copier-answers.yml`), `template.py`, `deps.py`,
-  `github.py`, `rules.py` (unchecked rules), `statusline.py`, `versions.py` (tags, channels,
-  release log, tool version), `frozen.py` (files frozen by `kiln-waivers.toml`, spared by
-  `update`), `renames.py` (pre-0.4.0 names and their English names, kiln's names before ion-repo),
-  `ion_names.py` (kiln's names in a project rewritten by `ion repo update`), `moved_dirs.py` (a project renamed: its package's and plugin's folders merged at their new paths), `banner.py` (banner,
-  welcome screen), `ui.py` (stone-and-fire palette, steps, spinner, summary, success, errors),
-  `shell.py`, `config.py` (`~/.config/kiln/config.toml`), `trailers.py` (`ion repo set ai_trailers`:
-  whether Claude's commits say Claude helped, Claude Code's `attribution`).
-- `src/ion_repo/grid/`: the grid (T-123): `rules/<theme>/<ID>.toml` one rule per file, `model.py`
-  (format, closed lists, validation), `facts.py` (what a repo is made of), `detectors.py`
-  (declarative detectors, Python checks), `forge.py` (the GitHub settings read through `gh`,
-  cached a day), `fixers/` (`ion repo fix` converters: `ci.py`, `workflows.py`
-  (what an existing CI lacks, a tracked `.env`), `python.py`, `containers.py`, `resolve.py` for SHAs and digests online), `fix.py` (`ion repo fix`), `checks.py` (the repo's checks that judge
-  each converter: found, timed out, told apart, a reverted converter's log kept), `show.py`
-  (`ion repo grid`), `score.py` (`ion repo score`, a repo scored against the grid), `gap_report.py` (what
-  the grid doesn't cover, reported to ion-repo with the user's consent, T-38), `roadmap.py`
-  (`ion repo score --roadmap`, `--rule`, `--write`: what needs judgment, for Claude); every rule has a
-  passing and a failing example in `tests/test_grid.py`.
-- `src/ion_repo/ci/`: `ion repo ci` (CI replayed on the machine, verdict in a git note);
-  `src/ion_repo/charter/`: the `charter` engine (`bans.py`, `ratchets.py`, `python_tools.py`,
-  `waivers.py`: the waivers of `kiln-waivers.toml`).
-- `hatch_build.py`: writes into the package the commit it is built from (`ion_repo/_build.json`,
-  read by `versions.py`).
-- `copier.yml`: the template's questions; `template/`: the template (`CLAUDE.md.jinja`, Claude's
-  instructions in `.claude/rules/ion-repo/`: project, charter, one per stack;
-  `.claude/settings.json.jinja`, CI…); `macros.jinja`.
-- `plugins/`: Claude Code plugins, catalog `.claude-plugin/marketplace.json` (with `renames`:
-  old names `kiln`, `base`, `pile-django`, `pile-nuxt`, `vps-podman`); `repo/` (the `repo` plugin, `kiln` before the
-  Ion family; skills `worktree`,
-  `merge`, `release`, `cleanup`, `review` (a branch's commits and diff before the merge, the whole
-  repo before a release), `backlog`, `update`, `adopt`, `modernize` (roadmap gaps closed one by
-  one), `report` (an ion-repo defect raised as an issue or a PR), `resize` (a repo moved up or down ion-repo's sizes), `token` (a service's token in
-  `.<service>/`), `contribution` (an outside contributor's PR), `good-first-issues`, `prompt` (a clean prompt, ready to paste), `pause` (the session's place kept, `ion repo pause`); `hooks/`
-  (including `reminders.py`, the spacing of update questions, `paused.py`, the sessions `ion repo pause` kept, listed at start, and `first_prompt.py`, ion-repo's logo
-  and what's new above the prompt, and `place.py`, a session started outside any repo told the
-  repos below it, by `session_start.py`); `scripts/statusline.py`, `scripts/lifetime_tokens.py`, the tokens of every transcript), `django/`, `nuxt/`, `vps/`,
-  `stripe/`, `serena/`; `kiln/` and `base/`: forwards from the old paths of the hooks, scripts
-  and skills (open sessions, status line).
-- `.github/workflows/`: reusable workflows called by generated repos (they take their actions
-  and the `charter` command at their own commit, `job.workflow_sha`), plus ion-repo's own
-  (`kiln.yml` checks, `ion repo score` at 100 and zizmor included, its false positives explained in
-  `.github/zizmor.yml`; `pypi.yml` publishes `ion-repo` and `kiln-cli` (its old name) at the promoted tag, with
-  build provenance, attached to the GitHub Release; `scorecard.yml` the weekly OpenSSF Scorecard);
-  `actions/`: composite actions (`charter`, its old name `charte`,
-  `services`); `.github/dependabot.yml`: proposed updates (uv, the actions of the workflows and
-  composite actions, after 7 days).
-- `.claude/rules/`: instructions loaded with their files: `releases.md` (versions, candidates,
-  promotion, channels), `docs.md` (READMEs, reference, images, demos, the promise).
-- Public showcase: `README.md` (and its translation `README.fr.md`), `CONTRIBUTING.md`,
-  `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1), `SECURITY.md`, `LICENSE` (MIT),
-  `.github/ISSUE_TEMPLATE/`, `.github/pull_request_template.md`; full reference
-  `docs/reference.md` and `docs/reference.fr.md`; images in `docs/assets/` (drawn by
-  `scripts/screenshots.py`, checked by `test_docs.py`), including the two animated demos recorded
-  with VHS, `kiln-new.gif` (`kiln-new.tape`) and `kiln-rescue.gif` (`kiln-rescue.tape`, on the
-  public repo `antoine-tena/kiln-demo-legacy`, kept old on purpose), and the share image
-  `social-preview.png` (uploaded by hand in GitHub's settings).
-- `docs/backlog/`: work tracking, in English (skill `/repo:backlog`), with the release plan
-  (`## 🚀 Releases`); `backlog.md` ends with its how-to (`## 📖`: tickets, effort scale, session
-  budget), the vision that orders the tickets (`## 🧭 Vision`) and the thesis of `ion repo score`
-  (`## 💡`, source of T-186 to T-319); next to it, only `done.md`, `rejected.md` and `urgent.md`.
-- `ROADMAP.md` (and `ROADMAP.fr.md`): the public roadmap, linked from the READMEs; milestones
-  written by hand, releases drawn from the backlog's `## 🚀 Releases` by `scripts/roadmap.py`, to
-  rerun after every change to the plan (`test_docs.py` fails otherwise).
-- `scripts/screenshots.py`: draws the README's images from ion-repo's real outputs (and the logo, the
-  share image); `scripts/social_preview.py`: the share image as a PNG (Playwright);
-  `scripts/demo_shell.sh`: the shell of the recorded demos (this folder's ion-repo, without a version
-  number, in a throwaway folder on disk, the template rendered like a release, Claude Code as a
-  visitor has it); `scripts/shrink_demo.sh`: a recorded demo brought under 5 MB (palette, frozen
-  stretch cut); `scripts/refresh_images.py`: the template's base images pinned to the digest of
-  their tag (before each candidate).
-- `tests/`: `test_template.py` (the template rendered for each stack), `test_cli.py` (the
-  command: welcome, errors, summary, output outside a terminal, old names), `test_questions.py`
-  (`ion repo new`'s questions), `test_new.py` (what `ion repo new` says at the end), `test_contract.py` (`ion repo contract`'s export, a dirty tree named), `test_pause.py` (`ion repo pause`'s proposed names), `test_frame.py` (`ion repo frame`'s widths), `test_update_conflicts.py` (`ion repo update` stopped by a template's conflict), `test_moved_dirs.py` (a project renamed), `test_grid.py` (the
-  grid), `test_score.py` (`ion repo score`), `test_gap_report.py` (reports of the grid's gaps), `test_forge.py` (GitHub settings through a
-  fake `gh`),
-  `test_fix.py` (`ion repo fix` and its conversions), `test_adopted.py` (adopted repos),
-  `test_unites.py`, `test_ci.py`, `test_flotte.py`, `test_waivers.py` (waivers), `test_waive.py`,
-  `test_charter_file.py` (`charter file`, the hook after an edit), `test_shipping.py`
-  (`ion repo version cut` and `promote`), `test_rehearsal.py` (`update --rehearse`), `test_e2e.py`
-  (end to end, `-m e2e`: every release since v0.3.0 through an installed tool, and the witness
-  repo `antoine-tena/ion-repo-rehearsal`, frozen at v0.3.3-rc.2: never update it),
-  `test_deployment.py`, `test_statusline.py` (the machine's choices and the script's rendering),
-  `test_plugins.py` (cited skills exist, named like their folder; each path of a rule in
-  `.claude/rules/` matches a file), `test_docs.py` (the showcase up to date:
-  `.claude/rules/docs.md`), `test_branch_guard.py` (branch guard hook), `test_adopt.py`,
-  `test_reminders.py`, `test_session_start.py`; `conftest.py`: the machine's git config set
-  aside, a test identity.
+- `src/ion_repo/`: `cli.py`; one command per module: `new.py` (`questions.py`), `adopt.py` (kept files listed under `kept` in `.copier-answers.yml`), `install.py`, `dev/` (`processes`, `backing`, `menu`, `background`, `foreground`, `containers`), `check.py`, `settings.py`, `machine.py`, `waive.py`, `pause.py`, `frame.py`, `bot.py` (kiln-bot on `kiln/bot`; bench `antoine-tena/kiln-bot-test`), `update.py`, `contract.py`, `release.py`, `shipping.py` (`version cut|promote`), `github_ci.py`, `doctor.py`, `tool_update.py`, `fleet.py`, `adopted.py`, `adopted_names.py`, `rehearsal.py`. Core: `stack.py`, `template.py`, `deps.py`, `github.py`, `rules.py`, `statusline.py`, `versions.py`, `frozen.py`, `renames.py`, `ion_names.py`, `moved_dirs.py`, `banner.py`, `ui.py`, `shell.py`, `config.py`, `trailers.py`, `migrations.py`.
+- `src/ion_repo/grid/`: `rules/<theme>/<ID>.toml`, `model.py`, `facts.py`, `detectors.py`, `forge.py` (`gh`, cached a day), `fixers/`, `fix.py`, `checks.py`, `show.py`, `score.py`, `gap_report.py`, `roadmap.py`; each rule has pass/fail examples in `tests/test_grid.py`.
+- `src/ion_repo/ci/`: `ion repo ci` (verdict in git note). `src/ion_repo/charter/`: engine (`bans`, `ratchets`, `python_tools`, `waivers`).
+- `hatch_build.py`: writes build commit to `ion_repo/_build.json`.
+- `copier.yml`, `macros.jinja`, `template/` (`CLAUDE.md.jinja`, `.claude/rules/ion-repo/`, `.claude/settings.json.jinja`, CI…).
+- `plugins/`: catalog `.claude-plugin/marketplace.json` (`renames`: `kiln`, `base`, `pile-django`, `pile-nuxt`, `vps-podman`). `repo/` (skills; `hooks/`: `reminders`, `paused`, `first_prompt`, `place`, `session_start`; `scripts/statusline.py`, `lifetime_tokens.py`), `django/`, `nuxt/`, `vps/`, `stripe/`, `serena/`; `kiln/`, `base/`: forwards from old paths.
+- `.github/workflows/`: reusable workflows (actions and `charter` at `job.workflow_sha`); own: `kiln.yml` (checks, score 100, zizmor; `.github/zizmor.yml`), `pypi.yml` (`ion-repo`, `kiln-cli` at promoted tag, provenance), `scorecard.yml`. `actions/`: `charter` (old `charte`), `services`. `.github/dependabot.yml` (uv, actions, after 7 days).
+- `.claude/rules/`: `releases.md`, `docs.md`.
+- Showcase: READMEs, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `LICENSE`, `.github/ISSUE_TEMPLATE/`, `.github/pull_request_template.md`. `docs/assets/`: drawn by `scripts/screenshots.py` (checked by `test_docs.py`); VHS demos `kiln-new`, `kiln-rescue` (on public `antoine-tena/kiln-demo-legacy`, old on purpose); `social-preview.png` (uploaded by hand).
+- `docs/backlog/` (English, `/repo:backlog`): `backlog.md` (`## 🚀 Releases`, `## 📖` how-to, `## 🧭 Vision`, `## 💡` score thesis), `done.md`, `rejected.md`, `urgent.md`.
+- `ROADMAP.md`/`.fr.md`: milestones by hand, releases from backlog via `scripts/roadmap.py`; rerun after each plan change (`test_docs.py` fails otherwise).
+- `scripts/`: `screenshots.py`, `social_preview.py`, `demo_shell.sh`, `shrink_demo.sh` (<5 MB), `refresh_images.py` (pin base images, before each candidate).
+- `tests/`: `test_<module>.py`, plus `test_template.py` (each stack), `test_e2e.py` (`-m e2e`: every release since v0.3.0, witness `antoine-tena/ion-repo-rehearsal` frozen at v0.3.3-rc.2: never update it), `test_plugins.py` (cited skills exist; rule paths match), `test_docs.py` (`.claude/rules/docs.md`), `conftest.py` (git config aside, test identity).
 
 ## Training repos
 
-ion-repo trains on two real repos, measured on 17 October 2026: the association's repo (the
-Django + Nuxt reference, the grid's training ground, T-124, T-134; its path is in the machine's
-global instructions, never named here) and a university repo (an ordinary repo, the test for a
-repo ion-repo didn't create). **The detailed measurements are not public** (security gaps of
-a site in production, vulnerabilities of a third-party project not yet reported to its team):
-they live in the **private** repo `antoine-tena/ion-repo-measures` (cloned next to ion-repo,
-`mesures-repos-entrainement.md`), never in ion-repo, not on a branch, not in a commit. Write only
-aggregate figures in the public repo about the association's repo, never its name; the
-university repo is not cited at all, not even in aggregate (antoine, 26 October 2026). Always
-measure on a local copy, never in the repo itself. ion-repo may also train on antoine's small repos
-(sweep, a course project: up to 100, in their own sessions) and on a copy of annway
-(`annway-copie`, for the Java pack), never on annway itself.
+Trains on the association's repo (Django+Nuxt reference, grid ground; path in global instructions, never named here) and a university repo. **Detailed measures are private**: `antoine-tena/ion-repo-measures` (`mesures-repos-entrainement.md`), never in ion-repo, a branch or a commit. Public: association's repo as aggregate figures only, never its name; university repo not cited at all. Measure on a local copy only. Also trains on antoine's small repos (sweep, a course project: up to 100, own sessions) and `annway-copie` (Java pack), never annway.
 
 ## In every change
 
-- A name changes through `ion repo set` or a conversion shipped in `ion repo update`, never by a
-  find-and-replace in a generated repo: the old render no longer matches, and every such line
-  conflicts at the next update (the family's repos, 31 October 2026).
-- **Breaking** is whatever touches ion-repo's public API: commands and options of the CLI,
-  questions of `copier.yml`, the generated tree, inputs of the reusable workflows and actions,
-  names of skills and hooks, IDs of charter rules. Mark it in the commit (`feat!:` or
-  `BREAKING CHANGE`) and ship its conversion in `ion repo update`; it opens the release note in
-  `CHANGELOG.md`.
-- What only the user can complete after an update (information ion-repo can't guess, such as each
-  person's GitHub login) goes in a line of the commit body, `After updating: …`:
-  `ion repo version cut` copies it into the note (`- **After updating**: …`) and `ion repo update` turns
-  it into a 🔴 "Finish the ion-repo update to vX.Y.Z" ticket of each repo's
-  `docs/backlog/backlog.md` (not `urgent.md`), which `/repo:update` works through with the user
-  right after the merge.
-- A change updates the docs in its own branch, never at the release: every command, option,
-  `ion repo set` setting, plugin, skill, hook and reusable workflow is in both references
-  (`docs/reference.md`, `docs/reference.fr.md`), and both READMEs follow what they show.
-  `test_docs.py` only runs at the release, where a forgotten doc blocks the candidate; its
-  checks: `.claude/rules/docs.md`.
+- A name changes through `ion repo set` or a conversion in `ion repo update`, never find-and-replace in a generated repo (conflicts at next update).
+- **Breaking** = public API: CLI commands/options, `copier.yml` questions, generated tree, workflow/action inputs, skill and hook names, charter rule IDs. Mark `feat!:`/`BREAKING CHANGE`, ship its conversion in `ion repo update`; opens the `CHANGELOG.md` note.
+- User-only post-update step: commit body line `After updating: …`; `version cut` copies it to the note, `ion repo update` makes a 🔴 "Finish the ion-repo update to vX.Y.Z" ticket in `docs/backlog/backlog.md` (not `urgent.md`), worked by `/repo:update` right after merge.
+- Docs update in the same branch: every command, option, setting, plugin, skill, hook, workflow in both references; READMEs follow. `test_docs.py` runs at release only, a forgotten doc blocks the candidate (`.claude/rules/docs.md`).
 
 ## Releases
 
-0.x: every release bumps the patch, features and breaking changes included; the minor moves about
-every ten releases (`ion repo version cut --minor`), at a themed milestone holding its breaking
-changes, as uv and ruff do (antoine, 26 October 2026; the plan renumbered by T-360). One release
-every two days. The plan and the milestones: `docs/backlog/backlog.md` (`## 🚀 Releases`, `## 🧭 Vision`), shown by
-`ROADMAP.md`; the public launch: T-03. Candidates, promotion and channels:
-`.claude/rules/releases.md`, to read before `/repo:release`.
+0.x: each release bumps patch, even features/breaking; minor about every ten (`version cut --minor`), at a themed milestone. One release per two days. Plan: `backlog.md`, shown by `ROADMAP.md`; public launch T-03. Candidates, promotion, channels: `.claude/rules/releases.md`, read before `/repo:release`.
 
 ## Checks
 
-At a merge into `develop`: `uv run ruff check` and `uv run ruff format --check` on the files the
-branch changed, nothing else: no mypy, no tests, no GitHub CI (antoine's choice). GitHub CI
-(`kiln.yml`) only runs on `release/**`, before `main`, and by hand. `uv run pytest -q` (spread
-over every core by pytest-xdist; `-n 0` for a single process, when debugging) runs in full at the
-release (`ion repo version cut`), which plays everything. ion-repo's pre-commit hook
-(`.pre-commit-config.yaml`, set up by `ion repo install`) runs ruff at each commit, nothing before a
-push.
+Merge into `develop`: `uv run ruff check` and `ruff format --check` on changed files only; no mypy, tests, GitHub CI. GitHub CI (`kiln.yml`) only on `release/**`, before `main`, and by hand. `uv run pytest -q` (xdist; `-n 0` to debug) in full at `version cut`. Pre-commit runs ruff at commit; nothing before push.
 
-antoine's machine runs ion-repo from this checkout: the tool is installed as editable (channel
-`beta`), and since the plugin catalog is declared as a local folder, open sessions call the hooks
-and the status line **in the main tree** (its `plugins/…`). What reaches `develop` runs
-at once in his sessions, and a file removed or renamed breaks every session at once (hook not
-found = tool blocked): a plugin path that changes keeps a forward from the old one
-(`plugins/base/`, checked by `test_plugins.py`).
+This machine runs ion-repo editable from this checkout (channel `beta`); local plugin catalog means open sessions call hooks and status line from the main tree's `plugins/`. Reaching `develop` is live: a removed/renamed plugin path blocks tools everywhere, so keep a forward (`plugins/base/`, `test_plugins.py`).
