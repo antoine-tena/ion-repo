@@ -109,7 +109,7 @@ folder or a module.
   `test_charter_file.py` (`charter file`, the hook after an edit), `test_shipping.py`
   (`ion repo version cut` and `promote`), `test_rehearsal.py` (`update --rehearse`), `test_e2e.py`
   (end to end, `-m e2e`: every release since v0.3.0 through an installed tool, and the witness
-  repo `antoine-tena/kiln-rehearsal`, frozen at v0.3.3-rc.2: never update it),
+  repo `antoine-tena/ion-repo-rehearsal`, frozen at v0.3.3-rc.2: never update it),
   `test_deployment.py`, `test_statusline.py` (the machine's choices and the script's rendering),
   `test_plugins.py` (cited skills exist, named like their folder; each path of a rule in
   `.claude/rules/` matches a file), `test_docs.py` (the showcase up to date:
@@ -124,7 +124,7 @@ Django + Nuxt reference, the grid's training ground, T-124, T-134; its path is i
 global instructions, never named here) and a university repo (an ordinary repo, the test for a
 repo ion-repo didn't create). **The detailed measurements are not public** (security gaps of
 a site in production, vulnerabilities of a third-party project not yet reported to its team):
-they live in the **private** repo `antoine-tena/kiln-measures` (cloned next to ion-repo,
+they live in the **private** repo `antoine-tena/ion-repo-measures` (cloned next to ion-repo,
 `mesures-repos-entrainement.md`), never in ion-repo, not on a branch, not in a commit. Write only
 aggregate figures in the public repo about the association's repo, never its name; the
 university repo is not cited at all, not even in aggregate (antoine, 26 October 2026). Always

@@ -146,7 +146,7 @@ announced (T-118).
 - T-189 · A stranger's first run: no install, never a crash, the next step printed (M)
 - T-348 · Opt-in telemetry: which commands run, and how they end (M)
 - T-349 · A daily digest mail: issues, pull requests, discussions, gap reports (S)
-- T-350 · Launch metrics kept in kiln-measures (S) — from launch day: GitHub keeps traffic 14 days
+- T-350 · Launch metrics kept in ion-repo-measures (S) — from launch day: GitHub keeps traffic 14 days
 - T-368 · Recorded demos replayed by a test: an output that changed fails until re-recorded (S)
 
 ### v0.5.5 · A score you can trust: the false alarms of real repos, gone
@@ -1790,7 +1790,7 @@ opt-in after its 2023 debate, and HN's readers judge a launch on it: opt-in it i
   enough, through a free tier (GitHub Models).
 - [ ] The mail account through `/kiln:token` (`.mail/`), the address antoine gives.
 
-### T-350 · Launch metrics kept in kiln-measures
+### T-350 · Launch metrics kept in ion-repo-measures
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1800,7 +1800,7 @@ opt-in after its 2023 debate, and HN's readers judge a launch on it: opt-in it i
 
 GitHub keeps a repo's traffic (views, clones, referrers) for 14 days only: what the launch week
 brings is lost unless saved.
-- [ ] Once a week from the launch, into `kiln-measures`: stars, forks, PyPI downloads, GitHub
+- [ ] Once a week from the launch, into `ion-repo-measures`: stars, forks, PyPI downloads, GitHub
   traffic and referrers, repos showing the badge (T-154), gap reports (T-38), telemetry's counts
   (T-348).
 - [ ] The launch texts, contacts and the questions file live there too, never in kiln.
