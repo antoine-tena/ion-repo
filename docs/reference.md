@@ -197,7 +197,7 @@ it has soaked (24 hours since its tag and at least one repo updated to it; 2 hou
 required, for a candidate of fixes only), its CI green (macOS and end-to-end tests included) and its update
 rehearsed on a copy of each repo, so a release never needs an emergency fix. A promoted release
 reaches PyPI (`uv tool install kiln-cli`) and the Homebrew tap (`brew install
-antoine-tena/ion-repo/ion-repo`, then `brew upgrade kiln`). Projects are generated and updated from the latest release, pin ion-repo's workflows to
+antoine-tena/ion/kiln`, then `brew upgrade kiln`). Projects are generated and updated from the latest release, pin ion-repo's workflows to
 that exact tag, and `ion repo update` shows what changed in each release it applies (see
 [`CHANGELOG.md`](../CHANGELOG.md)).
 Linux, WSL and macOS are supported.
