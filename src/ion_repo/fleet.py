@@ -49,6 +49,11 @@ DONE_OUTCOMES = ("merged into ", "already up to date", "rehearsal: ", "frozen")
 FROZEN_OUTCOME = "frozen (ion repo set frozen_repos): left as it is"
 
 
+# A repo with this file at its root stays out of the commands over all repos: a witness that must
+# not move, like ion-repo-rehearsal.
+FROZEN_MARKER = ".ion-repo-frozen"
+
+
 @dataclass(frozen=True)
 class ManagedRepo:
     root: Path
@@ -61,8 +66,12 @@ def find_repos(code_dir: Path) -> list[ManagedRepo]:
     for answers_path in _marker_files(code_dir, ANSWERS_FILE, SEARCH_DEPTH):
         root = answers_path.parent
         answers = read_answers(root)
-        if (root / ".git").is_dir() and any(
-            marker in str(answers.get("_src_path", "")) for marker in ION_REPO_SOURCE_MARKERS
+        if (
+            (root / ".git").is_dir()
+            and not (root / FROZEN_MARKER).exists()
+            and any(
+                marker in str(answers.get("_src_path", "")) for marker in ION_REPO_SOURCE_MARKERS
+            )
         ):
             repos.append(ManagedRepo(root, str(answers.get("_commit", ""))))
     return repos
