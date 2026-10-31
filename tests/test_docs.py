@@ -191,7 +191,7 @@ def test_cited_workflows_exist() -> None:
 
 # --- The reference describes everything ion-repo offers, at the release it is, in both languages
 # (antoine, 19 October 2026: "the README kept entirely up to date, every time"). A command,
-# option, setting, skill, hook, plugin or workflow added without its line fails here.
+# option, setting, skill, hook, output style, plugin or workflow added without its line fails here.
 # Former names kept for old repos: their new names are documented instead.
 LEGACY = frozenset({"--sauter", "--sans-pousser", "--garder", "--statut", "--poste"})
 
@@ -225,6 +225,10 @@ def offered() -> dict[str, str]:
         f"hook {path.name}": path.name
         for path in (ROOT / "plugins/repo/hooks").glob("*.py")
         if not path.name.startswith("_")
+    }
+    items |= {
+        f"output style {path.stem}": f"`{path.stem}`"
+        for path in (ROOT / "plugins").glob("*/output-styles/*.md")
     }
     items |= {
         f"workflow {path.name}": f"`{path.name}`"
