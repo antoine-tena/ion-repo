@@ -67,7 +67,7 @@ publishes the `ion-repo` and `kiln-cli` packages on PyPI through `pypi.yml`):
 **Channels**: `public` (the default) only sees promoted releases; machines on `internal`
 (`ion repo set channel=internal`) follow the candidates; antoine's machine is on `beta` (his choice:
 while ion-repo improves fast, a new feature must serve at once): the tool is the ion-repo
-checkout (`~/code/Keramos/kiln/kiln` until the move to `~/code/Ion/repo/ion-repo`) installed as editable, so `develop` read live, with neither version nor update;
+checkout (`~/code/Ion/repo/ion-repo`) installed as editable, so `develop` read live, with neither version nor update;
 releases remain what goes out to others.
 
 **Other repos**: generated repos cite ion-repo's workflows at the exact tag they start from
