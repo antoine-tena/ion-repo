@@ -59,7 +59,7 @@ jobs:
           options=()
           [ "$UPDATE" = "true" ] || options+=(--no-update)
           [ "$HAS_TOKEN" = "true" ] || options+=(--no-workflows)
-          ion repo bot "${options[@]}" --body "$RUNNER_TEMP/body.md"
+          ion-repo bot "${options[@]}" --body "$RUNNER_TEMP/body.md"
 
       - name: Pull request
         env:
