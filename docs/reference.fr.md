@@ -413,7 +413,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    uses: antoine-tena/ion-repo/.github/workflows/bot.yml@v0.4.10
+    uses: antoine-tena/ion-repo/.github/workflows/bot.yml@v0.4.11
     secrets:
       token: ${{ secrets.KILN_BOT_TOKEN }}  # optional, see below
 ```

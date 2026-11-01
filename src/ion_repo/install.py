@@ -163,7 +163,7 @@ def plugins_of_legacy_catalogue() -> list[str]:
         return []
     suffix = f"@{LEGACY_MARKETPLACE}"
     return [
-        f"{LEGACY_PLUGIN_NAMES.get(name, name).removesuffix(suffix)}@{MARKETPLACE}"
+        f"{(LEGACY_PLUGIN_NAMES.get(name) or name).removesuffix(suffix)}@{MARKETPLACE}"
         for name, enabled in plugins.items()
         if enabled and name.endswith(suffix) and name not in LEGACY_BASE_PLUGINS
     ]

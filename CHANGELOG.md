@@ -6,6 +6,16 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 `release/vX.Y.Z` branch, rewritten before its first candidate. Names are those of their release:
 entries before v0.4.0 quote kiln's former French names.
 
+## v0.4.11 — 2026-11-01
+- **Breaking**: kiln becomes `ion-repo`, typed `ion repo`, its plugin `repo` in the `ion-repo` catalogue (`/repo:…` skills, the old `/kiln:…` ones forwarded). `ion repo update` converts a repo's names and files.
+- **Moving to Ion**: this is the last `kiln-cli`. At its first run as a uv tool it installs `ion-sh` (the `ion` command) and `ion-repo` from PyPI, removes itself and moves the Claude Code catalogue. `kiln-cli` stays on PyPI, with no further release.
+- `/repo:prompt` writes a clean prompt, ready to paste, for a session, a subagent or another model.
+- The end-of-work report has one format, the `debrief` output style, and the skills' reports follow it, the next backlog tickets included. A skill of the Ion family frames its answer with rules drawn by `ion repo frame`.
+- `ion repo eval-skills` runs the skills' trigger evals. A repo marked `.ion-repo-frozen` stays out of the commands over all repos. `plugin_name` names a generated tool's Claude plugin, without the `ion-` prefix; a renamed project's package and plugin folders move with what it made of them.
+- `/repo:merge` updates the repo's installed Claude Code plugin after the push.
+- A private repo publishes on PyPI: GitHub refuses it build provenance, which no longer stops the publication. A new project's first commit passes. `ion repo version promote` no longer crashes when run from the release worktree.
+- **After updating**: run `ion repo install --machine` once on each machine, so that its Claude Code catalogue moves from kiln to ion-repo.
+
 ## v0.4.10 — 2026-10-30
 - **Breaking**: the four sizes get plain names, `tiny`, `small`, `medium` and `large`, instead of `spark`, `ember`, `flame` and `blaze`. `kiln update` renames a repo's size by itself; `--size` and `kiln set size=` still read the old names, with a warning.
 - **Security**: the Next template moves to 16.4.3, out of GHSA-673q-mjm6-r5xr and GHSA-2464-fhr4-w9xw (unauthenticated remote code execution) and GHSA-p3m5-59mp-jv5r (denial of service) of Next 16.4.0. `kiln update` brings it to a repo.
