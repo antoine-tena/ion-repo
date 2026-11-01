@@ -87,7 +87,7 @@ ion repo install             # hors d'un repo : le plugin Claude Code d'ion-repo
 ```
 
 En venant de kiln : le dernier `kiln-cli` vous fait passer à son premier lancement
-(`uv tool upgrade kiln-cli`, puis lancez-le une fois).
+(`uv tool install kiln-cli@latest`, puis lancez-le une fois).
 
 Avec Homebrew : `brew install antoine-tena/ion/ion-repo`. Ou pour essayer sans rien installer :
 `uvx ion-repo new mon-app` pour un nouveau repo, `uvx ion-repo adopt` dans un repo que vous
