@@ -1,4 +1,4 @@
-"""Build hook: what the tool is built from, written into the package (`kiln/_build.json`).
+"""Build hook: what the tool is built from, written into the package (`ion_repo/_build.json`).
 
 A tool installed from a folder (`uv tool install ~/code/kiln`) is a copy of that folder taken at
 install time: what it is must be read from the copy, not from the folder, which keeps moving.
@@ -13,12 +13,12 @@ from typing import Any
 
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 
-BUILD_INFO = "kiln/_build.json"
+BUILD_INFO = "ion_repo/_build.json"
 
 
 class CustomBuildHook(BuildHookInterface):
     def initialize(self, version: str, build_data: dict[str, Any]) -> None:
-        # An editable install runs the folder itself: kiln reads it live.
+        # An editable install runs the folder itself: ion-repo reads it live.
         if version == "editable":
             return
         described = _git(

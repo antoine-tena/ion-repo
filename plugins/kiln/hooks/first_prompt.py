@@ -1,33 +1,12 @@
 #!/usr/bin/env python3
-"""UserPromptSubmit: at the first prompt of a session where kiln offers an update, shows the logo
-of kiln in color with the update on offer, right before Claude asks the question.
+"""Former path of the kiln plugin (before ion-repo, 31 October 2026), still called by sessions
+started before the rename: runs plugins/repo/hooks/first_prompt.py."""
 
-`session_start.py` leaves the notice in `~/.local/state/kiln/notices/<session id>`; it is shown
-once, then removed. Silent in every other case.
-"""
-
-import json
+import runpy
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-import reminders
-
-NOTICES_DIR = reminders.STATE_DIR / "kiln" / "notices"
-
-
-def main() -> None:
-    try:
-        session_id = json.load(sys.stdin).get("session_id", "")
-        if not session_id or "/" in session_id:
-            return
-        path = NOTICES_DIR / session_id
-        text = path.read_text(encoding="utf-8")
-        path.unlink()
-    except Exception:
-        return
-    print(json.dumps({"systemMessage": text}, ensure_ascii=False))
-
-
-if __name__ == "__main__":
-    main()
+script = Path(__file__).resolve().parents[2] / "repo" / "hooks" / "first_prompt.py"
+sys.path.insert(0, str(script.parent))
+sys.argv[0] = str(script)
+runpy.run_path(str(script), run_name="__main__")

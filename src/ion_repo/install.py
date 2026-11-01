@@ -1,0 +1,311 @@
+"""`ion repo install`: sets up a machine after the clone, by stack; outside a repo (or with
+`--machine`), sets up ion-repo for the whole machine. Safe to run again."""
+
+import json
+import os
+import secrets
+import shutil
+import subprocess
+from pathlib import Path
+
+from ion_repo import ui
+from ion_repo.adopted_names import HOOKS_FILE
+from ion_repo.config import UserConfig, ensure_system, load_config
+from ion_repo.dev.backing import start_backing_services
+from ion_repo.dev.processes import LOCK_MANAGERS, NODE_INSTALLS, package_manager
+from ion_repo.shell import KilnError, require_tools, run, step
+from ion_repo.stack import (
+    MAVEN_WRAPPER,
+    PNPM_LENIENT_BUILDS,
+    ROOT_DIR,
+    Stack,
+    answers_if_any,
+    load_stack,
+)
+from ion_repo.statusline import apply_statusline_settings, ensure_statusline
+from ion_repo.trailers import ensure_trailers
+from ion_repo.versions import PYPI_NAME
+
+CLAUDE_DIR = Path.home() / ".claude"
+CLAUDE_SETTINGS = CLAUDE_DIR / "settings.json"
+KNOWN_MARKETPLACES = CLAUDE_DIR / "plugins" / "known_marketplaces.json"
+MARKETPLACE = "ion-repo"
+MARKETPLACE_SOURCE = "antoine-tena/ion-repo"
+# The catalogue before the Ion family (kiln, until 31 October 2026): `install --machine` moves it.
+LEGACY_MARKETPLACE = "kiln"
+BASE_PLUGIN = "repo@ion-repo"
+# Its names before (`base` before kiln 0.4, then `kiln`), until Claude Code applies the
+# catalogue's renames.
+LEGACY_BASE_PLUGINS = ("kiln@kiln", "repo@kiln", "base@kiln")
+LEGACY_PLUGIN_NAMES = {
+    "pile-django@kiln": "django",
+    "pile-nuxt@kiln": "nuxt",
+    "vps-podman@kiln": "vps",
+}
+
+SECRET_KEY_VARIABLE = "DJANGO_SECRET_KEY"
+SECRET_KEY_BYTES = 50
+ENV_FILE_MODE = 0o600
+# A venv script starts `#!/…/.venv/bin/python`: the folder it was created in.
+VENV_PYTHON = b"/bin/python"
+VENV_SHEBANG_MAX = 4096
+PNPM_LOCKFILE = "pnpm-lock.yaml"
+
+# Install hints by system (never pip or docker).
+SYSTEM_HINTS: dict[str, dict[str, str]] = {
+    "java": {
+        "linux": "sudo apt install openjdk-25-jdk",
+        "wsl": "sudo apt install openjdk-25-jdk",
+        "macos": "brew install openjdk@25",
+    },
+    # The Maven wrapper unpacks its distribution with unzip.
+    "unzip": {
+        "linux": "sudo apt install unzip",
+        "wsl": "sudo apt install unzip",
+        "macos": "unzip ships with macOS",
+    },
+    "pnpm": {
+        "linux": "corepack enable pnpm (Node 24, from mise or the package manager)",
+        "wsl": "corepack enable pnpm (Node 24, from mise or apt)",
+        "macos": "brew install node@24 && corepack enable pnpm",
+    },
+    "podman": {
+        "linux": "sudo apt install podman",
+        "wsl": "sudo apt install podman (inside WSL, not Podman Desktop on Windows)",
+        "macos": "brew install podman && podman machine init && podman machine start",
+    },
+}
+
+
+def install_project(root: Path) -> None:
+    config = ensure_system(load_config())
+    stack = load_stack(root)
+    _require_stack_tools(stack, config)
+    _ensure_uv_tool("pre-commit", "pre-commit-uv")
+    if stack.has_podman:
+        _ensure_uv_tool("podman-compose")
+    for directory in stack.python_dirs:
+        step(f"{directory}: Python dependencies")
+        run(sync_command(root / directory / ".venv"), root / directory)
+    if stack.maven_dir is not None:
+        step(f"{stack.maven_dir}: Maven and dependencies (wrapper)")
+        run([MAVEN_WRAPPER, "-B", "-q", "-DskipTests", "package"], root / stack.maven_dir)
+    if stack.has_api:
+        step("backend: .env")
+        ensure_env_file(root / stack.backend_dir)
+    if stack.backend == "django":
+        start_backing_services(root)
+        step("backend: migrations")
+        run(["uv", "run", "python", "manage.py", "migrate"], root / stack.backend_dir)
+    if stack.pnpm_dir is not None:
+        command = pnpm_install_command(root / stack.pnpm_dir)
+        step(f"{stack.pnpm_dir}: {command[0]} dependencies")
+        run(command, root / stack.pnpm_dir)
+    step("git guards (pre-commit) and status line")
+    install_git_hooks(root)
+    apply_statusline_settings(root)
+    ensure_trailers(ensure_statusline(config))
+    command_name = answers_if_any(root).get("name", "<command>")
+    ui.success(f"Ready. {launch_hint(stack, command_name)}")
+
+
+def install_git_hooks(root: Path) -> None:
+    """pre-commit's hook, only with its configuration: without it, the hook refuses every
+    commit (an adopted repo may have none)."""
+    if not (root / HOOKS_FILE).is_file():
+        print(f"no {HOOKS_FILE}: git hooks not installed.")
+        return
+    run(["pre-commit", "install"], root)
+
+
+def install_machine() -> None:
+    """ion-repo in every repo and every Claude session of the machine: the CLI as a uv tool, the
+    ion-repo plugin at user scope, the machine settings. Only what is missing is done."""
+    config = ensure_system(load_config())
+    require_tools("uv")
+    # A tool still installed as kiln-cli brings `ion-repo` too; `kiln_move.py` replaces it.
+    if shutil.which("ion-repo") is None and shutil.which("kiln") is None:
+        step("ion-repo command (uv tool)")
+        run(["uv", "tool", "install", PYPI_NAME], Path.cwd())
+    if shutil.which("claude") is None:
+        ui.note("Claude Code not found: install it, then ion repo install again for the plugins.")
+    else:
+        known = _json_file(KNOWN_MARKETPLACES)
+        legacy_plugins = plugins_of_legacy_catalogue()
+        if MARKETPLACE not in known:
+            source = marketplace_source(known.get(LEGACY_MARKETPLACE))
+            if LEGACY_MARKETPLACE in known and source != MARKETPLACE_SOURCE:
+                # Removed first: Claude Code knows a folder by its path, under its old name.
+                step("kiln's catalogue of Claude Code plugins becomes ion-repo's")
+                run(["claude", "plugin", "marketplace", "remove", LEGACY_MARKETPLACE], Path.cwd())
+                known = {}
+            step("ion-repo catalogue of Claude Code plugins")
+            run(["claude", "plugin", "marketplace", "add", source], Path.cwd())
+        if not base_plugin_enabled(legacy=False):
+            step(f"{BASE_PLUGIN} plugin, for every Claude session")
+            run(["claude", "plugin", "install", BASE_PLUGIN, "--scope", "user"], Path.cwd())
+        for plugin in legacy_plugins:
+            step(f"{plugin} plugin, from ion-repo's catalogue")
+            run(["claude", "plugin", "install", plugin, "--scope", "user"], Path.cwd())
+        # Last, once the new one is in place: removing it also disables what it holds.
+        if LEGACY_MARKETPLACE in known:
+            step("kiln's catalogue of Claude Code plugins removed")
+            run(["claude", "plugin", "marketplace", "remove", LEGACY_MARKETPLACE], Path.cwd())
+    ensure_trailers(ensure_statusline(config))
+    ui.success("ion-repo is set up on this machine. Check it: ion repo doctor")
+
+
+def plugins_of_legacy_catalogue() -> list[str]:
+    """The stack plugins enabled for the whole machine from kiln's catalogue, under their name in
+    ion-repo's; the repo plugin has its own step."""
+    plugins = _json_file(CLAUDE_SETTINGS).get("enabledPlugins")
+    if not isinstance(plugins, dict):
+        return []
+    suffix = f"@{LEGACY_MARKETPLACE}"
+    return [
+        f"{(LEGACY_PLUGIN_NAMES.get(name) or name).removesuffix(suffix)}@{MARKETPLACE}"
+        for name, enabled in plugins.items()
+        if enabled and name.endswith(suffix) and name not in LEGACY_BASE_PLUGINS
+    ]
+
+
+def marketplace_source(legacy: object) -> str:
+    """Where the catalogue comes from: the folder kiln's was added from (a checkout, read live),
+    otherwise GitHub."""
+    source = legacy.get("source") if isinstance(legacy, dict) else None
+    if isinstance(source, dict) and source.get("source") == "directory" and source.get("path"):
+        return str(source["path"])
+    return MARKETPLACE_SOURCE
+
+
+def base_plugin_enabled(*, legacy: bool = True) -> bool:
+    """The repo plugin enabled at user scope; `legacy`: under one of its names of before too."""
+    plugins = _json_file(CLAUDE_SETTINGS).get("enabledPlugins")
+    names = (BASE_PLUGIN, *LEGACY_BASE_PLUGINS) if legacy else (BASE_PLUGIN,)
+    return isinstance(plugins, dict) and any(plugins.get(name) for name in names)
+
+
+def _json_file(path: Path) -> dict[str, object]:
+    try:
+        content = json.loads(path.read_text())
+    except OSError, ValueError:
+        return {}
+    return content if isinstance(content, dict) else {}
+
+
+def launch_hint(stack: Stack, command_name: object) -> str:
+    """What to run first: the dev servers, the build, the tool, or only the checks of a repo
+    adopted without a stack of ion-repo."""
+    if stack.dev_commands():
+        return "Run the project: ion repo dev"
+    if stack.maven_dir is not None:
+        return f"Run the project: {_in(stack.maven_dir, f'{MAVEN_WRAPPER} verify')}"
+    if stack.backend == "cli":
+        return f"Run the project: {_in(stack.backend_dir, f'uv run {command_name} --help')}"
+    return "Check the project: ion repo check"
+
+
+def _in(directory: str, command: str) -> str:
+    return command if directory == ROOT_DIR else f"cd {directory} && {command}"
+
+
+def _require_stack_tools(stack: Stack, config: UserConfig) -> None:
+    require_tools("git", "uv")
+    needed = (
+        (["pnpm"] if stack.pnpm_dir else [])
+        + (["podman"] if stack.has_podman else [])
+        + (["java", "unzip"] if stack.maven_dir else [])
+    )
+    missing = [tool for tool in needed if shutil.which(tool) is None]
+    if missing:
+        system = config.system or "linux"
+        hints = "\n".join(f"  {tool}: {SYSTEM_HINTS[tool][system]}" for tool in missing)
+        raise KilnError(f"missing tools:\n{hints}")
+    if stack.has_podman and config.system == "macos":
+        _require_podman_machine()
+
+
+def _require_podman_machine() -> None:
+    completed = subprocess.run(["podman", "info"], capture_output=True, check=False)
+    if completed.returncode != 0:
+        raise KilnError("podman does not answer: podman machine start (or podman machine init)")
+
+
+def _ensure_uv_tool(tool: str, *extras: str) -> None:
+    """Command-line tool installed by uv (never pip), with its plugins."""
+    if shutil.which(tool) is not None and not extras:
+        return
+    step(f"{tool} tool (uv tool)")
+    with_options = [option for extra in extras for option in ("--with", extra)]
+    run(["uv", "tool", "install", tool, *with_options], Path.cwd())
+
+
+def sync_command(venv: Path) -> list[str]:
+    """`uv sync --locked`, reinstalling every package when the venv was moved: uv sees them
+    installed and would leave their scripts calling the old folder's Python."""
+    command = ["uv", "sync", "--locked"]
+    return [*command, "--reinstall"] if moved_from(venv) is not None else command
+
+
+def moved_from(venv: Path) -> Path | None:
+    """The folder a virtual environment was created in, when the repo has moved since (its
+    scripts then fail to spawn: `uv run mypy`); None when it is in place or cannot tell."""
+    for script in sorted((venv / "bin").glob("*")):
+        if not script.is_file() or script.is_symlink():
+            continue
+        with script.open("rb") as handle:
+            first_line = handle.readline(VENV_SHEBANG_MAX).strip()
+        if not (first_line.startswith(b"#!") and first_line.endswith(VENV_PYTHON)):
+            continue
+        created_in = Path(first_line[2:].decode(errors="replace")).parent.parent
+        same_place = os.path.realpath(created_in) == os.path.realpath(venv)
+        return None if same_place else created_in
+    return None
+
+
+def pnpm_install_command(directory: Path) -> list[str]:
+    """Frozen to the lockfile when there is one, by the package manager that wrote it: an
+    adopted npm repo keeps its package-lock.json, where pnpm would add a pnpm-lock.yaml and
+    leave the tree dirty. Without any lock (a repo that never committed one), `--frozen-lockfile`
+    fails with ERR_PNPM_NO_LOCKFILE: a plain pnpm install creates it."""
+    if (directory / PNPM_LOCKFILE).is_file():
+        return ["pnpm", "install", "--frozen-lockfile", PNPM_LENIENT_BUILDS]
+    if any((directory / lock).is_file() for lock, _ in LOCK_MANAGERS):
+        return list(NODE_INSTALLS[package_manager(directory)][0])
+    return ["pnpm", "install", PNPM_LENIENT_BUILDS]
+
+
+def pnpm_behind(directory: Path) -> bool:
+    """node_modules missing, or installed from another pnpm-lock.yaml than the folder's (a
+    lockfile merged without `pnpm install`): the checks would run other versions than the CI."""
+    lockfile = directory / PNPM_LOCKFILE
+    installed = directory / "node_modules" / ".pnpm" / "lock.yaml"
+    if not (directory / "node_modules").is_dir():
+        return True
+    if not (lockfile.is_file() and installed.is_file()):
+        return False
+    return lockfile.read_bytes() != installed.read_bytes()
+
+
+def ensure_env_file(backend_dir: Path) -> None:
+    """backend/.env drawn from .env.example, with a local secret key; kept if it exists."""
+    env_file = backend_dir / ".env"
+    if env_file.exists():
+        print("backend/.env already exists, kept.")
+        return
+    example = backend_dir / ".env.example"
+    # An adopted repo may have none: nothing to draw from, the backend reads its own settings.
+    if not example.exists():
+        print("backend/.env.example missing, no backend/.env created.")
+        return
+    template_lines = example.read_text().splitlines()
+    secret_key = secrets.token_urlsafe(SECRET_KEY_BYTES)
+    env_lines = [
+        f"{SECRET_KEY_VARIABLE}={secret_key}"
+        if line.startswith(f"{SECRET_KEY_VARIABLE}=")
+        else line
+        for line in template_lines
+    ]
+    env_file.write_text("\n".join(env_lines) + "\n")
+    os.chmod(env_file, ENV_FILE_MODE)
+    print("backend/.env created with a local secret key.")

@@ -3,9 +3,9 @@ from pathlib import Path
 
 import pytest
 
-from kiln import fleet
-from kiln.config import UserConfig
-from kiln.fleet import (
+from ion_repo import fleet
+from ion_repo.config import UserConfig
+from ion_repo.fleet import (
     MAX_FILES_PER_COMMIT,
     commit_in_batches,
     find_adopted,
@@ -13,8 +13,8 @@ from kiln.fleet import (
     integration_branch,
     template_state,
 )
-from kiln.shell import KilnError, step
-from kiln.update import conflicted_files
+from ion_repo.shell import KilnError, step
+from ion_repo.update import conflicted_files
 
 
 def make_repo(root: Path, source: str) -> Path:
@@ -25,7 +25,7 @@ def make_repo(root: Path, source: str) -> Path:
 
 
 def test_only_kiln_repos_are_found(tmp_path: Path) -> None:
-    make_repo(tmp_path / "association" / "projet", "https://github.com/antoine-tena/kiln.git")
+    make_repo(tmp_path / "association" / "projet", "https://github.com/antoine-tena/ion-repo.git")
     make_repo(tmp_path / "ancien", "https://github.com/antoine-tena/init-repo.git")
     make_repo(tmp_path / "autre", "gh:quelquun/modele")
 
@@ -34,8 +34,16 @@ def test_only_kiln_repos_are_found(tmp_path: Path) -> None:
     assert found == ["ancien", "projet"]
 
 
+def test_a_frozen_repo_is_not_found(tmp_path: Path) -> None:
+    frozen = make_repo(tmp_path / "temoin", "https://github.com/antoine-tena/ion-repo.git")
+    (frozen / fleet.FROZEN_MARKER).touch()
+    make_repo(tmp_path / "projet", "https://github.com/antoine-tena/ion-repo.git")
+
+    assert [repo.root.name for repo in find_repos(tmp_path)] == ["projet"]
+
+
 def test_adopted_repo_has_a_charter_but_no_answers(tmp_path: Path) -> None:
-    generated = make_repo(tmp_path / "genere", "https://github.com/antoine-tena/kiln.git")
+    generated = make_repo(tmp_path / "genere", "https://github.com/antoine-tena/ion-repo.git")
     (generated / "charte.toml").touch()
     adopted = tmp_path / "association" / "adopte"
     (adopted / ".git").mkdir(parents=True)
@@ -45,7 +53,7 @@ def test_adopted_repo_has_a_charter_but_no_answers(tmp_path: Path) -> None:
 
 
 def test_commits_hold_at_most_ten_files(tmp_path: Path) -> None:
-    repo = make_repo(tmp_path / "projet", "https://github.com/antoine-tena/kiln.git")
+    repo = make_repo(tmp_path / "projet", "https://github.com/antoine-tena/ion-repo.git")
     git = ["git", "-c", "user.email=t@t", "-c", "user.name=t"]
     subprocess.run([*git, "commit", "-q", "--allow-empty", "-m", "init"], cwd=repo, check=True)
     for index in range(MAX_FILES_PER_COMMIT + 3):
@@ -72,7 +80,7 @@ def test_commits_hold_at_most_ten_files(tmp_path: Path) -> None:
 
 
 def test_conflicts_left_by_copier_are_found(tmp_path: Path) -> None:
-    repo = make_repo(tmp_path / "projet", "https://github.com/antoine-tena/kiln.git")
+    repo = make_repo(tmp_path / "projet", "https://github.com/antoine-tena/ion-repo.git")
     (repo / "README.md").write_text(
         "<<<<<<< before updating\nancien\n=======\nnouveau\n>>>>>>> after\n"
     )
@@ -83,7 +91,7 @@ def test_conflicts_left_by_copier_are_found(tmp_path: Path) -> None:
 
 
 def test_develop_wins_without_origin_head(tmp_path: Path) -> None:
-    repo = make_repo(tmp_path / "projet", "https://github.com/antoine-tena/kiln.git")
+    repo = make_repo(tmp_path / "projet", "https://github.com/antoine-tena/ion-repo.git")
     git = ["git", "-c", "user.email=t@t", "-c", "user.name=t"]
     subprocess.run([*git, "commit", "-q", "--allow-empty", "-m", "init"], cwd=repo, check=True)
     subprocess.run(
@@ -94,7 +102,7 @@ def test_develop_wins_without_origin_head(tmp_path: Path) -> None:
 
 
 def test_local_develop_wins_without_origin(tmp_path: Path) -> None:
-    repo = make_repo(tmp_path / "projet", "https://github.com/antoine-tena/kiln.git")
+    repo = make_repo(tmp_path / "projet", "https://github.com/antoine-tena/ion-repo.git")
     git = ["git", "-c", "user.email=t@t", "-c", "user.name=t"]
     subprocess.run([*git, "commit", "-q", "--allow-empty", "-m", "init"], cwd=repo, check=True)
     subprocess.run(["git", "switch", "-q", "-c", "develop"], cwd=repo, check=True)
@@ -124,14 +132,14 @@ def test_update_branch_is_merged_straight_into_integration(tmp_path: Path) -> No
     git = ["git", "-C", str(clone), "-c", "user.name=t", "-c", "user.email=t@t"]
     subprocess.run([*git, "commit", "-q", "--allow-empty", "-m", "init"], check=True)
     subprocess.run([*git, "push", "-q", "origin", "HEAD:develop"], check=True)
-    subprocess.run([*git, "switch", "-q", "-c", "chore/kiln-update"], check=True)
+    subprocess.run([*git, "switch", "-q", "-c", "chore/ion-repo-update"], check=True)
     (clone / "f.txt").write_text("x\n")
     subprocess.run([*git, "add", "f.txt"], check=True)
     subprocess.run([*git, "commit", "-q", "-m", "chore: maj"], check=True)
 
     subprocess.run([*git, "config", "user.name", "t"], check=True)
     subprocess.run([*git, "config", "user.email", "t@t"], check=True)
-    fleet._merge_into_integration(clone, "chore/kiln-update", "develop")
+    fleet._merge_into_integration(clone, "chore/ion-repo-update", "develop")
 
     log = subprocess.run(
         ["git", "-C", str(origin), "log", "--format=%s", "develop"],
@@ -139,7 +147,7 @@ def test_update_branch_is_merged_straight_into_integration(tmp_path: Path) -> No
         text=True,
         check=True,
     ).stdout.splitlines()
-    assert log[0] == "Merge branch 'chore/kiln-update' into develop"
+    assert log[0] == "Merge branch 'chore/ion-repo-update' into develop"
     assert "chore: maj" in log
 
 
@@ -152,7 +160,7 @@ def test_status_counts_waivers_across_the_fleet(
         'since = 2026-10-16\nuntil = "never"\n'
     )
     for name in ("un", "deux"):
-        repo = make_repo(tmp_path / name, "https://github.com/antoine-tena/kiln.git")
+        repo = make_repo(tmp_path / name, "https://github.com/antoine-tena/ion-repo.git")
         (repo / "kiln-waivers.toml").write_text(waiver)
 
     fleet.show_status(tmp_path)
@@ -175,9 +183,9 @@ def _clone_with_develop(tmp_path: Path) -> Path:
 def test_worktree_left_empty_by_a_failed_run_is_reused(tmp_path: Path) -> None:
     clone = _clone_with_develop(tmp_path)
     worktree = clone / fleet.WORKTREES_DIR / "chore-kiln-update"
-    fleet._create_worktree(clone, worktree, "chore/kiln-update", "develop")
+    fleet._create_worktree(clone, worktree, "chore/ion-repo-update", "develop")
 
-    fleet._create_worktree(clone, worktree, "chore/kiln-update", "develop")
+    fleet._create_worktree(clone, worktree, "chore/ion-repo-update", "develop")
 
     assert worktree.is_dir()
 
@@ -185,11 +193,11 @@ def test_worktree_left_empty_by_a_failed_run_is_reused(tmp_path: Path) -> None:
 def test_worktree_with_changes_is_never_touched(tmp_path: Path) -> None:
     clone = _clone_with_develop(tmp_path)
     worktree = clone / fleet.WORKTREES_DIR / "chore-kiln-update"
-    fleet._create_worktree(clone, worktree, "chore/kiln-update", "develop")
+    fleet._create_worktree(clone, worktree, "chore/ion-repo-update", "develop")
     (worktree / "travail.txt").write_text("à garder\n")
 
     with pytest.raises(KilnError, match="left work in"):
-        fleet._create_worktree(clone, worktree, "chore/kiln-update", "develop")
+        fleet._create_worktree(clone, worktree, "chore/ion-repo-update", "develop")
     assert (worktree / "travail.txt").read_text() == "à garder\n"
 
 
@@ -198,7 +206,7 @@ def test_update_all_shows_one_line_per_repo_and_logs_the_rest(
 ) -> None:
     code_dir = tmp_path / "code"
     for name in ("ok", "stuck"):
-        make_repo(code_dir / name, "https://github.com/antoine-tena/kiln.git")
+        make_repo(code_dir / name, "https://github.com/antoine-tena/ion-repo.git")
     monkeypatch.setattr(fleet, "LOGS_DIR", tmp_path / "logs")
     monkeypatch.setattr(fleet, "require_tools", lambda *_: None)
 
@@ -234,7 +242,7 @@ def test_an_update_with_nothing_to_take_runs_no_check_and_leaves_no_branch(
     branches = subprocess.run(
         ["git", "branch"], cwd=clone, capture_output=True, text=True, check=True
     ).stdout
-    assert "chore/kiln-update" not in branches
+    assert "chore/ion-repo-update" not in branches
 
 
 def test_conflicts_of_the_template_are_reported_before_any_check(
@@ -260,7 +268,7 @@ def test_a_frozen_repo_is_left_alone_by_update_all(
 ) -> None:
     code_dir = tmp_path / "code"
     for name in ("live", "witness"):
-        make_repo(code_dir / name, "https://github.com/antoine-tena/kiln.git")
+        make_repo(code_dir / name, "https://github.com/antoine-tena/ion-repo.git")
     monkeypatch.setattr(fleet, "LOGS_DIR", tmp_path / "logs")
     monkeypatch.setattr(fleet, "require_tools", lambda *_: None)
     monkeypatch.setattr(fleet, "load_config", lambda: UserConfig(frozen_repos=("witness",)))

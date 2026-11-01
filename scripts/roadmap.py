@@ -2,7 +2,7 @@
 
     uv run python scripts/roadmap.py
 
-The plan lives in the `## 🚀 Releases` section of `docs/backlog/backlog.md` (`/kiln:backlog
+The plan lives in the `## 🚀 Releases` section of `docs/backlog/backlog.md` (`/repo:backlog
 plan`); the roadmap shows it to people who never open the backlog: each release with what it
 brings and why its work goes together, grouped by milestone. Only the part between the markers
 is drawn, the same in both languages (the backlog is written in English); the words around it are

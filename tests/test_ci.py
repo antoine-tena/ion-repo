@@ -1,4 +1,4 @@
-"""`kiln ci` : lecture du ci.yml, plans des jobs, exécution et verdict en note git."""
+"""`ion repo ci` : lecture du ci.yml, plans des jobs, exécution et verdict en note git."""
 
 import shutil
 import subprocess
@@ -8,10 +8,10 @@ from pathlib import Path
 import pytest
 import yaml
 
-from kiln.ci import execution
-from kiln.ci.execution import Workspace, run_job
-from kiln.ci.jobs import BACK_LANE, DEFAULTS, plan_job
-from kiln.ci.verdict import (
+from ion_repo.ci import execution
+from ion_repo.ci.execution import Workspace, run_job
+from ion_repo.ci.jobs import BACK_LANE, DEFAULTS, plan_job
+from ion_repo.ci.verdict import (
     FAILURE_LINE,
     SUCCESS_LINE,
     JobOutcome,
@@ -19,14 +19,14 @@ from kiln.ci.verdict import (
     read_verdict,
     record_verdict,
 )
-from kiln.ci.workflow import INLINE_KIND, Job, load_jobs
+from ion_repo.ci.workflow import INLINE_KIND, Job, load_jobs
 
 WORKFLOWS = Path(__file__).parent.parent / ".github" / "workflows"
 PROJECT_CI = """
 on: push
 jobs:
   backend-quality:
-    uses: antoine-tena/kiln/.github/workflows/django.yml@v0.3.0
+    uses: antoine-tena/ion-repo/.github/workflows/django.yml@v0.3.0
     with:
       base: demo
       postgres: docker.io/library/postgres:18-alpine
@@ -35,7 +35,7 @@ jobs:
         DEBUG=True
         IDEMPOTENCY_REQUIRED=True
   infra:
-    uses: antoine-tena/kiln/.github/workflows/infra.yml@v0.3.0
+    uses: antoine-tena/ion-repo/.github/workflows/infra.yml@v0.3.0
   end-to-end:
     runs-on: ubuntu-latest
     services:
@@ -56,7 +56,7 @@ def git_identity(monkeypatch: pytest.MonkeyPatch) -> None:
     """`git notes` exige une identité, absente des runners de CI."""
     for role in ("AUTHOR", "COMMITTER"):
         monkeypatch.setenv(f"GIT_{role}_NAME", "kiln")
-        monkeypatch.setenv(f"GIT_{role}_EMAIL", "kiln@example.invalid")
+        monkeypatch.setenv(f"GIT_{role}_EMAIL", "ion-repo@example.invalid")
 
 
 def _git(directory: Path, *arguments: str) -> str:
@@ -127,7 +127,7 @@ def test_workflow_names_of_before_0_4_are_still_replayed() -> None:
 
 
 def test_a_job_stops_at_its_first_failed_step(tmp_path: Path) -> None:
-    workspace = Workspace(tmp_path, tmp_path, "kiln-ci-test")
+    workspace = Workspace(tmp_path, tmp_path, "ion-repo-ci-test")
     job = Job("demo", INLINE_KIND, commands=("true", "false", "touch reached"))
     outcome = run_job(plan_job(job), workspace)
     assert outcome == JobOutcome("demo", is_success=False, failed_step="step 1")
@@ -186,7 +186,7 @@ def test_deploy_gate_accepts_a_kiln_ci_success_only(tmp_path: Path) -> None:
     (fake_bin / "gh").chmod(0o755)
     refused = _ci_green(clone, fake_bin, sha)
     assert refused.returncode == 1
-    assert 'kiln ci "never replayed"' in refused.stderr
+    assert 'ion repo ci "never replayed"' in refused.stderr
     failed = Verdict(sha, (JobOutcome("a", False, "pytest"),), (), datetime.now().astimezone(), 1)
     record_verdict(clone, failed, should_push=False)
     assert _ci_green(clone, fake_bin, sha).returncode == 1
@@ -194,7 +194,7 @@ def test_deploy_gate_accepts_a_kiln_ci_success_only(tmp_path: Path) -> None:
     record_verdict(clone, passed, should_push=True)
     accepted = _ci_green(clone, fake_bin, sha)
     assert accepted.returncode == 0, accepted.stderr
-    assert "CI replayed by kiln ci, green" in accepted.stdout
+    assert "CI replayed by ion repo ci, green" in accepted.stdout
 
 
 @pytest.mark.skipif(shutil.which("wslpath") is None, reason="WSL seulement")

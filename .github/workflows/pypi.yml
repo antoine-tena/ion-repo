@@ -1,13 +1,11 @@
 name: pypi
 
-# Publishes kiln on PyPI (package kiln-cli) at the tag of a promoted release, `vX.Y.Z`; never a
-# candidate `-rc.N`, which only the internal channel follows, through GitHub. PyPI token in the
-# secret `PYPI_TOKEN` of the `pypi` environment (set from `.pypi/token`); without it, trusted
-# publishing if PyPI trusts this workflow. Then the GitHub Release of the tag, its notes taken
+# Publishes ion-repo on PyPI at the tag of a promoted release, `vX.Y.Z`; never a candidate `-rc.N`,
+# which only the internal channel follows, through GitHub. Then the GitHub Release of the tag, its notes taken
 # from the tag's `CHANGELOG.md` entry (what the repo page and its watchers see), and the Homebrew
 # formula of the tap (T-12), pushed with the deploy key in the secret `HOMEBREW_TAP_KEY`. The built
 # packages carry a build provenance attestation (Sigstore, T-90) and are attached to the Release:
-# `gh attestation verify kiln_cli-X.Y.Z-py3-none-any.whl -R antoine-tena/kiln`.
+# `gh attestation verify ion_repo-X.Y.Z-py3-none-any.whl -R antoine-tena/ion-repo`.
 on:
   push:
     tags: [ "v[0-9]+.[0-9]+.[0-9]+" ]
@@ -17,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/project/kiln-cli/
+      url: https://pypi.org/project/ion-repo/
     permissions:
       contents: read
       id-token: write
@@ -38,14 +36,19 @@ jobs:
           fi
       - name: Build
         run: uv build
-      # The same code under the Keramos family's name, `keramos-kiln`, which replaces kiln-cli
-      # once the testers have moved: only the distribution's name differs.
-      - name: Build keramos-kiln
+      # The very last `kiln-cli` and `keramos-kiln`, the same code but for their name and description:
+      # at its first run each moves its tester to ion-repo (`kiln_move.py`). Published at this tag
+      # only (T-373).
+      - name: Build the last kiln-cli and keramos-kiln
+        if: github.ref_name == 'v0.4.11'
         run: |
-          sed -i 's/^name = "kiln-cli"$/name = "keramos-kiln"/' pyproject.toml
-          grep -q '^name = "keramos-kiln"$' pyproject.toml
-          uv build
-          git checkout -- pyproject.toml
+          for name in kiln-cli keramos-kiln; do
+            sed -i "s/^name = \"ion-repo\"\$/name = \"${name}\"/" pyproject.toml
+            grep -q "^name = \"${name}\"\$" pyproject.toml
+            sed -i 's/^description = .*/description = "Last release: kiln is now ion-repo. Run kiln once to move, or: uv tool install ion-repo"/' pyproject.toml
+            uv build
+            git checkout -- pyproject.toml
+          done
       - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: dist/*
@@ -53,17 +56,24 @@ jobs:
         with:
           name: dist
           path: dist/
-      - name: Publish kiln-cli
-        env:
-          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: uv publish --trusted-publishing automatic dist/kiln_cli-*
-      # PYPI_TOKEN is scoped to kiln-cli: keramos-kiln has the Keramos family's token
-      # (`KERAMOS_PYPI_TOKEN`, "Entire account" until the project exists), otherwise trusted
-      # publishing if PyPI trusts this workflow.
-      - name: Publish keramos-kiln
+      # The family's token, in the `pypi` environment ("Entire account" until the project exists:
+      # ion's `.pypi/config`). A file already on PyPI is skipped, so a failed run can be rerun.
+      - name: Publish ion-repo
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.KERAMOS_PYPI_TOKEN }}
-        run: uv publish --trusted-publishing automatic dist/keramos_kiln-*
+        run: uv publish --check-url https://pypi.org/simple/ dist/ion_repo-*
+      - name: Publish the last keramos-kiln
+        if: github.ref_name == 'v0.4.11'
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.KERAMOS_PYPI_TOKEN }}
+        run: uv publish --check-url https://pypi.org/simple/ dist/keramos_kiln-*
+      # After ion-repo, on purpose: this release moves its testers there. PYPI_TOKEN is scoped to
+      # kiln-cli.
+      - name: Publish the last kiln-cli
+        if: github.ref_name == 'v0.4.11'
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: uv publish --check-url https://pypi.org/simple/ dist/kiln_cli-*
 
   github-release:
     needs: publish
@@ -94,7 +104,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: >-
-          gh release create "${GITHUB_REF_NAME}" dist/* --title "kiln ${GITHUB_REF_NAME}"
+          gh release create "${GITHUB_REF_NAME}" dist/* --title "ion-repo ${GITHUB_REF_NAME}"
           --notes-file notes.md --verify-tag
 
   homebrew:
@@ -110,20 +120,23 @@ jobs:
         with:
           enable-cache: false  # a release: no cache to poison
       - name: Formula
-        run: uv run --no-project python scripts/homebrew_formula.py "${GITHUB_REF_NAME}" > kiln.rb
+        run: uv run --no-project python scripts/homebrew_formula.py "${GITHUB_REF_NAME}" > ion-repo.rb
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with: # zizmor: ignore[artipacked] the push to the tap needs its key kept
-          repository: antoine-tena/homebrew-kiln
+          repository: antoine-tena/homebrew-ion
           ssh-key: ${{ secrets.HOMEBREW_TAP_KEY }}
           path: tap
       - name: Push to the tap
         run: |
           mkdir -p tap/Formula
-          mv kiln.rb tap/Formula/kiln.rb
+          mv ion-repo.rb tap/Formula/ion-repo.rb
           cd tap
-          git add Formula/kiln.rb
+          # `brew upgrade kiln` follows the rename: https://docs.brew.sh/Rename-A-Formula
+          git rm -q --ignore-unmatch Formula/kiln.rb
+          echo '{ "kiln": "ion-repo" }' > formula_renames.json
+          git add Formula/ion-repo.rb formula_renames.json
           if git diff --cached --quiet; then exit 0; fi
           git -c user.name="github-actions[bot]" \
             -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
-            commit -m "kiln ${GITHUB_REF_NAME}"
+            commit -m "ion-repo ${GITHUB_REF_NAME}"
           git push

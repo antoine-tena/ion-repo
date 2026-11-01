@@ -1,7 +1,7 @@
 name: Dependency security (former name)
 
 # Name of security.yml before kiln 0.4.0, with its inputs of that time, kept for the repos that
-# call kiln's workflows at `develop`. Runs security.yml at this same commit.
+# call ion-repo's workflows at `develop`. Runs security.yml at this same commit.
 on:
   workflow_call:
     inputs:

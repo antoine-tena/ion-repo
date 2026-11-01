@@ -31,5 +31,5 @@ def test_check_fails_when_schema_drifted(tmp_path: Path) -> None:
 
 def test_committed_schema_matches_the_code() -> None:
     if not COMMITTED_SCHEMA.exists():
-        pytest.skip("openapi.json not generated yet (kiln update creates it)")
+        pytest.skip("openapi.json not generated yet (ion repo update creates it)")
     export(COMMITTED_SCHEMA, "--check")

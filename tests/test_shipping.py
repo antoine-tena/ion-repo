@@ -1,4 +1,5 @@
-"""`kiln version cut` and `kiln version promote` on a throwaway repo with its own origin (T-29)."""
+"""`ion repo version cut` and `ion repo version promote` on a throwaway repo with its own origin
+(T-29)."""
 
 import datetime
 import subprocess
@@ -7,9 +8,9 @@ from pathlib import Path
 import pytest
 from packaging.version import Version
 
-from kiln import github_ci, release, shipping
-from kiln.release import Evidence, Tag, read_tags
-from kiln.shell import KilnError
+from ion_repo import github_ci, release, shipping
+from ion_repo.release import Evidence, Tag, read_tags
+from ion_repo.shell import KilnError
 
 CHANGELOG = "# What's new\n\nHeader.\n\n## v0.1.0 — 2026-10-01\n- First release.\n"
 
@@ -36,15 +37,15 @@ def repo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     origin, clone = tmp_path / "origin.git", tmp_path / "kiln"
     git(tmp_path, "init", "-q", "--bare", "-b", "develop", str(origin))
     git(tmp_path, "clone", "-q", str(origin), str(clone))
-    (clone / "src/kiln").mkdir(parents=True)
-    (clone / "src/kiln/versions.py").write_text("")
+    (clone / "src/ion_repo").mkdir(parents=True)
+    (clone / "src/ion_repo/versions.py").write_text("")
     (clone / "pyproject.toml").write_text('[project]\nname = "kiln-cli"\nversion = "0.1.0"\n')
     (clone / "CHANGELOG.md").write_text(CHANGELOG)
     for readme in shipping.READMES:
         (clone / readme).parent.mkdir(parents=True, exist_ok=True)
-        (clone / readme).write_text("# kiln\n")
-    (clone / "plugins/kiln/.claude-plugin").mkdir(parents=True)
-    (clone / "plugins/kiln/.claude-plugin/plugin.json").write_text('{"version": "0.2.0"}\n')
+        (clone / readme).write_text("# ion-repo\n")
+    (clone / "plugins/repo/.claude-plugin").mkdir(parents=True)
+    (clone / "plugins/repo/.claude-plugin/plugin.json").write_text('{"version": "0.2.0"}\n')
     (clone / ".gitignore").write_text(".claude/\n")
     git(clone, "add", "-A")
     git(clone, "commit", "-qm", "chore: start")
@@ -91,16 +92,16 @@ def test_changelog_entry_is_the_body_of_its_version() -> None:
 
 
 def test_cut_drafts_then_tags_a_candidate_once_the_entry_is_rewritten(repo: Path) -> None:
-    (repo / "plugins/kiln/hook.py").write_text("")
-    publish(repo, "feat: kiln version cut")
+    (repo / "plugins/repo/hook.py").write_text("")
+    publish(repo, "feat: ion repo version cut")
 
     shipping.cut(repo)
     tree = repo / ".claude/worktrees/release-v0.1.1"
     assert '"0.1.1"' in (tree / "pyproject.toml").read_text()
-    assert '"0.2.1"' in (tree / "plugins/kiln/.claude-plugin/plugin.json").read_text()
+    assert '"0.2.1"' in (tree / "plugins/repo/.claude-plugin/plugin.json").read_text()
     entry = (tree / "CHANGELOG.md").read_text()
     assert entry.index("## v0.1.1") < entry.index("## v0.1.0")
-    assert "- Kiln version cut" in entry
+    assert "- Ion repo version cut" in entry
 
     with pytest.raises(KilnError, match="still a draft"):
         shipping.cut(repo)
@@ -143,6 +144,25 @@ def test_promote_waits_for_the_soak_and_a_repo_then_publishes(
     assert git(repo, "merge-base", "--is-ancestor", "v0.1.1", "origin/develop") == ""
     assert "release/v0.1.1" not in git(repo, "branch", "-a")
     assert [tag.name for tag in read_tags(repo)][-1] == "v0.1.2-rc.1"
+
+
+def test_promote_from_the_release_worktree_removes_it_and_its_branch(
+    repo: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    publish(repo, "feat: one")
+    shipping.cut(repo)
+    tree = repo / ".claude/worktrees/release-v0.1.1"
+    rewrite_draft(tree)
+    shipping.cut(repo)
+    monkeypatch.setattr(release, "SOAK", datetime.timedelta(0))
+    monkeypatch.setattr(shipping, "_adoption", lambda: {"v0.1.1-rc.1": ["club"]})
+    monkeypatch.chdir(tree)  # where `/repo:release` and `cut` leave you
+
+    shipping.promote(tree)
+
+    assert not tree.exists()
+    assert "release/v0.1.1" not in git(repo, "branch", "-a")
+    assert "release/v0.1.1" not in git(repo, "ls-remote", "--heads", "origin")
 
 
 def test_promote_refuses_a_candidate_not_ready() -> None:
@@ -194,10 +214,10 @@ def test_a_fix_of_a_candidate_bumps_the_plugins_it_touches(repo: Path) -> None:
     tree = repo / ".claude/worktrees/release-v0.1.1"
     rewrite_draft(tree)
     shipping.cut(repo)
-    manifest = tree / "plugins/kiln/.claude-plugin/plugin.json"
+    manifest = tree / "plugins/repo/.claude-plugin/plugin.json"
     tagged = manifest.read_text()
 
-    (tree / "plugins/kiln/hook.py").write_text("fixed\n")
+    (tree / "plugins/repo/hook.py").write_text("fixed\n")
     git(tree, "add", "-A")
     git(tree, "commit", "-qm", "fix: the hook")
     shipping.cut(repo)

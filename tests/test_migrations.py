@@ -1,4 +1,4 @@
-"""kiln update and a project of kiln 0.3: the conversions Copier cannot make."""
+"""ion repo update and a project of kiln 0.3: the conversions Copier cannot make."""
 
 import os
 import subprocess
@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from kiln import frozen, migrations
+from ion_repo import frozen, migrations
 
 LEGACY_CHARTER = """\
 # Notre commentaire.

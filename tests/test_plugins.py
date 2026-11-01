@@ -5,8 +5,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 MARKETPLACE = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text())
 PLUGINS = [plugin["name"] for plugin in MARKETPLACE["plugins"]]
-# Ce qui renvoie à un skill (`/kiln:merge`) : la charte et les fichiers générés, les plugins
-# eux-mêmes, les messages de la commande, la documentation, les consignes de kiln.
+# Ce qui renvoie à un skill (`/repo:merge`) : la charte et les fichiers générés, les plugins
+# eux-mêmes, les messages de la commande, la documentation, les consignes d'ion-repo.
 CITING = (
     "template",
     "plugins",
@@ -99,3 +99,11 @@ def test_hooks_point_at_existing_files() -> None:
     for hooks in (ROOT / "plugins").glob("*/hooks/hooks.json"):
         for path in re.findall(r"\$\{CLAUDE_PLUGIN_ROOT\}/([^\"\\]+)", hooks.read_text()):
             assert (hooks.parent.parent / path).is_file(), (hooks, path)
+
+
+# The hook of kiln 0.4.10 runs `claude plugin install kiln@kiln` once the catalogue has moved under
+# it, and a rename would unplug the tester's plugin: the old name stays until T-373 removes it.
+def test_kiln_at_kiln_stays_installable() -> None:
+    entry = next(plugin for plugin in MARKETPLACE["plugins"] if plugin["name"] == "kiln")
+    assert entry["source"] == "./plugins/repo"
+    assert "kiln" not in MARKETPLACE["renames"]

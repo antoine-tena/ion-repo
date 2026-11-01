@@ -7,7 +7,7 @@ from types import ModuleType
 
 import pytest
 
-from kiln import versions
+from ion_repo import versions
 
 ROOT = Path(__file__).resolve().parent.parent
 SHA = "ab" * 32
@@ -30,9 +30,9 @@ def test_formula_pins_the_lock_and_kiln_by_hash() -> None:
     assert 'url "https://files.example/kiln_cli-0.4.5.whl", using: :nounzip' in text
     assert f'sha256 "{SHA}"' in text
     assert f"      copier==9.18.2 --hash=sha256:{'cd' * 32} --hash=sha256:{'ef' * 32}\n" in text
-    assert f"      kiln-cli==0.4.5 --hash=sha256:{SHA}\n" in text
+    assert f"      ion-repo==0.4.5 --hash=sha256:{SHA}\n" in text
     assert "\\" not in text.split("<<~EOS")[1].split("EOS")[0]
-    assert '"#{bin}/kiln --version"' in text
+    assert '"#{bin}/ion-repo --version"' in text
 
 
 def test_the_lock_gives_every_runtime_dependency() -> None:
@@ -47,9 +47,9 @@ def test_the_lock_gives_every_runtime_dependency() -> None:
 @pytest.mark.parametrize(
     ("prefix", "tag", "command"),
     [
-        ("/opt/homebrew/Cellar/kiln/0.4.4/libexec", "v0.4.5", "brew upgrade kiln"),
-        ("/opt/homebrew/Cellar/kiln/0.4.4/libexec", "v0.4.5-rc.1", "git+"),
-        ("/home/me/.local/share/uv/tools/keramos-kiln", "v0.4.5", "keramos-kiln==0.4.5"),
+        ("/opt/homebrew/Cellar/ion-repo/0.4.4/libexec", "v0.4.5", "brew upgrade ion-repo"),
+        ("/opt/homebrew/Cellar/ion-repo/0.4.4/libexec", "v0.4.5-rc.1", "git+"),
+        ("/home/me/.local/share/uv/tools/ion-repo", "v0.4.5", "ion-repo==0.4.5"),
     ],
 )
 def test_a_tool_from_the_tap_upgrades_through_brew(
@@ -69,11 +69,18 @@ class FakeDistribution:
         return None
 
 
-@pytest.mark.parametrize("name", ["kiln-cli", "keramos-kiln"])
-def test_a_pypi_tool_upgrades_under_the_name_it_was_installed_with(
-    monkeypatch: pytest.MonkeyPatch, name: str
-) -> None:
-    monkeypatch.setattr(sys, "prefix", f"/home/me/.local/share/uv/tools/{name}")
-    monkeypatch.setattr(versions, "_installed_distribution", lambda: FakeDistribution(name))
+def test_a_pypi_tool_upgrades_as_ion_repo(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(sys, "prefix", "/home/me/.local/share/uv/tools/ion-repo")
+    monkeypatch.setattr(versions, "_installed_distribution", lambda: FakeDistribution("ion-repo"))
 
-    assert versions.upgrade_command("v0.4.5") == f'uv tool install --force "{name}==0.4.5"'
+    assert versions.upgrade_command("v0.4.5") == 'uv tool install --force "ion-repo==0.4.5"'
+
+
+def test_a_kiln_cli_tool_upgrades_into_ion_repo(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(sys, "prefix", "/home/me/.local/share/uv/tools/kiln-cli")
+    monkeypatch.setattr(versions, "_installed_distribution", lambda: FakeDistribution("kiln-cli"))
+
+    assert versions.upgrade_command("v0.4.5") == (
+        'uv tool install ion-sh && uv tool install --force "ion-repo==0.4.5" && '
+        'uv tool uninstall kiln-cli && uv tool install --force "ion-repo==0.4.5"'
+    )

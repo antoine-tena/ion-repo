@@ -9,12 +9,12 @@ from pathlib import Path
 
 import pytest
 
-from kiln.charter.cli import check_file, main
-from kiln.charter.config import load
-from kiln.charter.repo import Repo
+from ion_repo.charter.cli import check_file, main
+from ion_repo.charter.config import load
+from ion_repo.charter.repo import Repo
 
 ROOT = Path(__file__).resolve().parents[1]
-HOOK = ROOT / "plugins/kiln/hooks/check_file.py"
+HOOK = ROOT / "plugins/repo/hooks/check_file.py"
 CHARTER = """
 [bans.logging]
 id = "LOGGING"
@@ -49,7 +49,7 @@ def run(repo: Path, relative: str) -> int:
 
 
 def test_a_generated_file_is_known_before_it_is_added(repo: Path) -> None:
-    # `kiln contract` writes openapi.json and api.d.ts: exempt before the `git add`.
+    # `ion repo contract` writes openapi.json and api.d.ts: exempt before the `git add`.
     (repo / ".gitattributes").write_text("backend/clean.py linguist-generated=true\n")
 
     assert "backend/clean.py" in Repo(repo, load(repo)).generated
@@ -61,7 +61,7 @@ def test_the_edited_file_breaking_a_ban_fails(
     assert run(repo, "backend/printer.py") == 1
     out = capsys.readouterr().out
     assert "[LOGGING]" in out and "backend/printer.py" in out
-    assert "kiln waive <RULE> --paths backend/printer.py" in out
+    assert "ion repo waive <RULE> --paths backend/printer.py" in out
 
 
 def test_another_file_ignores_the_rest_of_the_repo(repo: Path) -> None:
@@ -100,7 +100,7 @@ def test_the_hook_reports_the_edited_file_fast(
 ) -> None:
     bin_dir = tmp_path_factory.mktemp("bin")
     charter = bin_dir / "charter"
-    charter.write_text(f"#!{sys.executable}\nfrom kiln.charter.cli import run\nrun()\n")
+    charter.write_text(f"#!{sys.executable}\nfrom ion_repo.charter.cli import run\nrun()\n")
     charter.chmod(0o755)
     payload = json.dumps({"tool_input": {"file_path": str(repo / "backend/printer.py")}})
 

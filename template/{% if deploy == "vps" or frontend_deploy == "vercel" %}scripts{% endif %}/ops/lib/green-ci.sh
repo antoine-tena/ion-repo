@@ -1,10 +1,10 @@
 # shellcheck shell=bash
 # Refuses to deploy a commit whose CI is not green: a commit with failing tests could reach
 # production. Two verdicts count, the first green one is enough:
-# - that of `kiln ci <sha>`, the CI of ci.yml replayed on a workstation (git note refs/notes/ci,
+# - that of `ion repo ci <sha>`, the CI of ci.yml replayed on a workstation (git note refs/notes/ci,
 #   pushed to origin): the only verdict of a repo whose GitHub CI does not run;
 # - that of the GitHub CI (workflow CI_WORKFLOW).
-# The release commit of `main` (--no-ff merge of `release/vN`, skill /kiln:release) holds exactly
+# The release commit of `main` (--no-ff merge of `release/vN`, skill /repo:release) holds exactly
 # the files of the release: the green verdict of the release counts for it.
 # SKIP_CI=1 overrides it, in an emergency.
 #
@@ -22,7 +22,7 @@ ci_is_green() {
     is_success "$note" && echo "Release merge: same files as release ${release:0:8}."
   fi
   if is_success "$note"; then
-    echo "CI replayed by kiln ci, green for ${sha:0:8}:"
+    echo "CI replayed by ion repo ci, green for ${sha:0:8}:"
     sed -n '2,$s/^/  /p' <<< "$note"
     return 0
   fi
@@ -40,19 +40,19 @@ print((runs[0]["conclusion"] or runs[0]["status"]) if runs else "no run")
     echo "GitHub CI green for ${sha:0:8}."
     return 0
   fi
-  echo "CI of ${sha:0:8}: GitHub \"$conclusion\", kiln ci \"${note%%$'\n'*}\"." >&2
+  echo "CI of ${sha:0:8}: GitHub \"$conclusion\", ion repo ci \"${note%%$'\n'*}\"." >&2
   [ -n "$note" ] && sed -n '2,$s/^/  /p' <<< "$note" >&2
-  echo "Run \`kiln ci ${sha:0:12}\` (the CI replayed on this machine), or SKIP_CI=1 in an emergency." >&2
+  echo "Run \`ion repo ci ${sha:0:12}\` (the CI replayed on this machine), or SKIP_CI=1 in an emergency." >&2
   return 1
 }
 
-# First line of a successful kiln ci note (its French wording before kiln 0.4.0 included).
+# First line of a successful ion repo ci note (its French wording before kiln 0.4.0 included).
 is_success() {
   local first="${1%%$'\n'*}"
   [ "$first" = "kiln ci: success" ] || [ "$first" = "kiln ci : succès" ]
 }
 
-# kiln ci's note on the commit: origin's when it says success, else the local one, else
+# ion repo ci's note on the commit: origin's when it says success, else the local one, else
 # "never replayed".
 kiln_ci_verdict() {
   local sha="$1" ref note

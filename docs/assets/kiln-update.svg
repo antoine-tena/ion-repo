@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="817" height="1210" viewBox="0 0 817 1210" role="img" aria-label="kiln update: what is new">
+<svg xmlns="http://www.w3.org/2000/svg" width="817" height="544" viewBox="0 0 817 544" role="img" aria-label="ion repo update: what is new">
 <rect width="100%" height="100%" rx="10" fill="#1c1b19"/>
 <circle cx="20" cy="18" r="6" fill="#ff5f57"/><circle cx="40" cy="18" r="6" fill="#febc2e"/><circle cx="60" cy="18" r="6" fill="#28c840"/>
 <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="14" fill="#e6e3dc" xml:space="preserve">
 <text x="22.0" y="41.5" textLength="8.4" fill="#8c8c87">$</text>
-<text x="38.8" y="41.5" textLength="92.4">kiln update</text>
+<text x="38.8" y="41.5" textLength="126.0">ion repo update</text>
 <path d="M47.2,73.0 Q43.0,73.0 43.0,82.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="51.4" y1="73.0" x2="47.2" y2="73.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="51.4" y1="73.0" x2="55.6" y2="73.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="59.8" y1="73.0" x2="55.6" y2="73.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="59.8" y1="73.0" x2="64.0" y2="73.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
@@ -95,7 +95,7 @@
 <line x1="782.2" y1="73.0" x2="778.0" y2="73.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="782.2" y1="73.0" x2="786.4" y2="73.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <path d="M786.4,73.0 Q790.6,73.0 790.6,82.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="91.0" x2="43.0" y2="82.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="91.0" x2="43.0" y2="100.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="55.6" y="95.5" textLength="302.4" fill="#f79628" font-weight="bold">What's new in kiln: v0.4.9 → v0.4.10</text>
+<text x="55.6" y="95.5" textLength="344.4" fill="#f79628" font-weight="bold">What's new in ion-repo: v0.4.10 → v0.4.11</text>
 <line x1="790.6" y1="91.0" x2="790.6" y2="82.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="91.0" x2="790.6" y2="100.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="109.0" x2="47.2" y2="109.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="109.0" x2="43.0" y2="100.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="109.0" x2="43.0" y2="118.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="51.4" y1="109.0" x2="47.2" y2="109.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="51.4" y1="109.0" x2="55.6" y2="109.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
@@ -188,385 +188,219 @@
 <line x1="782.2" y1="109.0" x2="778.0" y2="109.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="782.2" y1="109.0" x2="786.4" y2="109.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="790.6" y1="109.0" x2="786.4" y2="109.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="109.0" x2="790.6" y2="100.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="109.0" x2="790.6" y2="118.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="127.0" x2="43.0" y2="118.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="127.0" x2="43.0" y2="136.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="55.6" y="131.5" textLength="151.2" font-weight="bold">v0.4.10 2026-10-30</text>
+<text x="55.6" y="131.5" textLength="151.2" font-weight="bold">v0.4.11 2026-11-01</text>
 <line x1="790.6" y1="127.0" x2="790.6" y2="118.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="127.0" x2="790.6" y2="136.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="145.0" x2="43.0" y2="136.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="145.0" x2="43.0" y2="154.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <text x="55.6" y="149.5" textLength="8.4" fill="#f79628">·</text>
-<text x="72.4" y="149.5" textLength="378.0">**Breaking**: the four sizes get plain names,</text>
-<text x="458.8" y="149.5" textLength="33.6" fill="#ffe178">tiny</text>
-<text x="492.4" y="149.5" textLength="8.4">,</text>
-<text x="509.2" y="149.5" textLength="42.0" fill="#ffe178">small</text>
-<text x="551.2" y="149.5" textLength="8.4">,</text>
-<text x="568.0" y="149.5" textLength="50.4" fill="#ffe178">medium</text>
-<text x="626.8" y="149.5" textLength="25.2">and</text>
-<text x="660.4" y="149.5" textLength="42.0" fill="#ffe178">large</text>
-<text x="702.4" y="149.5" textLength="75.6">, instead</text>
+<text x="72.4" y="149.5" textLength="218.4">**Breaking**: kiln becomes</text>
+<text x="299.2" y="149.5" textLength="67.2" fill="#ffe178">ion-repo</text>
+<text x="366.4" y="149.5" textLength="58.8">, typed</text>
+<text x="433.6" y="149.5" textLength="25.2" fill="#ffe178">ion</text>
+<text x="467.2" y="149.5" textLength="33.6" fill="#ffe178">repo</text>
+<text x="500.8" y="149.5" textLength="100.8">, its plugin</text>
+<text x="610.0" y="149.5" textLength="33.6" fill="#ffe178">repo</text>
+<text x="652.0" y="149.5" textLength="50.4">in the</text>
+<text x="710.8" y="149.5" textLength="67.2" fill="#ffe178">ion-repo</text>
 <line x1="790.6" y1="145.0" x2="790.6" y2="136.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="145.0" x2="790.6" y2="154.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="163.0" x2="43.0" y2="154.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="163.0" x2="43.0" y2="172.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="167.5" textLength="16.8">of</text>
-<text x="97.6" y="167.5" textLength="42.0" fill="#ffe178">spark</text>
-<text x="139.6" y="167.5" textLength="8.4">,</text>
-<text x="156.4" y="167.5" textLength="42.0" fill="#ffe178">ember</text>
-<text x="198.4" y="167.5" textLength="8.4">,</text>
-<text x="215.2" y="167.5" textLength="42.0" fill="#ffe178">flame</text>
-<text x="265.6" y="167.5" textLength="25.2">and</text>
-<text x="299.2" y="167.5" textLength="42.0" fill="#ffe178">blaze</text>
-<text x="341.2" y="167.5" textLength="8.4">.</text>
-<text x="358.0" y="167.5" textLength="33.6" fill="#ffe178">kiln</text>
-<text x="400.0" y="167.5" textLength="50.4" fill="#ffe178">update</text>
-<text x="458.8" y="167.5" textLength="268.8">renames a repo's size by itself;</text>
+<text x="72.4" y="167.5" textLength="92.4">catalogue (</text>
+<text x="164.8" y="167.5" textLength="58.8" fill="#ffe178">/repo:…</text>
+<text x="232.0" y="167.5" textLength="126.0">skills, the old</text>
+<text x="366.4" y="167.5" textLength="58.8" fill="#ffe178">/kiln:…</text>
+<text x="433.6" y="167.5" textLength="134.4">ones forwarded).</text>
+<text x="576.4" y="167.5" textLength="25.2" fill="#ffe178">ion</text>
+<text x="610.0" y="167.5" textLength="33.6" fill="#ffe178">repo</text>
+<text x="652.0" y="167.5" textLength="50.4" fill="#ffe178">update</text>
+<text x="710.8" y="167.5" textLength="67.2">converts</text>
 <line x1="790.6" y1="163.0" x2="790.6" y2="154.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="163.0" x2="790.6" y2="172.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="181.0" x2="43.0" y2="172.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="181.0" x2="43.0" y2="190.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="185.5" textLength="50.4" fill="#ffe178">--size</text>
-<text x="131.2" y="185.5" textLength="25.2">and</text>
-<text x="164.8" y="185.5" textLength="33.6" fill="#ffe178">kiln</text>
-<text x="206.8" y="185.5" textLength="25.2" fill="#ffe178">set</text>
-<text x="240.4" y="185.5" textLength="42.0" fill="#ffe178">size=</text>
-<text x="290.8" y="185.5" textLength="344.4">still read the old names, with a warning.</text>
+<text x="72.4" y="185.5" textLength="210.0">a repo's names and files.</text>
 <line x1="790.6" y1="181.0" x2="790.6" y2="172.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="181.0" x2="790.6" y2="190.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="199.0" x2="43.0" y2="190.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="199.0" x2="43.0" y2="208.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <text x="55.6" y="203.5" textLength="8.4" fill="#f79628">·</text>
-<text x="72.4" y="203.5" textLength="663.6">**Security**: the Next template moves to 16.4.3, out of GHSA-673q-mjm6-r5xr and</text>
+<text x="72.4" y="203.5" textLength="294.0">**Moving to Ion**: this is the last</text>
+<text x="374.8" y="203.5" textLength="67.2" fill="#ffe178">kiln-cli</text>
+<text x="442.0" y="203.5" textLength="285.6">. At its first run as a uv tool it</text>
 <line x1="790.6" y1="199.0" x2="790.6" y2="190.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="199.0" x2="790.6" y2="208.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="217.0" x2="43.0" y2="208.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="217.0" x2="43.0" y2="226.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="221.5" textLength="697.2">GHSA-2464-fhr4-w9xw (unauthenticated remote code execution) and GHSA-p3m5-59mp-jv5r</text>
+<text x="72.4" y="221.5" textLength="67.2">installs</text>
+<text x="148.0" y="221.5" textLength="50.4" fill="#ffe178">ion-sh</text>
+<text x="206.8" y="221.5" textLength="33.6">(the</text>
+<text x="248.8" y="221.5" textLength="25.2" fill="#ffe178">ion</text>
+<text x="282.4" y="221.5" textLength="100.8">command) and</text>
+<text x="391.6" y="221.5" textLength="67.2" fill="#ffe178">ion-repo</text>
+<text x="467.2" y="221.5" textLength="294.0">from PyPI, removes itself and moves</text>
 <line x1="790.6" y1="217.0" x2="790.6" y2="208.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="217.0" x2="790.6" y2="226.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="235.0" x2="43.0" y2="226.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="235.0" x2="43.0" y2="244.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="239.5" textLength="294.0">(denial of service) of Next 16.4.0.</text>
-<text x="374.8" y="239.5" textLength="33.6" fill="#ffe178">kiln</text>
-<text x="416.8" y="239.5" textLength="50.4" fill="#ffe178">update</text>
-<text x="475.6" y="239.5" textLength="168.0">brings it to a repo.</text>
+<text x="72.4" y="239.5" textLength="218.4">the Claude Code catalogue.</text>
+<text x="299.2" y="239.5" textLength="67.2" fill="#ffe178">kiln-cli</text>
+<text x="374.8" y="239.5" textLength="327.6">stays on PyPI, with no further release.</text>
 <line x1="790.6" y1="235.0" x2="790.6" y2="226.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="235.0" x2="790.6" y2="244.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="253.0" x2="43.0" y2="244.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="253.0" x2="43.0" y2="262.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <text x="55.6" y="257.5" textLength="8.4" fill="#f79628">·</text>
-<text x="72.4" y="257.5" textLength="33.6" fill="#ffe178">kiln</text>
-<text x="114.4" y="257.5" textLength="42.0" fill="#ffe178">score</text>
-<text x="164.8" y="257.5" textLength="588.0">sees every gap wherever the code lives: code at the root as well as in</text>
+<text x="72.4" y="257.5" textLength="100.8" fill="#ffe178">/repo:prompt</text>
+<text x="181.6" y="257.5" textLength="562.8">writes a clean prompt, ready to paste, for a session, a subagent or</text>
 <line x1="790.6" y1="253.0" x2="790.6" y2="244.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="253.0" x2="790.6" y2="262.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="271.0" x2="43.0" y2="262.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="271.0" x2="43.0" y2="280.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="275.5" textLength="67.2" fill="#ffe178">backend/</text>
-<text x="148.0" y="275.5" textLength="25.2">and</text>
-<text x="181.6" y="275.5" textLength="75.6" fill="#ffe178">frontend/</text>
-<text x="257.2" y="275.5" textLength="226.8">, compose services, a loose</text>
-<text x="492.4" y="275.5" textLength="134.4" fill="#ffe178">requirements.txt</text>
-<text x="626.8" y="275.5" textLength="100.8">, the repo's</text>
+<text x="72.4" y="275.5" textLength="117.6">another model.</text>
 <line x1="790.6" y1="271.0" x2="790.6" y2="262.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="271.0" x2="790.6" y2="280.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="289.0" x2="43.0" y2="280.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="289.0" x2="43.0" y2="298.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="293.5" textLength="243.6">GitHub settings (read through</text>
-<text x="324.4" y="293.5" textLength="16.8" fill="#ffe178">gh</text>
-<text x="341.2" y="293.5" textLength="403.2">, cached a day), binary and non-UTF-8 files read</text>
+<text x="55.6" y="293.5" textLength="8.4" fill="#f79628">·</text>
+<text x="72.4" y="293.5" textLength="352.8">The end-of-work report has one format, the</text>
+<text x="433.6" y="293.5" textLength="58.8" fill="#ffe178">debrief</text>
+<text x="500.8" y="293.5" textLength="243.6">output style, and the skills'</text>
 <line x1="790.6" y1="289.0" x2="790.6" y2="280.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="289.0" x2="790.6" y2="298.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="307.0" x2="43.0" y2="298.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="307.0" x2="43.0" y2="316.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="311.5" textLength="663.6">right, agent files left out of the score. The tests and linters of every common</text>
+<text x="72.4" y="311.5" textLength="663.6">reports follow it, the next backlog tickets included. A skill of the Ion family</text>
 <line x1="790.6" y1="307.0" x2="790.6" y2="298.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="307.0" x2="790.6" y2="316.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="325.0" x2="43.0" y2="316.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="325.0" x2="43.0" y2="334.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="329.5" textLength="655.2">stack are recognized, and a language not scored yet is named beside the score.</text>
+<text x="72.4" y="329.5" textLength="310.8">frames its answer with rules drawn by</text>
+<text x="391.6" y="329.5" textLength="25.2" fill="#ffe178">ion</text>
+<text x="425.2" y="329.5" textLength="33.6" fill="#ffe178">repo</text>
+<text x="467.2" y="329.5" textLength="42.0" fill="#ffe178">frame</text>
+<text x="509.2" y="329.5" textLength="8.4">.</text>
 <line x1="790.6" y1="325.0" x2="790.6" y2="316.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="325.0" x2="790.6" y2="334.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="343.0" x2="43.0" y2="334.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="343.0" x2="43.0" y2="352.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <text x="55.6" y="347.5" textLength="8.4" fill="#f79628">·</text>
-<text x="72.4" y="347.5" textLength="33.6" fill="#ffe178">kiln</text>
-<text x="114.4" y="347.5" textLength="25.2" fill="#ffe178">fix</text>
-<text x="148.0" y="347.5" textLength="604.8">converts more, safely: the CI (actions pinned to a commit SHA with their</text>
+<text x="72.4" y="347.5" textLength="25.2" fill="#ffe178">ion</text>
+<text x="106.0" y="347.5" textLength="33.6" fill="#ffe178">repo</text>
+<text x="148.0" y="347.5" textLength="92.4" fill="#ffe178">eval-skills</text>
+<text x="248.8" y="347.5" textLength="378.0">runs the skills' trigger evals. A repo marked</text>
+<text x="635.2" y="347.5" textLength="134.4" fill="#ffe178">.ion-repo-frozen</text>
 <line x1="790.6" y1="343.0" x2="790.6" y2="334.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="343.0" x2="790.6" y2="352.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="361.0" x2="43.0" y2="352.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="361.0" x2="43.0" y2="370.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="365.5" textLength="663.6">version in a comment, read-only workflow tokens, Dependabot for every ecosystem</text>
+<text x="72.4" y="365.5" textLength="344.4">stays out of the commands over all repos.</text>
+<text x="425.2" y="365.5" textLength="92.4" fill="#ffe178">plugin_name</text>
+<text x="526.0" y="365.5" textLength="201.6">names a generated tool's</text>
 <line x1="790.6" y1="361.0" x2="790.6" y2="352.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="361.0" x2="790.6" y2="370.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="379.0" x2="43.0" y2="370.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="379.0" x2="43.0" y2="388.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="383.5" textLength="142.8">found), a tracked</text>
-<text x="223.6" y="383.5" textLength="33.6" fill="#ffe178">.env</text>
-<text x="257.2" y="383.5" textLength="25.2">, a</text>
-<text x="290.8" y="383.5" textLength="134.4" fill="#ffe178">requirements.txt</text>
-<text x="433.6" y="383.5" textLength="277.2">turned into a uv project, compose</text>
+<text x="72.4" y="383.5" textLength="218.4">Claude plugin, without the</text>
+<text x="299.2" y="383.5" textLength="33.6" fill="#ffe178">ion-</text>
+<text x="341.2" y="383.5" textLength="386.4">prefix; a renamed project's package and plugin</text>
 <line x1="790.6" y1="379.0" x2="790.6" y2="370.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="379.0" x2="790.6" y2="388.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="397.0" x2="43.0" y2="388.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="397.0" x2="43.0" y2="406.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="401.5" textLength="672.0">services hardened where they still start, an old runtime and an old Debian moved</text>
+<text x="72.4" y="401.5" textLength="327.6">folders move with what it made of them.</text>
 <line x1="790.6" y1="397.0" x2="790.6" y2="388.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="397.0" x2="790.6" y2="406.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="415.0" x2="43.0" y2="406.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="415.0" x2="43.0" y2="424.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="419.5" textLength="680.4">together. Each converter runs in a throwaway worktree, after the template, and is</text>
+<text x="55.6" y="419.5" textLength="8.4" fill="#f79628">·</text>
+<text x="72.4" y="419.5" textLength="92.4" fill="#ffe178">/repo:merge</text>
+<text x="173.2" y="419.5" textLength="529.2">updates the repo's installed Claude Code plugin after the push.</text>
 <line x1="790.6" y1="415.0" x2="790.6" y2="406.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="415.0" x2="790.6" y2="424.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="433.0" x2="43.0" y2="424.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="433.0" x2="43.0" y2="442.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="437.5" textLength="672.0">judged by the repo's own checks (found, timed out, told apart); a converter that</text>
+<text x="55.6" y="437.5" textLength="8.4" fill="#f79628">·</text>
+<text x="72.4" y="437.5" textLength="655.2">A private repo publishes on PyPI: GitHub refuses it build provenance, which no</text>
 <line x1="790.6" y1="433.0" x2="790.6" y2="424.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="433.0" x2="790.6" y2="442.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="451.0" x2="43.0" y2="442.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="451.0" x2="43.0" y2="460.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="455.5" textLength="487.2">breaks them is reverted, and a second run changes nothing.</text>
+<text x="72.4" y="455.5" textLength="554.4">longer stops the publication. A new project's first commit passes.</text>
+<text x="635.2" y="455.5" textLength="25.2" fill="#ffe178">ion</text>
+<text x="668.8" y="455.5" textLength="33.6" fill="#ffe178">repo</text>
+<text x="710.8" y="455.5" textLength="58.8" fill="#ffe178">version</text>
 <line x1="790.6" y1="451.0" x2="790.6" y2="442.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="451.0" x2="790.6" y2="460.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="469.0" x2="43.0" y2="460.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="469.0" x2="43.0" y2="478.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="55.6" y="473.5" textLength="8.4" fill="#f79628">·</text>
-<text x="72.4" y="473.5" textLength="75.6">kiln-bot:</text>
-<text x="156.4" y="473.5" textLength="33.6" fill="#ffe178">kiln</text>
-<text x="198.4" y="473.5" textLength="25.2" fill="#ffe178">bot</text>
-<text x="232.0" y="473.5" textLength="75.6">runs on a</text>
-<text x="316.0" y="473.5" textLength="67.2" fill="#ffe178">kiln/bot</text>
-<text x="391.6" y="473.5" textLength="369.6">branch and opens a weekly pull request, with</text>
+<text x="72.4" y="473.5" textLength="58.8" fill="#ffe178">promote</text>
+<text x="139.6" y="473.5" textLength="445.2">no longer crashes when run from the release worktree.</text>
 <line x1="790.6" y1="469.0" x2="790.6" y2="460.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="469.0" x2="790.6" y2="478.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="487.0" x2="43.0" y2="478.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="487.0" x2="43.0" y2="496.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="491.5" textLength="697.2">the score on each pull request; each commit it brings is proven first and says what</text>
+<text x="55.6" y="491.5" textLength="8.4" fill="#f79628">·</text>
+<text x="72.4" y="491.5" textLength="193.2">**After updating**: run</text>
+<text x="274.0" y="491.5" textLength="25.2" fill="#ffe178">ion</text>
+<text x="307.6" y="491.5" textLength="33.6" fill="#ffe178">repo</text>
+<text x="349.6" y="491.5" textLength="58.8" fill="#ffe178">install</text>
+<text x="416.8" y="491.5" textLength="75.6" fill="#ffe178">--machine</text>
+<text x="500.8" y="491.5" textLength="277.2">once on each machine, so that its</text>
 <line x1="790.6" y1="487.0" x2="790.6" y2="478.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="487.0" x2="790.6" y2="496.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 <line x1="43.0" y1="505.0" x2="43.0" y2="496.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="505.0" x2="43.0" y2="514.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="509.5" textLength="680.4">it was checked with. Without a token allowed to write workflows, the commits that</text>
+<text x="72.4" y="509.5" textLength="420.0">Claude Code catalogue moves from kiln to ion-repo.</text>
 <line x1="790.6" y1="505.0" x2="790.6" y2="496.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="505.0" x2="790.6" y2="514.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="523.0" x2="43.0" y2="514.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="523.0" x2="43.0" y2="532.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="527.5" textLength="252.0">would touch them are left out.</text>
-<line x1="790.6" y1="523.0" x2="790.6" y2="514.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="523.0" x2="790.6" y2="532.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="541.0" x2="43.0" y2="532.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="541.0" x2="43.0" y2="550.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="55.6" y="545.5" textLength="8.4" fill="#f79628">·</text>
-<text x="72.4" y="545.5" textLength="688.8">kiln's own workflows and actions pass zizmor, releases carry build provenance, and</text>
-<line x1="790.6" y1="541.0" x2="790.6" y2="532.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="541.0" x2="790.6" y2="550.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="559.0" x2="43.0" y2="550.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="559.0" x2="43.0" y2="568.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="563.5" textLength="621.6">OpenSSF Scorecard runs every week. Gitleaks scans the checked commit only.</text>
-<line x1="790.6" y1="559.0" x2="790.6" y2="550.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="559.0" x2="790.6" y2="568.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="577.0" x2="43.0" y2="568.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="577.0" x2="43.0" y2="586.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="55.6" y="581.5" textLength="8.4" fill="#f79628">·</text>
-<text x="72.4" y="581.5" textLength="33.6" fill="#ffe178">kiln</text>
-<text x="114.4" y="581.5" textLength="25.2" fill="#ffe178">set</text>
-<text x="148.0" y="581.5" textLength="134.4" fill="#ffe178">pypi_name=&lt;name&gt;</text>
-<text x="290.8" y="581.5" textLength="487.2">publishes a command-line tool on PyPI from its tag (with a</text>
-<line x1="790.6" y1="577.0" x2="790.6" y2="568.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="577.0" x2="790.6" y2="586.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="595.0" x2="43.0" y2="586.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="595.0" x2="43.0" y2="604.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="599.5" textLength="520.8">token or trusted publishing); kiln itself is also published as</text>
-<text x="601.6" y="599.5" textLength="100.8" fill="#ffe178">keramos-kiln</text>
-<text x="702.4" y="599.5" textLength="25.2">. A</text>
-<line x1="790.6" y1="595.0" x2="790.6" y2="586.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="595.0" x2="790.6" y2="604.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="613.0" x2="43.0" y2="604.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="613.0" x2="43.0" y2="622.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="617.5" textLength="453.6">command-line tool can ship its own Claude Code plugin.</text>
-<line x1="790.6" y1="613.0" x2="790.6" y2="604.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="613.0" x2="790.6" y2="622.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="631.0" x2="43.0" y2="622.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="631.0" x2="43.0" y2="640.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="55.6" y="635.5" textLength="8.4" fill="#f79628">·</text>
-<text x="72.4" y="635.5" textLength="100.8" fill="#ffe178">/kiln:resize</text>
-<text x="181.6" y="635.5" textLength="579.6">moves a repo up or down a size, and shows what the new size brings or</text>
-<line x1="790.6" y1="631.0" x2="790.6" y2="622.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="631.0" x2="790.6" y2="640.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="649.0" x2="43.0" y2="640.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="649.0" x2="43.0" y2="658.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="653.5" textLength="210.0">removes before the merge.</text>
-<line x1="790.6" y1="649.0" x2="790.6" y2="640.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="649.0" x2="790.6" y2="658.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="667.0" x2="43.0" y2="658.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="667.0" x2="43.0" y2="676.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="55.6" y="671.5" textLength="8.4" fill="#f79628">·</text>
-<text x="72.4" y="671.5" textLength="33.6" fill="#ffe178">kiln</text>
-<text x="114.4" y="671.5" textLength="42.0" fill="#ffe178">pause</text>
-<text x="164.8" y="671.5" textLength="25.2">and</text>
-<text x="198.4" y="671.5" textLength="92.4" fill="#ffe178">/kiln:pause</text>
-<text x="299.2" y="671.5" textLength="436.8">keep a session's place, listed with the command that</text>
-<line x1="790.6" y1="667.0" x2="790.6" y2="658.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="667.0" x2="790.6" y2="676.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="685.0" x2="43.0" y2="676.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="685.0" x2="43.0" y2="694.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="689.5" textLength="672.0">resumes it at the next session start. A session started outside any repo is told</text>
-<line x1="790.6" y1="685.0" x2="790.6" y2="676.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="685.0" x2="790.6" y2="694.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="703.0" x2="43.0" y2="694.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="703.0" x2="43.0" y2="712.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="707.5" textLength="386.4">which repos lie below it and where to restart.</text>
-<line x1="790.6" y1="703.0" x2="790.6" y2="694.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="703.0" x2="790.6" y2="712.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="721.0" x2="43.0" y2="712.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="721.0" x2="43.0" y2="730.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="55.6" y="725.5" textLength="8.4" fill="#f79628">·</text>
-<text x="72.4" y="725.5" textLength="126.0">Deployment with</text>
-<text x="206.8" y="725.5" textLength="84.0" fill="#ffe178">deploy=vps</text>
-<text x="290.8" y="725.5" textLength="487.2">: a server shared with other projects, containers that run</text>
-<line x1="790.6" y1="721.0" x2="790.6" y2="712.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="721.0" x2="790.6" y2="730.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="739.0" x2="43.0" y2="730.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="739.0" x2="43.0" y2="748.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="743.5" textLength="705.6">under Ubuntu 26.04, the first deployment and Caddy's log owner fixed, Caddy's health</text>
-<line x1="790.6" y1="739.0" x2="790.6" y2="730.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="739.0" x2="790.6" y2="748.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="757.0" x2="43.0" y2="748.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="757.0" x2="43.0" y2="766.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="761.5" textLength="697.2">probe under the API's name, an SMTP mailer in production, the project's own favicon</text>
-<line x1="790.6" y1="757.0" x2="790.6" y2="748.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="757.0" x2="790.6" y2="766.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="775.0" x2="43.0" y2="766.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="775.0" x2="43.0" y2="784.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="779.5" textLength="42.0">kept.</text>
-<line x1="790.6" y1="775.0" x2="790.6" y2="766.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="775.0" x2="790.6" y2="784.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="793.0" x2="43.0" y2="784.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="793.0" x2="43.0" y2="802.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="55.6" y="797.5" textLength="8.4" fill="#f79628">·</text>
-<text x="72.4" y="797.5" textLength="33.6" fill="#ffe178">kiln</text>
-<text x="114.4" y="797.5" textLength="50.4" fill="#ffe178">update</text>
-<text x="173.2" y="797.5" textLength="42.0" fill="#ffe178">--all</text>
-<text x="223.6" y="797.5" textLength="504.0">shows one line per repo, its output in a log, checks a whole</text>
-<line x1="790.6" y1="793.0" x2="790.6" y2="784.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="793.0" x2="790.6" y2="802.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="811.0" x2="43.0" y2="802.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="811.0" x2="43.0" y2="820.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="815.5" textLength="352.8">update only and leaves frozen repos alone;</text>
-<text x="433.6" y="815.5" textLength="84.0" fill="#ffe178">--rehearse</text>
-<text x="526.0" y="815.5" textLength="243.6">refuses a repo not under kiln</text>
-<line x1="790.6" y1="811.0" x2="790.6" y2="802.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="811.0" x2="790.6" y2="820.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="829.0" x2="43.0" y2="820.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="829.0" x2="43.0" y2="838.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="833.5" textLength="680.4">before cloning it; a template's conflict stops the update before the dependencies</text>
-<line x1="790.6" y1="829.0" x2="790.6" y2="820.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="829.0" x2="790.6" y2="838.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="847.0" x2="43.0" y2="838.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="847.0" x2="43.0" y2="856.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="851.5" textLength="361.2">read it, and the hint says to commit before</text>
-<text x="442.0" y="851.5" textLength="109.2" fill="#ffe178">--no-template</text>
-<text x="551.2" y="851.5" textLength="8.4">.</text>
-<line x1="790.6" y1="847.0" x2="790.6" y2="838.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="847.0" x2="790.6" y2="856.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="865.0" x2="43.0" y2="856.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="865.0" x2="43.0" y2="874.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="55.6" y="869.5" textLength="8.4" fill="#f79628">·</text>
-<text x="72.4" y="869.5" textLength="16.8" fill="#ffe178">-V</text>
-<text x="97.6" y="869.5" textLength="25.2">and</text>
-<text x="131.2" y="869.5" textLength="16.8" fill="#ffe178">-v</text>
-<text x="156.4" y="869.5" textLength="252.0">print the version; a command's</text>
-<text x="416.8" y="869.5" textLength="50.4" fill="#ffe178">--help</text>
-<text x="475.6" y="869.5" textLength="285.6">is drawn like the home screen; the</text>
-<line x1="790.6" y1="865.0" x2="790.6" y2="856.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="865.0" x2="790.6" y2="874.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="883.0" x2="43.0" y2="874.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="883.0" x2="43.0" y2="892.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="887.5" textLength="588.0">spinner shows the time elapsed; names are proposed when none is given;</text>
-<text x="668.8" y="887.5" textLength="33.6" fill="#ffe178">kiln</text>
-<line x1="790.6" y1="883.0" x2="790.6" y2="874.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="883.0" x2="790.6" y2="892.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="901.0" x2="43.0" y2="892.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="901.0" x2="43.0" y2="910.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="905.5" textLength="84.0" fill="#ffe178">completion</text>
-<text x="164.8" y="905.5" textLength="142.8">defaults to bash.</text>
-<line x1="790.6" y1="901.0" x2="790.6" y2="892.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="901.0" x2="790.6" y2="910.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="919.0" x2="43.0" y2="910.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="919.0" x2="43.0" y2="928.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="55.6" y="923.5" textLength="8.4" fill="#f79628">·</text>
-<text x="72.4" y="923.5" textLength="495.6">The stack's front runs through its lock's package manager (</text>
-<text x="568.0" y="923.5" textLength="25.2" fill="#ffe178">npm</text>
-<text x="601.6" y="923.5" textLength="16.8" fill="#ffe178">ci</text>
-<text x="626.8" y="923.5" textLength="142.8">in an npm folder,</text>
-<line x1="790.6" y1="919.0" x2="790.6" y2="910.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="919.0" x2="790.6" y2="928.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="937.0" x2="43.0" y2="928.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="937.0" x2="43.0" y2="946.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="941.5" textLength="67.2">no stray</text>
-<text x="148.0" y="941.5" textLength="117.6" fill="#ffe178">pnpm-lock.yaml</text>
-<text x="265.6" y="941.5" textLength="495.6">), and an adopted front through its own scripts. A DRF repo</text>
-<line x1="790.6" y1="937.0" x2="790.6" y2="928.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="937.0" x2="790.6" y2="946.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="955.0" x2="43.0" y2="946.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="955.0" x2="43.0" y2="964.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="959.5" textLength="588.0">exports its schema with drf-spectacular. A dirty tree names its files.</text>
-<line x1="790.6" y1="955.0" x2="790.6" y2="946.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="955.0" x2="790.6" y2="964.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="973.0" x2="43.0" y2="964.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="973.0" x2="43.0" y2="982.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="55.6" y="977.5" textLength="8.4" fill="#f79628">·</text>
-<text x="72.4" y="977.5" textLength="67.2" fill="#ffe178">.claude/</text>
-<text x="148.0" y="977.5" textLength="302.4">is laid out like PostHog's, plans in</text>
-<text x="458.8" y="977.5" textLength="117.6" fill="#ffe178">.claude/plans/</text>
-<text x="576.4" y="977.5" textLength="168.0">; project rules name</text>
-<line x1="790.6" y1="973.0" x2="790.6" y2="964.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="973.0" x2="790.6" y2="982.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="991.0" x2="43.0" y2="982.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="991.0" x2="43.0" y2="1000.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="995.5" textLength="218.4">only the stack a repo has;</text>
-<text x="299.2" y="995.5" textLength="92.4" fill="#ffe178">ai_trailers</text>
-<text x="400.0" y="995.5" textLength="336.0">sets whether Claude's commits say Claude</text>
-<line x1="790.6" y1="991.0" x2="790.6" y2="982.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="991.0" x2="790.6" y2="1000.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="1009.0" x2="43.0" y2="1000.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="1009.0" x2="43.0" y2="1018.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="1013.5" textLength="84.0">helped. On</text>
-<text x="164.8" y="1013.5" textLength="58.8" fill="#ffe178">develop</text>
-<text x="223.6" y="1013.5" textLength="537.6">, kiln opens its work branch itself, and the branch guard lets a</text>
-<line x1="790.6" y1="1009.0" x2="790.6" y2="1000.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="1009.0" x2="790.6" y2="1018.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="1027.0" x2="43.0" y2="1018.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="1027.0" x2="43.0" y2="1036.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="1031.5" textLength="235.2">repo's first commit through.</text>
-<line x1="790.6" y1="1027.0" x2="790.6" y2="1018.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="1027.0" x2="790.6" y2="1036.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="1045.0" x2="43.0" y2="1036.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="1045.0" x2="43.0" y2="1054.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="55.6" y="1049.5" textLength="8.4" fill="#f79628">·</text>
-<text x="72.4" y="1049.5" textLength="646.8">The status line shows the exact context in k, the tokens used since the first</text>
-<line x1="790.6" y1="1045.0" x2="790.6" y2="1036.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="1045.0" x2="790.6" y2="1054.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="1063.0" x2="43.0" y2="1054.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="1063.0" x2="43.0" y2="1072.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="1067.5" textLength="378.0">session, and hides the cache when it is fine.</text>
-<line x1="790.6" y1="1063.0" x2="790.6" y2="1054.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="1063.0" x2="790.6" y2="1072.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="1081.0" x2="43.0" y2="1072.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="1081.0" x2="43.0" y2="1090.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="55.6" y="1085.5" textLength="8.4" fill="#f79628">·</text>
-<text x="72.4" y="1085.5" textLength="159.6" fill="#ffe178">NON-ROOT-CONTAINERS</text>
-<text x="240.4" y="1085.5" textLength="277.2">fails again on an image ending on</text>
-<text x="526.0" y="1085.5" textLength="33.6" fill="#ffe178">USER</text>
-<text x="568.0" y="1085.5" textLength="25.2" fill="#ffe178">0:0</text>
-<text x="601.6" y="1085.5" textLength="16.8">or</text>
-<text x="626.8" y="1085.5" textLength="33.6" fill="#ffe178">USER</text>
-<text x="668.8" y="1085.5" textLength="75.6" fill="#ffe178">root:root</text>
-<text x="744.4" y="1085.5" textLength="8.4">.</text>
-<line x1="790.6" y1="1081.0" x2="790.6" y2="1072.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="1081.0" x2="790.6" y2="1090.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="1099.0" x2="43.0" y2="1090.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="1099.0" x2="43.0" y2="1108.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="55.6" y="1103.5" textLength="8.4" fill="#f79628">·</text>
-<text x="72.4" y="1103.5" textLength="512.4">Ruff 0.17. CODEOWNERS only from a team of two. Charter fixes:</text>
-<text x="593.2" y="1103.5" textLength="92.4" fill="#ffe178">charter.yml</text>
-<text x="694.0" y="1103.5" textLength="25.2">and</text>
-<line x1="790.6" y1="1099.0" x2="790.6" y2="1090.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="1099.0" x2="790.6" y2="1108.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="1117.0" x2="43.0" y2="1108.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="1117.0" x2="43.0" y2="1126.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="1121.5" textLength="84.0" fill="#ffe178">django.yml</text>
-<text x="164.8" y="1121.5" textLength="327.6">no longer fail on setup-uv's post step,</text>
-<text x="500.8" y="1121.5" textLength="151.2" fill="#ffe178">WORKFLOW-INJECTION</text>
-<text x="660.4" y="1121.5" textLength="84.0">reads only</text>
-<line x1="790.6" y1="1117.0" x2="790.6" y2="1108.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="1117.0" x2="790.6" y2="1126.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="1135.0" x2="43.0" y2="1126.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="1135.0" x2="43.0" y2="1144.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="1139.5" textLength="697.2">scripts, SQL formatted around quotes of the other kind is caught, Python rules read</text>
-<line x1="790.6" y1="1135.0" x2="790.6" y2="1126.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="1135.0" x2="790.6" y2="1144.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="1153.0" x2="43.0" y2="1144.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="1153.0" x2="43.0" y2="1162.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="1157.5" textLength="688.8">the code and not the examples in its strings, and the checks type what mypy is set</text>
-<line x1="790.6" y1="1153.0" x2="790.6" y2="1144.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="1153.0" x2="790.6" y2="1162.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="43.0" y1="1171.0" x2="43.0" y2="1162.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="43.0" y1="1171.0" x2="43.0" y2="1180.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<text x="72.4" y="1175.5" textLength="33.6">for.</text>
-<line x1="790.6" y1="1171.0" x2="790.6" y2="1162.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="790.6" y1="1171.0" x2="790.6" y2="1180.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<path d="M47.2,1189.0 Q43.0,1189.0 43.0,1180.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="51.4" y1="1189.0" x2="47.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="51.4" y1="1189.0" x2="55.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="59.8" y1="1189.0" x2="55.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="59.8" y1="1189.0" x2="64.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="68.2" y1="1189.0" x2="64.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="68.2" y1="1189.0" x2="72.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="76.6" y1="1189.0" x2="72.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="76.6" y1="1189.0" x2="80.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="85.0" y1="1189.0" x2="80.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="85.0" y1="1189.0" x2="89.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="93.4" y1="1189.0" x2="89.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="93.4" y1="1189.0" x2="97.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="101.8" y1="1189.0" x2="97.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="101.8" y1="1189.0" x2="106.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="110.2" y1="1189.0" x2="106.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="110.2" y1="1189.0" x2="114.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="118.6" y1="1189.0" x2="114.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="118.6" y1="1189.0" x2="122.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="127.0" y1="1189.0" x2="122.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="127.0" y1="1189.0" x2="131.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="135.4" y1="1189.0" x2="131.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="135.4" y1="1189.0" x2="139.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="143.8" y1="1189.0" x2="139.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="143.8" y1="1189.0" x2="148.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="152.2" y1="1189.0" x2="148.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="152.2" y1="1189.0" x2="156.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="160.6" y1="1189.0" x2="156.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="160.6" y1="1189.0" x2="164.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="169.0" y1="1189.0" x2="164.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="169.0" y1="1189.0" x2="173.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="177.4" y1="1189.0" x2="173.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="177.4" y1="1189.0" x2="181.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="185.8" y1="1189.0" x2="181.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="185.8" y1="1189.0" x2="190.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="194.2" y1="1189.0" x2="190.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="194.2" y1="1189.0" x2="198.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="202.6" y1="1189.0" x2="198.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="202.6" y1="1189.0" x2="206.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="211.0" y1="1189.0" x2="206.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="211.0" y1="1189.0" x2="215.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="219.4" y1="1189.0" x2="215.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="219.4" y1="1189.0" x2="223.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="227.8" y1="1189.0" x2="223.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="227.8" y1="1189.0" x2="232.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="236.2" y1="1189.0" x2="232.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="236.2" y1="1189.0" x2="240.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="244.6" y1="1189.0" x2="240.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="244.6" y1="1189.0" x2="248.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="253.0" y1="1189.0" x2="248.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="253.0" y1="1189.0" x2="257.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="261.4" y1="1189.0" x2="257.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="261.4" y1="1189.0" x2="265.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="269.8" y1="1189.0" x2="265.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="269.8" y1="1189.0" x2="274.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="278.2" y1="1189.0" x2="274.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="278.2" y1="1189.0" x2="282.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="286.6" y1="1189.0" x2="282.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="286.6" y1="1189.0" x2="290.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="295.0" y1="1189.0" x2="290.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="295.0" y1="1189.0" x2="299.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="303.4" y1="1189.0" x2="299.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="303.4" y1="1189.0" x2="307.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="311.8" y1="1189.0" x2="307.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="311.8" y1="1189.0" x2="316.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="320.2" y1="1189.0" x2="316.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="320.2" y1="1189.0" x2="324.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="328.6" y1="1189.0" x2="324.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="328.6" y1="1189.0" x2="332.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="337.0" y1="1189.0" x2="332.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="337.0" y1="1189.0" x2="341.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="345.4" y1="1189.0" x2="341.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="345.4" y1="1189.0" x2="349.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="353.8" y1="1189.0" x2="349.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="353.8" y1="1189.0" x2="358.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="362.2" y1="1189.0" x2="358.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="362.2" y1="1189.0" x2="366.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="370.6" y1="1189.0" x2="366.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="370.6" y1="1189.0" x2="374.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="379.0" y1="1189.0" x2="374.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="379.0" y1="1189.0" x2="383.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="387.4" y1="1189.0" x2="383.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="387.4" y1="1189.0" x2="391.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="395.8" y1="1189.0" x2="391.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="395.8" y1="1189.0" x2="400.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="404.2" y1="1189.0" x2="400.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="404.2" y1="1189.0" x2="408.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="412.6" y1="1189.0" x2="408.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="412.6" y1="1189.0" x2="416.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="421.0" y1="1189.0" x2="416.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="421.0" y1="1189.0" x2="425.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="429.4" y1="1189.0" x2="425.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="429.4" y1="1189.0" x2="433.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="437.8" y1="1189.0" x2="433.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="437.8" y1="1189.0" x2="442.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="446.2" y1="1189.0" x2="442.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="446.2" y1="1189.0" x2="450.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="454.6" y1="1189.0" x2="450.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="454.6" y1="1189.0" x2="458.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="463.0" y1="1189.0" x2="458.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="463.0" y1="1189.0" x2="467.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="471.4" y1="1189.0" x2="467.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="471.4" y1="1189.0" x2="475.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="479.8" y1="1189.0" x2="475.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="479.8" y1="1189.0" x2="484.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="488.2" y1="1189.0" x2="484.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="488.2" y1="1189.0" x2="492.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="496.6" y1="1189.0" x2="492.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="496.6" y1="1189.0" x2="500.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="505.0" y1="1189.0" x2="500.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="505.0" y1="1189.0" x2="509.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="513.4" y1="1189.0" x2="509.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="513.4" y1="1189.0" x2="517.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="521.8" y1="1189.0" x2="517.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="521.8" y1="1189.0" x2="526.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="530.2" y1="1189.0" x2="526.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="530.2" y1="1189.0" x2="534.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="538.6" y1="1189.0" x2="534.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="538.6" y1="1189.0" x2="542.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="547.0" y1="1189.0" x2="542.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="547.0" y1="1189.0" x2="551.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="555.4" y1="1189.0" x2="551.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="555.4" y1="1189.0" x2="559.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="563.8" y1="1189.0" x2="559.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="563.8" y1="1189.0" x2="568.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="572.2" y1="1189.0" x2="568.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="572.2" y1="1189.0" x2="576.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="580.6" y1="1189.0" x2="576.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="580.6" y1="1189.0" x2="584.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="589.0" y1="1189.0" x2="584.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="589.0" y1="1189.0" x2="593.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="597.4" y1="1189.0" x2="593.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="597.4" y1="1189.0" x2="601.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="605.8" y1="1189.0" x2="601.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="605.8" y1="1189.0" x2="610.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="614.2" y1="1189.0" x2="610.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="614.2" y1="1189.0" x2="618.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="622.6" y1="1189.0" x2="618.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="622.6" y1="1189.0" x2="626.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="631.0" y1="1189.0" x2="626.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="631.0" y1="1189.0" x2="635.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="639.4" y1="1189.0" x2="635.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="639.4" y1="1189.0" x2="643.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="647.8" y1="1189.0" x2="643.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="647.8" y1="1189.0" x2="652.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="656.2" y1="1189.0" x2="652.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="656.2" y1="1189.0" x2="660.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="664.6" y1="1189.0" x2="660.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="664.6" y1="1189.0" x2="668.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="673.0" y1="1189.0" x2="668.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="673.0" y1="1189.0" x2="677.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="681.4" y1="1189.0" x2="677.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="681.4" y1="1189.0" x2="685.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="689.8" y1="1189.0" x2="685.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="689.8" y1="1189.0" x2="694.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="698.2" y1="1189.0" x2="694.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="698.2" y1="1189.0" x2="702.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="706.6" y1="1189.0" x2="702.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="706.6" y1="1189.0" x2="710.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="715.0" y1="1189.0" x2="710.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="715.0" y1="1189.0" x2="719.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="723.4" y1="1189.0" x2="719.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="723.4" y1="1189.0" x2="727.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="731.8" y1="1189.0" x2="727.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="731.8" y1="1189.0" x2="736.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="740.2" y1="1189.0" x2="736.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="740.2" y1="1189.0" x2="744.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="748.6" y1="1189.0" x2="744.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="748.6" y1="1189.0" x2="752.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="757.0" y1="1189.0" x2="752.8" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="757.0" y1="1189.0" x2="761.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="765.4" y1="1189.0" x2="761.2" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="765.4" y1="1189.0" x2="769.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="773.8" y1="1189.0" x2="769.6" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="773.8" y1="1189.0" x2="778.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<line x1="782.2" y1="1189.0" x2="778.0" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="782.2" y1="1189.0" x2="786.4" y2="1189.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
-<path d="M786.4,1189.0 Q790.6,1189.0 790.6,1180.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<path d="M47.2,523.0 Q43.0,523.0 43.0,514.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="51.4" y1="523.0" x2="47.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="51.4" y1="523.0" x2="55.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="59.8" y1="523.0" x2="55.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="59.8" y1="523.0" x2="64.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="68.2" y1="523.0" x2="64.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="68.2" y1="523.0" x2="72.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="76.6" y1="523.0" x2="72.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="76.6" y1="523.0" x2="80.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="85.0" y1="523.0" x2="80.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="85.0" y1="523.0" x2="89.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="93.4" y1="523.0" x2="89.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="93.4" y1="523.0" x2="97.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="101.8" y1="523.0" x2="97.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="101.8" y1="523.0" x2="106.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="110.2" y1="523.0" x2="106.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="110.2" y1="523.0" x2="114.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="118.6" y1="523.0" x2="114.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="118.6" y1="523.0" x2="122.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="127.0" y1="523.0" x2="122.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="127.0" y1="523.0" x2="131.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="135.4" y1="523.0" x2="131.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="135.4" y1="523.0" x2="139.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="143.8" y1="523.0" x2="139.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="143.8" y1="523.0" x2="148.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="152.2" y1="523.0" x2="148.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="152.2" y1="523.0" x2="156.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="160.6" y1="523.0" x2="156.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="160.6" y1="523.0" x2="164.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="169.0" y1="523.0" x2="164.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="169.0" y1="523.0" x2="173.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="177.4" y1="523.0" x2="173.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="177.4" y1="523.0" x2="181.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="185.8" y1="523.0" x2="181.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="185.8" y1="523.0" x2="190.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="194.2" y1="523.0" x2="190.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="194.2" y1="523.0" x2="198.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="202.6" y1="523.0" x2="198.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="202.6" y1="523.0" x2="206.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="211.0" y1="523.0" x2="206.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="211.0" y1="523.0" x2="215.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="219.4" y1="523.0" x2="215.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="219.4" y1="523.0" x2="223.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="227.8" y1="523.0" x2="223.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="227.8" y1="523.0" x2="232.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="236.2" y1="523.0" x2="232.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="236.2" y1="523.0" x2="240.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="244.6" y1="523.0" x2="240.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="244.6" y1="523.0" x2="248.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="253.0" y1="523.0" x2="248.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="253.0" y1="523.0" x2="257.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="261.4" y1="523.0" x2="257.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="261.4" y1="523.0" x2="265.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="269.8" y1="523.0" x2="265.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="269.8" y1="523.0" x2="274.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="278.2" y1="523.0" x2="274.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="278.2" y1="523.0" x2="282.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="286.6" y1="523.0" x2="282.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="286.6" y1="523.0" x2="290.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="295.0" y1="523.0" x2="290.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="295.0" y1="523.0" x2="299.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="303.4" y1="523.0" x2="299.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="303.4" y1="523.0" x2="307.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="311.8" y1="523.0" x2="307.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="311.8" y1="523.0" x2="316.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="320.2" y1="523.0" x2="316.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="320.2" y1="523.0" x2="324.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="328.6" y1="523.0" x2="324.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="328.6" y1="523.0" x2="332.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="337.0" y1="523.0" x2="332.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="337.0" y1="523.0" x2="341.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="345.4" y1="523.0" x2="341.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="345.4" y1="523.0" x2="349.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="353.8" y1="523.0" x2="349.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="353.8" y1="523.0" x2="358.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="362.2" y1="523.0" x2="358.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="362.2" y1="523.0" x2="366.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="370.6" y1="523.0" x2="366.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="370.6" y1="523.0" x2="374.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="379.0" y1="523.0" x2="374.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="379.0" y1="523.0" x2="383.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="387.4" y1="523.0" x2="383.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="387.4" y1="523.0" x2="391.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="395.8" y1="523.0" x2="391.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="395.8" y1="523.0" x2="400.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="404.2" y1="523.0" x2="400.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="404.2" y1="523.0" x2="408.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="412.6" y1="523.0" x2="408.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="412.6" y1="523.0" x2="416.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="421.0" y1="523.0" x2="416.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="421.0" y1="523.0" x2="425.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="429.4" y1="523.0" x2="425.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="429.4" y1="523.0" x2="433.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="437.8" y1="523.0" x2="433.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="437.8" y1="523.0" x2="442.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="446.2" y1="523.0" x2="442.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="446.2" y1="523.0" x2="450.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="454.6" y1="523.0" x2="450.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="454.6" y1="523.0" x2="458.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="463.0" y1="523.0" x2="458.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="463.0" y1="523.0" x2="467.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="471.4" y1="523.0" x2="467.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="471.4" y1="523.0" x2="475.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="479.8" y1="523.0" x2="475.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="479.8" y1="523.0" x2="484.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="488.2" y1="523.0" x2="484.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="488.2" y1="523.0" x2="492.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="496.6" y1="523.0" x2="492.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="496.6" y1="523.0" x2="500.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="505.0" y1="523.0" x2="500.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="505.0" y1="523.0" x2="509.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="513.4" y1="523.0" x2="509.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="513.4" y1="523.0" x2="517.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="521.8" y1="523.0" x2="517.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="521.8" y1="523.0" x2="526.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="530.2" y1="523.0" x2="526.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="530.2" y1="523.0" x2="534.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="538.6" y1="523.0" x2="534.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="538.6" y1="523.0" x2="542.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="547.0" y1="523.0" x2="542.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="547.0" y1="523.0" x2="551.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="555.4" y1="523.0" x2="551.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="555.4" y1="523.0" x2="559.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="563.8" y1="523.0" x2="559.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="563.8" y1="523.0" x2="568.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="572.2" y1="523.0" x2="568.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="572.2" y1="523.0" x2="576.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="580.6" y1="523.0" x2="576.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="580.6" y1="523.0" x2="584.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="589.0" y1="523.0" x2="584.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="589.0" y1="523.0" x2="593.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="597.4" y1="523.0" x2="593.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="597.4" y1="523.0" x2="601.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="605.8" y1="523.0" x2="601.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="605.8" y1="523.0" x2="610.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="614.2" y1="523.0" x2="610.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="614.2" y1="523.0" x2="618.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="622.6" y1="523.0" x2="618.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="622.6" y1="523.0" x2="626.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="631.0" y1="523.0" x2="626.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="631.0" y1="523.0" x2="635.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="639.4" y1="523.0" x2="635.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="639.4" y1="523.0" x2="643.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="647.8" y1="523.0" x2="643.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="647.8" y1="523.0" x2="652.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="656.2" y1="523.0" x2="652.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="656.2" y1="523.0" x2="660.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="664.6" y1="523.0" x2="660.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="664.6" y1="523.0" x2="668.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="673.0" y1="523.0" x2="668.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="673.0" y1="523.0" x2="677.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="681.4" y1="523.0" x2="677.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="681.4" y1="523.0" x2="685.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="689.8" y1="523.0" x2="685.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="689.8" y1="523.0" x2="694.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="698.2" y1="523.0" x2="694.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="698.2" y1="523.0" x2="702.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="706.6" y1="523.0" x2="702.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="706.6" y1="523.0" x2="710.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="715.0" y1="523.0" x2="710.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="715.0" y1="523.0" x2="719.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="723.4" y1="523.0" x2="719.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="723.4" y1="523.0" x2="727.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="731.8" y1="523.0" x2="727.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="731.8" y1="523.0" x2="736.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="740.2" y1="523.0" x2="736.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="740.2" y1="523.0" x2="744.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="748.6" y1="523.0" x2="744.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="748.6" y1="523.0" x2="752.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="757.0" y1="523.0" x2="752.8" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="757.0" y1="523.0" x2="761.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="765.4" y1="523.0" x2="761.2" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="765.4" y1="523.0" x2="769.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="773.8" y1="523.0" x2="769.6" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="773.8" y1="523.0" x2="778.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<line x1="782.2" y1="523.0" x2="778.0" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/><line x1="782.2" y1="523.0" x2="786.4" y2="523.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
+<path d="M786.4,523.0 Q790.6,523.0 790.6,514.0" stroke="#5f5f5c" stroke-width="1.2" fill="none"/>
 </g>
 </svg>

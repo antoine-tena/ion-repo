@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-MODULE_PATH = Path(__file__).resolve().parent.parent / "plugins/kiln/hooks/reminders.py"
+MODULE_PATH = Path(__file__).resolve().parent.parent / "plugins/repo/hooks/reminders.py"
 
 
 @pytest.fixture

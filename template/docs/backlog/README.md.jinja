@@ -29,7 +29,9 @@ is old and must be checked** against the current code; they are never edited.
     Why, what to do (as a `- [ ]` checklist when there are several steps), where to look.
 
 - **ID** `T-NN`: stable, never reused, quoted as is in commits and branches. The next free one
-  is written at the top of [backlog.md](backlog.md) (`Next free: T-NN`).
+  is written at the top of [backlog.md](backlog.md) (`Next free: T-NN`). A bare `T-NN` always
+  means a ticket of this repo; a ticket of another repo is cited with that repo's name
+  (`ion-repo#T-400`).
 - **Type**, one of: `bug` (something is broken); `improvement` (it works, it could work
   better); `idea` (nothing exists yet, to be explored); `task` (work that is neither: a release,
   a decision, a check).
@@ -47,7 +49,7 @@ is old and must be checked** against the current code; they are never edited.
   turning their own first name into their login; never someone else's (only the owner hands a
   ticket over).
 - **Releases**: the `## 🚀 Releases` section at the top places every open ticket in a planned
-  release (`/kiln:backlog plan`); numbers are planned, not promised, until the candidate is cut.
+  release (`/repo:backlog plan`); numbers are planned, not promised, until the candidate is cut.
 - **Closing a ticket**: remove it from its section and add a line at the top of
   [done.md](done.md): `- **YYYY-MM-DD** · T-NN · Title — what was done (branch) · opened YYYY-MM-DD`.
 - **Details in archived audits**: when a ticket quotes lines of `docs/_archive/`, the original

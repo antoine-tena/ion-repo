@@ -1,5 +1,5 @@
 """Waivers of `kiln-waivers.toml`: tiers, expiry, targets, effect on the charter, frozen files
-left alone by `kiln update`; and the charter of an adopted repo of before kiln 0.4.0, still read
+left alone by `ion repo update`; and the charter of an adopted repo of before kiln 0.4.0, still read
 under its French names."""
 
 import datetime
@@ -11,12 +11,12 @@ from typing import Any
 import copier
 import pytest
 
-from kiln.charter.cli import check
-from kiln.charter.config import load as load_charter
-from kiln.charter.repo import Repo
-from kiln.charter.waivers import load
-from kiln.frozen import report_frozen_drift
-from kiln.update import apply_template, template_commit
+from ion_repo.charter.cli import check
+from ion_repo.charter.config import load as load_charter
+from ion_repo.charter.repo import Repo
+from ion_repo.charter.waivers import load
+from ion_repo.frozen import report_frozen_drift
+from ion_repo.update import apply_template, template_commit
 
 TODAY = datetime.date(2026, 10, 16)
 CHARTER = """

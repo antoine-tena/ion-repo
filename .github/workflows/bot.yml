@@ -1,7 +1,7 @@
 name: kiln-bot
 
-# "Dependabot for your methods" (T-59): on a schedule of the caller, `kiln bot` runs `kiln update`
-# (a kiln repo) then `kiln fix` on the branch `kiln/bot`, started again from the default branch,
+# "Dependabot for your methods" (T-59): on a schedule of the caller, `ion repo bot` runs `ion repo update`
+# (an ion-repo repo) then `ion repo fix` on the branch `kiln/bot`, started again from the default branch,
 # and one pull request is kept up to date with the score before and after and the why of each
 # commit; closed when nothing is left to propose. A pull request opened with `GITHUB_TOKEN` does
 # not start the repo's CI, and may never push `.github/workflows/` (those commits are then left
@@ -11,7 +11,7 @@ on:
   workflow_call:
     inputs:
       update:
-        description: In a kiln repo, run kiln update before kiln fix
+        description: In an ion-repo repo, run ion repo update before ion repo fix
         type: boolean
         default: true
     secrets:
@@ -34,21 +34,21 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      # kiln at the exact version of this workflow, installed as a tool.
+      # ion-repo at the exact version of this workflow, installed as a tool.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          repository: antoine-tena/kiln
+          repository: antoine-tena/ion-repo
           ref: ${{ job.workflow_sha || 'develop' }}
-          path: .kiln
+          path: .ion-repo
       # Kept to the end of the job, where setup-uv's post step reads the action again; out of git.
-      - uses: ./.kiln/actions/charter
+      - uses: ./.ion-repo/actions/charter
         with:
           ref: ${{ job.workflow_sha || 'develop' }}
-      - name: Keep kiln out of the project's git
-        run: echo ".kiln/" >> .git/info/exclude
+      - name: Keep ion-repo out of the project's git
+        run: echo ".ion-repo/" >> .git/info/exclude
 
-      - name: kiln bot
+      - name: ion repo bot
         env:
           UPDATE: ${{ inputs.update }}
           # GITHUB_TOKEN may never push .github/workflows/: what writes there waits for a token.
@@ -59,7 +59,7 @@ jobs:
           options=()
           [ "$UPDATE" = "true" ] || options+=(--no-update)
           [ "$HAS_TOKEN" = "true" ] || options+=(--no-workflows)
-          kiln bot "${options[@]}" --body "$RUNNER_TEMP/body.md"
+          ion-repo bot "${options[@]}" --body "$RUNNER_TEMP/body.md"
 
       - name: Pull request
         env:

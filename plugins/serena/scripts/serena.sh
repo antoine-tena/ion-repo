@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Starts Serena on the current worktree (each worktree is its own project, indexed in its
-# .serena/ directory, ignored by git), in kiln's read-only context, without dashboard. Pinned
+# .serena/ directory, ignored by git), in ion-repo's read-only context, without dashboard. Pinned
 # version: bump it here after trying it.
 set -euo pipefail
 VERSION=2.0.0

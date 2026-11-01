@@ -1,7 +1,7 @@
 {%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
 {#- [DEPENDENCY-UPDATES]: each ecosystem of the project, weekly, after a cooldown
     ([UPDATE-COOLDOWN]: a release a week old has had time to be pulled if it was hijacked). Same
-    shape as `kiln fix` writes it. kiln's own workflows move with `kiln update` only, which
+    shape as `ion repo fix` writes it. ion-repo's own workflows move with `ion repo update` only, which
     converts what changes with them. -#}
 {%- set uv_dirs = ([(('/' ~ bd) | replace('/.', '/'))] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + ([(('/' ~ fd) | replace('/.', '/'))] if frontend in ['streamlit', 'dash'] else []) %}
 {%- set container_dirs = (([(('/' ~ bd) | replace('/.', '/'))] if backend not in ['none', 'cli', 'java'] else []) + ([(('/' ~ fd) | replace('/.', '/'))] if frontend != 'none' else [])) if podman else [] %}
@@ -25,6 +25,6 @@ updates:
       default-days: 7
 {%- if ecosystem == 'github-actions' %}
     ignore:
-      - dependency-name: "antoine-tena/kiln/*"
+      - dependency-name: "antoine-tena/ion-repo/*"
 {%- endif %}
 {%- endfor %}

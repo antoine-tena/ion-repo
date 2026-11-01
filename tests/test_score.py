@@ -1,4 +1,4 @@
-"""`kiln score` (T-46): any repo measured against the grid, the same number twice, nothing
+"""`ion repo score` (T-46): any repo measured against the grid, the same number twice, nothing
 written, waivers apart, and what the grid does not know listed. `--roadmap` (T-129): what needs
 judgment handed to Claude with its places, a false positive dismissed on its path, a gap proven
 closed by `--rule`, tickets written once."""
@@ -11,9 +11,9 @@ from pathlib import Path
 
 import pytest
 
-from kiln import cli
-from kiln.grid import roadmap, score
-from kiln.shell import KilnError
+from ion_repo import cli
+from ion_repo.grid import roadmap, score
+from ion_repo.shell import KilnError
 
 SHA = "b4ffde65f46336ab88eb53be808477a3936bae11"
 GOOD = {
@@ -118,8 +118,8 @@ def test_github_settings_out_of_reach_are_left_out_and_said(
 ) -> None:
     root = make(tmp_path, GOOD)
     subprocess.run(["git", "-C", str(root), "remote", "add", "origin", "https://github.com/a/b"])
-    monkeypatch.setattr("kiln.grid.forge.ENABLED", True)
-    monkeypatch.setattr("kiln.grid.forge.shutil.which", lambda name: None)
+    monkeypatch.setattr("ion_repo.grid.forge.ENABLED", True)
+    monkeypatch.setattr("ion_repo.grid.forge.shutil.which", lambda name: None)
     report = score.score_repo(root)
 
     assert report.score == 100
@@ -203,7 +203,7 @@ def test_json_badge_and_screen(
     monkeypatch.setattr(sys, "argv", ["kiln", "score", str(root)])
     cli.main()
     screen = capsys.readouterr().out
-    assert "kiln score" in screen and "NOQA-CODES" in screen and "app.py:1" in screen
+    assert "ion repo score" in screen and "NOQA-CODES" in screen and "app.py:1" in screen
 
 
 def test_the_score_closes_a_screen_long_with_gaps(
@@ -304,5 +304,5 @@ def test_write_turns_items_into_tickets_once(tmp_path: Path) -> None:
 def test_without_a_backlog_write_says_how_to_get_one(tmp_path: Path) -> None:
     root = make(tmp_path, LEGACY)
 
-    with pytest.raises(KilnError, match="kiln adopt"):
+    with pytest.raises(KilnError, match="ion repo adopt"):
         roadmap.write_tickets(root, score.score_repo(root))

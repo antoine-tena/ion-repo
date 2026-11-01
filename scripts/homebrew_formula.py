@@ -1,12 +1,13 @@
 """The Homebrew formula of a promoted release, printed on stdout (T-12).
 
-    uv run python scripts/homebrew_formula.py 0.4.5 > Formula/kiln.rb
+    uv run python scripts/homebrew_formula.py 0.4.5 > Formula/ion-repo.rb
 
 `pypi.yml` runs it once PyPI has the release and pushes the result to the tap
-(https://github.com/antoine-tena/homebrew-kiln), so `brew upgrade kiln` follows each promotion.
+(https://github.com/antoine-tena/homebrew-ion), so `brew upgrade ion-repo` follows each promotion;
+`formula_renames.json` there takes `kiln` to it.
 The formula installs wheels only, each pinned by its hash from `uv.lock`: copier needs
 pydantic-core, and a Homebrew build from source would compile Rust on every machine. uv does the
-installing (kiln needs it anyway), into a virtualenv of Homebrew's Python.
+installing (ion-repo needs it anyway), into a virtualenv of Homebrew's Python.
 """
 
 import json
@@ -17,17 +18,17 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PACKAGE = "kiln-cli"
+PACKAGE = "ion-repo"
 PYTHON = "python@3.14"
 # PyPI's JSON can lag a minute behind the upload that `pypi.yml` has just made.
 ATTEMPTS, PAUSE = 10, 30
 
 FORMULA = """\
-# Written by scripts/homebrew_formula.py in antoine-tena/kiln at each promoted release: a change
+# Written by scripts/homebrew_formula.py in antoine-tena/ion-repo at each promoted release: a change
 # made here by hand is lost at the next one.
-class Kiln < Formula
+class IonRepo < Formula
   desc "Claude Code's workshop"
-  homepage "https://github.com/antoine-tena/kiln"
+  homepage "https://github.com/antoine-tena/ion-repo"
   url "{url}", using: :nounzip
   version "{version}"
   sha256 "{sha256}"
@@ -46,11 +47,11 @@ class Kiln < Formula
     system "uv", "pip", "install", "--python", python, "--require-hashes", "--no-deps",
            "--only-binary", ":all:", "--find-links", buildpath, "--requirement",
            buildpath/"requirements.txt"
-    bin.install_symlink libexec/"bin/kiln", libexec/"bin/charter", libexec/"bin/charte"
+    bin.install_symlink libexec/"bin/ion-repo", libexec/"bin/charter", libexec/"bin/charte"
   end
 
   test do
-    assert_match version.to_s, shell_output("#{{bin}}/kiln --version")
+    assert_match version.to_s, shell_output("#{{bin}}/ion-repo --version")
   end
 end
 """
@@ -95,7 +96,7 @@ def locked_requirements(root: Path) -> str:
 
 
 def render(version: str, url: str, sha256: str, requirements: str) -> str:
-    """The formula: the dependencies as locked, then kiln itself, by its hash."""
+    """The formula: the dependencies as locked, then ion-repo itself, by its hash."""
     # One line per requirement: a backslash would join lines inside Ruby's heredoc anyway.
     joined = requirements.replace(" \\\n", " ").replace("    --hash", "--hash")
     pinned = f"{joined.rstrip()}\n{PACKAGE}=={version} --hash=sha256:{sha256}\n"

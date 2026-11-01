@@ -6,10 +6,10 @@ allowBuilds:
   unrs-resolver: false
   vue-demi: false
 
-# Exact versions in package.json, even after `kiln update` ([LOCKED-DEPENDENCIES]).
+# Exact versions in package.json, even after `ion repo update` ([LOCKED-DEPENDENCIES]).
 saveExact: true
 
-# `kiln update` does not move these dependencies to a new major: TypeScript 7 breaks vue-tsc 3
+# `ion repo update` does not move these dependencies to a new major: TypeScript 7 breaks vue-tsc 3
 # (October 2026). Remove once a vue-tsc release supports it.
 updateConfig:
   ignoreDependencies:

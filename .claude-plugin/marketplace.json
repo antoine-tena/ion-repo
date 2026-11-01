@@ -1,14 +1,19 @@
 {
-  "name": "kiln",
-  "description": "Claude Code plugins of kiln projects",
+  "name": "ion-repo",
+  "description": "Claude Code plugins of ion-repo projects (the Ion family's repo tool, formerly kiln)",
   "owner": {
     "name": "antoine-tena"
   },
   "plugins": [
     {
-      "name": "kiln",
-      "source": "./plugins/kiln",
+      "name": "repo",
+      "source": "./plugins/repo",
       "description": "For every project: worktrees, merge, release, cleanup, backlog, branch guard, protected files, per-file check, context7"
+    },
+    {
+      "name": "kiln",
+      "source": "./plugins/repo",
+      "description": "The repo plugin under its old name, for machines moving from kiln: install repo@ion-repo instead"
     },
     {
       "name": "nuxt",
@@ -37,7 +42,7 @@
     }
   ],
   "renames": {
-    "base": "kiln",
+    "base": "repo",
     "pile-django": "django",
     "pile-nuxt": "nuxt",
     "vps-podman": "vps"

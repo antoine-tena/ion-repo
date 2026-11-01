@@ -1,34 +1,34 @@
 <div align="center">
 
-<img src="docs/assets/kiln-logo.svg" alt="Le logo de kiln : un four qui rit, en pixel art" width="168">
+<img src="docs/assets/kiln-logo.svg" alt="Le logo d'ion-repo : un four qui rit, en pixel art" width="168">
 
-# kiln
+# ion-repo
 
 *L'atelier de Claude Code*
 
 **Chaque nouveau projet démarré, et chaque vieux repo repris, comme le ferait un ingénieur expérimenté — même sans l'être soi-même.**
 
-kiln donne à Claude Code de quoi construire des repos de qualité production, remettre les vôtres à ce niveau, et les garder ainsi.
+ion-repo donne à Claude Code de quoi construire des repos de qualité production, remettre les vôtres à ce niveau, et les garder ainsi.
 
-[![PyPI](https://img.shields.io/pypi/v/kiln-cli.svg?color=c2551f)](https://pypi.org/project/kiln-cli/)
-[![CI](https://github.com/antoine-tena/kiln/actions/workflows/kiln.yml/badge.svg?branch=develop)](https://github.com/antoine-tena/kiln/actions/workflows/kiln.yml)
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/antoine-tena/kiln/badge)](https://scorecard.dev/viewer/?uri=github.com/antoine-tena/kiln)
+[![PyPI](https://img.shields.io/pypi/v/ion-repo.svg?color=c2551f)](https://pypi.org/project/ion-repo/)
+[![CI](https://github.com/antoine-tena/ion-repo/actions/workflows/kiln.yml/badge.svg?branch=develop)](https://github.com/antoine-tena/ion-repo/actions/workflows/kiln.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/antoine-tena/ion-repo/badge)](https://scorecard.dev/viewer/?uri=github.com/antoine-tena/ion-repo)
 [![Licence : MIT](https://img.shields.io/badge/licence-MIT-4c4c4c.svg)](LICENSE)
 
 [**Référence**](docs/reference.fr.md) · [Journal des versions](CHANGELOG.md) · [Contribuer](CONTRIBUTING.md) · [English](README.md)
 
-<img src="docs/assets/kiln-new.gif" alt="kiln new my-app pose trois questions (ce que l'on construit, sa taille, la langue de l'équipe), crée une application Django et Nuxt avec son premier commit, puis kiln check passe ruff, mypy, pytest, ESLint, les types et charter, et kiln score lui donne 100/100" width="820">
+<img src="docs/assets/kiln-new.gif" alt="ion repo new my-app pose trois questions (ce que l'on construit, sa taille, la langue de l'équipe), crée une application Django et Nuxt avec son premier commit, puis ion repo check passe ruff, mypy, pytest, ESLint, les types et charter, et ion repo score lui donne 100/100" width="820">
 
-<i>Une vraie exécution, jouée en 1,5× et coupée pendant les attentes : <code>kiln new</code>, puis <code>kiln check</code> et <code>kiln score</code> dans le nouveau repo.</i>
+<i>Une vraie exécution, jouée en 1,5× et coupée pendant les attentes : <code>ion repo new</code>, puis <code>ion repo check</code> et <code>ion repo score</code> dans le nouveau repo.</i>
 
 </div>
 
 Claude Code écrit vite. Un repo a besoin de plus pour rester sain : une stack à jour, des règles
 qu'un agent ne peut pas contourner à force d'arguments, une façon de travailler avec git qui
 résiste à un mauvais après-midi, et quelqu'un pour l'empêcher de vieillir au quatre-vingt-dixième
-jour. kiln apporte les quatre à un nouveau repo en trois questions, et à celui que vous avez
+jour. ion-repo apporte les quatre à un nouveau repo en trois questions, et à celui que vous avez
 déjà, si vieux et si sale soit-il : il pose les règles, liste ce qui n'y est pas, et Claude Code
-le résorbe. Puis il tient chaque repo à jour, version après version. kiln lui-même n'appelle
+le résorbe. Puis il tient chaque repo à jour, version après version. ion-repo lui-même n'appelle
 aucune IA et ne demande aucune clé d'API.
 
 ## Points forts
@@ -36,56 +36,61 @@ aucune IA et ne demande aucune clé d'API.
 - Un nouveau repo en trois questions (ce que vous construisez, sa taille, la langue de
   l'équipe) : code, tests, linters, CI, crochets pre-commit, conteneurs et les consignes que
   Claude lit en premier.
-- Un repo que vous avez déjà, si vieux soit-il : `kiln adopt` l'amène au niveau de `kiln new`
+- Un repo que vous avez déjà, si vieux soit-il : `ion repo adopt` l'amène au niveau de `ion repo new`
   sur une branche de travail, en posant la CI, les crochets, les règles et les consignes qui lui
   manquent sans écraser aucun fichier. Les règles sont vérifiées après chaque modification de
-  Claude, le passif qu'elles relèvent est listé pour que Claude le résorbe, et `kiln update` le
-  tient à jour comme un repo créé par kiln.
-- `kiln update` rejoue le modèle, prend les mises à jour compatibles des dépendances, convertit
+  Claude, le passif qu'elles relèvent est listé pour que Claude le résorbe, et `ion repo update` le
+  tient à jour comme un repo créé par ion-repo.
+- `ion repo update` rejoue le modèle, prend les mises à jour compatibles des dépendances, convertit
   ce qu'une version a renommé et lance vos contrôles avant que vous ne commitiez. `--rehearse`
   l'essaie d'abord sur un clone jetable, `--all` met à jour chaque repo du dossier de code.
-- `charter`, le contrôleur de règles de kiln, vérifie chaque fichier que Claude modifie en
+- `charter`, le contrôleur de règles d'ion-repo, vérifie chaque fichier que Claude modifie en
   0,15 s environ : outils bannis, noms, tailles de fichiers, données personnelles dans les logs.
   Des compteurs qui ne peuvent que baisser (cliquets) et des seuils de couverture tiennent à
   chaque commit et en CI. Une dérogation demande une raison et une date de fin.
-- `kiln grid` liste les pratiques que kiln défend, chacune avec sa raison, ses sources
-  (vérifiées et datées) et sa façon d'être détectée. `kiln score` y mesure n'importe quel repo
+- `ion repo grid` liste les pratiques qu'ion-repo défend, chacune avec sa raison, ses sources
+  (vérifiées et datées) et sa façon d'être détectée. `ion repo score` y mesure n'importe quel repo
   en une seconde environ, sans jeton : une note sur 100, une par pilier, et les écarts à
-  combler d'abord. `kiln fix` comble sur une branche ceux qu'un script peut combler, un
+  combler d'abord. `ion repo fix` comble sur une branche ceux qu'un script peut combler, un
   commit par règle, chacun prouvé, mis de côté si vos contrôles passent au rouge.
-  `kiln score --roadmap` confie le reste à Claude Code en une courte liste, fichier et ligne
-  compris, et `/kiln:modernize` la traite, chaque écart prouvé comblé par `kiln score --rule`.
+  `ion repo score --roadmap` confie le reste à Claude Code en une courte liste, fichier et ligne
+  compris, et `/repo:modernize` la traite, chaque écart prouvé comblé par `ion repo score --rule`.
   [kiln-bot](docs/reference.fr.md) apporte les correctifs en pull request chaque
   semaine, en un copier-coller.
 - Des skills pour les worktrees, les fusions, les versions et les relectures ; des hooks qui
   tiennent Claude à l'écart de `main` et `develop` ; une status line qui montre la CI, les
-  tickets et la production.
-- La CI d'un repo privé tourne sur votre poste (`kiln ci`, son verdict gardé en note git) et ne
+  tickets et la production ; un compte rendu de fin de travail, le style de sortie `debrief`,
+  qui donne l'état git réel, ce qui est cassé et la suite.
+- La CI d'un repo privé tourne sur votre poste (`ion repo ci`, son verdict gardé en note git) et ne
   coûte aucune minute GitHub ; celle d'un repo public tourne sur GitHub, où c'est gratuit.
 
 ## Sauver un vieux repo
 
 <p align="center">
-  <img src="docs/assets/kiln-rescue.gif" alt="kiln score donne 23 sur 100 à un vieux repo Django ; suivent kiln adopt, kiln fix et kiln score --roadmap ; Claude Code traite la feuille de route avec /kiln:modernize, un commit par écart ; kiln score lui donne alors 100 sur 100" width="820">
+  <img src="docs/assets/kiln-rescue.gif" alt="ion repo score donne 23 sur 100 à un vieux repo Django ; suivent ion repo adopt, ion repo fix et ion repo score --roadmap ; Claude Code traite la feuille de route avec /repo:modernize, un commit par écart ; ion repo score lui donne alors 100 sur 100" width="820">
 </p>
 <p align="center"><i>Une vraie exécution sur <a href="https://github.com/antoine-tena/kiln-demo-legacy">kiln-demo-legacy</a>, une application Django laissée telle qu'on l'écrivait vers 2020, jouée en 1,5× et coupée pendant les attentes ; les cinq minutes de Claude Code en accéléré.</i></p>
 
-`kiln score` lui donne 23/100. `kiln adopt` pose les règles, les contrôles et les consignes de
-kiln sans écraser un fichier (39), `kiln fix` comble ce qu'un script peut combler, un commit par
-règle (65), et `kiln score --roadmap` confie le reste à Claude Code. `/kiln:modernize` fige
+`ion repo score` lui donne 23/100. `ion repo adopt` pose les règles, les contrôles et les consignes de
+ion-repo sans écraser un fichier (39), `ion repo fix` comble ce qu'un script peut combler, un commit par
+règle (65), et `ion repo score --roadmap` confie le reste à Claude Code. `/repo:modernize` fige
 d'abord par des tests ce que fait le code aujourd'hui, puis comble chaque écart dans son propre
-commit, prouvé par `kiln score --rule` : 100/100. Le README du repo de démo donne les commandes
+commit, prouvé par `ion repo score --rule` : 100/100. Le README du repo de démo donne les commandes
 pour la rejouer.
 
 ## Installation
 
 ```sh
-uv tool install kiln-cli     # la commande est kiln ; uv installe Python 3.14 s'il manque
-kiln install                 # hors d'un repo : le plugin Claude Code de kiln dans chaque session
+uv tool install ion-sh       # la commande `ion` ; uv installe Python 3.14 s'il manque
+ion add repo                 # ion-repo
+ion repo install             # hors d'un repo : le plugin Claude Code d'ion-repo dans chaque session
 ```
 
-Avec Homebrew : `brew install antoine-tena/kiln/kiln`. Ou pour essayer sans rien installer :
-`uvx kiln-cli new mon-app` pour un nouveau repo, `uvx kiln-cli adopt` dans un repo que vous
+En venant de kiln : le dernier `kiln-cli` vous fait passer à son premier lancement
+(`uv tool upgrade kiln-cli`, puis lancez-le une fois).
+
+Avec Homebrew : `brew install antoine-tena/ion/ion-repo`. Ou pour essayer sans rien installer :
+`uvx ion-repo new mon-app` pour un nouveau repo, `uvx ion-repo adopt` dans un repo que vous
 avez déjà. macOS, Linux et Windows par WSL ;
 [pnpm](https://pnpm.io/) pour les fronts JavaScript, [podman](https://podman.io/) pour les
 conteneurs.
@@ -95,18 +100,18 @@ conteneurs.
 Un nouveau repo :
 
 ```console
-$ kiln new mon-app            # trois questions, puis un dépôt GitHub privé (--no-github : local)
-$ cd mon-app && kiln dev      # serveurs en arrière-plan, bases d'abord, journaux proposés
-$ kiln check                  # ruff, mypy, ESLint, types, puis charter (--tests : les suites)
-$ claude                      # Claude Code, avec les règles, skills et hooks de kiln
+$ ion repo new mon-app            # trois questions, puis un dépôt GitHub privé (--no-github : local)
+$ cd mon-app && ion repo dev      # serveurs en arrière-plan, bases d'abord, journaux proposés
+$ ion repo check                  # ruff, mypy, ESLint, types, puis charter (--tests : les suites)
+$ claude                      # Claude Code, avec les règles, skills et hooks d'ion-repo
 ```
 
 Un repo que vous avez déjà, sur une branche de travail :
 
 ```console
-$ git switch -c chore/kiln-adopt
-$ kiln adopt                  # ce qu'écrit kiln new, aucun fichier écrasé ; puis le passif
-$ claude                      # Claude Code le résorbe, avec les règles, skills et hooks de kiln
+$ git switch -c chore/ion-repo-adopt
+$ ion repo adopt                  # ce qu'écrit ion repo new, aucun fichier écrasé ; puis le passif
+$ claude                      # Claude Code le résorbe, avec les règles, skills et hooks d'ion-repo
 ```
 
 ## Ce que vous obtenez
@@ -120,12 +125,12 @@ $ claude                      # Claude Code le résorbe, avec les règles, skill
 | Une analyse de données (`analysis`) | polars, marimo, Plotly | — |
 | Un outil en ligne de commande (`cli`) | Python, installable, avec son propre plugin Claude Code si on le veut | — |
 
-Next.js, Vite + React, Dash et Java 25 + Maven sont là aussi, et les tests de kiln génèrent et vérifient chaque
+Next.js, Vite + React, Dash et Java 25 + Maven sont là aussi, et les tests d'ion-repo génèrent et vérifient chaque
 combinaison. Django et Nuxt sont complets ; les autres stacks sont figées mais entretenues : les
 nouvelles règles de la grille vont d'abord à Django et Nuxt.
 
 Chaque repo reçoit aussi uv, pnpm et podman (jamais pip, npm ni docker), une CI qui appelle les
-workflows réutilisables de kiln, des branches `main` et `develop` protégées, un `docs/backlog/`
+workflows réutilisables d'ion-repo, des branches `main` et `develop` protégées, un `docs/backlog/`
 de tickets typés, et une taille (`tiny`, `small`, `medium` ou `large`) qui règle le cérémonial
 qu'il porte. Une application Django peut partir sur un VPS durci (Caddy, conteneurs en lecture
 seule, retour arrière automatique, sauvegardes restaurées), un front Nuxt sur Vercel.
@@ -135,71 +140,71 @@ seule, retour arrière automatique, sauvegardes restaurées), un front Nuxt sur 
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/assets/kiln-flow-dark.svg">
-    <img src="docs/assets/kiln-flow-light.svg" alt="Une version, tous les repos à jour : kiln, puis une candidate essayée sur les repos de kiln, la version sur PyPI, une répétition sur un clone de votre repo, puis kiln update la fusionne seulement si les contrôles passent" width="820">
+    <img src="docs/assets/kiln-flow-light.svg" alt="Une version, tous les repos à jour : ion-repo, puis une candidate essayée sur les repos d'ion-repo, la version sur PyPI, une répétition sur un clone de votre repo, puis ion repo update la fusionne seulement si les contrôles passent" width="820">
   </picture>
 </p>
 
-Une version de kiln sort d'abord en candidate, taguée seulement quand sa CI est verte sous Linux
+Une version d'ion-repo sort d'abord en candidate, taguée seulement quand sa CI est verte sous Linux
 et macOS, y compris une mise à jour depuis chaque version depuis la v0.3.0, par un outil
 installé. Elle est promue une fois rodée (24 heures, au moins un repo passé dessus ; 2 heures pour une
 candidate de correctifs seuls), puis répétée sur un clone de
-chaque repo avant que `kiln update --all` la fusionne, un worktree par repo. Les repos citent les
-workflows de kiln à la version exacte qu'ils suivent : rien ne leur arrive entre deux versions,
-et `kiln update` montre les nouveautés de chaque version qu'il traverse. Un repo repris par
-`kiln adopt` se met à jour de la même façon.
+chaque repo avant que `ion repo update --all` la fusionne, un worktree par repo. Les repos citent les
+workflows d'ion-repo à la version exacte qu'ils suivent : rien ne leur arrive entre deux versions,
+et `ion repo update` montre les nouveautés de chaque version qu'il traverse. Un repo repris par
+`ion repo adopt` se met à jour de la même façon.
 
 ## La grille
 
 <p align="center">
-  <img src="docs/assets/kiln-rule.svg" alt="kiln grid pinned-actions : pourquoi la règle tient, son thème, sa portée et son niveau, sa détection et sa correction, sa source vérifiée à une date, et comment y déroger" width="820">
+  <img src="docs/assets/kiln-rule.svg" alt="ion repo grid pinned-actions : pourquoi la règle tient, son thème, sa portée et son niveau, sa détection et sa correction, sa source vérifiée à une date, et comment y déroger" width="820">
 </p>
-<p align="center"><i><code>kiln grid &lt;ID&gt;</code> : une règle en entier, avec sa raison, une source vérifiée à une date, et la façon pour un repo d'y déroger.</i></p>
+<p align="center"><i><code>ion repo grid &lt;ID&gt;</code> : une règle en entier, avec sa raison, une source vérifiée à une date, et la façon pour un repo d'y déroger.</i></p>
 
 Un petit fichier TOML par règle, sur deux axes : son thème (chaîne d'approvisionnement,
 conteneurs, tests…) et sa portée (universelle, un langage, un framework, un outil). Chacune dit
 pourquoi, cite des sources pesées dans un ordre fixe (documentation officielle, alertes de
 sécurité, études mesurées, données d'adoption, blogs) et porte un niveau du Technology Radar de
 Thoughtworks : adopter, essayer, évaluer, abandonner. Seules les règles adoptées comptent :
-40 (chaîne d'approvisionnement, CI, conteneurs, tests, normes de code, sécurité de Django et de
-Vue), chacune passée sur deux vrais repos pour traquer les faux positifs ; 95 brouillons
-attendent derrière `kiln grid --level assess`.
+43 (chaîne d'approvisionnement, CI, conteneurs, tests, normes de code, sécurité de Django et de
+Vue), chacune passée sur deux vrais repos pour traquer les faux positifs ; 96 brouillons
+attendent derrière `ion repo grid --level assess`.
 Chaque règle notée a un repo qui la respecte et un qui l'enfreint.
 
 ## Comparé à Copier et cookiecutter
 
-kiln repose sur [Copier](https://copier.readthedocs.io) : chaque projet garde son
-`.copier-answers.yml`, et Copier seul fonctionne toujours dessus. kiln ajoute ce qui vient
+ion-repo repose sur [Copier](https://copier.readthedocs.io) : chaque projet garde son
+`.copier-answers.yml`, et Copier seul fonctionne toujours dessus. ion-repo ajoute ce qui vient
 après le premier jour, et y laisse un peu d'étendue.
 
-| | cookiecutter | Copier | **kiln** |
+| | cookiecutter | Copier | **ion-repo** |
 |---|:---:|:---:|:---:|
 | Générer un projet | ✅ | ✅ | ✅ |
 | N'importe quel langage ou framework | ✅ | ✅ | ❌ |
 | Des modèles de la communauté pour démarrer | ✅ | ✅ | ❌ |
 | Appliquer les évolutions du modèle aux projets existants | ❌ | ✅ | ✅ |
 | Choisir la stack d'après ce que l'on construit | ❌ | ❌ | ✅ |
-| Changer de stack plus tard (`kiln set frontend=nuxt`) | ❌ | en partie | ✅ |
+| Changer de stack plus tard (`ion repo set frontend=nuxt`) | ❌ | en partie | ✅ |
 | Mettre à jour les dépendances et lancer les contrôles d'un coup | ❌ | ❌ | ✅ |
 | Répéter, puis mettre à jour tous ses repos d'un coup | ❌ | ❌ | ✅ |
 | Des workflows de CI partagés, cités à une version | ❌ | ❌ | ✅ |
 | Un moteur de règles aux dérogations datées (`charter`) | ❌ | ❌ | ✅ |
 | Skills, hooks et consignes pour Claude Code | ❌ | ❌ | ✅ |
 
-kiln a des opinions, exprès. Pour un moteur de gabarits neutre, prenez Copier ; pour une façon
-de travailler qui reste entretenue, prenez kiln, ou forkez-le et faites vôtres ses opinions.
+ion-repo a des opinions, exprès. Pour un moteur de gabarits neutre, prenez Copier ; pour une façon
+de travailler qui reste entretenue, prenez ion-repo, ou forkez-le et faites vôtres ses opinions.
 
 ## Référence
 
-Chaque commande et chaque option, chaque clé de `kiln set`, les workflows réutilisables, les
-plugins Claude Code, le moteur de charte et la façon dont kiln sort ses versions :
-[**docs/reference.fr.md**](docs/reference.fr.md). Dans un terminal, `kiln <commande> --help`.
+Chaque commande et chaque option, chaque clé de `ion repo set`, les workflows réutilisables, les
+plugins Claude Code, le moteur de charte et la façon dont ion-repo sort ses versions :
+[**docs/reference.fr.md**](docs/reference.fr.md). Dans un terminal, `ion-repo <commande> --help`.
 
 ## État
 
-kiln fait tourner chaque jour une poignée de vrais repos, dont un en production. Un seul
+ion-repo fait tourner chaque jour une poignée de vrais repos, dont un en production. Un seul
 mainteneur l'écrit avec Claude Code, sous les règles mêmes qu'il donne à vos repos. Il numérote
 ses versions comme Claude Code : en `0.x`, chaque version monte le correctif, les changements
-cassants viennent en tête du [journal](CHANGELOG.md) et `kiln update` les convertit ; la mineure
+cassants viennent en tête du [journal](CHANGELOG.md) et `ion repo update` les convertit ; la mineure
 marque une étape. Le semver strict commence à la 1.0. La suite est pour les repos que vous avez
 déjà : n'importe quel repo Django ou Nuxt noté face à la grille en quelques secondes, puis mis à
 niveau par script partout où un script le peut (v0.5.0). Ensuite Claude Code qui comble seul ce
@@ -210,9 +215,9 @@ promesse de stabilité de la 1.0, version par version : [**ROADMAP.fr.md**](ROAD
 
 Les issues et les pull requests sont bienvenues : voir [CONTRIBUTING.md](CONTRIBUTING.md), le
 [code de conduite](CODE_OF_CONDUCT.md), et l'étiquette
-[`good first issue`](https://github.com/antoine-tena/kiln/labels/good%20first%20issue) pour
-commencer. Dans un repo kiln, `/kiln:report` transforme un défaut de kiln en issue ou en pull
-request prête à poster, envoyée seulement avec votre accord. Si kiln vous fait gagner du temps,
+[`good first issue`](https://github.com/antoine-tena/ion-repo/labels/good%20first%20issue) pour
+commencer. Dans un repo ion-repo, `/repo:report` transforme un défaut d'ion-repo en issue ou en pull
+request prête à poster, envoyée seulement avec votre accord. Si ion-repo vous fait gagner du temps,
 une étoile aide d'autres à le trouver.
 
 ## Licence

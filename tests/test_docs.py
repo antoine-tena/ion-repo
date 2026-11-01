@@ -12,9 +12,9 @@ import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 READMES = ("README.md", "README.fr.md")
-# The reference, in each language: everything kiln offers, looked up there.
+# The reference, in each language: everything ion-repo offers, looked up there.
 REFERENCES = ("docs/reference.md", "docs/reference.fr.md")
-# Where kiln goes, for people who never open the backlog: the releases drawn from its plan.
+# Where ion-repo goes, for people who never open the backlog: the releases drawn from its plan.
 ROADMAPS = ("ROADMAP.md", "ROADMAP.fr.md")
 DOCS = (*READMES, *REFERENCES, *ROADMAPS, "CONTRIBUTING.md")
 MARKETPLACE = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text())
@@ -62,9 +62,9 @@ def test_a_recorded_demo_types_only_what_kiln_offers(image: Path) -> None:
 
     unknown = []
     for line in typed:
-        for name, arguments in re.findall(r"\bkiln ([a-z][a-z-]*)([^&|;]*)", line):
+        for name, arguments in re.findall(r"\b(?:kiln|ion repo) ([a-z][a-z-]*)([^&|;]*)", line):
             if f"command {name}" not in labels:
-                unknown.append(f"kiln {name}")
+                unknown.append(f"ion-repo {name}")
             unknown += [
                 option
                 for option in re.findall(r"--[a-z][a-z-]*", arguments)
@@ -79,7 +79,7 @@ def test_a_recorded_demo_types_only_what_kiln_offers(image: Path) -> None:
 
 @pytest.mark.parametrize("readme", READMES)
 def test_a_readme_shows_only_current_images_and_existing_commands(readme: str) -> None:
-    from kiln import cli
+    from ion_repo import cli
 
     text = (ROOT / readme).read_text(encoding="utf-8")
     images = re.findall(r'(?:src|srcset)="(docs/assets/[^"]+)"', text)
@@ -91,10 +91,10 @@ def test_a_readme_shows_only_current_images_and_existing_commands(readme: str) -
         for action in cli.build_parser()._actions
         if isinstance(action, argparse._SubParsersAction)
     ).choices
-    cited = set(re.findall(r"`kiln ([a-z][a-z-]+)", text)) | set(
-        re.findall(r"^\$ (?:cd \S+ && )?kiln ([a-z][a-z-]+)", text, re.M)
+    cited = set(re.findall(r"`ion-repo ([a-z][a-z-]+)", text)) | set(
+        re.findall(r"^\$ (?:cd \S+ && )?ion-repo ([a-z][a-z-]+)", text, re.M)
     )
-    assert cited <= set(commands), f"{readme} cites kiln {sorted(cited - set(commands))}"
+    assert cited <= set(commands), f"{readme} cites ion-repo {sorted(cited - set(commands))}"
     reference = REFERENCES[READMES.index(readme)]
     assert f"]({reference})" in text, f"{readme} links its reference"
 
@@ -113,8 +113,8 @@ def test_pypi_shows_the_readme_with_its_images_and_links() -> None:
     targets = re.findall(r'(?:src|srcset)="([^"]+)"', text) + re.findall(r"\]\(([^)\s]+)\)", text)
     assert [target for target in targets if not target.startswith(("https://", "#"))] == []
     tagged = (
-        f"https://raw.githubusercontent.com/antoine-tena/kiln/v{version}/",
-        f"https://github.com/antoine-tena/kiln/blob/v{version}/",
+        f"https://raw.githubusercontent.com/antoine-tena/ion-repo/v{version}/",
+        f"https://github.com/antoine-tena/ion-repo/blob/v{version}/",
     )
     for target in targets:
         for prefix in tagged:
@@ -178,8 +178,10 @@ def test_installed_plugins_exist_and_former_names_are_gone() -> None:
     plugins = {plugin["name"] for plugin in MARKETPLACE["plugins"]}
     former = "|".join(map(re.escape, MARKETPLACE["renames"]))
     for name, text in docs().items():
-        assert set(re.findall(r"plugin install ([\w-]+)@kiln", text)) <= plugins, name
+        assert set(re.findall(r"plugin install ([\w-]+)@ion-repo", text)) <= plugins, name
         assert not re.findall(rf"`/?({former})(:[\w-]+)?`", text), name
+        # `kiln` stays in the catalogue for the testers moving (T-373), its skills are not cited.
+        assert not re.findall(r"`/kiln:[\w-]+`", text), name
 
 
 def test_cited_workflows_exist() -> None:
@@ -189,17 +191,17 @@ def test_cited_workflows_exist() -> None:
         assert cited <= workflows, (name, sorted(cited - workflows))
 
 
-# --- The reference describes everything kiln offers, at the release it is, in both languages
+# --- The reference describes everything ion-repo offers, at the release it is, in both languages
 # (antoine, 19 October 2026: "the README kept entirely up to date, every time"). A command,
-# option, setting, skill, hook, plugin or workflow added without its line fails here.
+# option, setting, skill, hook, output style, plugin or workflow added without its line fails here.
 # Former names kept for old repos: their new names are documented instead.
 LEGACY = frozenset({"--sauter", "--sans-pousser", "--garder", "--statut", "--poste"})
 
 
 def offered() -> dict[str, str]:
-    """What kiln offers, by label, with the text each README must contain."""
-    from kiln import cli
-    from kiln.settings import SETTABLE_KEYS
+    """What ion-repo offers, by label, with the text each README must contain."""
+    from ion_repo import cli
+    from ion_repo.settings import SETTABLE_KEYS
 
     parser = cli.build_parser()
     commands = next(
@@ -207,7 +209,7 @@ def offered() -> dict[str, str]:
     )
     items: dict[str, str] = {}
     for name, command in commands.choices.items():
-        items[f"command {name}"] = f"`kiln {name}"
+        items[f"command {name}"] = f"`ion repo {name}"
         for action in command._actions:
             for option in action.option_strings:
                 if option.startswith("--") and option != "--help" and option not in LEGACY:
@@ -223,8 +225,12 @@ def offered() -> dict[str, str]:
     }
     items |= {
         f"hook {path.name}": path.name
-        for path in (ROOT / "plugins/kiln/hooks").glob("*.py")
+        for path in (ROOT / "plugins/repo/hooks").glob("*.py")
         if not path.name.startswith("_")
+    }
+    items |= {
+        f"output style {path.stem}": f"`{path.stem}`"
+        for path in (ROOT / "plugins").glob("*/output-styles/*.md")
     }
     items |= {
         f"workflow {path.name}": f"`{path.name}`"
@@ -249,5 +255,5 @@ def test_the_docs_quote_the_release_they_describe() -> None:
 
     assert re.search(r"^## v(\S+) — ", changelog, re.M).group(1) == version  # type: ignore[union-attr]
     for name, text in docs().items():
-        quoted = set(re.findall(r"antoine-tena/kiln/\S+?@v(\d+\.\d+\.\d+)", text))
-        assert quoted <= {version}, f"{name} quotes kiln at {quoted}, the release is {version}"
+        quoted = set(re.findall(r"antoine-tena/ion-repo/\S+?@v(\d+\.\d+\.\d+)", text))
+        assert quoted <= {version}, f"{name} quotes ion-repo at {quoted}, the release is {version}"

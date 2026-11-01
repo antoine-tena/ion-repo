@@ -1,6 +1,6 @@
-name: kiln
+name: ion-repo
 
-# Checks of kiln itself: ruff, mypy, the test suite (every stack combination is rendered), on
+# Checks of ion-repo itself: ruff, mypy, the test suite (every stack combination is rendered), on
 # Linux and macOS, with the end-to-end tests (every framework generated, installed and checked;
 # projects of earlier releases updated to this one). Only on release branches, the way to
 # `main`, and on demand: a merge into develop runs fast linters only (choice of antoine,
@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 jobs:
-  kiln:
+  ion-repo:
     strategy:
       fail-fast: false
       matrix:
@@ -38,11 +38,11 @@ jobs:
       - name: Tests
         run: uv run pytest -q
       # A tool that grades other repos scores 100 on its own grid, or the release waits (T-90).
-      - name: kiln score
+      - name: ion repo score
         run: |
-          uv run kiln score
-          uv run kiln score --json | uv run python -c 'import json, sys; sys.exit(json.load(sys.stdin)["score"] != 100)'
-      # kiln's workflows and actions run in other people's repos: zizmor finds nothing in them,
+          uv run ion-repo score
+          uv run ion-repo score --json | uv run python -c 'import json, sys; sys.exit(json.load(sys.stdin)["score"] != 100)'
+      # ion-repo's workflows and actions run in other people's repos: zizmor finds nothing in them,
       # its online audits included (T-90); false positives explained in .github/zizmor.yml.
       - name: zizmor
         if: runner.os == 'Linux'

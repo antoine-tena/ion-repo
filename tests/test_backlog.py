@@ -4,8 +4,8 @@
 import subprocess
 from pathlib import Path
 
-from kiln.backlog import add_after_update_ticket, migrate_legacy_backlog, split_backlog
-from kiln.versions import ReleaseNotes
+from ion_repo.backlog import add_after_update_ticket, migrate_legacy_backlog, split_backlog
+from ion_repo.versions import ReleaseNotes
 
 TEMPLATE_BACKLOG = (
     Path(__file__).parent.parent / "template/docs/backlog/backlog.md.jinja"
@@ -137,7 +137,7 @@ BACKLOG_WITH_CRITICAL = """# Backlog
 """
 NOTES = [
     ReleaseNotes("v0.4.1", "", ["- **After updating**: give each owner's @login"]),
-    ReleaseNotes("v0.4.0", "", ["- kiln doctor", "- **After updating**: rename the bucket"]),
+    ReleaseNotes("v0.4.0", "", ["- ion repo doctor", "- **After updating**: rename the bucket"]),
 ]
 
 
@@ -151,7 +151,7 @@ def test_after_updating_lines_become_one_critical_ticket(tmp_path: Path) -> None
 
     text = backlog.read_text()
     assert "**Next free: T-08.**" in text
-    assert text.index("### T-07 · Finish the kiln update to v0.4.1") < text.index("### T-03")
+    assert text.index("### T-07 · Finish the ion-repo update to v0.4.1") < text.index("### T-03")
     assert "- **Opened**: 2026-10-19" in text
     assert "- [ ] rename the bucket (v0.4.0)\n- [ ] give each owner's @login (v0.4.1)" in text
 

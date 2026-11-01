@@ -10,7 +10,7 @@ from types import ModuleType
 
 import pytest
 
-HOOKS = Path(__file__).resolve().parent.parent / "plugins/kiln/hooks"
+HOOKS = Path(__file__).resolve().parent.parent / "plugins/repo/hooks"
 
 
 def load(name: str) -> ModuleType:
@@ -29,9 +29,9 @@ def place() -> ModuleType:
 
 @pytest.fixture
 def code(tmp_path: Path) -> Path:
-    """`code/` holding `shop`, `tools/kiln`, a hidden repo, a nested one and a plain folder."""
+    """`code/` holding `shop`, `tools/ion-repo`, a hidden repo, a nested one and a plain folder."""
     root = tmp_path / "code"
-    for repo in ("shop", "tools/kiln", ".hidden/secret", "shop/inner"):
+    for repo in ("shop", "tools/ion-repo", ".hidden/secret", "shop/inner"):
         (root / repo).mkdir(parents=True)
         subprocess.run(["git", "init", "-q", str(root / repo)], check=True)
     (root / "notes").mkdir()
@@ -41,14 +41,14 @@ def code(tmp_path: Path) -> Path:
 def test_repos_below_skip_hidden_folders_and_inside_repos(place: ModuleType, code: Path) -> None:
     assert [repo.relative_to(code) for repo in place.repos_below(code)] == [
         Path("shop"),
-        Path("tools/kiln"),
+        Path("tools/ion-repo"),
     ]
 
 
 def test_outside_a_repo_claude_is_told_the_repos_below(place: ModuleType, code: Path) -> None:
     told = place.context(code)
-    assert told.startswith(f"kiln [WRONG-PLACE]: this session was started in {code},")
-    assert "Repos below it: shop, tools/kiln." in told
+    assert told.startswith(f"ion-repo [WRONG-PLACE]: this session was started in {code},")
+    assert "Repos below it: shop, tools/ion-repo." in told
     assert "secret" not in told and "inner" not in told
     assert "&& claude --dangerously-skip-permissions '<prompt>'" in told
 
@@ -76,4 +76,4 @@ def test_session_start_adds_it_to_claude_s_context(
     monkeypatch.setattr("sys.stdout", output)
     session_start.main()
     told = json.loads(output.getvalue())["hookSpecificOutput"]["additionalContext"]
-    assert "[WRONG-PLACE]" in told and "shop, tools/kiln" in told
+    assert "[WRONG-PLACE]" in told and "shop, tools/ion-repo" in told

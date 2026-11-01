@@ -1,4 +1,4 @@
-"""`kiln dev`: the Procfile.dev, the background (`-d`, status, logs, stop) and its arguments."""
+"""`ion repo dev`: the Procfile.dev, the background (`-d`, status, logs, stop) and its arguments."""
 
 import os
 import socket
@@ -9,10 +9,10 @@ from pathlib import Path
 
 import pytest
 
-from kiln import cli
-from kiln.dev import background, run_dev
-from kiln.dev.menu import select
-from kiln.dev.processes import (
+from ion_repo import cli
+from ion_repo.dev import background, run_dev
+from ion_repo.dev.menu import select
+from ion_repo.dev.processes import (
     dev_processes,
     node_installs,
     package_script_commands,
@@ -20,8 +20,8 @@ from kiln.dev.processes import (
     runs_beyond_front,
     spawn,
 )
-from kiln.shell import KilnError
-from kiln.stack import Command
+from ion_repo.shell import KilnError
+from ion_repo.stack import Command
 
 
 @pytest.fixture
@@ -274,7 +274,9 @@ def test_a_port_held_by_another_worktree_points_to_its_kiln_dev_stop(
         monkeypatch.setitem(background.DEV_PORTS, "nuxt", port)
         (project / "backend/Procfile.dev").write_text("nuxt: sleep 60\n", encoding="utf-8")
 
-        with pytest.raises(KilnError, match=r"kiln dev of /code/repo-feature: `kiln dev stop`"):
+        with pytest.raises(
+            KilnError, match=r"ion repo dev of /code/repo-feature: `ion repo dev stop`"
+        ):
             run_dev(project)
 
 
@@ -329,12 +331,12 @@ def adopted(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
         '{"scripts": {"dev": "vite", "server": "node server.js"}}', encoding="utf-8"
     )
     (tmp_path / "compose.yaml").write_text(ISSUE_59_COMPOSE, encoding="utf-8")
-    monkeypatch.setattr("kiln.dev.shutil.which", lambda name: f"/usr/bin/{name}")
+    monkeypatch.setattr("ion_repo.dev.shutil.which", lambda name: f"/usr/bin/{name}")
     return tmp_path
 
 
 def test_a_compose_file_running_the_project_is_offered_and_remembered(adopted: Path) -> None:
-    from kiln.dev import _compose_instead
+    from ion_repo.dev import _compose_instead
 
     asked: list[str] = []
 
@@ -356,14 +358,14 @@ def test_a_compose_file_running_the_project_is_offered_and_remembered(adopted: P
 def test_outside_a_terminal_the_compose_file_is_only_pointed_to(
     adopted: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    from kiln.dev import _compose_instead
+    from ion_repo.dev import _compose_instead
 
     assert not _compose_instead(adopted, dev_processes(adopted), None)
-    assert "compose.yaml runs web, server too: kiln dev --containers" in capsys.readouterr().out
+    assert "compose.yaml runs web, server too: ion repo dev --containers" in capsys.readouterr().out
 
 
 def test_a_stack_kiln_serves_keeps_its_servers_beside_its_compose_file(adopted: Path) -> None:
-    from kiln.dev import _compose_instead
+    from ion_repo.dev import _compose_instead
 
     (adopted / "backend").mkdir()
     (adopted / "backend/manage.py").touch()
