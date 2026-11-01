@@ -54,6 +54,9 @@ Once antoine sets a date, they are dated back from it, and he may move other rel
   outside the plan (a front without a lockfile, build scripts `allowBuilds` does not list, in
   `kiln install` then in `kiln ci` and the workflows); the planned releases moved by three numbers.
 - v0.4.10 · Every gap seen, wherever the code lives: promoted on Fri 30 Oct.
+- v0.4.12 · The `kiln` alias fixed, urgent on antoine's request (1 Nov): its notice said once,
+  the Homebrew formula keeping `kiln`; cut from v0.4.11 with these two fixes only, the planned
+  releases moved by one number.
 
 ### v0.4.11 · Never lets it rot, kiln first
 kiln-bot runs kiln's workflows with write access in other people's repos: each commit it brings is
@@ -64,7 +67,7 @@ Before that theme, this release moves everyone to Ion: the last `kiln-cli`, on a
 - ion-repo#T-373 · `kiln-cli` retired, the testers moved to `ion-repo` and `ion-sh` (S)
 - ion-repo#T-403 · Install lines on the Ion names once they are on PyPI (XS)
 
-### v0.4.12 · What the last sessions tripped on
+### v0.4.13 · What the last sessions tripped on
 Real sessions of late October hit these, each small: the release, the merge, a long session, a
 first `kiln check`. They cost time now, so they go before the moves.
 - ion-repo#T-376 · `kiln check` ran no test on emberstudio, and left a `.env` towards a stopped PostgreSQL (S)
@@ -73,7 +76,7 @@ first `kiln check`. They cost time now, so they go before the moves.
 - ion-repo#T-379 · Django template: `django-stubs-ext`, so `admin.ModelAdmin[Model]` runs (S)
 - ion-repo#T-380 · `/kiln:merge` ends by offering `/grog:distill` on the session (S) (blocked: ion-learn#T-01)
 
-### v0.4.13 · A tool's piece reaches a repo: the small moves
+### v0.4.14 · A tool's piece reaches a repo: the small moves
 How a tool's skill and files get into a generated repo gets decided, then proven on the three
 smallest moves. ⚠ breaking: skill names, each with a forward and its conversion in `kiln update`.
 - ion-repo#T-394 · How a tool's piece reaches a repo kiln generated (M)
@@ -82,12 +85,12 @@ smallest moves. ⚠ breaking: skill names, each with a forward and its conversio
 - ion-repo#T-390 · `/kiln:token` leaves kiln for saggar (S)
 - ion-repo#T-392 · The announcement of `/kiln:release` goes through stylus (S)
 
-### v0.4.14 · The server in hearth
+### v0.4.15 · The server in hearth
 The biggest move, alone in its release: production deployments depend on it. ⚠ breaking: the
 generated tree, the `deploy` question, `--vps`, the `vps` skills, with their conversion.
 - ion-repo#T-389 · The server leaves kiln for hearth (L) (blocked: ion-host#T-07)
 
-### v0.4.15 · The grid in cone
+### v0.4.16 · The grid in cone
 The last move, after kiln runs on slake (ion-render#T-07, one engine at a time). It closes the map of
 the moves.
 - ion-repo#T-393 · The grid leaves kiln for cone (L) (blocked: ion-score#T-01)
@@ -1024,6 +1027,9 @@ removes itself and moves the Claude Code catalogue (`src/ion_repo/kiln_move.py`)
 - [x] Right after it, in a clean `HOME`, from the real PyPI: `uv tool install ion-sh`, then `ion add repo`;
   the real migration from the published `kiln-cli` 0.4.10 (`uv tool install kiln-cli@latest`, an exact pin
   stays on 0.4.10). In the first minute after publishing, uv still answered "not found".
+- [x] v0.4.12, 1 November 2026: the `kiln` alias says its new name once (checked from the real
+  PyPI), and a real `kiln` 0.4.10 formula became `ion-repo` 0.4.12 with `kiln` kept, through
+  `brew upgrade` in the `homebrew/brew` container (Homebrew 7.0.11, tap trusted).
 - [ ] The `kiln` entry of the catalogue removed once no tester is left on 0.4.10 (its hook installs
   `kiln@kiln`; without the entry the plugin disappears), not before the v0.5 milestone.
 - [ ] The release after: `pypi.yml`'s `kiln-cli` and `keramos-kiln` steps removed, the `kiln-cli` script out of
