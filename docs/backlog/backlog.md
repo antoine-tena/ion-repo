@@ -1019,7 +1019,8 @@ removes itself and moves the Claude Code catalogue (`src/ion_repo/kiln_move.py`)
 0.4.10 from PyPI with the real next wheels on a local index, GitHub on a local copy.
 - [x] `ion-sh` 0.1.0 published first, 1 November 2026 (tag `v0.1.0` of `antoine-tena/ion`).
 - [x] v0.4.11 promoted, 1 November 2026: `pypi.yml` published `ion-repo` and the last `kiln-cli`; both
-  pages and the tap's `formula_renames.json` checked (Homebrew not tried: no brew on this machine).
+  pages and the tap's `formula_renames.json` checked (Homebrew: `brew tap`, `brew install` and `ion-repo --version` passed
+  in the `homebrew/brew` container after `brew update`; moving a real `kiln` formula not tried).
 - [x] Right after it, in a clean `HOME`, from the real PyPI: `uv tool install ion-sh`, then `ion add repo`;
   the real migration from the published `kiln-cli` 0.4.10 (`uv tool install kiln-cli@latest`, an exact pin
   stays on 0.4.10). In the first minute after publishing, uv still answered "not found".
