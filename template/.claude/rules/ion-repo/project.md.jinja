@@ -69,6 +69,7 @@ No ion-repo stack: common part only (CI, hooks, rules, charter).
 - **[NO-COMMIT-ON-MAIN]** Never commit on `main` or `develop`: dedicated branch, preferably a worktree (`/repo:worktree`, `.claude/worktrees/`). Merge into `develop` with `/repo:merge`, no PR or approval needed (PR optional for an opinion). Enforced by pre-commit `no-commit-to-branch`, ion-repo's branch guard, GitHub rulesets (`develop` not deletable or force-pushable; `main` only via `/repo:release`).
 - **[BRANCHES]** `feat/`, `fix/`, `refactor/`, `test/`, `chore/`, `docs/`; lowercase, no spaces (`feat/station-map`).
 - **[COMMITS]** Atomic: {% if level >= 1 %}max 10 files, {% endif %}title max 50 chars, typed with optional scope (`feat:`, `fix:`, `refactor:`, `style:`, `docs:`, `perf:`, `test:`, `build:`, `ci:`, `chore:`, `revert:`; `fix(map): …`){% if backend in ['django', 'fastapi'] %}; migration commit never mixes schema and business logic{% endif %}. Claude trailer per machine (`ion repo set ai_trailers=disclose|never`, enforced by branch guard); never `Claude-Session:` or `--author`.
+- **[FETCH-FIRST]** Another session may be merging while you build. Before a decision that rests on the project's setup, and at least before the last commits: `git fetch`, read `git log HEAD..origin/<integration>`, merge what it gained into the branch early rather than late.
 - **[MERGE]** `git merge --no-ff`, never squash or rebase onto the integration branch; then delete branch (local, remote) and worktree (`/repo:merge`).
 
 ## Work

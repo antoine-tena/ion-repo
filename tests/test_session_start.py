@@ -1,6 +1,7 @@
 import importlib.util
 import io
 import json
+import os
 import subprocess
 import sys
 from collections.abc import Callable
@@ -681,3 +682,122 @@ def test_on_the_beta_channel_the_checkout_may_sit_in_a_tool_folder_of_a_family(
     checkout = beta_machine(hook, tmp_path, monkeypatch, place="family/ion-repo/ion-repo")
 
     assert hook.kiln_checkout() == checkout
+
+
+# --- other sessions on the same repo (T-384) ------------------------------------------------------
+
+
+def _session(
+    claude: Path, name: str, cwd: Path, *, pid: int | None, age: float = 0, branch: str = "develop"
+) -> None:
+    project = claude / "projects" / "launch"
+    project.mkdir(parents=True, exist_ok=True)
+    transcript = project / f"{name}.jsonl"
+    lines = [{"cwd": str(cwd), "gitBranch": branch, "type": "user"}, {"type": "last-prompt"}]
+    transcript.write_text("".join(json.dumps(line) + "\n" for line in lines), encoding="utf-8")
+    os.utime(transcript, (1_000_000 - age, 1_000_000 - age))
+    if pid is not None:
+        records = claude / "sessions"
+        records.mkdir(exist_ok=True)
+        (records / f"{pid}.json").write_text(json.dumps({"sessionId": name}), encoding="utf-8")
+
+
+def _other_sessions(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> tuple[ModuleType, Path, Path]:
+    load_hook()
+    others = sys.modules["others"]
+    claude = tmp_path / "claude"
+    monkeypatch.setattr(others, "CLAUDE_DIR", claude)
+    repo = tmp_path / "shop"
+    subprocess.run(["git", "init", "-q", str(repo)], check=True)
+    return others, claude, repo
+
+
+def test_a_running_session_at_work_in_a_worktree_of_the_repo_is_told(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    others, claude, repo = _other_sessions(monkeypatch, tmp_path)
+    worktree = repo / ".claude" / "worktrees" / "cart"
+    _session(claude, "aaa", worktree, pid=os.getpid(), age=60, branch="feat/cart")
+
+    told = others.context(str(repo), "mine", now=1_000_000)
+
+    assert "[OTHER-SESSION]" in told
+    assert "feat/cart" in told
+    assert "aaa" in told
+
+
+def test_a_session_written_under_two_launch_folders_is_told_once(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    others, claude, repo = _other_sessions(monkeypatch, tmp_path)
+    _session(claude, "aaa", repo, pid=os.getpid(), age=120, branch="develop")
+    worktree_folder = claude / "projects" / "launch--claude-worktrees-cart"
+    worktree_folder.mkdir()
+    line = json.dumps({"cwd": str(repo), "gitBranch": "feat/cart"}) + "\n"
+    (worktree_folder / "aaa.jsonl").write_text(line, encoding="utf-8")
+    os.utime(worktree_folder / "aaa.jsonl", (1_000_000 - 60, 1_000_000 - 60))
+
+    told = others.context(str(repo), "mine", now=1_000_000)
+
+    assert told.count("session aaa") == 1
+    assert "feat/cart" in told
+
+
+@pytest.mark.parametrize(
+    ("name", "place", "pid", "age"),
+    [
+        ("mine", "shop", "self", 60),  # the session itself
+        ("aaa", "shop", "self", 11 * 60),  # silent for too long
+        ("aaa", "shop", None, 60),  # closed: no record of it
+        ("aaa", "shop", "dead", 60),  # closed: its process is gone
+        ("aaa", "shop-other", "self", 60),  # another repo, even with the same prefix
+    ],
+)
+def test_a_session_not_at_work_on_this_repo_is_not_told(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    name: str,
+    place: str,
+    pid: str | None,
+    age: int,
+) -> None:
+    others, claude, repo = _other_sessions(monkeypatch, tmp_path)
+    process = None
+    if pid == "self":
+        process = os.getpid()
+    elif pid == "dead":
+        ended = subprocess.Popen(["true"])
+        ended.wait()
+        process = ended.pid
+    _session(claude, name, tmp_path / place, pid=process, age=age)
+
+    assert others.context(str(repo), "mine", now=1_000_000) == ""
+
+
+def test_other_sessions_are_said_at_start_and_resume_only(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    others, claude, repo = _other_sessions(monkeypatch, tmp_path)
+    hook = sys.modules["session_start"] if "session_start" in sys.modules else load_hook()
+    _session(claude, "aaa", repo, pid=os.getpid())
+    monkeypatch.setattr(others.time, "time", lambda: 1_000_000)
+
+    for source, expected in (
+        ("startup", True),
+        ("resume", True),
+        ("clear", False),
+        ("compact", False),
+    ):
+        payload = {"source": source, "cwd": str(repo), "session_id": "mine"}
+        assert bool(hook.other_sessions(payload)) is expected
+
+
+def test_outside_a_repo_nothing_is_told(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    others, _, _ = _other_sessions(monkeypatch, tmp_path)
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    monkeypatch.setenv("GIT_CEILING_DIRECTORIES", str(tmp_path))
+
+    assert others.context(str(outside), "mine") == ""
