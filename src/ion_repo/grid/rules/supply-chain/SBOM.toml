@@ -3,7 +3,7 @@ title = "Each deployed image comes with its software bill of materials"
 pillar = "methods"
 theme = "supply-chain"
 scope = { kind = "tool", name = "containers" }
-# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+# A draft from the reference repo (ion-repo#T-124): assessed, out of the score until sourced.
 level = "assess"
 regime = "strict"
 profiles = ["company", "enterprise"]

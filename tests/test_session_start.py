@@ -625,7 +625,8 @@ def test_tool_update_moves_an_installed_plugin_to_the_marketplace_version(
     )
 
 
-# --- sessions kept by /repo:pause (T-344) -----------------------------------------------------
+# --- sessions kept by /repo:pause (ion-repo#T-344)
+# -----------------------------------------------------
 
 
 def test_a_paused_session_is_listed_at_the_next_start_then_leaves_the_list(
@@ -684,7 +685,8 @@ def test_on_the_beta_channel_the_checkout_may_sit_in_a_tool_folder_of_a_family(
     assert hook.kiln_checkout() == checkout
 
 
-# --- other sessions on the same repo (T-384) ------------------------------------------------------
+# --- other sessions on the same repo (ion-repo#T-384)
+# ------------------------------------------------------
 
 
 def _session(

@@ -1,5 +1,5 @@
 """`ion repo version cut` and `ion repo version promote` on a throwaway repo with its own origin
-(T-29)."""
+(ion-repo#T-29)."""
 
 import datetime
 import subprocess

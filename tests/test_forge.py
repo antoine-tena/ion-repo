@@ -1,4 +1,5 @@
-"""The GitHub settings `ion repo score` reads through `gh` (T-158, T-186): answers of a fake `gh`,
+"""The GitHub settings `ion repo score` reads through `gh` (ion-repo#T-158, ion-repo#T-186):
+answers of a fake `gh`,
 admin rights required, a day of cache, nothing in CI, never a token."""
 
 import shutil

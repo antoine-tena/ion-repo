@@ -1,5 +1,7 @@
-"""`ion repo score` (T-46): any repo measured against the grid, the same number twice, nothing
-written, waivers apart, and what the grid does not know listed. `--roadmap` (T-129): what needs
+"""`ion repo score` (ion-repo#T-46): any repo measured against the grid, the same number twice,
+nothing
+written, waivers apart, and what the grid does not know listed. `--roadmap` (ion-repo#T-129): what
+needs
 judgment handed to Claude with its places, a false positive dismissed on its path, a gap proven
 closed by `--rule`, tickets written once."""
 
@@ -62,7 +64,7 @@ def test_gaps_lower_the_score_and_the_cheapest_come_first(tmp_path: Path) -> Non
 
 
 def test_coding_without_an_agent_is_no_fault(tmp_path: Path) -> None:
-    # A map in the README is a map; no agent file, no agent folder: nothing to say (T-342).
+    # A map in the README is a map; no agent file, no agent folder: nothing to say (ion-repo#T-342).
     files = {k: v for k, v in GOOD.items() if k != "AGENTS.md"}
     report = score.score_repo(make(tmp_path, {**files, "README.md": "# a\n\n## Layout\n"}))
 
@@ -90,7 +92,7 @@ def test_a_repo_worked_with_an_agent_is_advised_its_instructions(
 def test_a_text_that_is_not_utf8_is_read_not_skipped(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    # Read as empty, a cp1252 source passed every pattern rule (T-186, A31).
+    # Read as empty, a cp1252 source passed every pattern rule (ion-repo#T-186, A31).
     root = make(tmp_path, GOOD)
     (root / "app.py").write_bytes("# café\ntry:\n    pass\nexcept:\n    pass\n".encode("cp1252"))
     (root / "notes.py").write_bytes("\ufeff# BOM\n".encode("utf-16"))
@@ -291,14 +293,15 @@ def test_write_turns_items_into_tickets_once(tmp_path: Path) -> None:
     report = score.score_repo(root)
     today = datetime.date(2026, 10, 21)
 
+    (root / ".copier-answers.yml").write_text("name: acme\n")
     written = roadmap.write_tickets(root, report, today)
     again = roadmap.write_tickets(root, report, today)
 
     text = (root / roadmap.BACKLOG).read_text()
-    assert written[0] == "T-07" and again == []
-    assert f"Next free: T-{7 + len(written):02d}" in text
+    assert written[0] == "acme#T-07" and again == []
+    assert f"Next free: acme#T-{7 + len(written):02d}" in text
     assert "grid rule `BARE-EXCEPT`" in text and "- [ ] `app.py:3`" in text
-    assert text.index("### T-07") > text.index("## 🟡 Normal") > 0
+    assert text.index("### acme#T-07") > text.index("## 🟡 Normal") > 0
 
 
 def test_without_a_backlog_write_says_how_to_get_one(tmp_path: Path) -> None:

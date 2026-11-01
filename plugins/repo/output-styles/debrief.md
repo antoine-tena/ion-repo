@@ -35,7 +35,7 @@ Exactly these parts, in this order, and nothing else:
    logical, each with its why on the same line; the first ends with `← recommended`. One `ok`
    from the user starts it. The work just done comes first when it leaves a step (merge, fix,
    a box still open); otherwise, or after it, the next open tickets of `docs/backlog/backlog.md`
-   the user may take (as `/repo:backlog` picks them), each with its ID: `T-20 · Try
+   the user may take (as `/repo:backlog` picks them), each with its full ID: `<repo>#T-20 · Try
    Easy!Appointments, the demo the meeting waits for`. Never a point made up to reach three;
    none at all when nothing follows and the backlog has nothing open for the user.
 5. **◆ Your turn:** only what Claude cannot do for the user (a login, an interactive command, a

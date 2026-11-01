@@ -86,7 +86,7 @@ def test_legacy_tracker_becomes_an_english_backlog(tmp_path: Path) -> None:
 
     text = (backlog / "backlog.md").read_text()
     assert "North star: **la démo en ligne**." in text
-    assert "Next free: T-04." in text
+    assert "#T-04.**" in text
     assert "**2026-01-02**" in text
     assert "### T-01 · Livrer la démo" in text
     assert "- **Status**: in progress — branch feat/demo, since 3 janvier" in text
@@ -146,12 +146,15 @@ def test_after_updating_lines_become_one_critical_ticket(tmp_path: Path) -> None
     backlog.parent.mkdir(parents=True)
     backlog.write_text(BACKLOG_WITH_CRITICAL)
 
-    assert add_after_update_ticket(tmp_path, NOTES, today="2026-10-19") == "T-07"
+    (tmp_path / ".copier-answers.yml").write_text("name: acme\n")
+    assert add_after_update_ticket(tmp_path, NOTES, today="2026-10-19") == "acme#T-07"
     assert add_after_update_ticket(tmp_path, NOTES, today="2026-10-20") is None
 
     text = backlog.read_text()
-    assert "**Next free: T-08.**" in text
-    assert text.index("### T-07 · Finish the ion-repo update to v0.4.1") < text.index("### T-03")
+    assert "**Next free: acme#T-08.**" in text
+    assert text.index("### acme#T-07 · Finish the ion-repo update to v0.4.1") < text.index(
+        "### T-03"
+    )
     assert "- **Opened**: 2026-10-19" in text
     assert "- [ ] rename the bucket (v0.4.0)\n- [ ] give each owner's @login (v0.4.1)" in text
 
@@ -188,7 +191,7 @@ def test_a_hand_kept_tracker_keeps_its_compass_its_numbers_and_its_notes(tmp_pat
 
     text = (backlog / "backlog.md").read_text()
     assert "North star: **première sortie**." in text
-    assert "Next free: T-04." in text  # AF-03 is taken: the stale AF-02 is not reused
+    assert "#T-04.**" in text  # AF-03 is taken: the stale AF-02 is not reused
     assert "La production tourne la **v1.1** (voir T-03)." in text
     assert text.index("La production tourne") < text.index("## 🔴")
     assert "- **Status**: todo (T-01)" in text

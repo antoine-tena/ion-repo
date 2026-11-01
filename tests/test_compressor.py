@@ -1,4 +1,5 @@
-"""The compressor (T-139): what it may remove, how it cuts, and that nothing unproven stays out."""
+"""The compressor (ion-repo#T-139): what it may remove, how it cuts, and that nothing unproven
+stays out."""
 
 import ast
 import shutil

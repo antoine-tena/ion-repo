@@ -3,7 +3,7 @@ title = "No dead code: what nothing calls is removed, the removal proven"
 pillar = "slimming"
 theme = "code-standards"
 scope = { kind = "universal" }
-# Out of the score until T-138 measures it on real repos; `ion repo fix --rule DEAD-CODE` runs it.
+# Out of the score until ion-repo#T-138 measures it on real repos; `ion repo fix --rule DEAD-CODE` runs it.
 level = "trial"
 regime = "review"
 profiles = ["solo", "association", "company", "university", "enterprise"]

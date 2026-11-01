@@ -48,7 +48,8 @@ FIRST_PROMPTS = {
 }
 
 
-# The stacks ion-repo brings to the top of the grid first (T-133, 17 October 2026); the others stay
+# The stacks ion-repo brings to the top of the grid first (ion-repo#T-133, 17 October 2026); the
+# others stay
 # generated and tested as they are, scored by the universal rules only.
 COMPLETE_STACKS = frozenset({"django", "nuxt", "none"})
 

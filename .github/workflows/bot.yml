@@ -1,6 +1,6 @@
 name: kiln-bot
 
-# "Dependabot for your methods" (T-59): on a schedule of the caller, `ion repo bot` runs `ion repo update`
+# "Dependabot for your methods" (ion-repo#T-59): on a schedule of the caller, `ion repo bot` runs `ion repo update`
 # (an ion-repo repo) then `ion repo fix` on the branch `kiln/bot`, started again from the default branch,
 # and one pull request is kept up to date with the score before and after and the why of each
 # commit; closed when nothing is left to propose. A pull request opened with `GITHUB_TOKEN` does

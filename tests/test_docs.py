@@ -180,7 +180,8 @@ def test_installed_plugins_exist_and_former_names_are_gone() -> None:
     for name, text in docs().items():
         assert set(re.findall(r"plugin install ([\w-]+)@ion-repo", text)) <= plugins, name
         assert not re.findall(rf"`/?({former})(:[\w-]+)?`", text), name
-        # `kiln` stays in the catalogue for the testers moving (T-373), its skills are not cited.
+        # `kiln` stays in the catalogue for the testers moving (ion-repo#T-373), its skills are not
+        # cited.
         assert not re.findall(r"`/kiln:[\w-]+`", text), name
 
 

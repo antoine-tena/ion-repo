@@ -27,6 +27,7 @@ from ion_repo.stack import (
     read_answers,
 )
 from ion_repo.statusline import apply_statusline_settings
+from ion_repo.tickets import rename_prefix
 from ion_repo.update import apply_template, check_working_branch, conflicted_files, report_changes
 
 SETTABLE_KEYS = (
@@ -123,7 +124,12 @@ def apply_settings(root: Path, assignments: list[str]) -> None:
     check_working_branch(root, "chore/ion-repo-set")
     step("Settings: " + ", ".join(f"{key}={value}" for key, value in changes.items()))
     previous_stack = load_stack(root)
+    previous_name = str(read_answers(root).get("name", ""))
     apply_template(root, follow_plugin_name(read_answers(root), changes))
+    new_name = changes.get("name")
+    if isinstance(new_name, str) and previous_name and new_name != previous_name:
+        moved = rename_prefix(root, previous_name, new_name)
+        ui.note(f"{moved} ticket IDs moved from {previous_name}#T-NN to {new_name}#T-NN.")
     stack = load_stack(root)
     remove_replaced_artifacts(root, previous_stack, stack)
     remove_starter_files(root, previous_stack, stack, tracked=_tracked_files(root))

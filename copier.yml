@@ -10,6 +10,8 @@ _min_copier_version: "9.4"
 # binary: an update cannot merge the project's own one, it would put ion-repo's back.
 _skip_if_exists:
   - CLAUDE.md
+  - docs/backlog/backlog.md
+  - docs/backlog/done.md
   - frontend/public/favicon.ico
   - frontend/public/favicon.svg
   - frontend/app/favicon.ico
@@ -341,7 +343,7 @@ ci_runner:
     "On GitHub (free and unlimited for a public repo)": github
   default: local
 
-# kiln-bot (T-59): `ion repo update` then `ion repo fix` as one pull request, on a schedule. Off by
+# kiln-bot (ion-repo#T-59): `ion repo update` then `ion repo fix` as one pull request, on a schedule. Off by
 # default: on a private repo each run spends GitHub minutes. Set with `ion repo set update_bot=weekly`.
 update_bot:
   type: str

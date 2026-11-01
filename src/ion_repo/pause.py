@@ -1,5 +1,5 @@
 """`ion repo pause`: a Claude Code session named and its place kept, listed at the next start
-(T-344).
+(ion-repo#T-344).
 
 Claude Code already names a session (`/rename`) and resumes it (`claude --resume`); what it lacks
 is the list, at the next start in any repo, of the sessions left halfway with where each stopped
@@ -26,7 +26,7 @@ SESSION_VARIABLE = "CLAUDE_CODE_SESSION_ID"
 # Branches whose name says nothing of the work.
 SHARED_BRANCHES = {"main", "master", "develop", "trunk"}
 BACKLOG_FILE = Path("docs") / "backlog" / "backlog.md"
-TICKET_HEADING = re.compile(r"^### (T-\d+) · (.+?)(?:\.\.\.)?$")
+TICKET_HEADING = re.compile(r"^### ((?:[a-z][a-z0-9-]*#)?T-\d+) · (.+?)(?:\.\.\.)?$")
 
 
 def pause(cwd: Path, name: str, next_step: str) -> Path | None:

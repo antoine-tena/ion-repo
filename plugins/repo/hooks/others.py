@@ -1,4 +1,5 @@
-"""The other sessions working on this repo (T-384): told at a session's start, so two sessions do
+"""The other sessions working on this repo (ion-repo#T-384): told at a session's start, so two
+sessions do
 not build on each other's half-done work unknowingly.
 
 A session counts when it is still running (Claude Code's `~/.claude/sessions/<pid>.json`) and its

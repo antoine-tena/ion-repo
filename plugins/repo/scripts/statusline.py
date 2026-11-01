@@ -283,7 +283,8 @@ def unmerged_branches(cwd: str, integ: str) -> int:
 
 
 def backlog_items(top: str) -> Group:
-    """Tickets of docs/backlog/backlog.md (`### T-NN ·`), or else of the former
+    """Tickets of docs/backlog/backlog.md (`### <repo>#T-NN ·`, or `### T-NN ·` not yet converted),
+    or else of the former
     docs/a-faire/a-faire.md (`### AF-NN ·`, French fields): those before the "Done" ("Fait")
     section, critical ones included (🔴 section); or else the former `N. **Title**` format;
     then the boxes of urgent.md, what only the user can do."""
@@ -298,7 +299,7 @@ def backlog_items(top: str) -> Group:
                 section = line
                 if "Done" in line or "Fait" in line:
                     break
-            elif re.match(r"### [A-Z]+-\d+ ·", line):
+            elif re.match(r"### (?:[a-z][a-z0-9-]*#)?[A-Z]+-\d+ ·", line):
                 entries += 1
                 critical += "🔴" in section
             elif match := re.match(r"- \*\*(?:Status\*\*:|État\*\* :) (.*)", line):

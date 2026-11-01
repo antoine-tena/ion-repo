@@ -54,7 +54,7 @@ def test_rule_paths_match_files() -> None:
     assert dead == {}
 
 
-# Une description de skill est relue à chaque message de chaque session (T-162) : courte,
+# Une description de skill est relue à chaque message de chaque session (ion-repo#T-162) : courte,
 # déclencheurs gardés. Les skills repris d'un autre auteur (`author:`) gardent la leur.
 DESCRIPTION_MAX = 300
 
@@ -102,7 +102,8 @@ def test_hooks_point_at_existing_files() -> None:
 
 
 # The hook of kiln 0.4.10 runs `claude plugin install kiln@kiln` once the catalogue has moved under
-# it, and a rename would unplug the tester's plugin: the old name stays until T-373 removes it.
+# it, and a rename would unplug the tester's plugin: the old name stays until ion-repo#T-373
+# removes it.
 def test_kiln_at_kiln_stays_installable() -> None:
     entry = next(plugin for plugin in MARKETPLACE["plugins"] if plugin["name"] == "kiln")
     assert entry["source"] == "./plugins/repo"

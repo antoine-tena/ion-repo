@@ -400,3 +400,17 @@ def test_backlog_still_reads_the_old_french_tracker(tmp_path: Path) -> None:
     items = load_script().backlog_items(str(tmp_path))
 
     assert labels(items) == ["1 tasks", f"crit{X}1", f"review{X}1"]
+
+
+def test_tickets_are_counted_in_both_forms(tmp_path: Path) -> None:
+    """A repo not yet through `ion repo tickets` keeps its count, one that is too."""
+    backlog = tmp_path / "docs/backlog/backlog.md"
+    backlog.parent.mkdir(parents=True)
+    backlog.write_text(
+        "## 🔴 Critical\n\n### acme-shop#T-01 · New form\n- **Status**: todo\n\n"
+        "## 🟡 Normal\n\n### T-02 · Old form\n- **Status**: todo\n"
+    )
+
+    items = load_script().backlog_items(str(tmp_path))
+
+    assert labels(items) == ["2 tasks", f"crit{X}1"]

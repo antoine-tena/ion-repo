@@ -1,4 +1,4 @@
-"""Converters of `ion repo fix`: supply chain and CI (T-127).
+"""Converters of `ion repo fix`: supply chain and CI (ion-repo#T-127).
 
 Each edits text in place, line by line, so that comments and layout stay as the repo wrote
 them; YAML is only parsed to read, never dumped back."""

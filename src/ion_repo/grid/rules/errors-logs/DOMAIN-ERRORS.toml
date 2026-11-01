@@ -3,7 +3,7 @@ title = "Business errors share one base exception with a stable code"
 pillar = "standards"
 theme = "errors-logs"
 scope = { kind = "universal" }
-# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+# A draft from the reference repo (ion-repo#T-124): assessed, out of the score until sourced.
 level = "assess"
 regime = "strict"
 profiles = ["solo", "association", "company", "university", "enterprise"]
