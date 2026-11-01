@@ -23,10 +23,11 @@ from ion_repo.config import BETA_CHANNEL, INTERNAL_CHANNEL, load_config
 
 ION_REPO_GIT_URL = "https://github.com/antoine-tena/ion-repo"
 # Package name on PyPI, in the Ion family's `ion-<tool>`; `kiln-cli` (kiln's name until 31 October
-# 2026) is published beside it with the same code until the testers have moved, `keramos-kiln` was
-# its planned name, `kiln` came before PyPI.
+# 2026) had its last release at v0.4.11, which moves its testers (`kiln_move.py`), `keramos-kiln`
+# was its planned name, `kiln` came before PyPI.
 PYPI_NAME = "ion-repo"
 LEGACY_PYPI_NAME = "kiln-cli"
+FAMILY_PYPI_NAME = "ion-sh"
 DISTRIBUTIONS = (PYPI_NAME, LEGACY_PYPI_NAME, "keramos-kiln", "kiln")
 CHECKOUT_NAMES = ("ion-repo", "kiln")
 CHECKOUT_MARKERS = (Path("src/ion_repo/versions.py"), Path("src/kiln/versions.py"))
@@ -112,12 +113,20 @@ def _installed_distribution() -> Distribution | None:
     return None
 
 
-def installed_pypi_name() -> str:
-    """The PyPI name the tool was installed under, kept by its upgrade: `kiln-cli` stays
-    `kiln-cli`, so a tester's tool is not replaced by a second one carrying the same commands."""
-    dist = _installed_distribution()
-    name = dist.metadata["Name"] if dist else ""
-    return LEGACY_PYPI_NAME if name == LEGACY_PYPI_NAME else PYPI_NAME
+def is_legacy_install() -> bool:
+    """Is the tool still the uv tool `kiln-cli`, which an upgrade replaces?"""
+    return Path(sys.prefix).name == LEGACY_PYPI_NAME
+
+
+def replacing_legacy(source: str) -> str:
+    """The install of `source`, leaving `kiln-cli` behind. Installed twice: uninstalling `kiln-cli`
+    removes the commands both carry, even once they point to the new tool."""
+    if not is_legacy_install():
+        return f"uv tool install --force {source}"
+    return (
+        f"uv tool install {FAMILY_PYPI_NAME} && uv tool install --force {source} && "
+        f"uv tool uninstall {LEGACY_PYPI_NAME} && uv tool install --force {source}"
+    )
 
 
 def install_source() -> str:
@@ -138,10 +147,10 @@ def upgrade_command(version: str) -> str:
     release = release_version(version)
     source = install_source()
     if source == "homebrew" and release is not None and not release.is_prerelease:
-        return "brew upgrade kiln"
+        return "brew upgrade ion-repo"
     if source == "pypi" and release is not None and not release.is_prerelease:
-        return f'uv tool install --force "{installed_pypi_name()}=={release}"'
-    return f'uv tool install --force "git+{ION_REPO_GIT_URL}@{version}"'
+        return replacing_legacy(f'"{PYPI_NAME}=={release}"')
+    return replacing_legacy(f'"git+{ION_REPO_GIT_URL}@{version}"')
 
 
 def beta_install_command(code_dir: Path) -> str:

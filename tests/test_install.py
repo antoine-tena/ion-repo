@@ -102,6 +102,34 @@ def test_the_last_line_names_what_the_repo_has(stack: Stack, hint: str) -> None:
     assert install.launch_hint(stack, "demo") == hint
 
 
+def test_kiln_s_catalogue_leaves_once_github_s_is_installed(machine: list[list[str]]) -> None:
+    catalogue = {"source": {"source": "github", "repo": "antoine-tena/kiln"}}
+    install.KNOWN_MARKETPLACES.write_text(json.dumps({"kiln": catalogue}))
+    plugins = {"repo@kiln": True, "pile-nuxt@kiln": True, "stripe@kiln": False}
+    install.CLAUDE_SETTINGS.write_text(json.dumps({"enabledPlugins": plugins}))
+
+    install.install_machine()
+
+    assert machine == [
+        ["claude", "plugin", "marketplace", "add", "antoine-tena/ion-repo"],
+        ["claude", "plugin", "install", "repo@ion-repo", "--scope", "user"],
+        ["claude", "plugin", "install", "nuxt@ion-repo", "--scope", "user"],
+        ["claude", "plugin", "marketplace", "remove", "kiln"],
+    ]
+
+
+def test_kiln_s_catalogue_leaves_even_when_ion_repo_s_is_already_there(
+    machine: list[list[str]],
+) -> None:
+    both = {"kiln": {"source": {"source": "github"}}, "ion-repo": {"source": {"source": "github"}}}
+    install.KNOWN_MARKETPLACES.write_text(json.dumps(both))
+    install.CLAUDE_SETTINGS.write_text(json.dumps({"enabledPlugins": {"repo@ion-repo": True}}))
+
+    install.install_machine()
+
+    assert machine == [["claude", "plugin", "marketplace", "remove", "kiln"]]
+
+
 def test_kiln_s_catalogue_becomes_ion_repo_s_from_the_same_folder(machine: list[list[str]]) -> None:
     folder = {"source": {"source": "directory", "path": "/home/me/code/kiln"}}
     install.KNOWN_MARKETPLACES.write_text(json.dumps({"kiln": folder}))

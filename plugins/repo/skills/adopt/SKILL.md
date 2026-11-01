@@ -8,7 +8,7 @@ Talk to the user in their language.
 1. The open repo does not follow ion-repo yet: no `.copier-answers.yml` (generated or adopted:
    skill `/repo:update`); otherwise say so and stop. A `charter.toml` without answers is a repo
    adopted before kiln 0.4.6: `ion repo adopt` completes it. The `ion-repo` command is installed
-   (`ion-repo --version`); otherwise give `uv tool install kiln-cli` and stop.
+   (`ion-repo --version`); otherwise give `uv tool install ion-repo` and stop.
 2. Ask for the size with the AskUserQuestion tool: `tiny` (script, personal tool), `small` (small
    app, low stakes, the default), `medium` (production, real users), `large` (several teams, high
    stakes).

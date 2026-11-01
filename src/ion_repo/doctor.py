@@ -247,7 +247,7 @@ def _is_kiln_source(root: Path) -> bool:
         (root / "copier.yml").is_file()
         and (root / "template").is_dir()
         and pyproject.is_file()
-        and 'name = "kiln-cli"' in pyproject.read_text(encoding="utf-8")
+        and 'name = "ion-repo"' in pyproject.read_text(encoding="utf-8")
     )
 
 

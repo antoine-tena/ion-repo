@@ -48,7 +48,7 @@ pace set by `ion repo set update-reminders` (once a week by default, T-45), and 
 make the update free.
 
 **Two stages**, through `/repo:release` (no deployment: the tag publishes, and the promoted tag
-publishes the `ion-repo` and `kiln-cli` packages on PyPI through `pypi.yml`):
+publishes the `ion-repo` package on PyPI through `pypi.yml`, with the last `kiln-cli` at v0.4.11):
 1. **Candidate**: branch `release/vX.Y.Z` from `develop`, a `## vX.Y.Z — date` entry at the top
    of `CHANGELOG.md`, `version = "X.Y.Z"` in `pyproject.toml`, the template's image digests
    refreshed (`uv run python scripts/refresh_images.py`), the demos re-recorded if what they show

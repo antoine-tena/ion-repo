@@ -5,8 +5,8 @@ import sys
 from ion_repo import cli
 
 NOTICE = (
-    "kiln is now ion-repo, in the Ion family: type `ion repo …` (or `ion-repo …`). "
-    "`kiln` stays an alias for a while."
+    "kiln is now ion-repo, in the Ion family: type `ion-repo …`, or `ion repo …` once "
+    "`uv tool install ion-sh` has brought the `ion` command. `kiln` stays an alias for a while."
 )
 
 

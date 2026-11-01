@@ -213,16 +213,17 @@ def test_an_ion_repo_install_is_found_and_upgraded_under_its_name(
     )
 
 
-def test_a_tester_s_kiln_cli_tool_stays_kiln_cli(
+def test_a_tester_s_kiln_cli_tool_is_replaced_by_ion_repo(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     hook = load_hook()
     fake_tool(tmp_path, "kiln-cli", "kiln_cli-0.4.0.dist-info", None)
     uv_tool_dir(hook, tmp_path, monkeypatch)
 
-    # Not a second tool beside it carrying the same commands.
+    # Installed again after the uninstall, which removes the commands both tools carry.
     assert hook.tool_update_command(("pypi", "v0.4.0"), "v0.4.1").startswith(
-        'uv tool install --force "kiln-cli==0.4.1" && '
+        'uv tool install ion-sh && uv tool install --force "ion-repo==0.4.1" && '
+        'uv tool uninstall kiln-cli && uv tool install --force "ion-repo==0.4.1" && '
     )
 
 
@@ -593,6 +594,7 @@ def test_on_the_beta_channel_without_checkout_the_tool_follows_github_develop(
     config.write_text(f'canal = "beta"\ndossier_code = "{tmp_path}"\n')
     monkeypatch.setattr(hook, "CONFIG_PATH", config)
     monkeypatch.setattr(hook, "has_legacy_tool", lambda: False)
+    monkeypatch.setattr(hook, "installed_pypi_name", lambda: "ion-repo")
 
     def run(*command: str) -> subprocess.CompletedProcess[str]:
         assert command[-1] == "refs/heads/develop"

@@ -93,16 +93,15 @@ pour le dépôt GitHub, que `ion repo new` crée d'office (si `gh` n'est pas con
 connexion et affiche le lien https://github.com/login/device).
 
 ```sh
-uv tool install kiln-cli
+uv tool install ion-sh && ion add repo
 ```
 
-Installe deux commandes, `ion-repo` et `charter` (`charte`, son nom d'avant 0.4.0, reste accepté),
-à la dernière version publiée sur PyPI (le paquet
-s'appelle `kiln-cli`, `ion-repo` y étant pris ; `uvx kiln-cli new mon-app` l'essaie sans
+Installe `ion`, puis deux commandes, `ion-repo` et `charter` (`charte`, son nom d'avant 0.4.0, reste accepté),
+à la dernière version publiée sur PyPI (`uvx ion-repo new mon-app` l'essaie sans
 l'installer). Pour suivre les candidates (canal `internal`) ou un commit précis :
 `uv tool install git+https://github.com/antoine-tena/ion-repo@<tag>`. macOS, Linux, et Windows par
 WSL. Quand une version sort, le hook de début de session propose de mettre à jour l'outil, puis
-chaque repo ; à la main : `uv tool upgrade kiln-cli`, puis `ion repo update` dans le repo.
+chaque repo ; à la main : `ion upgrade repo`, puis `ion repo update` dans le repo.
 Complétion dans bash : `eval "$(ion-repo completion bash)"` dans `~/.bashrc`.
 Python 3.14 est requis ; uv le télécharge au besoin. Au premier `ion repo install`, ion-repo demande le
 système du poste (Linux, WSL ou macOS) et le garde dans `~/.config/kiln/config.toml`, avec
@@ -284,11 +283,11 @@ Le travail s'intègre dans `develop` ; `main` ne reçoit que des versions.
   session propose l'outil puis le repo ; `ion repo update` applique la version, montre ses
   nouveautés et fait avancer la version (SHA et tag) à laquelle le `ci.yml` du repo cite les
   workflows d'ion-repo.
-- **Outil** : `uv tool install kiln-cli` prend les versions promues, publiées sur PyPI par le
+- **Outil** : `uv tool install ion-repo` prend les versions promues, publiées sur PyPI par le
   workflow `pypi.yml` au tag `vX.Y.Z` ; `uv tool install git+https://github.com/antoine-tena/ion-repo@<tag>`
-  prend aussi les candidates ; `brew install antoine-tena/ion/kiln` prend les versions promues
+  prend aussi les candidates ; `brew install antoine-tena/ion/ion-repo` prend les versions promues
   par le tap Homebrew (https://github.com/antoine-tena/homebrew-ion), que `pypi.yml` met à jour
-  au même tag, et ion-repo propose alors `brew upgrade kiln` ;
+  au même tag, et ion-repo propose alors `brew upgrade ion-repo` (`kiln-cli` a eu sa dernière version à v0.4.11 : installé par uv, il installe `ion-sh` et `ion-repo` à son premier lancement, se retire et déplace le catalogue Claude Code ; un échec le laisse en état de marche et affiche la commande qui termine) ;
   `ion repo status` dit de quelle version part chaque repo (`v0.4.0 → v0.4.2`), la bannière celle
   de l'outil (`v0.4.2 +3 · abc1234` : trois commits après v0.4.2, installé depuis un dossier).
   Seule une version met un repo à jour : un outil qui n'en est pas une (un dossier en avance sur

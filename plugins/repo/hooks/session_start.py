@@ -152,7 +152,7 @@ def run(*command: str, cwd: Path | None = None) -> subprocess.CompletedProcess[s
 # --- Tool: ion-repo installed by uv, from PyPI, from GitHub (commit) or from a directory (checkout)
 # ---
 
-# uv tools that carry ion-repo: `ion-repo` (PyPI package name), `kiln-cli` (kiln's, still published
+# uv tools that carry ion-repo: `ion-repo` (PyPI package name), `kiln-cli` (kiln's, last published
 # beside it for the testers), `keramos-kiln` (its planned name), `kiln` (before PyPI).
 TOOL_NAMES = ("ion-repo", "kiln-cli", "keramos-kiln", "kiln")
 PYPI_NAME = TOOL_NAMES[0]
@@ -209,11 +209,21 @@ def recorded_build(site_packages: Path) -> str:
 
 
 def installed_pypi_name() -> str:
-    """The PyPI name the tool was installed under, kept by its upgrade: a `kiln-cli` tool stays
-    `kiln-cli`, rather than a second tool carrying the same commands."""
+    """The name of the uv tool on this machine: `kiln-cli` until it moves to `ion-repo`."""
     tool_dir = run("uv", "tool", "dir").stdout.strip()
     has_legacy_name = bool(tool_dir) and Path(tool_dir, LEGACY_PYPI_NAME).is_dir()
     return LEGACY_PYPI_NAME if has_legacy_name else PYPI_NAME
+
+
+def replacing_tool(source: str) -> str:
+    """The install of `source`, leaving `kiln-cli` behind. Installed twice: uninstalling `kiln-cli`
+    removes the commands both carry, even once they point to the new tool."""
+    if installed_pypi_name() != LEGACY_PYPI_NAME:
+        return f"uv tool install --force {source}"
+    return (
+        f"uv tool install ion-sh && uv tool install --force {source} && "
+        f"uv tool uninstall {LEGACY_PYPI_NAME} && uv tool install --force {source}"
+    )
 
 
 def has_legacy_tool() -> bool:
@@ -292,16 +302,18 @@ def tool_update_command(install: tuple[str, str] | None, tag: str) -> str:
     if is_beta():
         checkout = kiln_checkout()
         source = f"--editable {checkout}" if checkout else f'"git+{ION_REPO_GIT_URL}@develop"'
-        return f"{legacy}uv tool install --force {source} && {plugins}"
+        return f"{legacy}{replacing_tool(source)} && {plugins}"
     key = release_key(tag)
     final = key is not None and key[3] == FINAL
     # PyPI only has promoted releases: a candidate (internal channel) comes from GitHub.
     if final and (install is None or install[0] == "pypi"):
         version = tag.removeprefix("v")
-        return f'{legacy}uv tool install --force "{installed_pypi_name()}=={version}" && {plugins}'
+        source = f'"{PYPI_NAME}=={version}"'
+        return f"{legacy}{replacing_tool(source)} && {plugins}"
     # A copy of a checkout is replaced by the release itself: ion-repo's own work runs with
     # `uv run ion-repo` in a worktree, never through the installed tool.
-    return f'{legacy}uv tool install --force "git+{ION_REPO_GIT_URL}@{tag}" && {plugins}'
+    source = f'"git+{ION_REPO_GIT_URL}@{tag}"'
+    return f"{legacy}{replacing_tool(source)} && {plugins}"
 
 
 # --- CI: a red integration branch is said before any new work ---

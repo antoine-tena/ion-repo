@@ -197,8 +197,10 @@ minor only moves for a milestone. Strict semver starts at 1.0. Each release is f
 it has soaked (24 hours since its tag and at least one repo updated to it; 2 hours, no repo
 required, for a candidate of fixes only), its CI green (macOS and end-to-end tests included) and its update
 rehearsed on a copy of each repo, so a release never needs an emergency fix. A promoted release
-reaches PyPI (`uv tool install kiln-cli`) and the Homebrew tap (`brew install
-antoine-tena/ion/kiln`, then `brew upgrade kiln`). Projects are generated and updated from the latest release, pin ion-repo's workflows to
+reaches PyPI (`uv tool install ion-repo`) and the Homebrew tap (`brew install
+antoine-tena/ion/ion-repo`, then `brew upgrade ion-repo`). `kiln-cli` had its last release at v0.4.11:
+at its first run as a uv tool it installs `ion-sh` and `ion-repo`, removes itself and moves the Claude
+Code catalogue; a failure leaves it working and prints the command that finishes. Projects are generated and updated from the latest release, pin ion-repo's workflows to
 that exact tag, and `ion repo update` shows what changed in each release it applies (see
 [`CHANGELOG.md`](../CHANGELOG.md)).
 Linux, WSL and macOS are supported.

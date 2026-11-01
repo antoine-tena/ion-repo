@@ -37,6 +37,11 @@ BASE_PLUGIN = "repo@ion-repo"
 # Its names before (`base` before kiln 0.4, then `kiln`), until Claude Code applies the
 # catalogue's renames.
 LEGACY_BASE_PLUGINS = ("kiln@kiln", "repo@kiln", "base@kiln")
+LEGACY_PLUGIN_NAMES = {
+    "pile-django@kiln": "django",
+    "pile-nuxt@kiln": "nuxt",
+    "vps-podman@kiln": "vps",
+}
 
 SECRET_KEY_VARIABLE = "DJANGO_SECRET_KEY"
 SECRET_KEY_BYTES = 50
@@ -118,7 +123,7 @@ def install_machine() -> None:
     ion-repo plugin at user scope, the machine settings. Only what is missing is done."""
     config = ensure_system(load_config())
     require_tools("uv")
-    # A tool installed as kiln-cli already brings `ion-repo`, or only `kiln` before its upgrade.
+    # A tool still installed as kiln-cli brings `ion-repo` too; `kiln_move.py` replaces it.
     if shutil.which("ion-repo") is None and shutil.which("kiln") is None:
         step("ion-repo command (uv tool)")
         run(["uv", "tool", "install", PYPI_NAME], Path.cwd())
@@ -126,19 +131,42 @@ def install_machine() -> None:
         ui.note("Claude Code not found: install it, then ion repo install again for the plugins.")
     else:
         known = _json_file(KNOWN_MARKETPLACES)
+        legacy_plugins = plugins_of_legacy_catalogue()
         if MARKETPLACE not in known:
             source = marketplace_source(known.get(LEGACY_MARKETPLACE))
-            if LEGACY_MARKETPLACE in known:
+            if LEGACY_MARKETPLACE in known and source != MARKETPLACE_SOURCE:
                 # Removed first: Claude Code knows a folder by its path, under its old name.
                 step("kiln's catalogue of Claude Code plugins becomes ion-repo's")
                 run(["claude", "plugin", "marketplace", "remove", LEGACY_MARKETPLACE], Path.cwd())
+                known = {}
             step("ion-repo catalogue of Claude Code plugins")
             run(["claude", "plugin", "marketplace", "add", source], Path.cwd())
         if not base_plugin_enabled(legacy=False):
             step(f"{BASE_PLUGIN} plugin, for every Claude session")
             run(["claude", "plugin", "install", BASE_PLUGIN, "--scope", "user"], Path.cwd())
+        for plugin in legacy_plugins:
+            step(f"{plugin} plugin, from ion-repo's catalogue")
+            run(["claude", "plugin", "install", plugin, "--scope", "user"], Path.cwd())
+        # Last, once the new one is in place: removing it also disables what it holds.
+        if LEGACY_MARKETPLACE in known:
+            step("kiln's catalogue of Claude Code plugins removed")
+            run(["claude", "plugin", "marketplace", "remove", LEGACY_MARKETPLACE], Path.cwd())
     ensure_trailers(ensure_statusline(config))
     ui.success("ion-repo is set up on this machine. Check it: ion repo doctor")
+
+
+def plugins_of_legacy_catalogue() -> list[str]:
+    """The stack plugins enabled for the whole machine from kiln's catalogue, under their name in
+    ion-repo's; the repo plugin has its own step."""
+    plugins = _json_file(CLAUDE_SETTINGS).get("enabledPlugins")
+    if not isinstance(plugins, dict):
+        return []
+    suffix = f"@{LEGACY_MARKETPLACE}"
+    return [
+        f"{LEGACY_PLUGIN_NAMES.get(name, name).removesuffix(suffix)}@{MARKETPLACE}"
+        for name, enabled in plugins.items()
+        if enabled and name.endswith(suffix) and name not in LEGACY_BASE_PLUGINS
+    ]
 
 
 def marketplace_source(legacy: object) -> str:

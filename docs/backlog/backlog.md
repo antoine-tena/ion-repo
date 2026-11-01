@@ -59,6 +59,10 @@ Once antoine sets a date, they are dated back from it, and he may move other rel
 kiln-bot runs kiln's workflows with write access in other people's repos: each commit it brings is
 proven first, and kiln's own workflows pass zizmor and carry provenance before anyone runs them.
 kiln-bot on a test repo is a box of the launch gate (T-03).
+Before that theme, this release moves everyone to Ion: the last `kiln-cli`, on antoine's request of
+1 November 2026.
+- T-373 · `kiln-cli` retired, the testers moved to `ion-repo` and `ion-sh` (S)
+- T-403 · Install lines on the Ion names once they are on PyPI (XS)
 
 ### v0.4.12 · What the last sessions tripped on
 Real sessions of late October hit these, each small: the release, the merge, a long session, a
@@ -73,8 +77,6 @@ first `kiln check`. They cost time now, so they go before the moves.
 - T-375 · [CLOCK] names freezegun, which [NEW-DEPENDENCY] refuses (S)
 - T-379 · Django template: `django-stubs-ext`, so `admin.ModelAdmin[Model]` runs (S)
 - T-380 · `/kiln:merge` ends by offering `/grog:distill` on the session (S) (blocked: grog's T-01)
-- T-372 · `keramos-kiln` everywhere once it is on PyPI (S) (blocked: its first promoted release)
-- T-373 · `kiln-cli` retired, the testers moved to `keramos-kiln` (S) (blocked: T-372, antoine)
 
 ### v0.4.13 · A tool's piece reaches a repo: the small moves
 How a tool's skill and files get into a generated repo gets decided, then proven on the three
@@ -874,7 +876,7 @@ and the plugin; no test saw them, the first real `ion repo update` did.
   (`/ion-repo:`), a plugin id `ion-repo@ion-repo`, a version of ion-repo below the rename.
 - [ ] After any bulk replacement, the same kind of check: what the replacement must never produce.
 
-### T-403 · Install lines back to the Ion names once they are on PyPI
+### T-403 · Install lines on the Ion names once they are on PyPI
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-31
@@ -883,9 +885,10 @@ and the plugin; no test saw them, the first real `ion repo update` did.
 
 `ion-repo` and `ion-sh` are not on PyPI yet (404), so the READMEs give `kiln-cli` and `kiln install`,
 and `ion/ion`'s README installs from a clone.
-- [ ] Once `ion-repo` and `ion-sh` are published: `template/README.md.jinja`, `README.md`,
-  `README.fr.md`, `TOOL_HINTS` in `grid/checks.py`, then `ion repo update` on the repos.
-- [ ] `ion/ion`'s `README.md` back to `uv tool install ion-sh`.
+- [x] `template/README.md.jinja`, `README.md`, `README.fr.md`, references, `TOOL_HINTS` in
+  `grid/checks.py`: written ahead of the release, true from its publication.
+- [x] `ion/ion`'s `README.md` back to `uv tool install ion-sh` (its branch `feat/ion-repo-on-pypi`).
+- [ ] `ion repo update` on the repos, by antoine, once v0.4.11 is out.
 
 ### T-399 · The names ion-repo still keeps from kiln
 - **Type**: improvement
@@ -903,6 +906,7 @@ its branch `kiln/bot`, `KILN_BOT_TOKEN`), kiln's own CI `kiln.yml`, the images
 `docs/assets/kiln-*` and the two recorded demos, which type `kiln` (the alias). Each moves with a
 fallback read of the old name, and `ion repo update` converts what a repo carries; the demos are
 re-recorded at the next candidate that shows them.
+Also `src/kiln/`, the `kiln` alias of `ion-repo` and `kiln_move.py`'s state in `~/.local/state/kiln/`.
 
 ### T-396 · `kiln version promote` crashes when run from the release worktree
 - **Type**: bug
@@ -1043,39 +1047,25 @@ Step 4 of the skill calls stylus when it is installed, and still falls back on t
   `test_gap_report.py`, `test_bot.py`, `test_compressor.py`…).
 - [ ] `kiln score` gives the same result, rule by rule, on the training repos.
 
-### T-372 · `keramos-kiln` everywhere once it is on PyPI
+### T-373 · `kiln-cli` retired, the testers moved to `ion-repo` and `ion-sh`
 - **Type**: task
-- **Status**: blocked — waiting for the first promoted release published under `keramos-kiln`
+- **Status**: in progress — code, proof and workflow on `develop`; publication waits for antoine's go
 - **Opened**: 2026-10-29
 - **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: antoine, 29 October 2026: every tool of the Keramos family on PyPI as
-  `keramos-<tool>`, the `keramos` package installing them
+- **Origin**: antoine, 1 November 2026: "dès la prochaine maj de kiln, je veux que tout le monde
+  transite sur ion" (replaces T-372's `keramos-kiln`, which never became the name)
 
-`pypi.yml` publishes the same code under `kiln-cli` and `keramos-kiln`; `kiln install`, the
-upgrade offers and the grid's hint already say `keramos-kiln`, while a `kiln-cli` tool keeps
-upgrading as `kiln-cli` (`installed_pypi_name`). The public pages wait for the package to exist:
-- [ ] `README.md`, `README.fr.md` (badge, `uv tool install`, `uvx keramos-kiln`),
-  `docs/reference.md` and `.fr.md`, `SECURITY.md` (the attested wheel's name),
-  `template/README.md.jinja`, skills `adopt` and `update`, `check_file.py`'s comment.
-- [ ] The Homebrew formula (`scripts/homebrew_formula.py`, `PACKAGE`) from the `keramos-kiln` wheel.
-- [ ] `versions.PYPI_NAME` checked on a machine with no kiln: `kiln install` installs
-  `keramos-kiln`.
-
-### T-373 · `kiln-cli` retired, the testers moved to `keramos-kiln`
-- **Type**: task
-- **Status**: blocked — waiting for T-372 and antoine's go
-- **Opened**: 2026-10-29
-- **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: antoine, 29 October 2026: "on supprimera kiln-cli plus tard pour éviter que mes
-  testeurs aient tout de rompu"
-
-- [ ] The upgrade offer of a `kiln-cli` tool becomes `uv tool uninstall kiln-cli && uv tool
-  install keramos-kiln` (session hook and `versions.upgrade_command`), shipped a few releases
-  before the last `kiln-cli`.
-- [ ] A last `kiln-cli` release whose description points to `keramos-kiln`, then `pypi.yml`
-  builds only `keramos-kiln`, `pyproject.toml` renamed, the `kiln-cli` script removed.
+v0.4.11 is the last `kiln-cli`: at its first run as a uv tool it installs `ion-sh` and `ion-repo`,
+removes itself and moves the Claude Code catalogue (`src/ion_repo/kiln_move.py`). Proven on a real
+0.4.10 from PyPI with the real next wheels on a local index, GitHub on a local copy.
+- [ ] `ion-sh` published first, from `ion/ion`'s branch `feat/ion-repo-on-pypi`.
+- [ ] v0.4.11 promoted: `pypi.yml` publishes `ion-repo`, then the last `kiln-cli`; check both pages
+  and the tap's `formula_renames.json` (Homebrew not tried: no brew on this machine).
+- [ ] The release after: `pypi.yml`'s two `kiln-cli` steps removed, the `kiln-cli` script out of
+  `pyproject.toml`, `session_start.py`'s `replacing_tool` kept for late testers.
 - [ ] The project left on PyPI (never deleted: a deleted name can be taken again), the PyPI token
-  scoped to `kiln-cli` revoked, `PYPI_TOKEN` removed.
+  scoped to `kiln-cli` revoked, `PYPI_TOKEN` removed; the "Entire account" `KERAMOS_PYPI_TOKEN`
+  replaced by a token scoped to `ion-repo`.
 
 ### T-345 · The licence: `MIT OR Apache-2.0`, the template's output free of attribution
 - **Type**: task
