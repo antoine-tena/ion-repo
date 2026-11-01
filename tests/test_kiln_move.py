@@ -7,7 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from ion_repo import kiln_move
+from ion_repo import cli, kiln_move
+from kiln import cli as kiln_cli
 
 
 class HandedError(Exception):
@@ -133,3 +134,33 @@ def test_keramos_kiln_moves_too(tmp_path: Path, monkeypatch: pytest.MonkeyPatch)
 
     assert kiln_move.in_legacy_tool()
     assert "uv tool uninstall keramos-kiln" in kiln_move.manual()
+
+
+def test_the_kiln_alias_says_its_new_name_once(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(kiln_move, "STATE_DIR", tmp_path / "state")
+    ran = []
+    monkeypatch.setattr(cli, "main", lambda: ran.append(True))
+
+    kiln_cli.main()
+    assert "kiln is now ion-repo" in capsys.readouterr().err
+
+    kiln_cli.main()
+    assert capsys.readouterr().err == ""
+    assert len(ran) == 2
+
+
+def test_the_kiln_alias_runs_even_if_it_cannot_remember(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    blocked = tmp_path / "file"
+    blocked.write_text("")
+    monkeypatch.setattr(kiln_move, "STATE_DIR", blocked / "state")
+    ran = []
+    monkeypatch.setattr(cli, "main", lambda: ran.append(True))
+
+    kiln_cli.main()
+
+    assert "kiln is now ion-repo" in capsys.readouterr().err
+    assert ran
