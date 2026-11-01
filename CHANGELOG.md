@@ -7,29 +7,13 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 entries before v0.4.0 quote kiln's former French names.
 
 ## v0.4.11 — 2026-11-01
-<!-- draft: rewrite for users, breaking changes first, then delete this line -->
-- **Breaking**: Kiln becomes ion-repo, typed `ion repo`, plugin repo@ion-repo
-- **Breaking**: Kiln becomes ion-repo: package ion_repo, plugin repo in the ion-repo catalogue
-- A private repo publishes on PyPI without build provenance
-- Version promote survives running from the release worktree (T-396)
-- Kiln 0.4.10's update keeps its plugin, keramos-kiln moves too
-- A new project's first commit passes
-- The last kiln-cli moves its testers to ion-repo and ion-sh
-- Next tickets in Next
-- Skills report in the debrief format
-- Debrief output style, forced for the end-of-work report
-- Ion repo eval-skills, the skill trigger eval
-- No frame on a question or a stop
-- A repo marked .ion-repo-frozen stays out of the commands over all repos
-- Template leftovers of the rename: /repo:… skills, the .claude/kiln link, ion-repo@ion-repo
-- A renamed project's package and plugin folders move with what it made of them
-- Plugin_name, a generated tool's Claude plugin named without the ion- prefix
-- /kiln:prompt writes a clean prompt, ready to paste (T-397)
-- Keramos skill frame drawn by kiln frame, no corners
-- Kiln frame draws a skill answer's rules at terminal width
-- Frame every Keramos tool's skill answer with double-line rules
-- Update the repo's installed Claude Code plugin after the push
-- Next 16.4.3, out of the critical advisories
+- **Breaking**: kiln becomes `ion-repo`, typed `ion repo`, its plugin `repo` in the `ion-repo` catalogue (`/repo:…` skills, the old `/kiln:…` ones forwarded). `ion repo update` converts a repo's names and files.
+- **Moving to Ion**: this is the last `kiln-cli`. At its first run as a uv tool it installs `ion-sh` (the `ion` command) and `ion-repo` from PyPI, removes itself and moves the Claude Code catalogue. `kiln-cli` stays on PyPI, with no further release.
+- `/repo:prompt` writes a clean prompt, ready to paste, for a session, a subagent or another model.
+- The end-of-work report has one format, the `debrief` output style, and the skills' reports follow it, the next backlog tickets included. A skill of the Ion family frames its answer with rules drawn by `ion repo frame`.
+- `ion repo eval-skills` runs the skills' trigger evals. A repo marked `.ion-repo-frozen` stays out of the commands over all repos. `plugin_name` names a generated tool's Claude plugin, without the `ion-` prefix; a renamed project's package and plugin folders move with what it made of them.
+- `/repo:merge` updates the repo's installed Claude Code plugin after the push.
+- A private repo publishes on PyPI: GitHub refuses it build provenance, which no longer stops the publication. A new project's first commit passes. `ion repo version promote` no longer crashes when run from the release worktree.
 - **After updating**: run `ion repo install --machine` once on each machine, so that its Claude Code catalogue moves from kiln to ion-repo.
 
 ## v0.4.10 — 2026-10-30
