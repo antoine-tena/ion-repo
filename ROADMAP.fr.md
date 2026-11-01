@@ -49,7 +49,7 @@ anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
 | v0.4.11 | Never lets it rot, kiln first | kiln-bot runs kiln's workflows with write access in other people's repos: each commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03). Before that theme, this release moves everyone to Ion: the last `kiln-cli`, on antoine's request of 1 November 2026. | 2 tickets |
-| v0.4.12 | What the last sessions tripped on | Real sessions of late October hit these, each small: the release, the merge, a long session, a first `kiln check`. They cost time now, so they go before the moves. | 9 tickets |
+| v0.4.12 | What the last sessions tripped on | Real sessions of late October hit these, each small: the release, the merge, a long session, a first `kiln check`. They cost time now, so they go before the moves. | 10 tickets |
 | v0.4.13 | A tool's piece reaches a repo: the small moves | How a tool's skill and files get into a generated repo gets decided, then proven on the three smallest moves. ⚠ breaking: skill names, each with a forward and its conversion in `kiln update`. | 5 tickets |
 | v0.4.14 | The server in hearth | The biggest move, alone in its release: production deployments depend on it. ⚠ breaking: the generated tree, the `deploy` question, `--vps`, the `vps` skills, with their conversion. | 1 ticket |
 | v0.4.15 | The grid in cone | The last move, after kiln runs on slake (slake's T-07, one engine at a time). It closes the map of the moves. | 2 tickets |
