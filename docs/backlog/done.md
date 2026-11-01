@@ -3,6 +3,7 @@
 The closed tickets of kiln, most recent first, one line each:
 `- **YYYY-MM-DD** · T-NN · Title — what was done (branch) · opened YYYY-MM-DD`.
 
+- **2026-11-01** · T-405 · A generated tool's releases numbered `vX.Y.Z`, never `vN` — `/repo:release`, the template, `pypi_name`'s docs and the eval say `vX.Y.Z`; the default number is semver from `v0.1.0` (fix/t405-vxyz) · opened 2026-11-01
 - **2026-11-01** · T-396 · `version promote` crashes when run from the release worktree — the release branch is removed from the main tree, tested from the worktree (fix/promote-from-release-worktree) · opened 2026-10-30
 - **2026-10-31** · T-397 · A skill that writes a clean prompt — `/kiln:prompt` in kiln (the way of working with Claude, not stylus's words for people): who reads it, the session's facts gathered, goal and why, context, steps, limits, done-when, output, given in one block ready to paste; triggered when antoine asks to write or clean up a prompt (feat/prompt-skill) · opened 2026-10-30
 - **2026-10-30** · T-395 · The launch of 11 November is cancelled: the plan follows — no dated release left, T-03 blocked on antoine's date, the moves split into v0.4.13 to v0.4.15, every open ticket placed, the public roadmap redrawn (chore/replan) · opened 2026-10-30

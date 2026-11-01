@@ -207,7 +207,7 @@ plugin_name:
     {% if claude_plugin and not (plugin_name | regex_search('^[a-z][a-z0-9-]*$')) %}Lowercase letters, digits and dashes only, starting with a letter.{% endif %}
 
 # A command-line tool published on PyPI under this name (`.github/workflows/pypi.yml`, at each
-# release tag `vN`); the command keeps the project's name. Empty: not published. Later with
+# release tag `vX.Y.Z`); the command keeps the project's name. Empty: not published. Later with
 # `ion repo set pypi_name=<name>`.
 pypi_name:
   type: str
