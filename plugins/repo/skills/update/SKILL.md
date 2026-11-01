@@ -12,8 +12,9 @@ Talk to the user in their language.
 ## Tool
 
 1. `<hook> tool` prints `up to date`, or the command that updates the installed tool (from PyPI
-   or GitHub: `uv tool install --force kiln-cli==…` or `…git+…@<tag>`, preceded by
-   `uv tool uninstall ion-repo` when the tool still has its old name, then ion-repo's marketplace and the
+   or GitHub: `uv tool install --force ion-repo==…` or `…git+…@<tag>`, preceded by
+   `uv tool uninstall kiln` when the tool still has its oldest name, and replacing `kiln-cli` when
+   it is still that one, then ion-repo's marketplace and the
    `ion-repo` plugin installed for every repo of the machine; a tool installed from an ion-repo checkout
    is replaced by the release, since only a release updates a repo). On the `beta` channel
    (`ion repo set channel=beta`), the tool is ion-repo's `develop` instead: the checkout of the code

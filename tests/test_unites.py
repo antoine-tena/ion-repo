@@ -571,7 +571,7 @@ def test_doctor_knows_kilns_own_repo(tmp_path: Path) -> None:
     (tmp_path / "template").mkdir()
     (tmp_path / "copier.yml").write_text("_subdirectory: template\n")
     stranger = repo_findings(tmp_path, None)[0]
-    (tmp_path / "pyproject.toml").write_text('[project]\nname = "kiln-cli"\n')
+    (tmp_path / "pyproject.toml").write_text('[project]\nname = "ion-repo"\n')
     kiln = repo_findings(tmp_path, None)[0]
 
     assert (stranger.level, stranger.detail) == (Level.WARN, "not an ion-repo repo")

@@ -63,7 +63,7 @@ def charter_command(path: Path) -> tuple[list[str], Path] | None:
     if not top:
         return None
     if any((Path(top) / name).exists() for name in CHARTER_FILES):
-        # `charter` comes with ion-repo (uv tool install kiln-cli) and checks the edited file only;
+        # `charter` comes with ion-repo (uv tool install ion-repo) and checks the edited file only;
         # `charte`, its name before 0.4.0, only knows the whole repo.
         if engine := shutil.which("charter"):
             return ([engine, "file", str(path)], Path(top))

@@ -10,7 +10,7 @@
 
 Make Claude Code build production-grade repos, bring yours up to that grade, and keep them that way.
 
-[![PyPI](https://img.shields.io/pypi/v/kiln-cli.svg?color=c2551f)](https://pypi.org/project/kiln-cli/)
+[![PyPI](https://img.shields.io/pypi/v/ion-repo.svg?color=c2551f)](https://pypi.org/project/ion-repo/)
 [![CI](https://github.com/antoine-tena/ion-repo/actions/workflows/kiln.yml/badge.svg?branch=develop)](https://github.com/antoine-tena/ion-repo/actions/workflows/kiln.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/antoine-tena/ion-repo/badge)](https://scorecard.dev/viewer/?uri=github.com/antoine-tena/ion-repo)
 [![License: MIT](https://img.shields.io/badge/license-MIT-4c4c4c.svg)](LICENSE)
@@ -74,15 +74,16 @@ today with tests first, then closes each gap in its own commit, proven by `ion r
 ## Install
 
 ```sh
-uv tool install kiln-cli     # uv fetches Python 3.14 if needed
-kiln install                 # outside a repo: ion-repo's Claude Code plugin in every session
+uv tool install ion-sh       # the `ion` command; uv fetches Python 3.14 if needed
+ion add repo                 # ion-repo
+ion repo install             # outside a repo: ion-repo's Claude Code plugin in every session
 ```
 
-The published release still answers to `kiln`, under its former name: below, read `kiln` for
-`ion repo` until `ion-repo` and `ion-sh` reach PyPI at the next release.
+Coming from kiln: the last `kiln-cli` moves you at its first run (`uv tool upgrade kiln-cli`, then run
+it once).
 
-With Homebrew: `brew install antoine-tena/ion/kiln`. Or try it without installing anything:
-`uvx kiln-cli new my-app` for a new repo, `uvx kiln-cli adopt` in one you already have. macOS,
+With Homebrew: `brew install antoine-tena/ion/ion-repo`. Or try it without installing anything:
+`uvx ion-repo new my-app` for a new repo, `uvx ion-repo adopt` in one you already have. macOS,
 Linux and Windows through WSL;
 [pnpm](https://pnpm.io/) for JavaScript fronts, [podman](https://podman.io/) for containers.
 

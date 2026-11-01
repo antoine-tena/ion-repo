@@ -1,9 +1,10 @@
 """The Homebrew formula of a promoted release, printed on stdout (T-12).
 
-    uv run python scripts/homebrew_formula.py 0.4.5 > Formula/kiln.rb
+    uv run python scripts/homebrew_formula.py 0.4.5 > Formula/ion-repo.rb
 
 `pypi.yml` runs it once PyPI has the release and pushes the result to the tap
-(https://github.com/antoine-tena/homebrew-ion), so `brew upgrade kiln` follows each promotion.
+(https://github.com/antoine-tena/homebrew-ion), so `brew upgrade ion-repo` follows each promotion;
+`formula_renames.json` there takes `kiln` to it.
 The formula installs wheels only, each pinned by its hash from `uv.lock`: copier needs
 pydantic-core, and a Homebrew build from source would compile Rust on every machine. uv does the
 installing (ion-repo needs it anyway), into a virtualenv of Homebrew's Python.
@@ -17,7 +18,7 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PACKAGE = "kiln-cli"
+PACKAGE = "ion-repo"
 PYTHON = "python@3.14"
 # PyPI's JSON can lag a minute behind the upload that `pypi.yml` has just made.
 ATTEMPTS, PAUSE = 10, 30
@@ -25,7 +26,7 @@ ATTEMPTS, PAUSE = 10, 30
 FORMULA = """\
 # Written by scripts/homebrew_formula.py in antoine-tena/ion-repo at each promoted release: a change
 # made here by hand is lost at the next one.
-class ion-repo < Formula
+class IonRepo < Formula
   desc "Claude Code's workshop"
   homepage "https://github.com/antoine-tena/ion-repo"
   url "{url}", using: :nounzip

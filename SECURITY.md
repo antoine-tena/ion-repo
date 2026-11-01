@@ -16,7 +16,7 @@ attestation signed through Sigstore: it proves the file was built by ion-repo's 
 from the tagged commit.
 
 ```bash
-gh attestation verify kiln_cli-0.4.11-py3-none-any.whl --repo antoine-tena/ion-repo
+gh attestation verify ion_repo-0.4.11-py3-none-any.whl --repo antoine-tena/ion-repo
 ```
 
 ion-repo's own workflows, which run in other people's repos, pass [zizmor](https://docs.zizmor.sh)

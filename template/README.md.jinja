@@ -18,15 +18,12 @@ Après le clone, depuis la racine du dépôt (prérequis : [uv](https://docs.ast
 {%- if js_front %} et [pnpm](https://pnpm.io/) avec Node 24{% endif %}) :
 
 ```sh
-uv tool install kiln-cli   # une fois par poste ; ion-repo sur PyPI à sa prochaine release
-kiln install
+uv tool install ion-sh && ion add repo   # une fois par poste
+ion repo install
 {%- if front_url or backend not in ['cli', 'java'] %}
-kiln dev
+ion repo dev
 {%- endif %}
 ```
-
-Ce dépôt écrit ensuite `ion repo …`, qui demande la commande `ion` (paquet `ion-sh`, pas encore sur
-PyPI) ; sans elle, `kiln …` fait la même chose.
 
 {% if backend == 'cli' and not front_url -%}
 Puis lancer l'outil : `cd {{ bd }} && uv run {{ name }} --help`, ou l'installer sur le poste par
@@ -185,15 +182,12 @@ After cloning, from the root of the repo (requirements: [uv](https://docs.astral
 {%- if js_front %} and [pnpm](https://pnpm.io/) with Node 24{% endif %}):
 
 ```sh
-uv tool install kiln-cli   # once per machine; ion-repo on PyPI at its next release
-kiln install
+uv tool install ion-sh && ion add repo   # once per machine
+ion repo install
 {%- if front_url or backend not in ['cli', 'java'] %}
-kiln dev
+ion repo dev
 {%- endif %}
 ```
-
-This repo then writes `ion repo …`, which needs the `ion` command (package `ion-sh`, not on PyPI
-yet); without it, `kiln …` does the same.
 
 {% if backend == 'cli' and not front_url -%}
 Then run the tool: `cd {{ bd }} && uv run {{ name }} --help`, or install it on the machine with

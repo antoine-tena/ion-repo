@@ -10,7 +10,7 @@
 
 ion-repo donne à Claude Code de quoi construire des repos de qualité production, remettre les vôtres à ce niveau, et les garder ainsi.
 
-[![PyPI](https://img.shields.io/pypi/v/kiln-cli.svg?color=c2551f)](https://pypi.org/project/kiln-cli/)
+[![PyPI](https://img.shields.io/pypi/v/ion-repo.svg?color=c2551f)](https://pypi.org/project/ion-repo/)
 [![CI](https://github.com/antoine-tena/ion-repo/actions/workflows/kiln.yml/badge.svg?branch=develop)](https://github.com/antoine-tena/ion-repo/actions/workflows/kiln.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/antoine-tena/ion-repo/badge)](https://scorecard.dev/viewer/?uri=github.com/antoine-tena/ion-repo)
 [![Licence : MIT](https://img.shields.io/badge/licence-MIT-4c4c4c.svg)](LICENSE)
@@ -81,15 +81,16 @@ pour la rejouer.
 ## Installation
 
 ```sh
-uv tool install kiln-cli     # uv installe Python 3.14 s'il manque
-kiln install                 # hors d'un repo : le plugin Claude Code d'ion-repo dans chaque session
+uv tool install ion-sh       # la commande `ion` ; uv installe Python 3.14 s'il manque
+ion add repo                 # ion-repo
+ion repo install             # hors d'un repo : le plugin Claude Code d'ion-repo dans chaque session
 ```
 
-La version publiée répond encore à `kiln`, son ancien nom : plus bas, lire `kiln` pour `ion repo`
-jusqu'à l'arrivée d'`ion-repo` et d'`ion-sh` sur PyPI, à la prochaine release.
+En venant de kiln : le dernier `kiln-cli` vous fait passer à son premier lancement
+(`uv tool upgrade kiln-cli`, puis lancez-le une fois).
 
-Avec Homebrew : `brew install antoine-tena/ion/kiln`. Ou pour essayer sans rien installer :
-`uvx kiln-cli new mon-app` pour un nouveau repo, `uvx kiln-cli adopt` dans un repo que vous
+Avec Homebrew : `brew install antoine-tena/ion/ion-repo`. Ou pour essayer sans rien installer :
+`uvx ion-repo new mon-app` pour un nouveau repo, `uvx ion-repo adopt` dans un repo que vous
 avez déjà. macOS, Linux et Windows par WSL ;
 [pnpm](https://pnpm.io/) pour les fronts JavaScript, [podman](https://podman.io/) pour les
 conteneurs.

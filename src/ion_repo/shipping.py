@@ -389,7 +389,7 @@ def promote(root: Path, wanted: str | None = None, is_urgent: bool = False) -> N
     run(["git", "merge", "-q", "--no-ff", name, "-m", f"Merge tag '{name}' into develop"], tree)
     run(["git", "push", "-q", "origin", "develop"], tree)
     _remove_release_branch(root, version)
-    ui.success(f"{name} promoted: pypi.yml publishes kiln-cli, keramos-kiln and the GitHub Release")
+    ui.success(f"{name} promoted: pypi.yml publishes ion-repo and the GitHub Release")
     ui.note("then, with consent: ion repo update --all")
 
 
