@@ -1,5 +1,6 @@
 """`ion repo eval-skills`: the cases it picks, the command it builds, the three ok it waits for."""
 
+import sys
 from pathlib import Path
 
 import pytest
@@ -60,7 +61,7 @@ def test_dry_run_shows_the_session_count_and_starts_nothing(
 def test_without_a_terminal_nothing_starts(
     no_launch: list[list[str]], monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(eval_skills.sys.stdin, "isatty", lambda: False)
+    monkeypatch.setattr(sys.stdin, "isatty", lambda: False)
 
     with pytest.raises(KilnError, match="in a terminal"):
         eval_skills.eval_skills(ROOT, ["pause"])
@@ -70,7 +71,7 @@ def test_without_a_terminal_nothing_starts(
 def test_anything_but_three_ok_starts_nothing(
     no_launch: list[list[str]], monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(eval_skills.sys.stdin, "isatty", lambda: True)
+    monkeypatch.setattr(sys.stdin, "isatty", lambda: True)
     answers = iter(["ok", "ok", "oui"])
     monkeypatch.setattr("builtins.input", lambda _: next(answers))
 
@@ -82,7 +83,7 @@ def test_anything_but_three_ok_starts_nothing(
 def test_three_ok_start_the_eval(
     no_launch: list[list[str]], monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(eval_skills.sys.stdin, "isatty", lambda: True)
+    monkeypatch.setattr(sys.stdin, "isatty", lambda: True)
     monkeypatch.setattr("builtins.input", lambda _: "ok")
 
     eval_skills.eval_skills(ROOT, ["pause"])
