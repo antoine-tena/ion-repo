@@ -34,6 +34,7 @@ from pathlib import Path
 from typing import Any, NamedTuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import others
 import paused
 import place
 import reminders
@@ -805,6 +806,7 @@ def main() -> None:
             red,
             found.context if found else "",
             launch_place(payload),
+            other_sessions(payload),
         )
         if part
     )
@@ -835,6 +837,16 @@ def launch_place(payload: dict[str, Any]) -> str:
     Said again after a compaction or a /clear, which drop it."""
     try:
         return place.context(Path(payload.get("cwd") or ".").resolve())
+    except Exception:
+        return ""
+
+
+def other_sessions(payload: dict[str, Any]) -> str:
+    """At a session's start or resumption: the other sessions at work on this repo (`others.py`)."""
+    try:
+        if payload.get("source", STARTUP_SOURCE) not in (STARTUP_SOURCE, "resume"):
+            return ""
+        return others.context(payload.get("cwd") or ".", payload.get("session_id", ""))
     except Exception:
         return ""
 
