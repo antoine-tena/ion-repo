@@ -7,16 +7,9 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 entries before v0.4.0 quote kiln's former French names.
 
 ## v0.4.12 — 2026-11-01
-<!-- draft: rewrite for users, breaking changes first, then delete this line -->
-- **Breaking**: Write tickets as <repo>#T-NN, from the repo's name
-- The formula keeps the kiln alias
-- The kiln alias says its new name once
-- [FETCH-FIRST], fetch before building (T-381)
-- Session start tells of other sessions (T-384)
-- /repo:release publishes from the machine when Actions is blocked (T-388)
-- /repo:merge leaves an isolated worktree before merging (T-378)
-- A generated tool's releases are numbered vX.Y.Z, never vN (T-405)
-- **After updating**: run `ion repo tickets` if the update had nobody to ask.
+<!-- readme: unchanged: two fixes of the move from kiln, nothing the READMEs describe -->
+- `kiln` says that it is now `ion-repo` once on a machine, no longer on every run.
+- The Homebrew formula keeps the `kiln` alias: after `brew upgrade kiln`, the `kiln` command still works.
 
 ## v0.4.11 — 2026-11-01
 - **Breaking**: kiln becomes `ion-repo`, typed `ion repo`, its plugin `repo` in the `ion-repo` catalogue (`/repo:…` skills, the old `/kiln:…` ones forwarded). `ion repo update` converts a repo's names and files.
