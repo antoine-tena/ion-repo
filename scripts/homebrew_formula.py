@@ -47,7 +47,8 @@ class IonRepo < Formula
     system "uv", "pip", "install", "--python", python, "--require-hashes", "--no-deps",
            "--only-binary", ":all:", "--find-links", buildpath, "--requirement",
            buildpath/"requirements.txt"
-    bin.install_symlink libexec/"bin/ion-repo", libexec/"bin/charter", libexec/"bin/charte"
+    bin.install_symlink libexec/"bin/ion-repo", libexec/"bin/kiln", libexec/"bin/charter",
+                        libexec/"bin/charte"
   end
 
   test do
