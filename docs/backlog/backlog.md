@@ -67,8 +67,6 @@ Before that theme, this release moves everyone to Ion: the last `kiln-cli`, on a
 ### v0.4.12 · What the last sessions tripped on
 Real sessions of late October hit these, each small: the release, the merge, a long session, a
 first `kiln check`. They cost time now, so they go before the moves.
-- T-388 · `/kiln:release` publishes to PyPI from the machine when Actions is blocked (S)
-- T-378 · `/kiln:merge` from an isolated worktree: leave it before merging, plain commands only (S)
 - T-381 · A long session fetches the integration branch before building on it (S)
 - T-384 · A session start warns when another session is working on the same repo (S)
 - T-376 · `kiln check` ran no test on emberstudio, and left a `.env` towards a stopped PostgreSQL (S)
@@ -907,29 +905,6 @@ fallback read of the old name, and `ion repo update` converts what a repo carrie
 re-recorded at the next candidate that shows them.
 Also `src/kiln/`, the `kiln` alias of `ion-repo` and `kiln_move.py`'s state in `~/.local/state/kiln/`.
 
-### T-388 · `/kiln:release` publishes to PyPI from the machine when Actions is blocked
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-30
-- **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: hearth v0.2.0, 30 October 2026: the tag was pushed, `pypi.yml` never started (GitHub
-  billing, same for v0.1.1), the run stayed queued for minutes before failing, and the package
-  went up by hand; antoine has no Actions budget left
-
-The release step "the pushed tag is the deployment" assumes Actions runs. Without it:
-- [ ] A local path, in the skill or as a command: export the tag to a temporary folder (repo
-  untouched), set the version from the tag, `uv build`, try the wheel in an isolated environment
-  (`--version`, `--help` of each area), `uv publish` with the token in the environment, never
-  printed, then check `https://pypi.org/project/<pypi_name>/N/`.
-- [ ] Which token: the repo's own `.pypi/` scoped to its project. A repo without one stops and
-  asks; never another repo's token without the user's yes (hearth's upload used the account-wide
-  token of `keramos/.pypi/`).
-- [ ] Say that a local upload has no build provenance (`attest-build-provenance` runs only on
-  GitHub), and don't wait on a queued run: its job can sit queued a long time before the billing
-  refusal shows up in the annotations.
-- [ ] Decide whether `pypi.yml` stays generated while Actions is off, since each tag then leaves a
-  failed run.
-
 ### T-387 · What belongs to another craft leaves kiln for its tool
 - **Type**: task
 - **Status**: todo — the map of the moves, closed when its boxes are
@@ -1586,27 +1561,6 @@ secret by design ([SECRETS]) and the generated README sends people to it. The se
 user has to add them by hand.
 - [ ] The deny excludes `*.example` (and `.env.sample`), in kiln's settings and in AI02's check.
 - [ ] OP07 `ENV-EXAMPLE-COMPLETE` would then be reachable by an agent.
-
-### T-378 · `/kiln:merge` from an isolated worktree: leave it before merging, plain commands only
-- **Type**: bug
-- **Status**: todo
-- **Opened**: 2026-10-30
-- **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: emberstudio session `feat/auth`, 30 October 2026 (see also T-167)
-
-A session moved into its worktree by `EnterWorktree` is isolated by Claude Code: it refuses
-`git -C <main tree>`, `cd ..`, a `for` loop, `$(…)` and paths with `[token]` in them ("too
-complex to verify"). `/kiln:merge` step 2 merges "from the main tree", so the merge was refused
-until the session left the worktree, which step 5 only does at the end. About ten commands of
-the session were refused the same way.
-- [ ] `/kiln:merge` (and `/kiln:review`) leave the worktree with `ExitWorktree` (`keep`) before
-  step 2, not at step 5.
-- [ ] kiln's skills and rules write one plain command per call when the session is isolated (no
-  `cd`, loop, command substitution), with the file lists passed as plain arguments.
-
-Seen again by grog (30 October 2026): about thirty refusals over four sessions, a variable in a
-plain path included (`sed -n 1,9p $K/docs/…` refused: spell the path out). Every isolated session
-pays it; worth moving up to 🟠 Important.
 
 ### T-379 · Django template: `django-stubs-ext`, so `admin.ModelAdmin[Model]` runs
 - **Type**: improvement
