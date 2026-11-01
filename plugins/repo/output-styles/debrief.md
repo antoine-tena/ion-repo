@@ -33,8 +33,11 @@ Exactly these parts, in this order, and nothing else:
    reach its service). If there is none: "nothing known", then in a few words what was verified.
 4. **◆ Next**: at most three actions Claude can do next, numbered from the most to the least
    logical, each with its why on the same line; the first ends with `← recommended`. One `ok`
-   from the user starts it. Never a point made up to reach three; none at all when nothing
-   follows.
+   from the user starts it. The work just done comes first when it leaves a step (merge, fix,
+   a box still open); otherwise, or after it, the next open tickets of `docs/backlog/backlog.md`
+   the user may take (as `/repo:backlog` picks them), each with its ID: `T-20 · Try
+   Easy!Appointments, the demo the meeting waits for`. Never a point made up to reach three;
+   none at all when nothing follows and the backlog has nothing open for the user.
 5. **◆ Your turn:** only what Claude cannot do for the user (a login, an interactive command, a
    restart, a decision), in one line, then the command in a single `bash` block when there is
    one. Leave the whole part out when there is nothing.
