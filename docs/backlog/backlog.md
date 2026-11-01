@@ -67,8 +67,6 @@ Before that theme, this release moves everyone to Ion: the last `kiln-cli`, on a
 ### v0.4.12 · What the last sessions tripped on
 Real sessions of late October hit these, each small: the release, the merge, a long session, a
 first `kiln check`. They cost time now, so they go before the moves.
-- T-381 · A long session fetches the integration branch before building on it (S)
-- T-384 · A session start warns when another session is working on the same repo (S)
 - T-376 · `kiln check` ran no test on emberstudio, and left a `.env` towards a stopped PostgreSQL (S)
 - T-377 · An agent cannot document a new variable: `.env.example` is under the `.env*` deny (S)
 - T-375 · [CLOCK] names freezegun, which [NEW-DEPENDENCY] refuses (S)
@@ -1586,20 +1584,6 @@ A merge is the real end of a piece of work. Step 6 of `/kiln:merge` adds one lin
 `/grog:distill` on this session?", only when grog's plugin is installed, and only after a session
 with something to learn (a refused command, a rule worked around, a fix redone).
 
-### T-381 · A long session fetches the integration branch before building on it
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-30
-- **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: emberstudio session `feat/auth`, 30 October 2026
-
-While the session built its front on `features.noScripts` (no Nuxt JavaScript anywhere),
-another session merged into `develop` a per-route `noScripts` with the opposite default. It only
-showed at the merge, after the pages, the measures and a question to the user had been done on
-the old setup. A rule of the way of working: before a decision that rests on the project's
-setup, and at least before the last commits, `git fetch` and read what the integration branch
-gained (`git log HEAD..origin/<integration>`); merge it into the branch early rather than late.
-
 ### T-383 · `/kiln:worktree` reports two false failures
 - **Type**: bug
 - **Status**: todo
@@ -1615,22 +1599,6 @@ gained (`git log HEAD..origin/<integration>`); merge it into the branch early ra
 - [ ] Step 4: `EnterWorktree` refuses ("the current directory is not in a git repository") when
   the session was opened above the repo (`~/code/Keramos`, twice). The skill says so and goes on
   with absolute paths, instead of a bare error.
-
-### T-384 · A session start warns when another session is working on the same repo
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-30
-- **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: grog `/grog:distill` over four sessions of 29 October 2026: two sessions on the
-  same repo for half an hour
-
-antoine's rule is one session at a time on a project; nothing tells him when two are open. Two
-sessions worked on the same repo at once: one found a gitleaks alert that came from the other's
-commit, the other built on a setting the first was changing (T-381). A third learned at its end
-that another session was still open on its subject.
-- [ ] The `SessionStart` hook lists the other sessions whose transcript
-  (`~/.claude/projects/<project>/`) was written in the last minutes with a `cwd` in the same repo
-  (its worktrees included), with their branch, and asks whether to go on.
 
 ### T-385 · `kiln session move`: a session filed under its repo afterwards
 - **Type**: improvement
