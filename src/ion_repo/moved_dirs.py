@@ -24,6 +24,10 @@ BACKEND_DIR = "backend"
 PLUGINS_DIR = "plugins"
 CONFLICT_LABELS = ("before updating", "base", "after updating")
 ION_PREFIX = "ion-"
+# Where the project's name is the PyPI distribution's, which a new `name` does not move.
+DISTRIBUTION_CITED = (
+    r"DISTRIBUTION\s*=\s*[\"']|(?:uv tool install|uv pip install|pip install|pipx install|uvx)\s+"
+)
 
 
 def default_plugin_name(name: str) -> str:
@@ -44,6 +48,8 @@ class Renaming:
     old_plugin: str | None
     new_plugin: str | None
     python_package: bool
+    # The PyPI name when it stayed through the rename.
+    distribution: str | None = None
 
     @property
     def old_package(self) -> str:
@@ -88,13 +94,34 @@ class Renaming:
     def words(self, text: str) -> str:
         """Every mention of the project's name, for a file about to be merged with a render under
         the new name; a plugin's new name is no reason to touch the command's."""
-        text = self.references(text)
-        if self.renamed:
-            for old, new in (
-                (self.old_name, self.new_name),
-                (self.old_package, self.new_package),
-            ):
-                text = re.sub(rf"(?<![\w-]){re.escape(old)}(?![\w-])", new, text)
+        return self._names(self.references(text), r"(?<![\w-])", r"(?![\w-])", r"(?<![\w-])")
+
+    def mentions(self, text: str) -> str:
+        """What cites the project in its own files. A path or a URL stays: neither the folder
+        nor the GitHub repo moved. A name of one plain word is a common word too (`sweep`):
+        only when quoted, or in a code span."""
+        return self._names(
+            self.references(text),
+            r"(?<![\w/.-])",
+            r"(?![\w/-])",
+            r"(?<=[`\"'])",
+        )
+
+    def _names(self, text: str, before: str, after: str, before_plain: str) -> str:
+        if not self.renamed:
+            return text
+        for old, new in ((self.old_name, self.new_name), (self.old_package, self.new_package)):
+            start = before if "-" in old or "_" in old else before_plain
+            pinned = rf"({DISTRIBUTION_CITED})?" if old == self.distribution else "()"
+            text = re.sub(
+                rf"{pinned}{start}{re.escape(old)}{after}",
+                lambda match, new=new: match.group(0) if match.group(1) else new,
+                text,
+            )
+        if self.old_name.startswith(ION_PREFIX):
+            typed = self.old_name.replace(ION_PREFIX, "ion ", 1)
+            new_typed = self.new_name.replace(ION_PREFIX, "ion ", 1)
+            text = re.sub(rf"(?<![\w-]){typed}(?![\w-])", new_typed, text)
         return text
 
     def words_beside(self, text: str, render: str) -> str:
@@ -106,6 +133,14 @@ class Renaming:
             for line in text.splitlines(keepends=True)
         )
 
+    def mentions_beside(self, text: str, render: str) -> str:
+        """`mentions`, sparing a line the new render still holds, as `words_beside`."""
+        held = set(render.splitlines())
+        return "".join(
+            line if line.rstrip("\r\n") in held else self.mentions(line)
+            for line in text.splitlines(keepends=True)
+        )
+
 
 def renaming_of(previous: Mapping[str, object], current: Mapping[str, object]) -> Renaming | None:
     """None when the answers say nothing of a name that moved (a template without `name`)."""
@@ -113,6 +148,9 @@ def renaming_of(previous: Mapping[str, object], current: Mapping[str, object]) -
     old_name, new_name = previous.get("name"), current.get("name")
     if not isinstance(old_name, str) or not isinstance(new_name, str):
         return None
+    distribution = (
+        current.get("pypi_name") if current.get("pypi_name") == previous.get("pypi_name") else None
+    )
     had_plugin = bool(previous.get("claude_plugin"))
     has_plugin = bool(current.get("claude_plugin"))
     renaming = Renaming(
@@ -122,6 +160,7 @@ def renaming_of(previous: Mapping[str, object], current: Mapping[str, object]) -
         old_plugin=str(previous.get("plugin_name") or old_name) if had_plugin else None,
         new_plugin=str(current.get("plugin_name") or new_name) if has_plugin else None,
         python_package=previous.get("backend") == "cli" and current.get("backend") == "cli",
+        distribution=distribution if isinstance(distribution, str) else None,
     )
     return renaming if renaming.renamed or renaming.folders else None
 
@@ -144,20 +183,22 @@ def move_renamed_dirs(
         for old, new in renaming.folders
         if (files := _committed_files(root, old)) and not spared.intersection(files)
     ]
-    if folders:
-        previous_commit = str(previous_answers.get("_commit", "")) or None
-        with tempfile.TemporaryDirectory() as tmp:
-            old_render = migrations.render(
-                source, previous_commit, previous_answers, Path(tmp) / "old"
-            )
+    with tempfile.TemporaryDirectory() as tmp:
+        new_render = None
+        if folders or renaming.renamed:
             new_render = migrations.render(
                 source, ref, migrations.raw_answers(root), Path(tmp) / "new"
+            )
+        if folders and new_render is not None:
+            previous_commit = str(previous_answers.get("_commit", "")) or None
+            old_render = migrations.render(
+                source, previous_commit, previous_answers, Path(tmp) / "old"
             )
             for old, new in folders:
                 _move_folder(root, old, new, old_render, new_render, renaming)
                 done.append(f"{old}/ moved to {new}/")
-    if _rewrite_project(root, renaming, spared):
-        done.append("what cites the old names follows the new ones")
+        if _rewrite_project(root, renaming, spared, new_render):
+            done.append("what cites the old names follows the new ones")
     return done
 
 
@@ -268,7 +309,9 @@ def _remove_old_folder(root: Path, old: str, new: str) -> None:
     shutil.rmtree(folder)
 
 
-def _rewrite_project(root: Path, renaming: Renaming, spared: set[str]) -> bool:
+def _rewrite_project(
+    root: Path, renaming: Renaming, spared: set[str], new_render: Path | None
+) -> bool:
     listed = capture(["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard"], root)
     changed = False
     for name in sorted(set(listed.split("\0"))):
@@ -285,7 +328,12 @@ def _rewrite_project(root: Path, renaming: Renaming, spared: set[str]) -> bool:
             text = path.read_text()
         except UnicodeDecodeError:
             continue
-        rewritten = renaming.references(text)
+        rendered = new_render / name if new_render is not None else None
+        rewritten = (
+            renaming.mentions_beside(text, rendered.read_text())
+            if rendered is not None and rendered.is_file()
+            else renaming.mentions(text)
+        )
         if rewritten != text:
             path.write_text(rewritten)
             changed = True
