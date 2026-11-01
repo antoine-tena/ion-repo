@@ -1055,7 +1055,7 @@ Step 4 of the skill calls stylus when it is installed, and still falls back on t
 v0.4.11 is the last `kiln-cli`: at its first run as a uv tool it installs `ion-sh` and `ion-repo`,
 removes itself and moves the Claude Code catalogue (`src/ion_repo/kiln_move.py`). Proven on a real
 0.4.10 from PyPI with the real next wheels on a local index, GitHub on a local copy.
-- [ ] `ion-sh` published first, from `ion/ion`'s branch `feat/ion-repo-on-pypi`.
+- [x] `ion-sh` 0.1.0 published first, 1 November 2026 (tag `v0.1.0` of `antoine-tena/ion`).
 - [ ] v0.4.11 promoted: `pypi.yml` publishes `ion-repo`, then the last `kiln-cli`; check both pages
   and the tap's `formula_renames.json` (Homebrew not tried: no brew on this machine).
 - [ ] The `kiln` entry of the catalogue removed once no tester is left on 0.4.10 (its hook installs
