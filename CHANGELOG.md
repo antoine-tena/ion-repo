@@ -6,6 +6,11 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 `release/vX.Y.Z` branch, rewritten before its first candidate. Names are those of their release:
 entries before v0.4.0 quote kiln's former French names.
 
+## v0.4.12 — 2026-11-01
+<!-- readme: unchanged: two fixes of the move from kiln, nothing the READMEs describe -->
+- `kiln` says that it is now `ion-repo` once on a machine, no longer on every run.
+- The Homebrew formula keeps the `kiln` alias: after `brew upgrade kiln`, the `kiln` command still works.
+
 ## v0.4.11 — 2026-11-01
 - **Breaking**: kiln becomes `ion-repo`, typed `ion repo`, its plugin `repo` in the `ion-repo` catalogue (`/repo:…` skills, the old `/kiln:…` ones forwarded). `ion repo update` converts a repo's names and files.
 - **Moving to Ion**: this is the last `kiln-cli`. At its first run as a uv tool it installs `ion-sh` (the `ion` command) and `ion-repo` from PyPI, removes itself and moves the Claude Code catalogue. `kiln-cli` stays on PyPI, with no further release.
