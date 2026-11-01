@@ -67,7 +67,6 @@ Before that theme, this release moves everyone to Ion: the last `kiln-cli`, on a
 ### v0.4.12 · What the last sessions tripped on
 Real sessions of late October hit these, each small: the release, the merge, a long session, a
 first `kiln check`. They cost time now, so they go before the moves.
-- T-405 · A generated tool's releases numbered `vX.Y.Z`, never `vN` (XS)
 - T-388 · `/kiln:release` publishes to PyPI from the machine when Actions is blocked (S)
 - T-378 · `/kiln:merge` from an isolated worktree: leave it before merging, plain commands only (S)
 - T-381 · A long session fetches the integration branch before building on it (S)
@@ -908,16 +907,6 @@ fallback read of the old name, and `ion repo update` converts what a repo carrie
 re-recorded at the next candidate that shows them.
 Also `src/kiln/`, the `kiln` alias of `ion-repo` and `kiln_move.py`'s state in `~/.local/state/kiln/`.
 
-### T-405 · A generated tool's releases numbered `vX.Y.Z`, never `vN`
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-11-01
-- **Effort**: XS · **Owner**: — · **Due**: —
-- **Origin**: antoine, 1 November 2026, on `ion-sh`'s `v2`: the same numbering as ion-repo's
-
-`/repo:release`, the template's `pypi.yml` comments and `pypi_name`'s docs still say `vN`. A tool
-published on PyPI gets `vX.Y.Z` by default, as `ion-sh` now does through its own `CLAUDE.md`.
-
 ### T-388 · `/kiln:release` publishes to PyPI from the machine when Actions is blocked
 - **Type**: improvement
 - **Status**: todo
@@ -1058,6 +1047,9 @@ removes itself and moves the Claude Code catalogue (`src/ion_repo/kiln_move.py`)
 - [x] `ion-sh` 0.1.0 published first, 1 November 2026 (tag `v0.1.0` of `antoine-tena/ion`).
 - [ ] v0.4.11 promoted: `pypi.yml` publishes `ion-repo`, then the last `kiln-cli`; check both pages
   and the tap's `formula_renames.json` (Homebrew not tried: no brew on this machine).
+- [ ] Right after it, on a clean machine or `HOME`: `uv tool install ion-sh`, then `ion add repo`
+  from the real PyPI (1 November 2026: fails as expected on the 404, passes with the candidate's
+  wheel on a local index); the real migration from the published `kiln-cli` 0.4.10.
 - [ ] The `kiln` entry of the catalogue removed once no tester is left on 0.4.10 (its hook installs
   `kiln@kiln`; without the entry the plugin disappears), not before the v0.5 milestone.
 - [ ] The release after: `pypi.yml`'s `kiln-cli` and `keramos-kiln` steps removed, the `kiln-cli` script out of
