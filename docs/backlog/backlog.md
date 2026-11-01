@@ -1061,7 +1061,9 @@ removes itself and moves the Claude Code catalogue (`src/ion_repo/kiln_move.py`)
 - [ ] `ion-sh` published first, from `ion/ion`'s branch `feat/ion-repo-on-pypi`.
 - [ ] v0.4.11 promoted: `pypi.yml` publishes `ion-repo`, then the last `kiln-cli`; check both pages
   and the tap's `formula_renames.json` (Homebrew not tried: no brew on this machine).
-- [ ] The release after: `pypi.yml`'s two `kiln-cli` steps removed, the `kiln-cli` script out of
+- [ ] The `kiln` entry of the catalogue removed once no tester is left on 0.4.10 (its hook installs
+  `kiln@kiln`; without the entry the plugin disappears), not before the v0.5 milestone.
+- [ ] The release after: `pypi.yml`'s `kiln-cli` and `keramos-kiln` steps removed, the `kiln-cli` script out of
   `pyproject.toml`, `session_start.py`'s `replacing_tool` kept for late testers.
 - [ ] The project left on PyPI (never deleted: a deleted name can be taken again), the PyPI token
   scoped to `kiln-cli` revoked, `PYPI_TOKEN` removed; the "Entire account" `KERAMOS_PYPI_TOKEN`

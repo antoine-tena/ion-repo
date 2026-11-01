@@ -74,7 +74,7 @@ def test_ion_repo_not_available_leaves_kiln_cli_working(
     kiln_move.run()
 
     assert not any("uninstall" in call for call in calls)
-    assert kiln_move.MANUAL in capsys.readouterr().err
+    assert kiln_move.manual() in capsys.readouterr().err
 
 
 def test_a_failed_move_waits_a_day_and_says_the_command(
@@ -88,7 +88,7 @@ def test_a_failed_move_waits_a_day_and_says_the_command(
     kiln_move.run()
 
     assert calls == []
-    assert kiln_move.MANUAL in capsys.readouterr().err
+    assert kiln_move.manual() in capsys.readouterr().err
 
 
 def test_the_opt_out_only_says_the_command(tool: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -122,3 +122,13 @@ def test_the_stdout_of_a_failed_step_stays_clean(
 ) -> None:
     assert kiln_move.step([sys.executable, "-c", "print('out'); raise SystemExit(3)"]) is False
     assert capsys.readouterr().out == ""
+
+
+def test_keramos_kiln_moves_too(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    prefix = tmp_path / "keramos-kiln"
+    prefix.mkdir()
+    (prefix / kiln_move.RECEIPT).touch()
+    monkeypatch.setattr(sys, "prefix", str(prefix))
+
+    assert kiln_move.in_legacy_tool()
+    assert "uv tool uninstall keramos-kiln" in kiln_move.manual()

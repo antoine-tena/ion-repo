@@ -152,11 +152,11 @@ def run(*command: str, cwd: Path | None = None) -> subprocess.CompletedProcess[s
 # --- Tool: ion-repo installed by uv, from PyPI, from GitHub (commit) or from a directory (checkout)
 # ---
 
-# uv tools that carry ion-repo: `ion-repo` (PyPI package name), `kiln-cli` (kiln's, last published
-# beside it for the testers), `keramos-kiln` (its planned name), `kiln` (before PyPI).
+# uv tools that carry ion-repo: `ion-repo` (PyPI package name), `kiln-cli` (kiln's) and
+# `keramos-kiln` (its planned name), last published at v0.4.11, `kiln` (before PyPI).
 TOOL_NAMES = ("ion-repo", "kiln-cli", "keramos-kiln", "kiln")
 PYPI_NAME = TOOL_NAMES[0]
-LEGACY_PYPI_NAME = TOOL_NAMES[1]
+LEGACY_PYPI_NAMES = TOOL_NAMES[1:3]
 
 
 def installed_kiln() -> tuple[str, str] | None:
@@ -209,20 +209,21 @@ def recorded_build(site_packages: Path) -> str:
 
 
 def installed_pypi_name() -> str:
-    """The name of the uv tool on this machine: `kiln-cli` until it moves to `ion-repo`."""
+    """The name of the uv tool on this machine: an old one until it moves to `ion-repo`."""
     tool_dir = run("uv", "tool", "dir").stdout.strip()
-    has_legacy_name = bool(tool_dir) and Path(tool_dir, LEGACY_PYPI_NAME).is_dir()
-    return LEGACY_PYPI_NAME if has_legacy_name else PYPI_NAME
+    legacy = [name for name in LEGACY_PYPI_NAMES if tool_dir and Path(tool_dir, name).is_dir()]
+    return legacy[0] if legacy else PYPI_NAME
 
 
 def replacing_tool(source: str) -> str:
-    """The install of `source`, leaving `kiln-cli` behind. Installed twice: uninstalling `kiln-cli`
+    """The install of `source`, leaving the old tool behind. Installed twice: uninstalling it
     removes the commands both carry, even once they point to the new tool."""
-    if installed_pypi_name() != LEGACY_PYPI_NAME:
+    name = installed_pypi_name()
+    if name not in LEGACY_PYPI_NAMES:
         return f"uv tool install --force {source}"
     return (
         f"uv tool install ion-sh && uv tool install --force {source} && "
-        f"uv tool uninstall {LEGACY_PYPI_NAME} && uv tool install --force {source}"
+        f"uv tool uninstall {name} && uv tool install --force {source}"
     )
 
 
