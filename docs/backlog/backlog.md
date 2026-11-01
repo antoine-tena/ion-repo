@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: ion-repo#T-406.**
+**Next free: ion-repo#T-407.**
 
 ---
 
@@ -71,6 +71,7 @@ first `kiln check`. They cost time now, so they go before the moves.
 - ion-repo#T-377 · An agent cannot document a new variable: `.env.example` is under the `.env*` deny (S)
 - ion-repo#T-375 · [CLOCK] names freezegun, which [NEW-DEPENDENCY] refuses (S)
 - ion-repo#T-379 · Django template: `django-stubs-ext`, so `admin.ModelAdmin[Model]` runs (S)
+- ion-repo#T-406 · `ion repo set name=`: the project's own code keeps the old name, its renamed tests fail (S)
 - ion-repo#T-380 · `/kiln:merge` ends by offering `/grog:distill` on the session (S) (blocked: ion-learn#T-01)
 
 ### v0.4.13 · A tool's piece reaches a repo: the small moves
@@ -1528,6 +1529,19 @@ before a deployment; the release of hearth v0.1.0 went through on it, its tests 
 `time-machine` (3.6.0, 25 October 2026, MIT) instead. The rule names `time-machine`
 (`time_machine.travel(..., tick=False)`), and the grid's check (`charter.toml`, ratchet
 `clock-in-tests`) accepts both.
+
+### ion-repo#T-406 · `ion repo set name=`: the project's own code keeps the old name, its renamed tests fail
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-01
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: trying `ion repo set name=foyer` on a copy of ion-host, 1 November 2026
+
+The rename rewrites a project's own files with `Renaming.references` (imports, paths), but a file
+settled from a conflict with `Renaming.words` (every mention). On ion-host, `PROGRAM = "ion-host"`
+in `cli/common.py` stays while `tests/test_cli.py` now expects `foyer`: 2 tests fail after the
+rename, none before. Decide which holds, so that code and tests move together.
+- [ ] A renamed ion-host copy passes its own tests, or the rename names what it left behind.
 
 ### ion-repo#T-376 · `kiln check` ran no test on emberstudio, and left a `.env` towards a stopped PostgreSQL
 - **Type**: bug
