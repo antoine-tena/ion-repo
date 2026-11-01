@@ -11,6 +11,11 @@
       "description": "For every project: worktrees, merge, release, cleanup, backlog, branch guard, protected files, per-file check, context7"
     },
     {
+      "name": "kiln",
+      "source": "./plugins/repo",
+      "description": "The repo plugin under its old name, for machines moving from kiln: install repo@ion-repo instead"
+    },
+    {
       "name": "nuxt",
       "source": "./plugins/nuxt",
       "description": "Nuxt, Vue, Vitest, preview and visual audit, playwright MCP server"
@@ -37,7 +42,6 @@
     }
   ],
   "renames": {
-    "kiln": "repo",
     "base": "repo",
     "pile-django": "django",
     "pile-nuxt": "nuxt",

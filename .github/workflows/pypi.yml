@@ -36,16 +36,19 @@ jobs:
           fi
       - name: Build
         run: uv build
-      # The very last `kiln-cli`, the same code but for its name and description: at its first run
-      # it moves its tester to ion-repo (`kiln_move.py`). Published at this tag only (T-373).
-      - name: Build the last kiln-cli
+      # The very last `kiln-cli` and `keramos-kiln`, the same code but for their name and description:
+      # at its first run each moves its tester to ion-repo (`kiln_move.py`). Published at this tag
+      # only (T-373).
+      - name: Build the last kiln-cli and keramos-kiln
         if: github.ref_name == 'v0.4.11'
         run: |
-          sed -i 's/^name = "ion-repo"$/name = "kiln-cli"/' pyproject.toml
-          grep -q '^name = "kiln-cli"$' pyproject.toml
-          sed -i 's/^description = .*/description = "Last release: kiln is now ion-repo. Run kiln once to move, or: uv tool install ion-repo"/' pyproject.toml
-          uv build
-          git checkout -- pyproject.toml
+          for name in kiln-cli keramos-kiln; do
+            sed -i "s/^name = \"ion-repo\"\$/name = \"${name}\"/" pyproject.toml
+            grep -q "^name = \"${name}\"\$" pyproject.toml
+            sed -i 's/^description = .*/description = "Last release: kiln is now ion-repo. Run kiln once to move, or: uv tool install ion-repo"/' pyproject.toml
+            uv build
+            git checkout -- pyproject.toml
+          done
       - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: dist/*
@@ -59,6 +62,11 @@ jobs:
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.KERAMOS_PYPI_TOKEN }}
         run: uv publish --check-url https://pypi.org/simple/ dist/ion_repo-*
+      - name: Publish the last keramos-kiln
+        if: github.ref_name == 'v0.4.11'
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.KERAMOS_PYPI_TOKEN }}
+        run: uv publish --check-url https://pypi.org/simple/ dist/keramos_kiln-*
       # After ion-repo, on purpose: this release moves its testers there. PYPI_TOKEN is scoped to
       # kiln-cli.
       - name: Publish the last kiln-cli

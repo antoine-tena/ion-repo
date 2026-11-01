@@ -1,6 +1,7 @@
-"""The last `kiln-cli` moves its tester to the Ion family, at its first run on the machine.
+"""The last `kiln-cli` and `keramos-kiln` move their tester to the Ion family, at their first run on
+the machine.
 
-Only a uv tool named `kiln-cli` moves: `uvx`, Homebrew and a checkout are left alone, and so is
+Only a uv tool of one of these names moves: `uvx`, Homebrew and a checkout are left alone, and so is
 `charter`, which git hooks call. Standard library only, and every report on stderr: the code under
 it is uninstalled while it runs, and a script keeps reading the command's stdout.
 
@@ -23,7 +24,7 @@ import time
 from collections.abc import Sequence
 from pathlib import Path
 
-LEGACY_TOOL = "kiln-cli"
+LEGACY_TOOLS = ("kiln-cli", "keramos-kiln")
 TOOL = "ion-repo"
 FAMILY = "ion-sh"
 # Left by `uv tool install` in the tool's environment; `uvx` leaves none.
@@ -34,20 +35,23 @@ STEP_TIMEOUT = 600
 STATE_DIR = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "kiln"
 ATTEMPT_FILE = STATE_DIR / "move-to-ion"
 LOCK_FILE = STATE_DIR / "move-to-ion.lock"
-MANUAL = (
-    f"uv tool install {FAMILY} && uv tool install --force {TOOL} && "
-    f"uv tool uninstall {LEGACY_TOOL} && uv tool install --force {TOOL} && "
-    f"{TOOL} install --machine"
-)
 
 
 def say(message: str) -> None:
     print(f"kiln: {message}", file=sys.stderr)
 
 
+def manual() -> str:
+    return (
+        f"uv tool install {FAMILY} && uv tool install --force {TOOL} && "
+        f"uv tool uninstall {Path(sys.prefix).name} && uv tool install --force {TOOL} && "
+        f"{TOOL} install --machine"
+    )
+
+
 def in_legacy_tool() -> bool:
     prefix = Path(sys.prefix)
-    return prefix.name == LEGACY_TOOL and (prefix / RECEIPT).is_file()
+    return prefix.name in LEGACY_TOOLS and (prefix / RECEIPT).is_file()
 
 
 def is_due(now: float) -> bool:
@@ -79,14 +83,14 @@ def step(command: Sequence[str]) -> bool:
 
 
 def move_tools() -> bool:
-    """`ion-sh` and `ion-repo` in place of `kiln-cli`. The interpreter's version is given because
+    """`ion-sh` and `ion-repo` in place of the old tool. The interpreter's version is given because
     it is known to work here; uv would otherwise try the machine's default Python first."""
     python = ["--python", f"{sys.version_info.major}.{sys.version_info.minor}"]
     install = ["uv", "tool", "install", *python]
     return (
         step([*install, FAMILY])
         and step([*install, "--force", TOOL])
-        and step(["uv", "tool", "uninstall", LEGACY_TOOL])
+        and step(["uv", "tool", "uninstall", Path(sys.prefix).name])
         and step([*install, "--force", TOOL])
     )
 
@@ -113,18 +117,18 @@ def run() -> None:
             hand_over()
         now = time.time()
         if not is_due(now):
-            say(f"kiln-cli is no longer updated, move to Ion: {MANUAL}")
+            say(f"{Path(sys.prefix).name} is no longer updated, move to Ion: {manual()}")
             return
         ATTEMPT_FILE.touch()
     except OSError as error:
-        say(f"cannot move to Ion ({error}): {MANUAL}")
+        say(f"cannot move to Ion ({error}): {manual()}")
         return
     say("kiln is now ion-repo, in the Ion family: moving this machine, once.")
     if not move_tools():
         if Path(sys.prefix, RECEIPT).is_file():
-            say(f"staying on kiln-cli for now. To finish by hand: {MANUAL}")
+            say(f"staying on {Path(sys.prefix).name} for now. To finish by hand: {manual()}")
             return
-        say(f"kiln-cli is gone but ion-repo is incomplete. To finish: {MANUAL}")
+        say(f"{Path(sys.prefix).name} is gone but ion-repo is incomplete. To finish: {manual()}")
         sys.exit(1)
     # The plugin moves with the new tool's code, and its failure costs no command.
     if shutil.which("claude") is not None and not step([TOOL, "install", "--machine"]):

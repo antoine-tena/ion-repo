@@ -77,6 +77,10 @@ Les plugins Claude Code vivent dans [`plugins/`](../plugins/), catalogue `ion-re
   fichier, définition et références d'un symbole), activé par `ion repo set serena=true` sur un gros
   repo ; les éditions restent aux outils de Claude Code, où sont branchés les hooks de `ion-repo`.
 
+- `kiln` (le plugin `repo` sous son ancien nom, gardé pour les machines qui viennent de kiln : la
+  commande de mise à jour de kiln 0.4.10 installe `kiln@kiln` ; `ion repo install --machine` le
+  remplace par `repo@ion-repo`). Installer `repo`.
+
 Installation : `ion repo install` hors d'un repo, ou à la main `claude plugin marketplace add antoine-tena/ion-repo`, puis
 `claude plugin install repo@ion-repo --scope user`.
 
@@ -287,7 +291,7 @@ Le travail s'intègre dans `develop` ; `main` ne reçoit que des versions.
   workflow `pypi.yml` au tag `vX.Y.Z` ; `uv tool install git+https://github.com/antoine-tena/ion-repo@<tag>`
   prend aussi les candidates ; `brew install antoine-tena/ion/ion-repo` prend les versions promues
   par le tap Homebrew (https://github.com/antoine-tena/homebrew-ion), que `pypi.yml` met à jour
-  au même tag, et ion-repo propose alors `brew upgrade ion-repo` (`kiln-cli` a eu sa dernière version à v0.4.11 : installé par uv, il installe `ion-sh` et `ion-repo` à son premier lancement, se retire et déplace le catalogue Claude Code ; un échec le laisse en état de marche et affiche la commande qui termine) ;
+  au même tag, et ion-repo propose alors `brew upgrade ion-repo` (depuis l'ancienne formule `kiln`, Homebrew demande d'abord `brew trust antoine-tena/kiln`, puis `brew upgrade kiln` suit le renommage ; `kiln-cli` et `keramos-kiln` ont eu leur dernière version à v0.4.11 : installé par uv, chacun installe `ion-sh` et `ion-repo` à son premier lancement, se retire et déplace le catalogue Claude Code ; un échec le laisse en état de marche et affiche la commande qui termine) ;
   `ion repo status` dit de quelle version part chaque repo (`v0.4.0 → v0.4.2`), la bannière celle
   de l'outil (`v0.4.2 +3 · abc1234` : trois commits après v0.4.2, installé depuis un dossier).
   Seule une version met un repo à jour : un outil qui n'en est pas une (un dossier en avance sur

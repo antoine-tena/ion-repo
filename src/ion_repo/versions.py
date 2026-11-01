@@ -23,12 +23,12 @@ from ion_repo.config import BETA_CHANNEL, INTERNAL_CHANNEL, load_config
 
 ION_REPO_GIT_URL = "https://github.com/antoine-tena/ion-repo"
 # Package name on PyPI, in the Ion family's `ion-<tool>`; `kiln-cli` (kiln's name until 31 October
-# 2026) had its last release at v0.4.11, which moves its testers (`kiln_move.py`), `keramos-kiln`
-# was its planned name, `kiln` came before PyPI.
+# 2026) and `keramos-kiln` (its planned name) had their last release at v0.4.11, which moves their
+# testers (`kiln_move.py`), `kiln` came before PyPI.
 PYPI_NAME = "ion-repo"
-LEGACY_PYPI_NAME = "kiln-cli"
+LEGACY_PYPI_NAMES = ("kiln-cli", "keramos-kiln")
 FAMILY_PYPI_NAME = "ion-sh"
-DISTRIBUTIONS = (PYPI_NAME, LEGACY_PYPI_NAME, "keramos-kiln", "kiln")
+DISTRIBUTIONS = (PYPI_NAME, *LEGACY_PYPI_NAMES, "kiln")
 CHECKOUT_NAMES = ("ion-repo", "kiln")
 CHECKOUT_MARKERS = (Path("src/ion_repo/versions.py"), Path("src/kiln/versions.py"))
 CHANGELOG_FILE = "CHANGELOG.md"
@@ -114,18 +114,18 @@ def _installed_distribution() -> Distribution | None:
 
 
 def is_legacy_install() -> bool:
-    """Is the tool still the uv tool `kiln-cli`, which an upgrade replaces?"""
-    return Path(sys.prefix).name == LEGACY_PYPI_NAME
+    """Is the tool still a uv tool of an old name, which an upgrade replaces?"""
+    return Path(sys.prefix).name in LEGACY_PYPI_NAMES
 
 
 def replacing_legacy(source: str) -> str:
-    """The install of `source`, leaving `kiln-cli` behind. Installed twice: uninstalling `kiln-cli`
+    """The install of `source`, leaving the old tool behind. Installed twice: uninstalling it
     removes the commands both carry, even once they point to the new tool."""
     if not is_legacy_install():
         return f"uv tool install --force {source}"
     return (
         f"uv tool install {FAMILY_PYPI_NAME} && uv tool install --force {source} && "
-        f"uv tool uninstall {LEGACY_PYPI_NAME} && uv tool install --force {source}"
+        f"uv tool uninstall {Path(sys.prefix).name} && uv tool install --force {source}"
     )
 
 

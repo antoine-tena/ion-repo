@@ -47,6 +47,7 @@ UPGRADED_STACKS = [
 OLDEST_UPDATED = "v0.3.0"
 LIGHT_STACK = ("cli", "none")
 GITHUB_TEMPLATE = "https://github.com/antoine-tena/ion-repo"
+LEGACY_GITHUB_TEMPLATE = "https://github.com/antoine-tena/kiln"
 # A release no one has: the tag the checkout under test is given, newer than any real one.
 RELEASE_UNDER_TEST = "v99.0.0-rc.1"
 PNPM_FRONTENDS = {"nuxt", "next", "astro"}
@@ -244,9 +245,11 @@ def released_kiln(tmp_path_factory: pytest.TempPathFactory) -> dict[str, str]:
     subprocess.run([*git, "commit", "-q", "--allow-empty", "-m", "release under test"], check=True)
     subprocess.run([*git, "tag", RELEASE_UNDER_TEST], check=True)
     gitconfig = root / "gitconfig"
+    # The frozen witness still has kiln's address as its template (GitHub redirects it).
     gitconfig.write_text(
         "[user]\n\tname = Test\n\temail = test@example.com\n"
         f'[url "{clone}"]\n\tinsteadOf = {GITHUB_TEMPLATE}.git\n\tinsteadOf = {GITHUB_TEMPLATE}\n'
+        f"\tinsteadOf = {LEGACY_GITHUB_TEMPLATE}.git\n\tinsteadOf = {LEGACY_GITHUB_TEMPLATE}\n"
     )
     config_dir = root / "config" / "kiln"
     config_dir.mkdir(parents=True)
