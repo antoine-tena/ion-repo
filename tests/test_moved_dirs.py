@@ -142,6 +142,34 @@ def test_a_rename_takes_along_a_project_comment_beside_the_pypi_name_that_stays(
     )
 
 
+def test_a_file_named_after_the_project_follows_what_looks_for_it(project: Path) -> None:
+    (project / "old-tool.toml").write_text("key = 1\n")
+    code = project / "backend/old_tool/settings.py"
+    code.write_text('FILE = "old-tool.toml"\n')
+    commit(project, "own settings file")
+
+    update.apply_template(project, {"name": "new-tool", "plugin_name": "new-tool"})
+
+    assert not (project / "old-tool.toml").exists()
+    assert (project / "new-tool.toml").read_text() == "key = 1\n"
+    assert (project / "backend/new_tool/settings.py").read_text() == 'FILE = "new-tool.toml"\n'
+    assert update.conflicted_files(project) == []
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "before", "after"),
+    [
+        ("ion-host", "foyer", "ion-host.toml", "foyer.toml"),
+        ("ion-host", "foyer", "ion_host.example.toml", "foyer.example.toml"),
+        ("ion-host", "foyer", "ion-hosts.txt", "ion-hosts.txt"),
+        ("sweep", "broom", "sweep.toml", "broom.toml"),
+        ("sweep", "broom", "sweeper.py", "sweeper.py"),
+    ],
+)
+def test_which_file_names_follow(old: str, new: str, before: str, after: str) -> None:
+    assert Renaming(old, new, None, None, True).file_name(before) == after
+
+
 @pytest.mark.parametrize(
     ("before", "after"),
     [
