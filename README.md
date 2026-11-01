@@ -54,7 +54,8 @@ ion-repo itself calls no AI and needs no API key.
   copy-paste.
 - Skills for worktrees, merges, releases and reviews; hooks that keep Claude off `main` and
   `develop`; a status line that shows CI, tickets and production; an end-of-work report, the
-  `debrief` output style, that gives the real git state, what is broken and what comes next.
+  `debrief` output style, that gives the real git state, what is broken and what comes next
+  (alone, without the rest: `claude plugin install debrief@ion-repo`).
 - A private repo's CI runs on your machine (`ion repo ci`, its verdict kept as a git note) and spends
   no GitHub minutes; a public repo's runs on GitHub, where it is free.
 

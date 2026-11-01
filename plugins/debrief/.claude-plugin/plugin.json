@@ -1,0 +1,8 @@
+{
+  "name": "debrief",
+  "version": "0.1.0",
+  "description": "The debrief output style alone, without the repo plugin's hooks and skills: end-of-work report read in five seconds",
+  "author": {
+    "name": "antoine-tena"
+  }
+}
