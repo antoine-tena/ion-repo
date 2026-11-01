@@ -48,21 +48,21 @@ anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
-| v0.4.11 | Never lets it rot, kiln first | kiln-bot runs kiln's workflows with write access in other people's repos: each commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before anyone runs them. kiln-bot on a test repo is a box of the launch gate (T-03). Before that theme, this release moves everyone to Ion: the last `kiln-cli`, on antoine's request of 1 November 2026. | 2 tickets |
+| v0.4.11 | Never lets it rot, kiln first | kiln-bot runs kiln's workflows with write access in other people's repos: each commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before anyone runs them. kiln-bot on a test repo is a box of the launch gate (ion-repo#T-03). Before that theme, this release moves everyone to Ion: the last `kiln-cli`, on antoine's request of 1 November 2026. | 2 tickets |
 | v0.4.12 | What the last sessions tripped on | Real sessions of late October hit these, each small: the release, the merge, a long session, a first `kiln check`. They cost time now, so they go before the moves. | 7 tickets |
 | v0.4.13 | A tool's piece reaches a repo: the small moves | How a tool's skill and files get into a generated repo gets decided, then proven on the three smallest moves. ⚠ breaking: skill names, each with a forward and its conversion in `kiln update`. | 5 tickets |
 | v0.4.14 | The server in hearth | The biggest move, alone in its release: production deployments depend on it. ⚠ breaking: the generated tree, the `deploy` question, `--vps`, the `vps` skills, with their conversion. | 1 ticket |
-| v0.4.15 | The grid in cone | The last move, after kiln runs on slake (slake's T-07, one engine at a time). It closes the map of the moves. | 2 tickets |
+| v0.4.15 | The grid in cone | The last move, after kiln runs on slake (ion-render#T-07, one engine at a time). It closes the map of the moves. | 2 tickets |
 
 ### v0.5.x · 18 releases
 
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
-| v0.5.0 | Public launch: the proof and the page | Milestone decided by antoine (16 October 2026), its content defined on 17 October: the version the launch waits for (T-03). The proof (kiln's own repos at 100) and the page that shows it, the potential line as its demo. No study and no new demo: the recorded demos stay (antoine, 30 October 2026). | 10 tickets |
+| v0.5.0 | Public launch: the proof and the page | Milestone decided by antoine (16 October 2026), its content defined on 17 October: the version the launch waits for (ion-repo#T-03). The proof (kiln's own repos at 100) and the page that shows it, the potential line as its demo. No study and no new demo: the recorded demos stay (antoine, 30 October 2026). | 10 tickets |
 | v0.5.1 | Before the launch: the rehearsal, and the bugs already known | Fixes only from here to the launch. | 8 tickets |
-| v0.5.2 | Before the launch: what the rehearsal found | The fixes of T-142, nothing else. | fixes as they come |
+| v0.5.2 | Before the launch: what the rehearsal found | The fixes of ion-repo#T-142, nothing else. | fixes as they come |
 | v0.5.3 | Launch day | Promoted two days before the launch by the next candidate: the version strangers install. Gate checked that evening at 20:00; nothing is promoted on launch day. | 1 ticket |
-| v0.5.4 | The first week with strangers | Promoted after the launch. What the launch brings in (issues, reports, the first gap reports of T-38) comes first; these give way to it. From here each milestone is announced (T-118). | 11 tickets |
+| v0.5.4 | The first week with strangers | Promoted after the launch. What the launch brings in (issues, reports, the first gap reports of ion-repo#T-38) comes first; these give way to it. From here each milestone is announced (ion-repo#T-118). | 11 tickets |
 | v0.5.5 | A score you can trust: the false alarms of real repos, gone | Strangers' repos hold fixtures, vendored and generated code, templates, READMEs in other languages: each class of false alarm is handled once, in the engine, and stays fixed by a test; the reference repo's score in every note says when the grid moved. | 2 tickets |
 | v0.5.6 | Show your score | The image that travels by itself, and anyone's repo scored from its URL: the launch's visitors become its messengers. | 4 tickets |
 | v0.5.7 | Claude pays less per session | Context length is the cost (measured on 22 October): skills that run one kiln command, a ladder before writing code, context files kept under a budget, the score shown without Claude asking for it. | 5 tickets |
@@ -71,7 +71,7 @@ anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 | v0.5.10 | `kiln fix`: more gaps closed, faster, from scripts | The code's own rules get converters, the checks run once with a bisection on red, the options kiln-bot and the skills need; a fresh `kiln new` repo leaves `kiln fix` nothing to do. | 4 tickets |
 | v0.5.11 | Rules that test themselves | Before the grid grows by hundreds of rules: each rule carries its examples, its rung and its message per place, and `kiln grid new`, `test`, `try` and `lint` make a rule in minutes. | 1 ticket |
 | v0.5.12 | Findings where people look | With rules that test themselves (v0.5.11) to build on: in the pull request, the CI's summary and GitHub's code scanning, written without a flag; repo-local rules in the grid's format. | 3 tickets |
-| v0.5.13 | The grid grows: the exact rules first, three new themes | T-141 opens here, its other boxes being the theme releases below: the rules a detector decides exactly today, the first rule of `licensing`, `infrastructure` and `data-science`, and the template held to every new rule by its own test. | 5 tickets |
+| v0.5.13 | The grid grows: the exact rules first, three new themes | ion-repo#T-141 opens here, its other boxes being the theme releases below: the rules a detector decides exactly today, the first rule of `licensing`, `infrastructure` and `data-science`, and the template held to every new rule by its own test. | 5 tickets |
 | v0.5.14 | Repos safe to hand to an agent | What Claude Code users need first (17 October): narrow permissions, pinned MCP servers, no secret an agent can read, model calls with limits; plugins and MCP servers scored as a kind of their own. | 5 tickets |
 | v0.5.15 | The roadmap Claude reads without exploring | The input of v0.6.0: each gap a context pack with its recipe and its proof, ordered by points per token, cut into batches that fit a session. | 1 ticket |
 | v0.5.16 | Tests at the lowest token cost | The other half of v0.6.0: generators that cost no tokens in the template, coverage and surviving mutants measured by script, Claude on the holes only. | 3 tickets |
@@ -187,9 +187,9 @@ anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 | v0.8.0 | Every common stack scored | Milestone decided by antoine (25 October 2026), reached here: every common stack scored and fixed by script before the format freezes. The rarer languages come as data packs that the community packs of v1.0.0 will extend; then the gate, the corpus re-scored and each stack among those that make 95 % of its repos shown at the level of Django at v0.5.0. | 2 tickets |
 | v0.8.1 | The CIs used most after GitHub's and GitLab's | The road to v0.9.0: any CI, any machine, any size, the last before the format freezes. First the CIs used most after GitHub's and GitLab's (v0.6.63), read into the CI model of v0.6.21 with their pinning and their untrusted text (appendix B). | 1 ticket |
 | v0.8.2 | Every other CI | Jenkins, Buildkite, Woodpecker, the clouds' own CIs, Tekton and the rest, read the same way. | 1 ticket |
-| v0.8.3 | Every machine, every network | macOS and WSL tested beside Linux, ARM64 and musl, air-gapped and corporate networks; native Windows only if T-94 reopens. | 1 ticket |
-| v0.8.4 | No Python needed | A single signed binary, `npx kiln-cli score` for JavaScript machines, and the score in a browser if the forges allow it; a language server only if T-117 reopens. | 1 ticket |
-| v0.8.5 | Monorepos and big trees | Monorepo tools' project graphs read for components and their links (T-86 staying declined for generating them), rules run in parallel, and a time budget that says what it left out. | 1 ticket |
+| v0.8.3 | Every machine, every network | macOS and WSL tested beside Linux, ARM64 and musl, air-gapped and corporate networks; native Windows only if ion-repo#T-94 reopens. | 1 ticket |
+| v0.8.4 | No Python needed | A single signed binary, `npx kiln-cli score` for JavaScript machines, and the score in a browser if the forges allow it; a language server only if ion-repo#T-117 reopens. | 1 ticket |
+| v0.8.5 | Monorepos and big trees | Monorepo tools' project graphs read for components and their links (ion-repo#T-86 staying declined for generating them), rules run in parallel, and a time budget that says what it left out. | 1 ticket |
 | v0.8.6 | A million files | Sampling with a stated margin, Rust only where a profile points, then the speed published as uv and ruff publish theirs. | 1 ticket |
 
 </details>
@@ -207,7 +207,7 @@ anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
-| v1.0.0 | The grid others build on | Milestone decided by antoine (16 October 2026), its bar set on 25 October 2026: the public stability promise, once the rule format has held without breaking on the stacks that make about 95% of the corpus's repos (B01), on GitHub's, GitLab's and one more CI, on Linux, macOS and WSL, and on monorepos, each scored and fixed by script as Django is at v0.5.0; the long tail comes as community packs (T-69). From here, strict semver: breaking → major, `feat` → minor. | 3 tickets |
+| v1.0.0 | The grid others build on | Milestone decided by antoine (16 October 2026), its bar set on 25 October 2026: the public stability promise, once the rule format has held without breaking on the stacks that make about 95% of the corpus's repos (B01), on GitHub's, GitLab's and one more CI, on Linux, macOS and WSL, and on monorepos, each scored and fixed by script as Django is at v0.5.0; the long tail comes as community packs (ion-repo#T-69). From here, strict semver: breaking → major, `feat` → minor. | 3 tickets |
 
 </details>
 

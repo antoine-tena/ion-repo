@@ -4,7 +4,7 @@ Everything left to do on kiln, in a single list ordered by priority. Started on
 **2026-10-15**, rewritten on **2026-10-17** from the vision of that day (the measures of the two
 real repos stay private, see "Repos d'entraînement" in `CLAUDE.md`). Below the tickets: the
 [🧭 Vision](#-vision) that orders them, then the [💡 kiln score thesis](#-kiln-score-the-thesis)
-that T-186 to T-319 came from. Closed tickets are in [done.md](done.md), what was turned down in
+that ion-repo#T-186 to ion-repo#T-319 came from. Closed tickets are in [done.md](done.md), what was turned down in
 [rejected.md](rejected.md); how to write a ticket: [📖 How to use](#-how-to-use-humans-and-agents).
 **Nothing else is open.**
 
@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: T-404.**
+**Next free: ion-repo#T-406.**
 
 ---
 
@@ -22,8 +22,8 @@ keeps a repo up to date with the best of the world, and easy for Claude to read"
 A candidate every two days, about 4 of its 7 session-hours planned, the rest margin. The launch of
 11 November 2026 is cancelled and has no new date (antoine, 30 October 2026: a few more months of
 work on his machine first), so no release below carries a date. Every open ticket has its release and is listed under it, the
-1,070 [kiln score ideas](#-kiln-score-the-thesis) included: each became a box of a ticket (T-186 to
-T-319, or the existing ticket it extended) in the release it was planned in (antoine, 25 October
+1,070 [kiln score ideas](#-kiln-score-the-thesis) included: each became a box of a ticket (ion-repo#T-186 to
+ion-repo#T-319, or the existing ticket it extended) in the release it was planned in (antoine, 25 October
 2026: everything a ticket, in one format, in its place). A milestone takes its minor in the release
 that reaches it, so the work leading to it carries the minor before: every common stack is v0.7.x,
 and v0.8.0 is the release where the last one is scored. Each stack gets two releases, about what
@@ -40,13 +40,13 @@ Once antoine sets a date, they are dated back from it, and he may move other rel
 - v0.4.0 · kiln speaks English: promoted on Mon 19 Oct, the milestone decided by antoine
   (⚠ breaking, all converted by `kiln update`).
 - v0.4.1 · The grid, as data: `kiln grid`, 105 drafts from the reference repo.
-- v0.4.2 · Any repo scored against the best, in seconds: T-125, T-46, T-157.
-- v0.4.3 · What a script can fix, fixed by script: T-126, T-127, T-128.
-- v0.4.4 · The rest handed to Claude: T-129, T-161, and most of T-130 (the template's gaps
+- v0.4.2 · Any repo scored against the best, in seconds: ion-repo#T-125, ion-repo#T-46, ion-repo#T-157.
+- v0.4.3 · What a script can fix, fixed by script: ion-repo#T-126, ion-repo#T-127, ion-repo#T-128.
+- v0.4.4 · The rest handed to Claude: ion-repo#T-129, ion-repo#T-161, and most of ion-repo#T-130 (the template's gaps
   closed), promoted on Wed 21 Oct.
 - v0.4.5 · Cheaper sessions, CI only at the release: promoted on Fri 23 Oct, with the outside
-  fixes #54 to #56 (thanks @NathanBarrachin). Its planned theme slipped: T-90's rest moved to
-  v0.4.11, T-130's proof to v0.5.0, T-160 to v0.6.23.
+  fixes #54 to #56 (thanks @NathanBarrachin). Its planned theme slipped: ion-repo#T-90's rest moved to
+  v0.4.11, ion-repo#T-130's proof to v0.5.0, ion-repo#T-160 to v0.6.23.
 - v0.4.6 · Every issue closed, adoption at full strength: promoted on Mon 26 Oct (urgent, on
   antoine's request: no repo of the code folder runs candidates since they all follow `beta`),
   `kiln adopt` at the level of `kiln new`, #42 to #44 and #58 to #60.
@@ -58,612 +58,612 @@ Once antoine sets a date, they are dated back from it, and he may move other rel
 ### v0.4.11 · Never lets it rot, kiln first
 kiln-bot runs kiln's workflows with write access in other people's repos: each commit it brings is
 proven first, and kiln's own workflows pass zizmor and carry provenance before anyone runs them.
-kiln-bot on a test repo is a box of the launch gate (T-03).
+kiln-bot on a test repo is a box of the launch gate (ion-repo#T-03).
 Before that theme, this release moves everyone to Ion: the last `kiln-cli`, on antoine's request of
 1 November 2026.
-- T-373 · `kiln-cli` retired, the testers moved to `ion-repo` and `ion-sh` (S)
-- T-403 · Install lines on the Ion names once they are on PyPI (XS)
+- ion-repo#T-373 · `kiln-cli` retired, the testers moved to `ion-repo` and `ion-sh` (S)
+- ion-repo#T-403 · Install lines on the Ion names once they are on PyPI (XS)
 
 ### v0.4.12 · What the last sessions tripped on
 Real sessions of late October hit these, each small: the release, the merge, a long session, a
 first `kiln check`. They cost time now, so they go before the moves.
-- T-381 · A long session fetches the integration branch before building on it (S)
-- T-384 · A session start warns when another session is working on the same repo (S)
-- T-376 · `kiln check` ran no test on emberstudio, and left a `.env` towards a stopped PostgreSQL (S)
-- T-377 · An agent cannot document a new variable: `.env.example` is under the `.env*` deny (S)
-- T-375 · [CLOCK] names freezegun, which [NEW-DEPENDENCY] refuses (S)
-- T-379 · Django template: `django-stubs-ext`, so `admin.ModelAdmin[Model]` runs (S)
-- T-380 · `/kiln:merge` ends by offering `/grog:distill` on the session (S) (blocked: grog's T-01)
+- ion-repo#T-381 · A long session fetches the integration branch before building on it (S)
+- ion-repo#T-384 · A session start warns when another session is working on the same repo (S)
+- ion-repo#T-376 · `kiln check` ran no test on emberstudio, and left a `.env` towards a stopped PostgreSQL (S)
+- ion-repo#T-377 · An agent cannot document a new variable: `.env.example` is under the `.env*` deny (S)
+- ion-repo#T-375 · [CLOCK] names freezegun, which [NEW-DEPENDENCY] refuses (S)
+- ion-repo#T-379 · Django template: `django-stubs-ext`, so `admin.ModelAdmin[Model]` runs (S)
+- ion-repo#T-380 · `/kiln:merge` ends by offering `/grog:distill` on the session (S) (blocked: ion-learn#T-01)
 
 ### v0.4.13 · A tool's piece reaches a repo: the small moves
 How a tool's skill and files get into a generated repo gets decided, then proven on the three
 smallest moves. ⚠ breaking: skill names, each with a forward and its conversion in `kiln update`.
-- T-394 · How a tool's piece reaches a repo kiln generated (M)
-- T-391 · `/nuxt:polish` leaves kiln for glaze (S)
-- T-371 · `/kiln:token`: a paste prompt in kiln's own style (S)
-- T-390 · `/kiln:token` leaves kiln for saggar (S)
-- T-392 · The announcement of `/kiln:release` goes through stylus (S)
+- ion-repo#T-394 · How a tool's piece reaches a repo kiln generated (M)
+- ion-repo#T-391 · `/nuxt:polish` leaves kiln for glaze (S)
+- ion-repo#T-371 · `/kiln:token`: a paste prompt in kiln's own style (S)
+- ion-repo#T-390 · `/kiln:token` leaves kiln for saggar (S)
+- ion-repo#T-392 · The announcement of `/kiln:release` goes through stylus (S)
 
 ### v0.4.14 · The server in hearth
 The biggest move, alone in its release: production deployments depend on it. ⚠ breaking: the
 generated tree, the `deploy` question, `--vps`, the `vps` skills, with their conversion.
-- T-389 · The server leaves kiln for hearth (L) (blocked: hearth's T-07)
+- ion-repo#T-389 · The server leaves kiln for hearth (L) (blocked: ion-host#T-07)
 
 ### v0.4.15 · The grid in cone
-The last move, after kiln runs on slake (slake's T-07, one engine at a time). It closes the map of
+The last move, after kiln runs on slake (ion-render#T-07, one engine at a time). It closes the map of
 the moves.
-- T-393 · The grid leaves kiln for cone (L) (blocked: cone's T-01)
-- T-387 · What belongs to another craft leaves kiln for its tool (L)
+- ion-repo#T-393 · The grid leaves kiln for cone (L) (blocked: ion-score#T-01)
+- ion-repo#T-387 · What belongs to another craft leaves kiln for its tool (L)
 
 ### v0.5.0 · Public launch: the proof and the page
 Milestone decided by antoine (16 October 2026), its content
-defined on 17 October: the version the launch waits for (T-03). The proof (kiln's own repos at 100)
+defined on 17 October: the version the launch waits for (ion-repo#T-03). The proof (kiln's own repos at 100)
 and the page that shows it, the potential line as its demo. No study and no new demo: the recorded
 demos stay (antoine, 30 October 2026).
-- T-130 · Generated repos pass the whole grid: the proof left (S)
-- T-30 · README and English docs for strangers, with the demos already recorded (L)
-- T-177 · kiln's own docs in English only (M)
-- T-33 · One promise everywhere: tagline, About, PyPI, social preview (S)
-- T-119 · GitHub Sponsors and `FUNDING.yml` (XS)
-- T-188 · The potential on every run, the frozen templates scored, an honest comparison (M)
-- T-360 · The plan renumbered: a minor every ten releases or so (S)
-- T-345 · The licence: `MIT OR Apache-2.0`, the template's output free of attribution (S)
-- T-346 · "The kiln standard": the grid's public name (S)
-- T-347 · A mascot and a logo, still and animated (S) — once antoine has chosen the mascot; not a
+- ion-repo#T-130 · Generated repos pass the whole grid: the proof left (S)
+- ion-repo#T-30 · README and English docs for strangers, with the demos already recorded (L)
+- ion-repo#T-177 · kiln's own docs in English only (M)
+- ion-repo#T-33 · One promise everywhere: tagline, About, PyPI, social preview (S)
+- ion-repo#T-119 · GitHub Sponsors and `FUNDING.yml` (XS)
+- ion-repo#T-188 · The potential on every run, the frozen templates scored, an honest comparison (M)
+- ion-repo#T-360 · The plan renumbered: a minor every ten releases or so (S)
+- ion-repo#T-345 · The licence: `MIT OR Apache-2.0`, the template's output free of attribution (S)
+- ion-repo#T-346 · "The kiln standard": the grid's public name (S)
+- ion-repo#T-347 · A mascot and a logo, still and animated (S) — once antoine has chosen the mascot; not a
   box of the gate
 
 ### v0.5.1 · Before the launch: the rehearsal, and the bugs already known
 Fixes only from here to the launch.
-- T-142 · Launch rehearsal: a stranger's first ten minutes, replayed (M)
-- T-167 · The branch guard reads the session's folder, not the command's (S)
-- T-382 · `kiln ci` doesn't replay `python.yml`, and its verdict still says success (S)
-- T-383 · `/kiln:worktree` reports two false failures (XS)
-- T-168 · A repo from `kiln new` + `gh repo create --push` has no CI workflow on GitHub (S)
-- T-179 · A new Django repo's tests start without warnings (S)
-- T-53 · Readable by Claude, measured: the A/B test (M) — run once, before the launch (antoine,
+- ion-repo#T-142 · Launch rehearsal: a stranger's first ten minutes, replayed (M)
+- ion-repo#T-167 · The branch guard reads the session's folder, not the command's (S)
+- ion-repo#T-382 · `kiln ci` doesn't replay `python.yml`, and its verdict still says success (S)
+- ion-repo#T-383 · `/kiln:worktree` reports two false failures (XS)
+- ion-repo#T-168 · A repo from `kiln new` + `gh repo create --push` has no CI workflow on GitHub (S)
+- ion-repo#T-179 · A new Django repo's tests start without warnings (S)
+- ion-repo#T-53 · Readable by Claude, measured: the A/B test (M) — run once, before the launch (antoine,
   26 October 2026); its number joins the launch article only if it is net
-- T-145 · A public benchmark: Claude Code with and without kiln (L) — same condition, after T-53
+- ion-repo#T-145 · A public benchmark: Claude Code with and without kiln (L) — same condition, after ion-repo#T-53
 
 ### v0.5.2 · Before the launch: what the rehearsal found
-The fixes of T-142, nothing else.
+The fixes of ion-repo#T-142, nothing else.
 
 ### v0.5.3 · Launch day
 Promoted two days before the launch by the next candidate: the version strangers install. Gate
 checked that evening at 20:00; nothing is promoted on launch day.
-- T-03 · Public launch: date to set, 16:00 Paris, every forum at once (M) (blocked: antoine)
+- ion-repo#T-03 · Public launch: date to set, 16:00 Paris, every forum at once (M) (blocked: antoine)
 
 ### v0.5.4 · The first week with strangers
 Promoted after the launch. What the launch brings in (issues, reports, the
-first gap reports of T-38) comes first; these give way to it. From here each milestone is
-announced (T-118).
-- T-118 · Each milestone announced on Bluesky, dev.to, X and Mastodon (S)
-- T-153 · `statusline.ci locale`: a French value left in generated repos (S)
-- T-10 · Interface polish (S)
-- T-99 · `kiln doctor --fix` (S)
-- T-98 · Tab completion for zsh and fish (S) (good first issue)
-- T-116 · An accessible CLI: `NO_COLOR`, `--plain` (S) (good first issue)
-- T-189 · A stranger's first run: no install, never a crash, the next step printed (M)
-- T-348 · Opt-in telemetry: which commands run, and how they end (M)
-- T-349 · A daily digest mail: issues, pull requests, discussions, gap reports (S)
-- T-350 · Launch metrics kept in ion-repo-measures (S) — from launch day: GitHub keeps traffic 14 days
-- T-368 · Recorded demos replayed by a test: an output that changed fails until re-recorded (S)
+first gap reports of ion-repo#T-38) comes first; these give way to it. From here each milestone is
+announced (ion-repo#T-118).
+- ion-repo#T-118 · Each milestone announced on Bluesky, dev.to, X and Mastodon (S)
+- ion-repo#T-153 · `statusline.ci locale`: a French value left in generated repos (S)
+- ion-repo#T-10 · Interface polish (S)
+- ion-repo#T-99 · `kiln doctor --fix` (S)
+- ion-repo#T-98 · Tab completion for zsh and fish (S) (good first issue)
+- ion-repo#T-116 · An accessible CLI: `NO_COLOR`, `--plain` (S) (good first issue)
+- ion-repo#T-189 · A stranger's first run: no install, never a crash, the next step printed (M)
+- ion-repo#T-348 · Opt-in telemetry: which commands run, and how they end (M)
+- ion-repo#T-349 · A daily digest mail: issues, pull requests, discussions, gap reports (S)
+- ion-repo#T-350 · Launch metrics kept in ion-repo-measures (S) — from launch day: GitHub keeps traffic 14 days
+- ion-repo#T-368 · Recorded demos replayed by a test: an output that changed fails until re-recorded (S)
 
 ### v0.5.5 · A score you can trust: the false alarms of real repos, gone
 Strangers' repos hold fixtures, vendored and generated code, templates, READMEs in other languages:
 each class of false alarm is handled once, in the engine, and stays fixed by a test; the reference
 repo's score in every note says when the grid moved.
-- T-134 · The reference repo's score in every release note (S)
-- T-190 · False alarms gone: templates, fixtures, vendored and generated code left out (L)
+- ion-repo#T-134 · The reference repo's score in every release note (S)
+- ion-repo#T-190 · False alarms gone: templates, fixtures, vendored and generated code left out (L)
 
 ### v0.5.6 · Show your score
 The image that travels by itself, and anyone's repo scored from its URL: the launch's visitors
 become its messengers.
-- T-154 · Show your score: a badge other repos display (S)
-- T-191 · Any repo scored from its URL, a percentile, a Marketplace action (M)
-- T-352 · The score as a page: Markdown and Mermaid charts (S)
-- T-353 · A leaderboard of the best-scored public repos (S)
+- ion-repo#T-154 · Show your score: a badge other repos display (S)
+- ion-repo#T-191 · Any repo scored from its URL, a percentile, a Marketplace action (M)
+- ion-repo#T-352 · The score as a page: Markdown and Mermaid charts (S)
+- ion-repo#T-353 · A leaderboard of the best-scored public repos (S)
 
 ### v0.5.7 · Claude pays less per session
 Context length is the cost (measured on 22 October): skills that run one kiln command, a ladder
 before writing code, context files kept under a budget, the score shown without Claude asking for
 it.
-- T-163 · Skills call one kiln command, the backlog first (L)
-- T-165 · Write less code, measured: a ladder before writing (M)
-- T-192 · The score in Claude Code's session, context files under a budget (S)
-- T-385 · `kiln session move`: a session filed under its repo afterwards (S)
-- T-386 · Sessions named on their own: at the branch, then at the ticket (S)
+- ion-repo#T-163 · Skills call one kiln command, the backlog first (L)
+- ion-repo#T-165 · Write less code, measured: a ladder before writing (M)
+- ion-repo#T-192 · The score in Claude Code's session, context files under a budget (S)
+- ion-repo#T-385 · `kiln session move`: a session filed under its repo afterwards (S)
+- ion-repo#T-386 · Sessions named on their own: at the branch, then at the ticket (S)
 
 ### v0.5.8 · kiln never makes you wait
 The same features, sooner: what was measured slow on 24 October (the suite every release waits for,
 the session start, `kiln status`, each Bash call, the install), and the score's own start,
 benchmarked in CI.
-- T-180 · The test suite renders each set of answers once, copier stops asking git per file (M)
-- T-181 · The session start does not wait for GitHub (S)
-- T-182 · `kiln status` in half a second (S)
-- T-183 · One hook per Bash call instead of two (S)
-- T-178 · A lighter install: copier's dependencies trimmed, not fetched later (S)
-- T-193 · `kiln score` benchmarked: a startup budget, a lean path, slow candidates stopped (M)
-- T-354 · Fast CI: the generated test suites in parallel (M)
+- ion-repo#T-180 · The test suite renders each set of answers once, copier stops asking git per file (M)
+- ion-repo#T-181 · The session start does not wait for GitHub (S)
+- ion-repo#T-182 · `kiln status` in half a second (S)
+- ion-repo#T-183 · One hook per Bash call instead of two (S)
+- ion-repo#T-178 · A lighter install: copier's dependencies trimmed, not fetched later (S)
+- ion-repo#T-193 · `kiln score` benchmarked: a startup budget, a lean path, slow candidates stopped (M)
+- ion-repo#T-354 · Fast CI: the generated test suites in parallel (M)
 
 ### v0.5.9 · Updates you take without reading them
 Asked at your pace, applied in one step, proven on real upgrade paths, the score before and after
 shown, Claude told what changed in its rules.
-- T-45 · Update reminders at the pace you choose (S)
-- T-107 · After an update, Claude is told what changed in its rules (S)
-- T-54 · Every candidate proven on real upgrade paths (M)
-- T-194 · Updates that announce their rules and show the score before and after (M)
-- T-355 · The repo's update offered outside Claude Code too (S)
-- T-356 · Strangers may follow the candidates; kiln's `develop` gets a channel of its own (S)
+- ion-repo#T-45 · Update reminders at the pace you choose (S)
+- ion-repo#T-107 · After an update, Claude is told what changed in its rules (S)
+- ion-repo#T-54 · Every candidate proven on real upgrade paths (M)
+- ion-repo#T-194 · Updates that announce their rules and show the score before and after (M)
+- ion-repo#T-355 · The repo's update offered outside Claude Code too (S)
+- ion-repo#T-356 · Strangers may follow the candidates; kiln's `develop` gets a channel of its own (S)
 
 ### v0.5.10 · `kiln fix`: more gaps closed, faster, from scripts
 The code's own rules get converters, the checks run once with a bisection on red, the options
 kiln-bot and the skills need; a fresh `kiln new` repo leaves `kiln fix` nothing to do.
-- T-174 · More converters: the code (M)
-- T-175 · `kiln fix` runs the checks once, then bisects on red (M)
-- T-176 · `kiln fix` options: several rules, `--skip`, `--json`, `--pr`, `--dry-run --verify` (M)
-- T-195 · Fixes that close and stay closed: `kiln score --fix`, a fix block per rule (M)
+- ion-repo#T-174 · More converters: the code (M)
+- ion-repo#T-175 · `kiln fix` runs the checks once, then bisects on red (M)
+- ion-repo#T-176 · `kiln fix` options: several rules, `--skip`, `--json`, `--pr`, `--dry-run --verify` (M)
+- ion-repo#T-195 · Fixes that close and stay closed: `kiln score --fix`, a fix block per rule (M)
 
 ### v0.5.11 · Rules that test themselves
 Before the grid grows by hundreds of rules: each rule carries its examples, its rung and its message
 per place, and `kiln grid new`, `test`, `try` and `lint` make a rule in minutes.
-- T-196 · Rules that test themselves: examples in the rule file, `kiln grid new`, `test`, `lint` (L)
+- ion-repo#T-196 · Rules that test themselves: examples in the rule file, `kiln grid new`, `test`, `lint` (L)
 
 ### v0.5.12 · Findings where people look
 With rules that test themselves (v0.5.11) to build on: in the pull request, the CI's summary and
 GitHub's code scanning, written without a flag; repo-local rules in the grid's format.
-- T-91 · Findings where people look: SARIF in pull requests and code scanning (M)
-- T-197 · Findings in the pull request: locations, fingerprints, annotations, summaries (L)
-- T-117 · A VS Code extension (L), reopened on 26 October 2026
+- ion-repo#T-91 · Findings where people look: SARIF in pull requests and code scanning (M)
+- ion-repo#T-197 · Findings in the pull request: locations, fingerprints, annotations, summaries (L)
+- ion-repo#T-117 · A VS Code extension (L), reopened on 26 October 2026
 
 ### v0.5.13 · The grid grows: the exact rules first, three new themes
-T-141 opens here, its other boxes being the theme releases below: the rules a detector decides
+ion-repo#T-141 opens here, its other boxes being the theme releases below: the rules a detector decides
 exactly today, the first rule of `licensing`, `infrastructure` and `data-science`, and the template
 held to every new rule by its own test.
-- T-141 · Grid v2: the themes after the launch (L)
-- T-198 · The exact rules first, and the template held to each new rule (L)
-- T-199 · Three new themes open: licensing, infrastructure, data science (M)
-- T-363 · New tools found the week they come out, assessed before recommended (M)
-- T-374 · Out-of-request work for a project without Celery: [OUT-OF-REQUEST], [OUTBOX], [IDEMPOTENCY] (M)
+- ion-repo#T-141 · Grid v2: the themes after the launch (L)
+- ion-repo#T-198 · The exact rules first, and the template held to each new rule (L)
+- ion-repo#T-199 · Three new themes open: licensing, infrastructure, data science (M)
+- ion-repo#T-363 · New tools found the week they come out, assessed before recommended (M)
+- ion-repo#T-374 · Out-of-request work for a project without Celery: [OUT-OF-REQUEST], [OUTBOX], [IDEMPOTENCY] (M)
 
 ### v0.5.14 · Repos safe to hand to an agent
 What Claude Code users need first (17 October): narrow permissions, pinned MCP servers, no secret an
 agent can read, model calls with limits; plugins and MCP servers scored as a kind of their own.
-- T-200 · Repos safe to hand to an agent: permissions, MCP servers, plugins, hooks (L)
-- T-201 · Apps that call a model: keys server-side, current models, validated outputs (L)
-- T-364 · Credentials under one `.secrets/` folder, caches hidden from the editor (M)
-- T-367 · No bulk staging: `git add -A`, `git add .` and `git commit -a` refused (S)
-- T-370 · Worktree cleanup decided by a script: safe, review, protected, undo (M)
+- ion-repo#T-200 · Repos safe to hand to an agent: permissions, MCP servers, plugins, hooks (L)
+- ion-repo#T-201 · Apps that call a model: keys server-side, current models, validated outputs (L)
+- ion-repo#T-364 · Credentials under one `.secrets/` folder, caches hidden from the editor (M)
+- ion-repo#T-367 · No bulk staging: `git add -A`, `git add .` and `git commit -a` refused (S)
+- ion-repo#T-370 · Worktree cleanup decided by a script: safe, review, protected, undo (M)
 
 ### v0.5.15 · The roadmap Claude reads without exploring
 The input of v0.6.0: each gap a context pack with its recipe and its proof, ordered by points per
 token, cut into batches that fit a session.
-- T-202 · The roadmap as context packs: estimated, ordered, batched, budgeted (L)
+- ion-repo#T-202 · The roadmap as context packs: estimated, ordered, batched, budgeted (L)
 
 ### v0.5.16 · Tests at the lowest token cost
 The other half of v0.6.0: generators that cost no tokens in the template, coverage and surviving
 mutants measured by script, Claude on the holes only.
-- T-135 · Tests at the lowest token cost, measured on one module first (M)
-- T-136 · Test generators that cost no tokens, in the template (M)
-- T-203 · Tests that cost no tokens: properties, mutants, API fuzzing, journeys as rules (M)
+- ion-repo#T-135 · Tests at the lowest token cost, measured on one module first (M)
+- ion-repo#T-136 · Test generators that cost no tokens, in the template (M)
+- ion-repo#T-203 · Tests that cost no tokens: properties, mutants, API fuzzing, journeys as rules (M)
 
 ### v0.5.17 · Strangers' repos run as they are
 `kiln dev` brings up any adopted repo without a question, on podman or Docker, whichever the
 machine has.
-- T-351 · `kiln dev` runs any repo without being told (L)
-- T-37 · Docker or podman: the engine the machine has (M), reopened on 26 October 2026
-- T-369 · Worktrees ready however they are made: a `WorktreeCreate` hook, a port per worktree (M)
+- ion-repo#T-351 · `kiln dev` runs any repo without being told (L)
+- ion-repo#T-37 · Docker or podman: the engine the machine has (M), reopened on 26 October 2026
+- ion-repo#T-369 · Worktrees ready however they are made: a `WorktreeCreate` hook, a port per worktree (M)
 
 ### v0.6.0 · Claude closes the gaps alone
 Milestone decided by antoine (16 October 2026: Claude does the work in the repo), its content
 re-scoped to the vision: the roadmap worked unattended within a budget, each pull request kept to
 its places, the cost of a judgment gap measured, a fix made twice turned into a converter.
-- T-74 · The roadmap worked unattended: one gap, one pull request (L)
-- T-137 · Claude invents, the script repeats: a fix made twice becomes a converter (M)
-- T-204 · The unattended run kept to its places, its verdicts fed back (S)
-- T-366 · The session's place kept before compaction, a pause offered near the usage limit (M)
+- ion-repo#T-74 · The roadmap worked unattended: one gap, one pull request (L)
+- ion-repo#T-137 · Claude invents, the script repeats: a fix made twice becomes a converter (M)
+- ion-repo#T-204 · The unattended run kept to its places, its verdicts fed back (S)
+- ion-repo#T-366 · The session's place kept before compaction, a pause offered near the usage limit (M)
 
 ### v0.6.1 · Less code to carry
 The vision's fourth pillar, measured before anything is built: the compressor's dry run, removals
 proven by types, tests and behaviour, the slimming rules promoted once precise.
-- T-138 · Less code to carry, measured first: the compressor's dry run (M)
-- T-139 · The compressor: removals proven by types, tests and behaviour (L)
-- T-205 · The slimming rules: dead code, unused dependencies, duplication, a dependency budget (M)
-- T-359 · kiln's own engines weighed against existing tools: keep, wrap or replace (M)
+- ion-repo#T-138 · Less code to carry, measured first: the compressor's dry run (M)
+- ion-repo#T-139 · The compressor: removals proven by types, tests and behaviour (L)
+- ion-repo#T-205 · The slimming rules: dead code, unused dependencies, duplication, a dependency budget (M)
+- ion-repo#T-359 · kiln's own engines weighed against existing tools: keep, wrap or replace (M)
 
 ### v0.6.2 · Claude in the team's flow
 A red CI made green on the machine, the roadmap as issues and good first issues, a summary a human
 reads in their language, a file other agents can read too.
-- T-76 · `kiln ci --fix`: a red CI made green by Claude Code, locally (M)
-- T-206 · The roadmap where the team works: issues, good first issues, other agents (M)
-- T-357 · Every agent, or none: the instructions laid for the agent the person uses (L)
-- T-358 · The generated flow follows the evidence: trunk-based, pull requests for teams (L)
+- ion-repo#T-76 · `kiln ci --fix`: a red CI made green by Claude Code, locally (M)
+- ion-repo#T-206 · The roadmap where the team works: issues, good first issues, other agents (M)
+- ion-repo#T-357 · Every agent, or none: the instructions laid for the agent the person uses (L)
+- ion-repo#T-358 · The generated flow follows the evidence: trunk-based, pull requests for teams (L)
 
 ### v0.6.3 · The grid kept current: its sources watched
 Every week the sources are read, the data bundle refreshed, the rules whose sources moved flagged;
 each release note carries the grid's diff.
-- T-140 · The grid kept current: its sources watched every week (M)
-- T-207 · The grid's data dated at each release: end of life, grid diff, consistency, proposals (L)
+- ion-repo#T-140 · The grid kept current: its sources watched every week (M)
+- ion-repo#T-207 · The grid's data dated at each release: end of life, grid diff, consistency, proposals (L)
 
 ### v0.6.4 · `kiln new` fits the person
 The quick door and the tailored one share the recap and the machine profile: built together.
 ⚠ breaking: the size question becomes three questions and `--all-questions` gives way to the
 tailored mode, both converted by `kiln update`.
-- T-169 · `kiln new` asks about your situation, not about tools (L)
-- T-184 · `kiln new` tailored: it starts from what you know, then what the project needs (L)
+- ion-repo#T-169 · `kiln new` asks about your situation, not about tools (L)
+- ion-repo#T-184 · `kiln new` tailored: it starts from what you know, then what the project needs (L)
 
 ### v0.6.5 · For more people
 Tutorials that keep bringing visitors, the roadmap as a GitHub Project, a page per rule where
 searches land, the study every quarter, a folder or a zip scored as well as a repo.
-- T-57 · A tutorial series: bring a Django repo up to date in an afternoon (M)
-- T-58 · A public roadmap on GitHub Projects (M)
-- T-208 · A page per rule, and the study every quarter (M)
+- ion-repo#T-57 · A tutorial series: bring a Django repo up to date in an afternoon (M)
+- ion-repo#T-58 · A public roadmap on GitHub Projects (M)
+- ion-repo#T-208 · A page per rule, and the study every quarter (M)
 
 ### v0.6.6 · One answer to "what is this repo"
 Score, fix, adopt, dev and check read one model: components with their roles, so a Django rule never
 reads `frontend/` and one helper script doesn't make a repo Python.
-- T-209 · One model of the repo: components, roles, one answer for every command (L)
+- ion-repo#T-209 · One model of the repo: components, roles, one answer for every command (L)
 
 ### v0.6.7 · Rules per component: versions, tools, evidence
 Each fact says where it comes from and how sure it is; rules can say `django >= 4.2` or "your
 formatter"; a component is scored alone.
-- T-210 · Facts per component: versions, runtimes, tools, evidence, `--facts` (L)
+- ion-repo#T-210 · Facts per component: versions, runtimes, tools, evidence, `--facts` (L)
 
 ### v0.6.8 · Rules that say what they mean
 Applicability as an expression, several ways to meet one practice, conditions across files, evidence
 for passes, an honest `unknown`.
-- T-211 · Rules that say what they mean: applicability as an expression, `any_of`, `unknown` (L)
+- ion-repo#T-211 · Rules that say what they mean: applicability as an expression, `any_of`, `unknown` (L)
 
 ### v0.6.9 · Code, not text: the syntax engine
 Detectors match syntax trees (ast-grep); Django settings, `nuxt.config`, Dockerfiles and tsconfig
 chains are read as they resolve; the false negatives found on 24 October close.
-- T-212 · The syntax engine: ast-grep, one parse per file, settings and configs resolved (L)
+- ion-repo#T-212 · The syntax engine: ast-grep, one parse per file, settings and configs resolved (L)
 
 ### v0.6.10 · Mature tools as detectors
 ruff, shellcheck and their kin mapped onto grid rules, pinned and cached, never downloaded without
 asking; the faster checkers measured against the ones they would replace.
-- T-144 · Checks as fast as they are precise: oxlint, TypeScript 7, ty or pyrefly, measured (M)
-- T-213 · Mature tools as detectors: ruff and shellcheck, pinned and deduplicated (L)
+- ion-repo#T-144 · Checks as fast as they are precise: oxlint, TypeScript 7, ty or pyrefly, measured (M)
+- ion-repo#T-213 · Mature tools as detectors: ruff and shellcheck, pinned and deduplicated (L)
 
 ### v0.6.11 · Instant the second time
 One listing from git, one matcher for every rule, a cache keyed by blob SHA: a warm run recomputes
 nothing unchanged, in under 50 ms.
-- T-214 · Instant the second time: one listing, one index, a cache by blob SHA (L)
+- ion-repo#T-214 · Instant the second time: one listing, one index, a cache by blob SHA (L)
 
 ### v0.6.12 · Code standards a linter proves
 With ruff mapped (v0.6.10), the Python standards it already decides become rules at once, its safe
 fixes their converters; shell scripts and encodings come with them.
-- T-215 · Python standards ruff already decides: modern syntax, formatting, linting (L)
-- T-216 · Error handling, shell scripts and encodings, decided by tools (L)
+- ion-repo#T-215 · Python standards ruff already decides: modern syntax, formatting, linting (L)
+- ion-repo#T-216 · Error handling, shell scripts and encodings, decided by tools (L)
 
 ### v0.6.13 · Secrets and the settings that leak
 The secrets themselves, checksum-verified, and the production settings read as they resolve
 (v0.6.9): cookies, headers, HTTPS, debug flags, keys in the front.
-- T-217 · Secrets in the tree cap the score; session cookies, headers, CSRF (L)
-- T-218 · Settings that leak: CORS, passwords, HTTPS, front secrets, debug modes (L)
+- ion-repo#T-217 · Secrets in the tree cap the score; session cookies, headers, CSRF (L)
+- ion-repo#T-218 · Settings that leak: CORS, passwords, HTTPS, front secrets, debug modes (L)
 
 ### v0.6.14 · Precision measured on a thousand repos
 A labelled corpus re-scored at every candidate, precision and recall per rule as a release gate, new
 detectors in shadow first; the radar moves on that evidence only.
-- T-219 · The corpus: precision and recall per rule at every candidate (L)
-- T-220 · A quality sheet in every release note (S)
+- ion-repo#T-219 · The corpus: precision and recall per rule at every candidate (L)
+- ion-repo#T-220 · A quality sheet in every release note (S)
 
 ### v0.6.15 · A number that can't lie
 Severity orders the gaps, critical findings cap the score at 49 once they are 99 % precise (decision
 2), a maybe is never punished, an empty file earns nothing, a report can be verified.
-- T-221 · A number that can't lie: severity, the critical cap, confidence, anti-gaming (L)
+- ion-repo#T-221 · A number that can't lie: severity, the critical cap, confidence, anti-gaming (L)
 
 ### v0.6.16 · Locks and installs you can trust
 Every lockfile parsed, one practice checked in every ecosystem, every manifest folder covered by the
 update bot, installs from the lock in CI and in images.
-- T-222 · Locks and installs you can trust: every lockfile, frozen installs, pinned runtimes (L)
+- ion-repo#T-222 · Locks and installs you can trust: every lockfile, frozen installs, pinned runtimes (L)
 
 ### v0.6.17 · Nothing runs that you didn't pin
 Install scripts off, one index, tools and hooks pinned, downloads checked, no token in a committed
 `.npmrc`, no binary in the tree, an SBOM per release.
-- T-223 · Nothing runs unpinned: install scripts, indexes, git dependencies, tools (L)
-- T-224 · Nothing downloaded blind: curl pipes, checksums, binaries, tokens in config (M)
+- ion-repo#T-223 · Nothing runs unpinned: install scripts, indexes, git dependencies, tools (L)
+- ion-repo#T-224 · Nothing downloaded blind: curl pipes, checksums, binaries, tokens in config (M)
 
 ### v0.6.18 · What is on its way out, and when it breaks
 The calendar of what ends (runtimes, frameworks, runners, model IDs), the `hold` rules that detect
 what is leaving, the converters that move it.
-- T-225 · What is on its way out: support calendars, hold rules and their converters (L)
+- ion-repo#T-225 · What is on its way out: support calendars, hold rules and their converters (L)
 
 ### v0.6.19 · Containers built right
 Dockerfiles read stage by stage (v0.6.9): the final user, multi-stage builds, secrets at build time,
 exec form, images by tag and digest everywhere.
-- T-226 · Dockerfiles built right: digests, base images, non-root, stages (L)
-- T-227 · Dockerfiles that behave: build secrets, signals, pipefail, one process (L)
+- ion-repo#T-226 · Dockerfiles built right: digests, base images, non-root, stages (L)
+- ion-repo#T-227 · Dockerfiles that behave: build secrets, signals, pipefail, one process (L)
 
 ### v0.6.20 · Compose files for a small server
 What a VPS running compose needs: no engine socket, databases on localhost, logs rotated, limits and
 restarts, secrets out of the file, images scanned and signed.
-- T-228 · Compose for a small server: hardening, no socket, logs and limits (L)
-- T-229 · Compose that survives: restarts, volumes, secrets, scanned and signed images (M)
+- ion-repo#T-228 · Compose for a small server: hardening, no socket, logs and limits (L)
+- ion-repo#T-229 · Compose that survives: restarts, volumes, secrets, scanned and signed images (M)
 
 ### v0.6.21 · One CI model, any workflow
 Jobs, steps, triggers and permissions extracted once; `make test` resolved into what it runs; zizmor
 and actionlint as detectors; the scored CI rules read from that model.
-- T-230 · One CI model: every step resolved, injection and privileges on any CI (L)
-- T-231 · The scored CI rules read from the CI model (M)
+- ion-repo#T-230 · One CI model: every step resolved, injection and privileges on any CI (L)
+- ion-repo#T-231 · The scored CI rules read from the CI model (M)
 
 ### v0.6.22 · Fast and safe pipelines
 Concurrency, caches and retention, supported runners, secrets through `env:`, reusable workflows
 pinned, provenance on what ships, the same CI on a laptop.
-- T-232 · Fast pipelines: concurrency, caches, runners, actionlint, zizmor (L)
-- T-233 · Safe pipelines: secrets through `env`, pinned reusable workflows, provenance (L)
+- ion-repo#T-232 · Fast pipelines: concurrency, caches, runners, actionlint, zizmor (L)
+- ion-repo#T-233 · Safe pipelines: secrets through `env`, pinned reusable workflows, provenance (L)
 
 ### v0.6.23 · Tests that prove something
 Tests per component that assert, run shuffled and in parallel, without network or sleep, coverage
 that only rises; a front with no backend gets its smoke test.
-- T-160 · A front with no backend ships a smoke test (M)
-- T-234 · Tests counted right: presence, clock, network, coverage, strict pytest (L)
-- T-235 · Tests that prove something: no sleeps, random order, assertions, names (L)
+- ion-repo#T-160 · A front with no backend ships a smoke test (M)
+- ion-repo#T-234 · Tests counted right: presence, clock, network, coverage, strict pytest (L)
+- ion-repo#T-235 · Tests that prove something: no sleeps, random order, assertions, names (L)
 
 ### v0.6.24 · Progress, not perfection: no new finding
 The score of a change, a comparison with any ref, gates on new findings only, scores kept in git
 notes and drawn as a curve.
-- T-236 · No new finding: history, the score of a change, `--compare`, PR comments (L)
+- ion-repo#T-236 · No new finding: history, the score of a change, `--compare`, PR comments (L)
 
 ### v0.6.25 · One funnel for every repo, new or old
 `kiln adopt` as score, lay, fix, roadmap, its result shown before it runs; baselines for the gradual
 path; the template a repo started from recognised; `kiln new` as the same funnel run on an empty
 folder.
-- T-237 · One funnel for every repo: baselines, `kiln adopt` scored before and after (M)
+- ion-repo#T-237 · One funnel for every repo: baselines, `kiln adopt` scored before and after (M)
 
 ### v0.6.26 · Only what changed, right after each edit
 Tests and score rechecked on the changed files only, on save and in Claude Code's edit hook, in
 milliseconds.
-- T-77 · Tests in seconds after each edit: only those the change touches (M)
-- T-238 · Only what changed: `--changed`, `--watch`, the edit hook (M)
-- T-365 · Claude can't call a task done with new findings: a Stop hook (M)
+- ion-repo#T-77 · Tests in seconds after each edit: only those the change touches (M)
+- ion-repo#T-238 · Only what changed: `--changed`, `--watch`, the edit hook (M)
+- ion-repo#T-365 · Claude can't call a task done with new findings: a Stop hook (M)
 
 ### v0.6.27 · The score explained like a senior engineer would
 The denominator, the weakest themes, the effort to 100 in session hours, a verdict in plain words,
 `--explain` with this repo's numbers.
-- T-239 · The score explained like a senior engineer would (L)
+- ion-repo#T-239 · The score explained like a senior engineer would (L)
 
 ### v0.6.28 · A report you can share
 Every format a CI or a tool reads, a one-file HTML report, links to each rule's page and to the line
 on the forge, nothing personal left in it.
-- T-240 · A report you can share: every format, HTML, `--quiet`, `--porcelain` (L)
+- ion-repo#T-240 · A report you can share: every format, HTML, `--quiet`, `--porcelain` (L)
 
 ### v0.6.29 · Code that can be attacked
 Injection, unsafe deserialization, weak crypto, open redirects, SSRF and the rest, with taint
 followed inside a function.
-- T-241 · Code that can be attacked: taint, permissions, uploads, injections, crypto (L)
-- T-242 · Code that can be attacked: redirects, SSRF, paths, escaping, JWT, SAST (L)
+- ion-repo#T-241 · Code that can be attacked: taint, permissions, uploads, injections, crypto (L)
+- ion-repo#T-242 · Code that can be attacked: redirects, SSRF, paths, escaping, JWT, SAST (L)
 
 ### v0.6.30 · Sizes and names, measured in any language
 A metrics pass for every language feeds the size and complexity ratchets; names, cases and
 misspellings judged from symbol tables.
-- T-243 · A metrics pass and misspellings, in any language (S)
-- T-244 · Sizes and names measured: files, functions, complexity, naming (L)
+- ion-repo#T-243 · A metrics pass and misspellings, in any language (S)
+- ion-repo#T-244 · Sizes and names measured: files, functions, complexity, naming (L)
 
 ### v0.6.31 · Code standards from the syntax tree
 What a regex can't tell: modern Vue, explicit imports, floating promises, debug prints, TODOs
 without a ticket, barrel files, with oxlint or Biome where they decide.
-- T-245 · oxlint or Biome mapped, barrel files counted (S)
-- T-246 · TypeScript and Vue standards from the syntax tree (L)
+- ion-repo#T-245 · oxlint or Biome mapped, barrel files counted (S)
+- ion-repo#T-246 · TypeScript and Vue standards from the syntax tree (L)
 
 ### v0.6.32 · API, contracts and typing
 The schema committed and checked for breaking changes, front types generated from it, typing read
 through its inheritance and counted as ratchets.
-- T-247 · API contracts: the schema committed and frozen, typed routes, pagination (L)
-- T-248 · Strict typing everywhere: libraries, annotations, TypeScript options, problem details (L)
-- T-249 · Clients and schemas generated, not copied: OpenAPI lint, GraphQL, Protobuf, settings (L)
+- ion-repo#T-247 · API contracts: the schema committed and frozen, typed routes, pagination (L)
+- ion-repo#T-248 · Strict typing everywhere: libraries, annotations, TypeScript options, problem details (L)
+- ion-repo#T-249 · Clients and schemas generated, not copied: OpenAPI lint, GraphQL, Protobuf, settings (L)
 
 ### v0.6.33 · Architecture you can see
 An import graph per language: cycles, layers, sealed domains, god modules, files that always change
 together.
-- T-250 · The import graph: cycles, feature folders, change coupling (M)
-- T-251 · Architecture you can see: thin views, a service layer, sealed domains (L)
-- T-252 · Boundaries between front, back and services: stores, async, one database each (L)
+- ion-repo#T-250 · The import graph: cycles, feature folders, change coupling (M)
+- ion-repo#T-251 · Architecture you can see: thin views, a service layer, sealed domains (L)
+- ion-repo#T-252 · Boundaries between front, back and services: stores, async, one database each (L)
 
 ### v0.6.34 · Data and migrations
 Migrations reversible, safe on a live table, linted in CI, run on the production engine; dumps out
 of git; invariants held by the database.
-- T-253 · Migrations safe and reversible, linted in CI (L)
-- T-254 · Data modelled right: constraints, public IDs, connections, seeds, the real engine in tests
+- ion-repo#T-253 · Migrations safe and reversible, linted in CI (L)
+- ion-repo#T-254 · Data modelled right: constraints, public IDs, connections, seeds, the real engine in tests
   (L)
 
 ### v0.6.35 · Background tasks and concurrency
 Tasks that retry, time out, take IDs and run outside the request; increments and locks that survive
 two requests at once; Celery's settings made exact.
-- T-255 · Background tasks that survive: retries, outbox, idempotence, limits (L)
-- T-256 · Schedulers and workers watched: one scheduler, health, visibility, dead letters (M)
-- T-257 · Concurrency: atomic updates, locks, timeouts, async servers, Celery made exact (L)
+- ion-repo#T-255 · Background tasks that survive: retries, outbox, idempotence, limits (L)
+- ion-repo#T-256 · Schedulers and workers watched: one scheduler, health, visibility, dead letters (M)
+- ion-repo#T-257 · Concurrency: atomic updates, locks, timeouts, async servers, Celery made exact (L)
 
 ### v0.6.36 · Fast back ends: caches and queries
 Real cache backends with timeouts and invalidation, N+1 queries and missing indexes found, latency
 budgets kept in the repo.
-- T-258 · Caches that invalidate and stay private (L)
-- T-259 · Fast back ends: N+1 queries, query counts, indexes, benchmarks (L)
+- ion-repo#T-258 · Caches that invalidate and stay private (L)
+- ion-repo#T-259 · Fast back ends: N+1 queries, query counts, indexes, benchmarks (L)
 
 ### v0.6.37 · Errors and logs you can follow
 Structured logs to stdout, no secret in them and no stack trace shown, errors tracked with their
 release, a request ID and traces from the front to the back.
-- T-260 · Errors and logs you can follow (L)
-- T-261 · Requests traced: request IDs, OpenTelemetry, front errors, an audit trail (M)
+- ion-repo#T-260 · Errors and logs you can follow (L)
+- ion-repo#T-261 · Requests traced: request IDs, OpenTelemetry, front errors, an audit trail (M)
 
 ### v0.6.38 · An accessible front, in every language
 Labels, alt texts, focus, contrast and motion checked in templates and by axe; the European
 Accessibility Act's profile; every locale complete.
-- T-262 · An accessible front: names, alt text, focus, motion, ARIA (L)
-- T-263 · Accessible and translated: headings, contrast, the EU Accessibility Act, i18n keys (L)
+- ion-repo#T-262 · An accessible front: names, alt text, focus, motion, ARIA (L)
+- ion-repo#T-263 · Accessible and translated: headings, contrast, the EU Accessibility Act, i18n keys (L)
 
 ### v0.6.39 · A fast, SSR-safe front
 Hydration and SSR safety, keys and loading states handled, bundle and image budgets, scripts and
 fonts that don't block, SEO basics.
-- T-264 · A fast front: Core Web Vitals, budgets, images, fonts, lazy loading (L)
-- T-265 · A front that renders safely: UI states, SSR and hydration, SEO, error pages (L)
+- ion-repo#T-264 · A fast front: Core Web Vitals, budgets, images, fonts, lazy loading (L)
+- ion-repo#T-265 · A front that renders safely: UI states, SSR and hydration, SEO, error pages (L)
 
 ### v0.6.40 · Deploys you can undo
 Services and hosts read from every deploy config; health probes that exist, config that fails fast,
 OIDC instead of keys, rollbacks, certificates renewed.
-- T-266 · Where it deploys: services and deploy configs read, compression, static files (M)
-- T-267 · Deploys you can undo: health probes, config that fails fast, OIDC, graceful shutdown (L)
+- ion-repo#T-266 · Where it deploys: services and deploy configs read, compression, static files (M)
+- ion-repo#T-267 · Deploys you can undo: health probes, config that fails fast, OIDC, graceful shutdown (L)
 
 ### v0.6.41 · Production watched, backups restored
 A runbook whose commands exist, backups with a restore job, uptime and cron checks, alerts on
 symptoms, metrics kept private.
-- T-268 · Production that holds: backups restored, runbooks, uptime, recovery targets (L)
-- T-269 · Production watched: SLOs, alerts on symptoms, private metrics, dashboards (L)
+- ion-repo#T-268 · Production that holds: backups restored, runbooks, uptime, recovery targets (L)
+- ion-repo#T-269 · Production watched: SLOs, alerts on symptoms, private metrics, dashboards (L)
 
 ### v0.6.42 · A tree anyone can find their way in
 No build output or artefact committed, a complete `.gitignore`, one config per tool, paths every OS
 accepts, small folders.
-- T-270 · A tidy tree: the root, the layout, one config per tool, small folders (L)
-- T-271 · A tree that checks out anywhere: marked files, no build output, line endings, paths (L)
+- ion-repo#T-270 · A tidy tree: the root, the layout, one config per tool, small folders (L)
+- ion-repo#T-271 · A tree that checks out anywhere: marked files, no build output, line endings, paths (L)
 
 ### v0.6.43 · Docs that tell the truth
 Every path, command and link that the README and CLAUDE.md name exists; the map lists every folder;
 docs that name what is gone are found.
-- T-272 · The map tells the truth: links, the repo map, entry points, decisions (L)
-- T-273 · Docs that tell the truth: README, commands, links, docstrings, context files (L)
+- ion-repo#T-272 · The map tells the truth: links, the repo map, entry points, decisions (L)
+- ion-repo#T-273 · Docs that tell the truth: README, commands, links, docstrings, context files (L)
 
 ### v0.6.44 · Set up in one command
 One bootstrap command, tasks named in one place, fast commit hooks, tool versions pinned as in CI,
 editor settings shared.
-- T-274 · Set up in one command: pre-commit, editor files, a task runner, tool versions (L)
+- ion-repo#T-274 · Set up in one command: pre-commit, editor files, a task runner, tool versions (L)
 
 ### v0.6.45 · Personal data, the GDPR way
 Personal fields found in the models and kept out of logs, URLs, fixtures and model calls; the
 inventory and the subprocessors written by script; retention and deletion.
-- T-275 · Sensitive data found by itself, encrypted, isolated per tenant (M)
-- T-276 · Personal data the GDPR way (L)
+- ion-repo#T-275 · Sensitive data found by itself, encrypted, isolated per tenant (M)
+- ion-repo#T-276 · Personal data the GDPR way (L)
 
 ### v0.6.46 · Money, time, accounts and mail
 Amounts in the smallest unit with their currency, dates in UTC, webhooks verified, cards never on
 the server, passkeys and rate limits, bulk mail that can be unsubscribed from.
-- T-277 · Money, payments and webhooks done right, accounts protected (L)
-- T-278 · People's data as given: phones, names, dates, invoices, mail that arrives (L)
+- ion-repo#T-277 · Money, payments and webhooks done right, accounts protected (L)
+- ion-repo#T-278 · People's data as given: phones, names, dates, invoices, mail that arrives (L)
 
 ### v0.6.47 · History: what every clone carries
 Secrets once committed, heavy blobs, locks drifting from their manifests, each blob read once and
 cached; hotspots open the roadmap.
-- T-279 · History: secrets ever committed, heavy blobs, hotspots (L)
+- ion-repo#T-279 · History: secrets ever committed, heavy blobs, hotspots (L)
 
 ### v0.6.48 · History: how the repo is worked
 Commit sizes and messages, merges and branch names, releases and their notes, fixes that come with a
 test, all read from history.
-- T-280 · History: commit habits, signatures, release rhythm, regression tests (L)
-- T-281 · Git and versions rules from history: commits, branches, releases, tags (L)
+- ion-repo#T-280 · History: commit habits, signatures, release rhythm, regression tests (L)
+- ion-repo#T-281 · Git and versions rules from history: commits, branches, releases, tags (L)
 
 ### v0.6.49 · The forge's settings, read
 Through the `gh` already logged in: token permissions, secrets' ages, environments, required checks,
 alerts left open, update pull requests ignored.
-- T-282 · The forge's settings read: tokens, secrets, alerts, environments, required checks (L)
-- T-283 · Repo hygiene on the forge: submodules, CODEOWNERS, force pushes, stale branches (M)
+- ion-repo#T-282 · The forge's settings read: tokens, secrets, alerts, environments, required checks (L)
+- ion-repo#T-283 · Repo hygiene on the forge: submodules, CODEOWNERS, force pushes, stale branches (M)
 
 ### v0.6.50 · What you depend on, checked at the registry
 Real vulnerabilities in the locked versions, malicious and abandoned packages, typosquats, the
 provenance of what is published, dependencies' licences, a health card for a new one.
-- T-284 · What you depend on, checked at the registry: vulnerabilities, malware, licences (L)
+- ion-repo#T-284 · What you depend on, checked at the registry: vulnerabilities, malware, licences (L)
 
 ### v0.6.51 · `--deep`: the repo's own checks, in a sandbox
 Opt-in, in a throwaway copy with the network off: the install from the lock, the tests (flaky,
 order, network, clock), Django's deploy check, type checkers at their strictest, a clean clone.
-- T-285 · `--deep`: the repo's own checks in a sandbox (L)
+- ion-repo#T-285 · `--deep`: the repo's own checks in a sandbox (L)
 
 ### v0.6.52 · `--deep`: the app built and probed
 Images built and scanned, migrations applied and reversed, the API fuzzed, the front rendered for
 axe and Lighthouse, the app served and probed, a deployed URL on request.
-- T-286 · `--deep`: the app built, served and probed (L)
+- ion-repo#T-286 · `--deep`: the app built, served and probed (L)
 
 ### v0.6.53 · What the grid doesn't know, shown
 Every tracked file claimed by a fact or listed, fingerprints as data from Linguist and SchemaStore,
 the gap reports carrying them, corrections counted as signals.
-- T-287 · What the grid doesn't know, shown: every file claimed (L)
+- ion-repo#T-287 · What the grid doesn't know, shown: every file claimed (L)
 
 ### v0.6.54 · Never a crash, whatever the repo
 Static by default, hardened parsers, linear-time regexes, fuzzed trees, symlinks, untracked and
 ignored files handled; zero crashes on the corpus at each candidate.
-- T-288 · Never a crash, whatever the repo (L)
+- ion-repo#T-288 · Never a crash, whatever the repo (L)
 
 ### v0.6.55 · Python beyond Django
 FastAPI, Flask, SQLAlchemy and every packaging tool read; a new stack's rules count only once ten
 corpus repos of it were checked.
-- T-289 · Python beyond Django: every packaging tool, FastAPI and Flask (L)
+- ion-repo#T-289 · Python beyond Django: every packaging tool, FastAPI and Flask (L)
 
 ### v0.6.56 · JavaScript beyond Nuxt: the fronts
 Every JS framework and package manager read; Next.js, React, React Router, Angular, Vue without
 Nuxt, Svelte and Astro each with its pack, Electron and Tauri locked down.
-- T-290 · JavaScript beyond Nuxt: every framework and package manager (M)
-- T-291 · Framework packs: Next.js, React, Angular, Svelte, Astro (L)
+- ion-repo#T-290 · JavaScript beyond Nuxt: every framework and package manager (M)
+- ion-repo#T-291 · Framework packs: Next.js, React, Angular, Svelte, Astro (L)
 
 ### v0.6.57 · JavaScript beyond Nuxt: the Node back ends
 Express, Fastify, NestJS and Hono, the most used back ends after Django's peers, each with its own
 release's worth of rules rather than a share of the fronts' (framework coverage review of 26 October
 2026).
-- T-336 · Node back ends: Express, Fastify, NestJS, Hono (L)
+- ion-repo#T-336 · Node back ends: Express, Fastify, NestJS, Hono (L)
 
 ### v0.6.58 · Data science repos
 The first outside issues came from data repos: notebooks without outputs or secrets, data out of
 git, seeds and environments locked, models loaded safely.
-- T-292 · Data science repos: notebooks, data out of git, seeds, locked environments (L)
-- T-293 · Data science repos: pipelines, model loading, experiments, Streamlit (L)
+- ion-repo#T-292 · Data science repos: notebooks, data out of git, seeds, locked environments (L)
+- ion-repo#T-293 · Data science repos: pipelines, model loading, experiments, Streamlit (L)
 
 ### v0.6.59 · Open source done right
 A licence that says the same everywhere, notices kept, contributing, conduct and security policies,
 issue forms, sponsors, the OpenSSF badge.
-- T-294 · Licences right: files, manifests, notices, assets, community health (L)
-- T-295 · Open source done right: contributing, conduct, security policy, issue forms (L)
+- ion-repo#T-294 · Licences right: files, manifests, notices, assets, community health (L)
+- ion-repo#T-295 · Open source done right: contributing, conduct, security policy, issue forms (L)
 
 ### v0.6.60 · Libraries and CLIs that publish cleanly
 Trusted publishing with attestations, complete metadata, one version source, typed exports, packages
 that hold what they should and nothing else.
-- T-296 · Packages published cleanly: trusted publishing, attestations, contents (L)
-- T-297 · Packages that behave: typed exports, engines, one version source, CLIs (M)
+- ion-repo#T-296 · Packages published cleanly: trusted publishing, attestations, contents (L)
+- ion-repo#T-297 · Packages that behave: typed exports, engines, one version source, CLIs (M)
 
 ### v0.6.61 · Infrastructure as code
 Terraform and OpenTofu, Kubernetes and Helm, Ansible: state out of git, versions pinned, buckets
 private, pods restricted.
-- T-298 · Infrastructure as code: Terraform locked, scanned, private, encrypted (L)
-- T-299 · Kubernetes, Helm and Ansible by the book (L)
+- ion-repo#T-298 · Infrastructure as code: Terraform locked, scanned, private, encrypted (L)
+- ion-repo#T-299 · Kubernetes, Helm and Ansible by the book (L)
 
 ### v0.6.62 · Every kind of repo
 A library, an awesome list, a template, a fork or an archive each held to what it needs; the kind
 and what kiln assumed on the report's first lines, with their evidence.
-- T-300 · Every kind of repo, each with its rules (L)
+- ion-repo#T-300 · Every kind of repo, each with its rules (L)
 
 ### v0.6.63 · GitLab too
 Universities and companies often run GitLab: its CI read like GitHub's, its settings through `glab`,
 its merge request widget fed.
-- T-301 · GitLab too: its CI, its forge, its reports (M)
+- ion-repo#T-301 · GitLab too: its CI, its forge, its reports (M)
 
 ### v0.6.64 · Profiles read from the repo, never asked
 Solo, association, company or university, inferred from signals; criticality raises the bar by
 itself; moving up applies the new rules as ratchets.
-- T-39 · Profiles of structure: the rules that fit an association, a company, a university (L)
-- T-302 · Profiles read from the repo: stages, criticality, team signals (M)
+- ion-repo#T-39 · Profiles of structure: the rules that fit an association, a company, a university (L)
+- ion-repo#T-302 · Profiles read from the repo: stages, criticality, team signals (M)
 
 ### v0.6.65 · Coursework and research
 A course's repos scored on what a student can act on, a teacher's guide, research artefacts that can
 be reproduced and cited.
-- T-303 · Coursework and research repos (M)
+- ion-repo#T-303 · Coursework and research repos (M)
 
 ### v0.7.0 · A whole organisation's repos
 Milestone decided by antoine (16 October 2026: kiln for teams and organisations), re-scoped to the
 vision's targets: a university, an association network, a 50-person company; large companies come
 later. Every repo scored remotely without cloning, gaps ranked by how many repos share them.
-- T-87 · Fleet view: every repo of an organisation scored, without cloning (M)
-- T-304 · A whole organisation's repos: CSV, local scores, organisation packs (M)
+- ion-repo#T-87 · Fleet view: every repo of an organisation scored, without cloning (M)
+- ion-repo#T-304 · A whole organisation's repos: CSV, local scores, organisation packs (M)
 
 ### v0.7.1 · Compliance views
 What a company has to show: Scorecard, ASVS, SLSA, CIS, WCAG, the Cyber Resilience Act and the
 Accessibility Act, each control covered or honestly listed as not checkable.
-- T-305 · Compliance views: Scorecard, ASVS, SLSA, the CRA and the EAA (L)
+- ion-repo#T-305 · Compliance views: Scorecard, ASVS, SLSA, the CRA and the EAA (L)
 
 ### v0.7.2 · Delivery measured, the organisation's settings read
 DORA's four keys from the forge, the bus factor and knowledge islands, two-factor authentication and
 base permissions, for organisation profiles.
-- T-306 · Delivery measured, the organisation's settings read (M)
+- ion-repo#T-306 · Delivery measured, the organisation's settings read (M)
 
 ### v0.7.3 · The charter and the grid, one engine
 Decision 4, before the format freezes: shared detectors first, then the charter as the grid's rules
 in strict or ratchet regime, its IDs kept as aliases; rule files checked by a published schema.
 ⚠ breaking: `charter.toml` lists grid rule IDs with their regime, converted by `kiln update`.
-- T-307 · The charter and the grid, one engine (M)
+- ion-repo#T-307 · The charter and the grid, one engine (M)
 
 ### v0.7.4 · Java and Kotlin repos, read
 The road to v0.8.0: every common stack scored and fixed by script as Django is at v0.5.0, stack by
@@ -674,164 +674,164 @@ spanning stacks see it; then its pack, counted once ten corpus repos of it were 
 stack's rules are written from the corpus when its turn comes. First Java and Kotlin: Maven and
 Gradle read with their wrappers, Spring Boot, Quarkus and Micronaut recognised: kiln's own frozen
 Java template held to its stack's rules at last.
-- T-310 · Java and Kotlin read: Maven, Gradle, Spring Boot, the LTS lines (L)
+- ion-repo#T-310 · Java and Kotlin read: Maven, Gradle, Spring Boot, the LTS lines (L)
 
 ### v0.7.5 · The Java and Kotlin pack
 A supported LTS, a verified wrapper, locked dependencies and a bug finder in the build, then Spring
 Boot's own rules, counted once ten corpus repos of Java and Kotlin were checked (B24).
-- T-311 · The Java and Kotlin pack (L)
-- T-337 · The Spring Boot pack (M)
+- ion-repo#T-311 · The Java and Kotlin pack (L)
+- ion-repo#T-337 · The Spring Boot pack (M)
 
 ### v0.7.6 · C# and .NET repos, read
 Projects, solutions and central package management read, with nullable references and the supported
 .NET lines.
-- T-322 · C# and .NET read: projects, central packages, nullable, supported lines (L)
+- ion-repo#T-322 · C# and .NET read: projects, central packages, nullable, supported lines (L)
 
 ### v0.7.7 · The C# pack
 NuGetAudit, lock files, warnings as errors and a pinned SDK, then the rules of ASP.NET Core and
 Blazor, counted once ten corpus repos of C# were checked (B24).
-- T-323 · The C# pack (L)
-- T-338 · The ASP.NET Core and Blazor pack (M)
+- ion-repo#T-323 · The C# pack (L)
+- ion-repo#T-338 · The ASP.NET Core and Blazor pack (M)
 
 ### v0.7.8 · PHP repos, read
 Composer, Laravel, Symfony and WordPress read, with their analysers, formatters, tests and auditor.
-- T-312 · PHP read: Composer, Laravel, Symfony, WordPress (L)
+- ion-repo#T-312 · PHP read: Composer, Laravel, Symfony, WordPress (L)
 
 ### v0.7.9 · The PHP pack
 Strict types, `composer audit` in CI, a supported PHP and no `phpinfo()` left, then the rules of
 Laravel, Symfony and WordPress, counted once ten corpus repos of PHP were checked (B24).
-- T-313 · The PHP pack (L)
-- T-339 · The Laravel, Symfony and WordPress pack (M)
+- ion-repo#T-313 · The PHP pack (L)
+- ion-repo#T-339 · The Laravel, Symfony and WordPress pack (M)
 
 ### v0.7.10 · C and C++ repos, read
 CMake, Meson, Bazel, Conan and vcpkg read, with clang-format, clang-tidy, sanitizers and fuzzing.
-- T-327 · C and C++ read: CMake, Meson, Bazel, Conan, vcpkg (L)
+- ion-repo#T-327 · C and C++ read: CMake, Meson, Bazel, Conan, vcpkg (L)
 
 ### v0.7.11 · The C and C++ pack
 Warnings as errors, sanitizers in CI, clang-tidy, fuzzing for parsers and managed dependencies,
 counted once ten corpus repos of C and C++ were checked (B24).
-- T-328 · The C and C++ pack (L)
+- ion-repo#T-328 · The C and C++ pack (L)
 
 ### v0.7.12 · Go repos, read
 go.mod, go.sum and the toolchain read, with golangci-lint, govulncheck, race tests and wrapped
 errors, `go.sum` held to the rules that span stacks.
-- T-308 · Go read: modules, toolchains, race tests, errors (L)
+- ion-repo#T-308 · Go read: modules, toolchains, race tests, errors (L)
 
 ### v0.7.13 · The Go pack
 Go's own rules with their examples and converters, from a tidy `go.mod` to no `panic` in a library,
 counted once ten corpus repos of Go were checked (B24).
-- T-309 · The Go pack (L)
+- ion-repo#T-309 · The Go pack (L)
 
 ### v0.7.14 · Rust repos, read
 Cargo, clippy, the edition and `unsafe` read, `Cargo.lock` held to the rules that span stacks.
-- T-320 · Rust read: Cargo, clippy, editions, `unsafe`, locks (L)
+- ion-repo#T-320 · Rust read: Cargo, clippy, editions, `unsafe`, locks (L)
 
 ### v0.7.15 · The Rust pack
 Rust's own rules, from clippy with warnings as errors to a declared MSRV, counted once ten corpus
 repos of Rust were checked (B24).
-- T-321 · The Rust pack (L)
+- ion-repo#T-321 · The Rust pack (L)
 
 ### v0.7.16 · Ruby repos, read
 Bundler and Rails read, with RuboCop, Sorbet or RBS, RSpec or Minitest and bundler-audit.
-- T-324 · Ruby read: Bundler, Rails, RuboCop, bundler-audit (L)
+- ion-repo#T-324 · Ruby read: Bundler, Rails, RuboCop, bundler-audit (L)
 
 ### v0.7.17 · The Ruby pack
 Brakeman and bundler-audit in CI, RuboCop configured, a supported Ruby and no `permit!`, counted
 once ten corpus repos of Ruby were checked (B24).
-- T-325 · The Ruby pack (L)
+- ion-repo#T-325 · The Ruby pack (L)
 
 ### v0.7.18 · iOS, Android and Flutter repos, read
 SwiftPM, CocoaPods, the Android manifest and Flutter's pubspec read; App Transport Security and
 exported components checked.
-- T-314 · iOS, Android and Flutter read: SwiftPM, the manifest, pubspec (L)
+- ion-repo#T-314 · iOS, Android and Flutter read: SwiftPM, the manifest, pubspec (L)
 
 ### v0.7.19 · The mobile pack
 What the stores require and what an app bundle gives away: the privacy manifest, the target SDK, no
 server secret in the app, signing keys out of git, counted once ten corpus repos of apps were
 checked (B24).
-- T-315 · The mobile pack (L)
+- ion-repo#T-315 · The mobile pack (L)
 
 ### v0.7.20 · Game repos, read and packed
 Unity, Godot, Unreal and Roblox repos read on top of the C# and C++ packs, with Lua and Luau: the
 engine's version pinned, assets in Git LFS, caches and builds out of git, no store or signing
 credential committed.
-- T-340 · Game repos: Unity, Godot, Unreal, Roblox, Lua (L)
+- ion-repo#T-340 · Game repos: Unity, Godot, Unreal, Roblox, Lua (L)
 
 ### v0.7.21 · R repos, read and packed
 R packages and analyses read and packed in one release: DESCRIPTION and renv, lintr, testthat and R
 CMD check, beyond the notebooks the data science release (v0.6.58) reads.
-- T-341 · R read and its pack: renv, lintr, testthat, R CMD check (L)
+- ion-repo#T-341 · R read and its pack: renv, lintr, testthat, R CMD check (L)
 
 ### v0.7.22 · Elixir repos, read and packed
 A smaller ecosystem, read and packed in one release: mix and Phoenix, with Credo, Dialyzer, Sobelow
 and mix_audit as its rules.
-- T-326 · Elixir read and its pack: mix, Phoenix, Credo, Sobelow (L)
+- ion-repo#T-326 · Elixir read and its pack: mix, Phoenix, Credo, Sobelow (L)
 
 ### v0.8.0 · Every common stack scored
 Milestone decided by antoine (25 October 2026), reached here: every common stack scored and fixed by
 script before the format freezes. The rarer languages come as data packs that the community packs of
 v1.0.0 will extend; then the gate, the corpus re-scored and each stack among those that make 95 % of
 its repos shown at the level of Django at v0.5.0.
-- T-329 · The long tail as data packs (M)
-- T-330 · Every common stack scored, measured: the corpus's 95 % (M)
+- ion-repo#T-329 · The long tail as data packs (M)
+- ion-repo#T-330 · Every common stack scored, measured: the corpus's 95 % (M)
 
 ### v0.8.1 · The CIs used most after GitHub's and GitLab's
 The road to v0.9.0: any CI, any machine, any size, the last before the format freezes. First the CIs
 used most after GitHub's and GitLab's (v0.6.63), read into the CI model of v0.6.21 with their
 pinning and their untrusted text (appendix B).
-- T-316 · The CIs used most after GitHub's and GitLab's: Forgejo, Bitbucket, Azure, CircleCI (L)
+- ion-repo#T-316 · The CIs used most after GitHub's and GitLab's: Forgejo, Bitbucket, Azure, CircleCI (L)
 
 ### v0.8.2 · Every other CI
 Jenkins, Buildkite, Woodpecker, the clouds' own CIs, Tekton and the rest, read the same way.
-- T-331 · Every other CI read: Jenkins, Buildkite, Woodpecker, the clouds', Tekton (L)
+- ion-repo#T-331 · Every other CI read: Jenkins, Buildkite, Woodpecker, the clouds', Tekton (L)
 
 ### v0.8.3 · Every machine, every network
 macOS and WSL tested beside Linux, ARM64 and musl, air-gapped and corporate networks; native Windows
-only if T-94 reopens.
-- T-332 · Every machine and every network: macOS, WSL, ARM64, musl, offline, proxies (L)
+only if ion-repo#T-94 reopens.
+- ion-repo#T-332 · Every machine and every network: macOS, WSL, ARM64, musl, offline, proxies (L)
 
 ### v0.8.4 · No Python needed
 A single signed binary, `npx kiln-cli score` for JavaScript machines, and the score in a browser if
-the forges allow it; a language server only if T-117 reopens.
-- T-333 · No Python needed: a signed binary, npx, the browser (L)
+the forges allow it; a language server only if ion-repo#T-117 reopens.
+- ion-repo#T-333 · No Python needed: a signed binary, npx, the browser (L)
 
 ### v0.8.5 · Monorepos and big trees
-Monorepo tools' project graphs read for components and their links (T-86 staying declined for
+Monorepo tools' project graphs read for components and their links (ion-repo#T-86 staying declined for
 generating them), rules run in parallel, and a time budget that says what it left out.
-- T-317 · Monorepos and big trees: project graphs, rules in parallel, a time budget (L)
+- ion-repo#T-317 · Monorepos and big trees: project graphs, rules in parallel, a time budget (L)
 
 ### v0.8.6 · A million files
 Sampling with a stated margin, Rust only where a profile points, then the speed published as uv and
 ruff publish theirs.
-- T-334 · A million files: sampling, Rust where a profile points, the speed published (L)
+- ion-repo#T-334 · A million files: sampling, Rust where a profile points, the speed published (L)
 
 ### v0.9.0 · Any CI, any machine, any size
 Milestone decided by antoine (25 October 2026), reached here, the last before the format freezes:
 the bar of v1.0.0 run as a matrix in kiln's own CI, on GitHub's, GitLab's and one more CI, Linux,
 macOS and WSL, x86-64 and ARM64, a monorepo and a million files, each scored within its budget.
-- T-335 · Any CI, any machine, any size: the bar's matrix, run (M)
+- ion-repo#T-335 · Any CI, any machine, any size: the bar's matrix, run (M)
 
 ### v0.9.1 · Does the score mean anything? Measured, on every stack
 The last proof before the stability promise, now that every stack is scored: ten senior engineers'
 ranking against kiln's, the score against public repos' incidents, readability against tokens, each
 published whatever it says.
-- T-318 · Does the score mean anything? Seniors, incidents and tokens, measured (M)
+- ion-repo#T-318 · Does the score mean anything? Seniors, incidents and tokens, measured (M)
 
 ### v1.0.0 · The grid others build on
 Milestone decided by antoine (16 October 2026), its bar set on 25 October 2026: the public stability
 promise, once the rule format has held without breaking on the stacks that make about 95% of the
 corpus's repos (B01), on GitHub's, GitLab's and one more CI, on Linux, macOS and WSL, and on
 monorepos, each scored and fixed by script as Django is at v0.5.0; the long tail comes as community
-packs (T-69). From here, strict semver: breaking → major, `feat` → minor.
-- T-69 · Community grid packs from any git repo (L)
-- T-122 · `kiln version` proposes 1.0.0 (S)
-- T-319 · The grid others build on: the JSON schema, packs indexed, everything pinned (M)
+packs (ion-repo#T-69). From here, strict semver: breaking → major, `feat` → minor.
+- ion-repo#T-69 · Community grid packs from any git repo (L)
+- ion-repo#T-122 · `kiln version` proposes 1.0.0 (S)
+- ion-repo#T-319 · The grid others build on: the JSON schema, packs indexed, everything pinned (M)
 
 ## 🔴 Critical
 
 ## 🟠 Important
 
-### T-400 · `ion repo update` stopped by a conflict never runs the converters
+### ion-repo#T-400 · `ion repo update` stopped by a conflict never runs the converters
 - **Type**: bug
 - **Status**: todo
 - **Opened**: 2026-10-31
@@ -846,7 +846,7 @@ fix`. Seen on all 18 family repos, closed by calling the function by hand.
   converters, whatever its flags.
 - [ ] A test: an update with a conflict, then the follow-up, ends pinned.
 
-### T-401 · Updating a family of repos, stopping only at real conflicts
+### ion-repo#T-401 · Updating a family of repos, stopping only at real conflicts
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-31
@@ -860,7 +860,7 @@ then merge, push and clean up. The middle ground is missing.
   merges only those that are clean, after a yes.
 - [ ] `frozen_repos` respected, as `--all` does.
 
-### T-402 · A test against the half-renamed forms in the template
+### ion-repo#T-402 · A test against the half-renamed forms in the template
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-31
@@ -873,7 +873,7 @@ and the plugin; no test saw them, the first real `ion repo update` did.
   (`/ion-repo:`), a plugin id `ion-repo@ion-repo`, a version of ion-repo below the rename.
 - [ ] After any bulk replacement, the same kind of check: what the replacement must never produce.
 
-### T-403 · Install lines on the Ion names once they are on PyPI
+### ion-repo#T-403 · Install lines on the Ion names once they are on PyPI
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-31
@@ -887,7 +887,7 @@ and `ion/ion`'s README installs from a clone.
 - [x] `ion/ion`'s `README.md` back to `uv tool install ion-sh` (its branch `feat/ion-repo-on-pypi`).
 - [ ] `ion repo update` on the repos, by antoine, once v0.4.11 is out.
 
-### T-399 · The names ion-repo still keeps from kiln
+### ion-repo#T-399 · The names ion-repo still keeps from kiln
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-31
@@ -905,7 +905,7 @@ fallback read of the old name, and `ion repo update` converts what a repo carrie
 re-recorded at the next candidate that shows them.
 Also `src/kiln/`, the `kiln` alias of `ion-repo` and `kiln_move.py`'s state in `~/.local/state/kiln/`.
 
-### T-387 · What belongs to another craft leaves kiln for its tool
+### ion-repo#T-387 · What belongs to another craft leaves kiln for its tool
 - **Type**: task
 - **Status**: todo — the map of the moves, closed when its boxes are
 - **Opened**: 2026-10-30
@@ -915,13 +915,13 @@ Also `src/kiln/`, the `kiln` alias of `ion-repo` and `kiln_move.py`'s state in `
 
 Each tool takes the piece before kiln drops it (a project never loses a file between two
 `kiln update`). The inventory, 30 October 2026:
-- [ ] First, how a tool's piece reaches a repo: T-394.
-- [ ] **hearth**: the server: T-389, hearth's T-07.
-- [ ] **saggar**: `/kiln:token`: T-390, saggar's T-01.
-- [ ] **glaze**: `/nuxt:polish`: T-391, glaze's T-01.
-- [ ] **stylus**: the announcement of `/kiln:release`: T-392, stylus's T-01.
-- [ ] **cone**: the grid: T-393, cone's T-01.
-- [ ] **slake**: rendering and updating, Copier today: slake's T-07 (no kiln ticket of its own).
+- [ ] First, how a tool's piece reaches a repo: ion-repo#T-394.
+- [ ] **hearth**: the server: ion-repo#T-389, ion-host#T-07.
+- [ ] **saggar**: `/kiln:token`: ion-repo#T-390, ion-secure#T-01.
+- [ ] **glaze**: `/nuxt:polish`: ion-repo#T-391, ion-design#T-01.
+- [ ] **stylus**: the announcement of `/kiln:release`: ion-repo#T-392, ion-words#T-01.
+- [ ] **cone**: the grid: ion-repo#T-393, ion-score#T-01.
+- [ ] **slake**: rendering and updating, Copier today: ion-render#T-07 (no kiln ticket of its own).
 - [ ] The generated `README.md` of each repo points to the tools that now hold each piece.
 
 Reviewed and staying in kiln: `/kiln:contribution` and `/kiln:good-first-issues` (code review, and
@@ -929,29 +929,29 @@ issues drawn from the backlog: not visibility work), `/nuxt:preview`, the `strip
 charter's rules on data and backups, kiln's own showcase (`scripts/screenshots.py`,
 `scripts/social_preview.py`, the demos, the roadmap).
 
-### T-394 · How a tool's piece reaches a repo kiln generated
+### ion-repo#T-394 · How a tool's piece reaches a repo kiln generated
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-30
 - **Effort**: M · **Owner**: — · **Due**: —
-- **Origin**: the inventory of T-387: every move below needs this answer, none has it
+- **Origin**: the inventory of ion-repo#T-387: every move below needs this answer, none has it
 
 Decide it once, before the first move:
 - [ ] Skills: `.claude/settings.json.jinja` enables plugins of the `kiln` catalog only. How a
   repo gets `saggar@…` or `hearth@…`, and who installs the tool. The tools' repos are private
   today: a public kiln cannot point to them.
-- [ ] Files: hearth's T-07 asks how hearth renders its files in a project (slake, or commands that
+- [ ] Files: ion-host#T-07 asks how hearth renders its files in a project (slake, or commands that
   install them on the server). The same answer for any later tool.
 - [ ] What `kiln update` does to a repo that has the old piece: a conversion, without losing a
   file, and a forward from each old skill name.
 - [ ] The answer written in `docs/reference.md` and `docs/reference.fr.md`.
 
-### T-389 · The server leaves kiln for hearth
+### ion-repo#T-389 · The server leaves kiln for hearth
 - **Type**: task
-- **Status**: blocked — waiting for hearth's T-07 and T-394
+- **Status**: blocked — waiting for ion-host#T-07 and ion-repo#T-394
 - **Opened**: 2026-10-30
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: T-387. ⚠ breaking: the generated tree, the `deploy` question of `copier.yml`,
+- **Origin**: ion-repo#T-387. ⚠ breaking: the generated tree, the `deploy` question of `copier.yml`,
   `--vps`, the `vps` plugin's skill names; its conversion ships in `kiln update`
 
 - [ ] Remove the `vps` plugin (`deploy`, `prod-dump`, `prod-logs`), keeping forwards.
@@ -963,58 +963,58 @@ Decide it once, before the first move:
 - [ ] Decide what becomes of `kiln new --vps` and the `deploy` question.
 - [ ] Until then, new server know-how goes to hearth, not here.
 
-### T-390 · `/kiln:token` leaves kiln for saggar
+### ion-repo#T-390 · `/kiln:token` leaves kiln for saggar
 - **Type**: task
-- **Status**: blocked — waiting for saggar's T-01 and T-394
+- **Status**: blocked — waiting for ion-secure#T-01 and ion-repo#T-394
 - **Opened**: 2026-10-30
 - **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: T-387. ⚠ breaking: a skill's name; a forward from the old one
+- **Origin**: ion-repo#T-387. ⚠ breaking: a skill's name; a forward from the old one
 
 - [ ] Remove the skill, and update what cites it: `/kiln:release`, the generated `pypi.yml`,
   `docs/reference.md`.
-- [ ] Read `security.md` in full and confirm it stays. T-387 first moved it to saggar, but its one
+- [ ] Read `security.md` in full and confirm it stays. ion-repo#T-387 first moved it to saggar, but its one
   heading is "Browser security" and it has 18 lines: it looks like a code rule.
 
-### T-391 · `/nuxt:polish` leaves kiln for glaze
+### ion-repo#T-391 · `/nuxt:polish` leaves kiln for glaze
 - **Type**: task
-- **Status**: blocked — waiting for glaze's T-01 and T-394
+- **Status**: blocked — waiting for ion-design#T-01 and ion-repo#T-394
 - **Opened**: 2026-10-30
 - **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: T-387. ⚠ breaking: a skill's name; a forward from the old one
+- **Origin**: ion-repo#T-387. ⚠ breaking: a skill's name; a forward from the old one
 
 Remove the skill and its mention in `docs/reference.md`. `/nuxt:preview` stays.
 
-### T-392 · The announcement of `/kiln:release` goes through stylus
+### ion-repo#T-392 · The announcement of `/kiln:release` goes through stylus
 - **Type**: task
-- **Status**: blocked — waiting for stylus's T-01 and T-394
+- **Status**: blocked — waiting for ion-words#T-01 and ion-repo#T-394
 - **Opened**: 2026-10-30
 - **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: T-387
+- **Origin**: ion-repo#T-387
 
 Step 4 of the skill calls stylus when it is installed, and still falls back on the project's
 `CLAUDE.md`, which keeps how the announcement is sent.
 
-### T-393 · The grid leaves kiln for cone
+### ion-repo#T-393 · The grid leaves kiln for cone
 - **Type**: task
-- **Status**: blocked — waiting for cone's T-01; after slake's T-07, one engine at a time
+- **Status**: blocked — waiting for ion-score#T-01; after ion-render#T-07, one engine at a time
 - **Opened**: 2026-10-30
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: T-387. ⚠ breaking only if a charter rule ID or a command changes: neither should
+- **Origin**: ion-repo#T-387. ⚠ breaking only if a charter rule ID or a command changes: neither should
 
 - [ ] kiln depends on `keramos-cone`, and `src/kiln/grid/` keeps only what changes a repo (the
-  split is in cone's T-01).
+  split is in ion-score#T-01).
 - [ ] What imports the grid moves to cone's contract: `cli.py`, `adopted.py`, `update.py`, `bot.py`,
   `charter/cli.py`, and the tests (`test_grid.py`, `test_score.py`, `test_fix.py`, `test_forge.py`,
   `test_gap_report.py`, `test_bot.py`, `test_compressor.py`…).
 - [ ] `kiln score` gives the same result, rule by rule, on the training repos.
 
-### T-373 · `kiln-cli` retired, the testers moved to `ion-repo` and `ion-sh`
+### ion-repo#T-373 · `kiln-cli` retired, the testers moved to `ion-repo` and `ion-sh`
 - **Type**: task
 - **Status**: in progress — code, proof and workflow on `develop`; publication waits for antoine's go
 - **Opened**: 2026-10-29
 - **Effort**: S · **Owner**: — · **Due**: —
 - **Origin**: antoine, 1 November 2026: "dès la prochaine maj de kiln, je veux que tout le monde
-  transite sur ion" (replaces T-372's `keramos-kiln`, which never became the name)
+  transite sur ion" (replaces ion-repo#T-372's `keramos-kiln`, which never became the name)
 
 v0.4.11 is the last `kiln-cli`: at its first run as a uv tool it installs `ion-sh` and `ion-repo`,
 removes itself and moves the Claude Code catalogue (`src/ion_repo/kiln_move.py`). Proven on a real
@@ -1033,7 +1033,7 @@ removes itself and moves the Claude Code catalogue (`src/ion_repo/kiln_move.py`)
   scoped to `kiln-cli` revoked, `PYPI_TOKEN` removed; the "Entire account" `KERAMOS_PYPI_TOKEN`
   replaced by a token scoped to `ion-repo`.
 
-### T-345 · The licence: `MIT OR Apache-2.0`, the template's output free of attribution
+### ion-repo#T-345 · The licence: `MIT OR Apache-2.0`, the template's output free of attribution
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1054,7 +1054,7 @@ outside contributors have code in kiln. antoine said yes to the pair (26 October
 - [ ] What `kiln new` and `kiln adopt` lay in a repo is the user's: the template's files under
   MIT-0 (no notice to keep), said in the README, so a generated repo carries no kiln licence.
 
-### T-360 · The plan renumbered: a minor every ten releases or so
+### ion-repo#T-360 · The plan renumbered: a minor every ten releases or so
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1070,7 +1070,7 @@ every few weeks, each minor a themed group holding its breaking changes.
 - [ ] `ROADMAP.md`'s two hand-written milestone tables, `.claude/rules/releases.md`, the vision's
   dates and the tickets' "Planned in" lines follow; `scripts/roadmap.py` rerun.
 
-### T-346 · "The kiln standard": the grid's public name
+### ion-repo#T-346 · "The kiln standard": the grid's public name
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1086,7 +1086,7 @@ on. `kiln score` keeps its name: it scores a repo against the standard (Q113).
   skills).
 - [ ] The code keeps `grid` (`src/kiln/grid/`), one line in the repo map of `CLAUDE.md` saying so.
 
-### T-177 · kiln's own docs in English only
+### ion-repo#T-177 · kiln's own docs in English only
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-24
@@ -1113,22 +1113,22 @@ moved into this file, in English, on 24 Oct.
   asks for the English README or reference to change (or `<!-- readme: unchanged, why -->`).
 - [ ] `CLAUDE.md` (map of the repo, "Le README, entièrement à jour", "Contrôles") and the
   `tout-a-jour` memory: one language for kiln's docs.
-- T-164 (French docs translated at the candidate) and T-55 (README in Chinese, Japanese,
-  Spanish, Portuguese) ruled out by antoine on 24 Oct (`rejected.md`); T-30 keeps no French
+- ion-repo#T-164 (French docs translated at the candidate) and ion-repo#T-55 (README in Chinese, Japanese,
+  Spanish, Portuguese) ruled out by antoine on 24 Oct (`rejected.md`); ion-repo#T-30 keeps no French
   summary.
 
-### T-163 · Skills call one kiln command, the backlog first
+### ion-repo#T-163 · Skills call one kiln command, the backlog first
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-21
 - **Effort**: L · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: antoine, 21 October 2026, after T-162: "skills should use one command line at most"
+- **Origin**: antoine, 21 October 2026, after ion-repo#T-162: "skills should use one command line at most"
 
 A skill that runs git, gh and file reads step by step pays each step in tokens and leaves every
 output in the conversation, re-read by each later message; a kiln command does the mechanics in
 one call and answers in a few lines. The backlog first: one full read costs about 20k tokens
 here and 36k in the reference repo, and Claude read it nearly 500 times in three weeks.
-- [ ] `kiln backlog next`, `show T-NN`, `add`, `start`, `done`: one ticket in or out, never the
+- [ ] `kiln backlog next`, `show ion-repo#T-NN`, `add`, `start`, `done`: one ticket in or out, never the
   whole file; `/kiln:backlog` calls them and nothing else.
 - [ ] The backlog condensed to what Claude needs (antoine, 26 October 2026: "only for Claude,
   optimize it to the max"): the thesis and appendices whose ideas are all tickets archived, each
@@ -1138,7 +1138,7 @@ here and 36k in the reference repo, and Claude read it nearly 500 times in three
 - [ ] `test_plugins.py`: one shell command per skill at most, the skills that need judgment over
   several commands (`review`, `release`, `contribution`) listed with their reason.
 
-### T-165 · Write less code, measured: a ladder before writing
+### ion-repo#T-165 · Write less code, measured: a ladder before writing
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-21
@@ -1149,13 +1149,13 @@ here and 36k in the reference repo, and Claude read it nearly 500 times in three
 Before writing, Claude climbs a ladder and stops at the first rung that works: does this code
 need to exist, does the repo already have it, the standard library, an installed dependency, a
 few lines; never cut: validation at the boundaries, security, data loss, accessibility, a test
-for each risky logic. Same pillar as T-138 and T-139, which remove code that exists; this one
+for each risky logic. Same pillar as ion-repo#T-138 and ion-repo#T-139, which remove code that exists; this one
 keeps it from being written.
 - [ ] A few lines in `template/.claude/rules/kiln/` (they are read at every message).
-- [ ] Measured before it stays, with T-53's method: the same tasks with and without, tokens,
+- [ ] Measured before it stays, with ion-repo#T-53's method: the same tasks with and without, tokens,
   lines written, tests, bugs caught; dropped if it does not win.
 
-### T-130 · Generated repos pass the whole grid
+### ion-repo#T-130 · Generated repos pass the whole grid
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-17
@@ -1169,16 +1169,16 @@ pitch hollow.
   fail when a template change lowers it.
 - [x] The template's gaps closed (from the 17 October audit: actions by SHA, cooldown,
   Debian 13, read-only containers): shipped in v0.4.4.
-- [ ] `kiln update` takes an older generated repo to 100 (the converters of T-126).
-- [ ] The frozen templates (T-133) measured, their score in the docs.
+- [ ] `kiln update` takes an older generated repo to 100 (the converters of ion-repo#T-126).
+- [ ] The frozen templates (ion-repo#T-133) measured, their score in the docs.
 
 From the kiln score ideas of 24 October 2026:
 - [ ] **P01** `kiln new` proven at 100: every combination of answers (stack, size, options)
-  generated and scored at each candidate; a template change that lowers any of them fails (T-130's
+  generated and scored at each candidate; a template change that lowers any of them fails (ion-repo#T-130's
   matrix).
-- [ ] **T07** kiln, its generated repos and the reference repo at 100, visibly (T-90, T-130, T-134).
+- [ ] **T07** kiln, its generated repos and the reference repo at 100, visibly (ion-repo#T-90, ion-repo#T-130, ion-repo#T-134).
 
-### T-134 · The reference repo's score in every release note
+### ion-repo#T-134 · The reference repo's score in every release note
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-17
@@ -1193,14 +1193,14 @@ From the kiln score ideas of 24 October 2026:
 
 From the kiln score ideas of 24 October 2026:
 - [ ] **P15** The reference repo's score and its potential after `kiln fix` in every release note
-  (T-134).
+  (ion-repo#T-134).
 
-### T-30 · README and English docs for strangers, with the demos already recorded
+### ion-repo#T-30 · README and English docs for strangers, with the demos already recorded
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-16
 - **Effort**: L · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: T-03 prerequisites; issues #37 and #38; rewritten 17 October 2026 for the vision
+- **Origin**: ion-repo#T-03 prerequisites; issues #37 and #38; rewritten 17 October 2026 for the vision
 
 - [x] Today's README brought to the level of the best (20 October 2026, branch
   `docs/showcase`), after measuring the READMEs of 70 repos of 10,000 stars or more (uv, ruff,
@@ -1213,7 +1213,7 @@ From the kiln score ideas of 24 October 2026:
   would break on PyPI, and on a demo that types what kiln no longer offers.
 - [x] Demo recorded with vhs (`docs/assets/kiln-new.tape`, `scripts/demo_shell.sh`): `kiln new`,
   its three questions, then `kiln check` on the new repo; replayed before each candidate.
-- [ ] v0.5.0 first screen: the promise (T-33), `uvx kiln-cli score`, then the demos already
+- [ ] v0.5.0 first screen: the promise (ion-repo#T-33), `uvx kiln-cli score`, then the demos already
   recorded (antoine, 30 October 2026: no study, no new demo); then how it works in five
   steps (score, fix, roadmap for Claude, verified by the script, continuous), the grid, and
   "Built for Claude Code; the score and the fixes need no AI at all".
@@ -1222,24 +1222,24 @@ From the kiln score ideas of 24 October 2026:
   project shown at fault), `kiln score` 23, `kiln adopt` 39, `kiln fix` 65, the roadmap, a real
   Claude Code on `/kiln:modernize` as a time-lapse (about ten minutes), `kiln score` 100. The
   `kiln new` tape now ends on `kiln score` at 100/100.
-- [ ] The kiln-bot pull request in the rescue tape, once kiln-bot exists (T-59).
+- [ ] The kiln-bot pull request in the rescue tape, once kiln-bot exists (ion-repo#T-59).
 - [ ] Docs in English in `docs/`: getting started, score, fix, modernize, the grid (one page per
   theme generated from the rule files: the Technology Radar that applies itself), update,
-  charter, plugins, workflows, versions, in English only (T-177). Closes #37 and #38 (another
+  charter, plugins, workflows, versions, in English only (ion-repo#T-177). Closes #37 and #38 (another
   good first issue opened instead).
 - [ ] A comparison page, facts only: what Dependabot and Renovate, Copier and cruft,
   sp-repo-review, OpenRewrite, AWS Transform and Claude Code's `/doctor` do, and what kiln adds
-  (from the vision's market table); the r/Python Showcase format asks for it (T-03).
+  (from the vision's market table); the r/Python Showcase format asks for it (ion-repo#T-03).
 - [ ] `kiln new` second: "Starting a repo? It starts at 100."
 - [ ] From the decisions of 26 October 2026: `kiln score` first, then `kiln adopt`, then `kiln new`
-  (decision 4); "the kiln standard" (T-346); no Ubuntu image; one line each for `kiln check`,
+  (decision 4); "the kiln standard" (ion-repo#T-346); no Ubuntu image; one line each for `kiln check`,
   `kiln ci` and `kiln score` (decision 40); the review gap as the sourced why (decision 8); the
   score in Lighthouse's bands (decision 6); `uvx` first.
 - [ ] The default branch becomes `main` with v0.5.0, so the repo page and `claude plugin
   marketplace add` show what `uvx kiln-cli` installs; pull requests still go to `develop`
   (CONTRIBUTING).
 
-### T-33 · One promise everywhere: tagline, About, PyPI, social preview
+### ion-repo#T-33 · One promise everywhere: tagline, About, PyPI, social preview
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-16
@@ -1279,12 +1279,12 @@ previews), the PyPI summary and the launch titles.
   (no API takes it): https://github.com/antoine-tena/kiln/settings, "Social preview", "Edit".
   Today's image was uploaded by antoine on 20 October 2026.
 
-### T-154 · Show your score: a badge other repos display
+### ion-repo#T-154 · Show your score: a badge other repos display
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-20
 - **Effort**: S · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: README study, 20 October 2026; after T-46
+- **Origin**: README study, 20 October 2026; after ion-repo#T-46
 
 The image that travels by itself: GitHub's code search finds the Ruff badge in about 7,800
 READMEs, OpenSSF Scorecard's in about 25,000, github-readme-stats cards in about 247,000. A score
@@ -1292,15 +1292,15 @@ is a badge that measures something, the kind a study of 294,941 npm packages fou
 lasting (Trockman et al., ICSE 2018), whose authors ask for badges of "conformance to coding
 standards".
 - [ ] `kiln score --badge`: the Markdown of a shields.io endpoint badge, its JSON kept up to date
-  by kiln-bot (T-59) or the CI.
-- [ ] A "Show your score" section in the README, as Ruff has; kiln's own badge on top (T-90).
+  by kiln-bot (ion-repo#T-59) or the CI.
+- [ ] A "Show your score" section in the README, as Ruff has; kiln's own badge on top (ion-repo#T-90).
 - [ ] The `kiln score` output made to be screenshotted: the score large, the kiln, 80 columns.
 
 From the kiln score ideas of 24 October 2026:
 - [ ] **L07** A live badge: kiln-bot publishes a shields.io endpoint JSON (Pages or a gist) instead
-  of a number frozen in the README (T-154).
+  of a number frozen in the README (ion-repo#T-154).
 
-### T-119 · GitHub Sponsors and `FUNDING.yml`
+### ion-repo#T-119 · GitHub Sponsors and `FUNDING.yml`
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-16
@@ -1310,12 +1310,12 @@ From the kiln score ideas of 24 October 2026:
 - [ ] Sponsors profile: https://github.com/sponsors/accounts ; `.github/FUNDING.yml` and a line
   in the README, in place before the launch.
 
-### T-142 · Launch rehearsal: a stranger's first ten minutes, replayed
+### ion-repo#T-142 · Launch rehearsal: a stranger's first ten minutes, replayed
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-17
 - **Effort**: M · **Owner**: @antoine-tena · **Due**: the week before the launch
-- **Origin**: launch planned on 17 October 2026 (T-03)
+- **Origin**: launch planned on 17 October 2026 (ion-repo#T-03)
 
 - [ ] On fresh GitHub-hosted runners (Ubuntu, macOS) and in a clean container: the README's
   commands copied as they are, `uvx kiln-cli score` from an empty cache on three public repos of
@@ -1325,9 +1325,9 @@ From the kiln score ideas of 24 October 2026:
 - [ ] First with the people around antoine who already use kiln (about ten, four often), each
   on a repo of their own; then the runners.
 - [ ] Every stumble fixed in v0.5.1 to v0.5.3, never on the day.
-- [ ] The texts of T-03 checked against each forum's rules.
+- [ ] The texts of ion-repo#T-03 checked against each forum's rules.
 
-### T-03 · Public launch: date to set, 16:00 Paris, every forum at once
+### ion-repo#T-03 · Public launch: date to set, 16:00 Paris, every forum at once
 - **Type**: task
 - **Status**: blocked — waiting for antoine's date (11 November 2026 cancelled by him
   on 30 October 2026: a few more months of work on his machine first)
@@ -1339,7 +1339,7 @@ From the kiln score ideas of 24 October 2026:
   define")
 
 One launch, everywhere the same afternoon: stars come in a burst, and the launch happens once.
-Nothing is posted on a forum before it (T-118 starts after).
+Nothing is posted on a forum before it (ion-repo#T-118 starts after).
 
 **Awaiting antoine's decision** (26 October 2026, decision 1): Hacker News restricts Show HN from
 new accounts since March 2026 (https://news.ycombinator.com/showlim) and antoine has no HN
@@ -1350,18 +1350,18 @@ opened at once and used for real, never about kiln (`urgent.md`).
 
 **The version it waits for: v0.5.0**, and what it has to prove:
 - [ ] `kiln-cli` 0.5.0 or later promoted on PyPI; `uvx kiln-cli score` works from an empty
-  cache on Linux and macOS, on a repo kiln never saw (T-142).
+  cache on Linux and macOS, on a repo kiln never saw (ion-repo#T-142).
 - [ ] `kiln score` deterministic, offline, without a token, under 5 seconds on a 50,000-line
-  repo (T-46); `kiln fix` closes every scriptable gap of `kiln-demo-legacy`, its checks
-  still green (T-126 to T-128); kiln-bot runs on a test repo (T-59).
+  repo (ion-repo#T-46); `kiln fix` closes every scriptable gap of `kiln-demo-legacy`, its checks
+  still green (ion-repo#T-126 to ion-repo#T-128); kiln-bot runs on a test repo (ion-repo#T-59).
 - [ ] `kiln score` on ten known public repos of other stacks (Go, Rust, Ruby, Java, PHP,
   TypeScript) says nothing false about tests, CI and linters, and names at the top the language it
   doesn't score yet: a launch's visitors run it on their own repos, not on Django ones. Measured on
   26 October 2026: 8 false alarms in 6 of 10 such repos (no tests found in a Rust and a Ruby repo,
   no linter in CI where clippy, golangci-lint and RuboCop ran), fixed the same day; one class left,
-  a linter run by `npm test`'s script, for T-190.
-- [ ] The README's first screen and the docs done, with the demos already recorded (T-30, T-33).
-- [ ] kiln passes its own grid, its CI green on `main` (T-90).
+  a linter run by `npm test`'s script, for ion-repo#T-190.
+- [ ] The README's first screen and the docs done, with the demos already recorded (ion-repo#T-30, ion-repo#T-33).
+- [ ] kiln passes its own grid, its CI green on `main` (ion-repo#T-90).
 - [ ] No open 🔴 ticket.
 - [ ] The Hacker News title, text and every answer written by antoine, by hand: HN's
   guidelines say "Please don't put generated text in HN posts" and, for comments, "Don't
@@ -1387,7 +1387,7 @@ at work, the US East Coast in its morning, the West Coast waking up.
   Claude (`.devto/`, `.bluesky/`, `.x/`, `.mastodon/`), the AI disclosure only where the platform
   asks (decision 3).
 - [ ] The same day, by antoine: a LinkedIn post written by Claude, and a mail to his university's
-  students; Discussions' categories ready (T-58).
+  students; Discussions' categories ready (ion-repo#T-58).
 - [ ] 16:15 to 17:15, a quarter of an hour apart (identical posts at once trip Reddit's spam
   filters), by antoine: https://www.reddit.com/r/ClaudeAI/submit,
   https://www.reddit.com/r/ClaudeCode/submit, https://www.reddit.com/r/django/submit,
@@ -1397,13 +1397,13 @@ at work, the US East Coast in its morning, the West Coast waking up.
   recommendation: https://github.com/hesreallyhim/awesome-claude-code/issues/new/choose
 - [ ] Until midnight: every comment answered by antoine, with facts from the study, never an
   argument over taste; pull requests through `/kiln:contribution`; three good first issues open
-  (T-98, T-116, a grid rule to add) by `/kiln:good-first-issues`.
+  (ion-repo#T-98, ion-repo#T-116, a grid rule to add) by `/kiln:good-first-issues`.
 - [ ] A week later, with the first numbers: Anthropic's plugin directory, one plugin, `kiln`
   (decision 27): https://clau.de/plugin-directory-submission
 - [ ] Never: asking for votes, posting from several accounts, the same text twice without a
   canonical URL.
 
-### T-53 · Readable by Claude, measured: the A/B test
+### ion-repo#T-53 · Readable by Claude, measured: the A/B test
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-16
@@ -1423,12 +1423,12 @@ layouts directly.
 - [ ] The result published either way; the readability rules of the grid follow it (a rule the
   measurement does not support goes back to `assess`).
 
-### T-167 · The branch guard reads the session's folder, not the command's
+### ion-repo#T-167 · The branch guard reads the session's folder, not the command's
 - **Type**: bug
 - **Status**: todo
 - **Opened**: 2026-10-21
 - **Effort**: S · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: T-05 probe, 2026-10-21
+- **Origin**: ion-repo#T-05 probe, 2026-10-21
 
 `plugins/kiln/hooks/branch_guard.py` refused `cd <scratch repo> && git commit` on a branch of
 another repo with "never commit on develop": it checks the branch of the session's folder and
@@ -1440,18 +1440,18 @@ on a `test/…` branch whose commit was refused with "never commit on develop".
 Same family, seen on 31 October 2026 (session bc540ab5): `git checkout -b x; git commit` sent as one
 command is refused on `main`, since the guard reads the branch before the command runs.
 
-### T-168 · A repo from `kiln new` + `gh repo create --push` has no CI workflow on GitHub
+### ion-repo#T-168 · A repo from `kiln new` + `gh repo create --push` has no CI workflow on GitHub
 - **Type**: bug
 - **Status**: todo
 - **Opened**: 2026-10-21
 - **Effort**: S · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: T-05 probe, 2026-10-21
+- **Origin**: ion-repo#T-05 probe, 2026-10-21
 
 After the first push, `ci.yml` was not registered (dispatch answered 404 for minutes); a second
 commit touching the file registered it. Reproduce with `kiln publish`, then find out whether it
 is GitHub's or kiln's doing.
 
-### T-188 · The potential on every run, the frozen templates scored, an honest comparison
+### ion-repo#T-188 · The potential on every run, the frozen templates scored, an honest comparison
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -1461,12 +1461,12 @@ is GitHub's or kiln's doing.
 
 Planned in v0.5.0, "Public launch: the proof and the page".
 Milestone decided by antoine (16 October 2026), its content defined on 17 October: the version the
-launch waits for (T-03). The proof (kiln's own repos at 100) and the page that shows it, the
+launch waits for (ion-repo#T-03). The proof (kiln's own repos at 100) and the page that shows it, the
 potential line as its demo.
 
 - [ ] **I07** The potential on every run: "58 now · 74 after `kiln fix` (no token, about 2 minutes)
   · 100 after the roadmap (12 items, about 3 hours of Claude Code)".
-- [ ] **P18** The frozen templates (T-133) scored at each candidate too: frozen doesn't mean
+- [ ] **P18** The frozen templates (ion-repo#T-133) scored at each candidate too: frozen doesn't mean
   rotting, and their score goes in the docs.
 - [ ] **V04** An honest comparison page: kiln score beside OpenSSF Scorecard, SonarQube, Codacy,
   DeepSource, Snyk, repolinter and the CHAOSS metrics; what each sees and what kiln adds (practices,
@@ -1474,7 +1474,7 @@ potential line as its demo.
 - [ ] **V07** `kiln score` in the README demo's first ten seconds: the number, the potential, `kiln
   fix`, the number again.
 
-### T-374 · Out-of-request work for a project without Celery: [OUT-OF-REQUEST], [OUTBOX], [IDEMPOTENCY]
+### ion-repo#T-374 · Out-of-request work for a project without Celery: [OUT-OF-REQUEST], [OUTBOX], [IDEMPOTENCY]
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-30
@@ -1494,7 +1494,7 @@ breaks the rule silently or builds a whole Celery stack for three mails.
   creations), instead of "every mutation".
 - [ ] The Django template offers that path, so the first mail of a project is not improvised.
 
-### T-382 · `kiln ci` doesn't replay `python.yml`, and its verdict still says success
+### ion-repo#T-382 · `kiln ci` doesn't replay `python.yml`, and its verdict still says success
 - **Type**: bug
 - **Status**: todo
 - **Opened**: 2026-10-30
@@ -1517,7 +1517,7 @@ before a deployment; the release of hearth v0.1.0 went through on it, its tests 
 
 ## 🟡 Normal
 
-### T-375 · [CLOCK] names freezegun, which [NEW-DEPENDENCY] refuses
+### ion-repo#T-375 · [CLOCK] names freezegun, which [NEW-DEPENDENCY] refuses
 - **Type**: bug
 - **Status**: todo
 - **Opened**: 2026-10-30
@@ -1530,7 +1530,7 @@ before a deployment; the release of hearth v0.1.0 went through on it, its tests 
 (`time_machine.travel(..., tick=False)`), and the grid's check (`charter.toml`, ratchet
 `clock-in-tests`) accepts both.
 
-### T-376 · `kiln check` ran no test on emberstudio, and left a `.env` towards a stopped PostgreSQL
+### ion-repo#T-376 · `kiln check` ran no test on emberstudio, and left a `.env` towards a stopped PostgreSQL
 - **Type**: bug
 - **Status**: todo
 - **Opened**: 2026-10-30
@@ -1547,12 +1547,12 @@ database until `podman-compose up -d db`.
   saying why; never "All checks pass" without the tests.
 - [ ] A `.env` that `kiln check` writes comes with the database it names started, or says how.
 
-### T-377 · An agent cannot document a new variable: `.env.example` is under the `.env*` deny
+### ion-repo#T-377 · An agent cannot document a new variable: `.env.example` is under the `.env*` deny
 - **Type**: bug
 - **Status**: todo
 - **Opened**: 2026-10-30
 - **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: emberstudio session `feat/auth`, 30 October 2026 (see also AI02, T-369)
+- **Origin**: emberstudio session `feat/auth`, 30 October 2026 (see also AI02, ion-repo#T-369)
 
 The permission rules deny reading and editing `.env*`; `.env.example` matches, though it holds no
 secret by design ([SECRETS]) and the generated README sends people to it. The session added
@@ -1562,7 +1562,7 @@ user has to add them by hand.
 - [ ] The deny excludes `*.example` (and `.env.sample`), in kiln's settings and in AI02's check.
 - [ ] OP07 `ENV-EXAMPLE-COMPLETE` would then be reachable by an agent.
 
-### T-379 · Django template: `django-stubs-ext`, so `admin.ModelAdmin[Model]` runs
+### ion-repo#T-379 · Django template: `django-stubs-ext`, so `admin.ModelAdmin[Model]` runs
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-30
@@ -1574,9 +1574,9 @@ type 'ModelAdmin' is not subscriptable` at import without `django_stubs_ext.monk
 session dropped its admin rather than fight it. The template adds `django-stubs-ext` and calls
 `monkeypatch()` in `settings.py`, so a typed admin works from the first model.
 
-### T-380 · `/kiln:merge` ends by offering `/grog:distill` on the session
+### ion-repo#T-380 · `/kiln:merge` ends by offering `/grog:distill` on the session
 - **Type**: improvement
-- **Status**: blocked — waiting for grog's `/grog:distill` (grog T-01)
+- **Status**: blocked — waiting for grog's `/grog:distill` (ion-learn#T-01)
 - **Opened**: 2026-10-30
 - **Effort**: S · **Owner**: — · **Due**: —
 - **Origin**: antoine, 30 October 2026: at the end of a session, offer a skill that improves the
@@ -1586,7 +1586,7 @@ A merge is the real end of a piece of work. Step 6 of `/kiln:merge` adds one lin
 `/grog:distill` on this session?", only when grog's plugin is installed, and only after a session
 with something to learn (a refused command, a rule worked around, a fix redone).
 
-### T-381 · A long session fetches the integration branch before building on it
+### ion-repo#T-381 · A long session fetches the integration branch before building on it
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-30
@@ -1600,7 +1600,7 @@ the old setup. A rule of the way of working: before a decision that rests on the
 setup, and at least before the last commits, `git fetch` and read what the integration branch
 gained (`git log HEAD..origin/<integration>`); merge it into the branch early rather than late.
 
-### T-383 · `/kiln:worktree` reports two false failures
+### ion-repo#T-383 · `/kiln:worktree` reports two false failures
 - **Type**: bug
 - **Status**: todo
 - **Opened**: 2026-10-30
@@ -1616,7 +1616,7 @@ gained (`git log HEAD..origin/<integration>`); merge it into the branch early ra
   the session was opened above the repo (`~/code/Keramos`, twice). The skill says so and goes on
   with absolute paths, instead of a bare error.
 
-### T-384 · A session start warns when another session is working on the same repo
+### ion-repo#T-384 · A session start warns when another session is working on the same repo
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-30
@@ -1626,13 +1626,13 @@ gained (`git log HEAD..origin/<integration>`); merge it into the branch early ra
 
 antoine's rule is one session at a time on a project; nothing tells him when two are open. Two
 sessions worked on the same repo at once: one found a gitleaks alert that came from the other's
-commit, the other built on a setting the first was changing (T-381). A third learned at its end
+commit, the other built on a setting the first was changing (ion-repo#T-381). A third learned at its end
 that another session was still open on its subject.
 - [ ] The `SessionStart` hook lists the other sessions whose transcript
   (`~/.claude/projects/<project>/`) was written in the last minutes with a `cwd` in the same repo
   (its worktrees included), with their branch, and asks whether to go on.
 
-### T-385 · `kiln session move`: a session filed under its repo afterwards
+### ion-repo#T-385 · `kiln session move`: a session filed under its repo afterwards
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-30
@@ -1666,7 +1666,7 @@ still being written. Filing it afterwards is the need, not avoiding the restart.
   paths in `~/.claude` rewritten, a forward left at the old path. A symlink between project folders
   makes one session appear twice: `ion learn digest <id>` then refuses it as ambiguous.
 
-### T-386 · Sessions named on their own: at the branch, then at the ticket
+### ion-repo#T-386 · Sessions named on their own: at the branch, then at the ticket
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-30
@@ -1675,12 +1675,12 @@ still being written. Filing it afterwards is the need, not avoiding the restart.
   grog (grog rereads finished sessions, on request: too late and too rare for a name that serves
   while the session lives and to resume it; it reads the names, it does not give them)
 
-T-344 names a session only when someone runs `kiln pause`, and left the rest to Claude Code's
+ion-repo#T-344 names a session only when someone runs `kiln pause`, and left the rest to Claude Code's
 `/rename` and its automatic title. Most sessions end unnamed by us, though kiln already knows
 what each one works on: `suggested_names()` in `src/kiln/pause.py` draws a name from the branch,
 the ticket in progress and the last commit, with no call to the model (no token spent).
 - [ ] When `/kiln:worktree` creates the branch, the session takes the branch made readable as its
-  name; when `/kiln:backlog start T-NN` runs, it becomes `T-NN: <title>`. A session left on the
+  name; when `/kiln:backlog start ion-repo#T-NN` runs, it becomes `ion-repo#T-NN: <title>`. A session left on the
   integration branch keeps Claude Code's own title.
 - [ ] A name the user gave (`/rename`, `kiln pause "<name>"`) is never overwritten.
 - [ ] Where the name lives, decided first: `/rename` appends
@@ -1691,7 +1691,7 @@ the ticket in progress and the last commit, with no call to the model (no token 
   shows it in its status line and the list at session start, Claude Code's title untouched.
 - [ ] grog's `/grog:distill` offers the sessions by these names.
 
-### T-371 · `/kiln:token`: a paste prompt in kiln's own style
+### ion-repo#T-371 · `/kiln:token`: a paste prompt in kiln's own style
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-29
@@ -1716,7 +1716,7 @@ success, `✗` EMBER for failure, bold titles, dim notes; bare text outside a te
 - [ ] Optional: `--to <command>` pipes the secret into another tool's stdin (`wrangler secret
   put NAME`, `gh secret set NAME`) without writing it to disk.
 
-### T-364 · Credentials under one `.secrets/` folder, caches hidden from the editor
+### ion-repo#T-364 · Credentials under one `.secrets/` folder, caches hidden from the editor
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1731,7 +1731,7 @@ success, `✗` EMBER for failure, bold titles, dim notes; bare text outside a te
 - [ ] `.secrets/` in the template's `.gitignore`: one tracked line protects every service,
   present and future, in every clone (today a forgotten exclude line and `git add .` commit a
   token); a matching `Read(.secrets/**)` deny in `.claude/settings.json` keeps it from agents
-  (T-200).
+  (ion-repo#T-200).
 - [ ] `kiln update` offers to move the existing `.<service>/` folders (untracked: moved on the
   machine, never committed), and says which files still quote the old paths.
 - [ ] `files.exclude` in `template/.vscode/settings.json.jinja`: `__pycache__`, `.mypy_cache`,
@@ -1741,7 +1741,7 @@ success, `✗` EMBER for failure, bold titles, dim notes; bare text outside a te
 - [ ] ⚠ breaking: the credentials convention changes; conversion in `kiln update`, both
   references and READMEs.
 
-### T-347 · A mascot and a logo, still and animated
+### ion-repo#T-347 · A mascot and a logo, still and animated
 - **Type**: idea
 - **Status**: blocked — waiting for antoine's choice of mascot
 - **Opened**: 2026-10-26
@@ -1755,7 +1755,7 @@ in the fire of a kiln. Once chosen:
   animated one (the banner of `kiln new`, the GIFs), drawn by `scripts/screenshots.py` like the
   other images.
 
-### T-348 · Opt-in telemetry: which commands run, and how they end
+### ion-repo#T-348 · Opt-in telemetry: which commands run, and how they end
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1763,7 +1763,7 @@ in the fire of a kiln. Once chosen:
 - **Origin**: antoine's answers of 26 October 2026 (Q96: "yes, we need telemetry!"), reversing
   S05; decision 19
 
-Which commands strangers run, and where they fail, decides what to merge or drop (T-10). Go chose
+Which commands strangers run, and where they fail, decides what to merge or drop (ion-repo#T-10). Go chose
 opt-in after its 2023 debate, and HN's readers judge a launch on it: opt-in it is.
 - [ ] Asked once, at install or at the first command, answer "no" by default; `kiln set
   telemetry=on|off`; `KILN_NO_TELEMETRY=1` and CI (`CI=true`) never send.
@@ -1772,7 +1772,7 @@ opt-in after its 2023 debate, and HN's readers judge a launch on it: opt-in it i
 - [ ] An existing service with an EU region and a free tier (to choose with sources), no server
   of kiln's (decision 20).
 
-### T-349 · A daily digest mail: issues, pull requests, discussions, gap reports
+### ion-repo#T-349 · A daily digest mail: issues, pull requests, discussions, gap reports
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1781,13 +1781,13 @@ opt-in after its 2023 debate, and HN's readers judge a launch on it: opt-in it i
   a free agent that only receives PRs and issues and mails me an ultra simple recap"), decision 19
 
 - [ ] A scheduled workflow of kiln's repo (free on a public repo), once a day: what opened, what
-  waits for antoine, the gap reports (T-38), each in one line with its link; nothing sent on an
+  waits for antoine, the gap reports (ion-repo#T-38), each in one line with its link; nothing sent on an
   empty day.
 - [ ] Written by script first (no tokens); a model's summary only if the script's is not clear
   enough, through a free tier (GitHub Models).
 - [ ] The mail account through `/kiln:token` (`.mail/`), the address antoine gives.
 
-### T-350 · Launch metrics kept in ion-repo-measures
+### ion-repo#T-350 · Launch metrics kept in ion-repo-measures
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1798,11 +1798,11 @@ opt-in after its 2023 debate, and HN's readers judge a launch on it: opt-in it i
 GitHub keeps a repo's traffic (views, clones, referrers) for 14 days only: what the launch week
 brings is lost unless saved.
 - [ ] Once a week from the launch, into `ion-repo-measures`: stars, forks, PyPI downloads, GitHub
-  traffic and referrers, repos showing the badge (T-154), gap reports (T-38), telemetry's counts
-  (T-348).
+  traffic and referrers, repos showing the badge (ion-repo#T-154), gap reports (ion-repo#T-38), telemetry's counts
+  (ion-repo#T-348).
 - [ ] The launch texts, contacts and the questions file live there too, never in kiln.
 
-### T-351 · `kiln dev` runs any repo without being told
+### ion-repo#T-351 · `kiln dev` runs any repo without being told
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1817,7 +1817,7 @@ files, `package.json` scripts, Makefiles, Justfiles, devcontainers.
 - [ ] Measured on a corpus of public repos: the share of repos whose servers come up with no question;
   each miss a test.
 
-### T-352 · The score as a page: Markdown and Mermaid charts
+### ion-repo#T-352 · The score as a page: Markdown and Mermaid charts
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1829,7 +1829,7 @@ files, `package.json` scripts, Makefiles, Justfiles, devcontainers.
   the score's history from the git notes), rendered as is by GitHub and GitLab.
 - [ ] The terminal shows the number in Lighthouse's bands (0-49 red, 50-89 orange, 90-100 green).
 
-### T-354 · Fast CI: the generated test suites in parallel
+### ion-repo#T-354 · Fast CI: the generated test suites in parallel
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1845,7 +1845,7 @@ files, `package.json` scripts, Makefiles, Justfiles, devcontainers.
 - [ ] What `kiln ci` does not replay yet, said on 26 October: the end-to-end job (its own
   services), the `infra` and `sbom` workflows.
 
-### T-355 · The repo's update offered outside Claude Code too
+### ion-repo#T-355 · The repo's update offered outside Claude Code too
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1857,10 +1857,10 @@ The tool's own update is offered after a command typed in a terminal, but never 
 like antoine's, which is why he hasn't seen it. The repo's `kiln update` is offered only in a
 Claude session.
 - [ ] A kiln command typed in a terminal, in a repo behind the latest release, ends by offering
-  `kiln update`, at the pace of `update-reminders` (T-45); a yes runs it on a branch and merges it
+  `kiln update`, at the pace of `update-reminders` (ion-repo#T-45); a yes runs it on a branch and merges it
   when the checks pass, a conflict sends the user to `/kiln:update`.
 
-### T-356 · Strangers may follow the candidates; kiln's `develop` gets a channel of its own
+### ion-repo#T-356 · Strangers may follow the candidates; kiln's `develop` gets a channel of its own
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1874,7 +1874,7 @@ early releases that passed the whole CI, which the candidates are.
   editable checkout, moves to `edge`; `kiln update` converts the setting.
 - [ ] The reference and `kiln set channel=…`'s help say what each channel gets and risks.
 
-### T-357 · Every agent, or none: the instructions laid for the agent the person uses
+### ion-repo#T-357 · Every agent, or none: the instructions laid for the agent the person uses
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1891,9 +1891,9 @@ AGENTS.md is read by most agents; Claude Code reads CLAUDE.md, which can import 
 - [ ] What only Claude Code has (skills, hooks, the status line) stays in its plugins; the
   others get the same rules as text.
 - [ ] Without an agent: `kiln score`, `kiln fix` and the roadmap written for a person (the
-  checklist of T-129 in plain words).
+  checklist of ion-repo#T-129 in plain words).
 
-### T-358 · The generated flow follows the evidence: trunk-based, pull requests for teams
+### ion-repo#T-358 · The generated flow follows the evidence: trunk-based, pull requests for teams
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1906,11 +1906,11 @@ performance, and git-flow's author advises a simpler flow for software delivered
 which a web app is. The generated repos follow antoine's flow today (`develop`, `main`,
 `release/**`, merges without pull requests, CI at the release only).
 - [ ] New repos: one long-lived branch (`main`), short branches, releases as tags after the whole
-  CI; for team profiles (T-39), a pull request and its CI before each merge.
+  CI; for team profiles (ion-repo#T-39), a pull request and its CI before each merge.
 - [ ] Repos of the old flow keep it until they choose; the conversion offered by `kiln update`.
-- [ ] kiln's own repo keeps `develop` and `main` while its channels hang on them (T-356).
+- [ ] kiln's own repo keeps `develop` and `main` while its channels hang on them (ion-repo#T-356).
 
-### T-359 · kiln's own engines weighed against existing tools: keep, wrap or replace
+### ion-repo#T-359 · kiln's own engines weighed against existing tools: keep, wrap or replace
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1925,7 +1925,7 @@ which a web app is. The generated repos follow antoine's flow today (`develop`, 
 - [ ] Kept only where kiln's is better or nothing exists; otherwise wrapped or replaced, one
   ticket each.
 
-### T-37 · Docker or podman: the engine the machine has
+### ion-repo#T-37 · Docker or podman: the engine the machine has
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1935,12 +1935,12 @@ which a web app is. The generated repos follow antoine's flow today (`develop`, 
   not mandatory"), decision 17
 
 Many strangers on macOS have Docker Desktop or OrbStack: refusing them is friction at the first
-try. The grid's container rules are engine-neutral already (T-125).
+try. The grid's container rules are engine-neutral already (ion-repo#T-125).
 - [ ] `kiln dev`'s backing services and `kiln ci`'s throwaway databases run on podman or Docker,
   whichever the machine has, podman first; `kiln doctor` says podman is recommended, and why
   (rootless, no daemon), without failing on Docker.
 
-### T-117 · A VS Code extension
+### ion-repo#T-117 · A VS Code extension
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -1950,17 +1950,17 @@ try. The grid's container rules are engine-neutral already (T-125).
   paid"; Q96: people who can't use a terminal), decision 38
 
 Publishing is free (the VS Code Marketplace and Open VSX, which Cursor and VSCodium read).
-- [ ] The score and the findings in the editor, from `kiln score --json` and the SARIF of T-91: a
+- [ ] The score and the findings in the editor, from `kiln score --json` and the SARIF of ion-repo#T-91: a
   finding on its line, its why and its fix one click away; no logic of its own.
 
-### T-174 · More converters: the code
+### ion-repo#T-174 · More converters: the code
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
 - **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
 
-The second half of T-173: rules on the code itself, each change proven by the repo's tests.
+The second half of ion-repo#T-173: rules on the code itself, each change proven by the repo's tests.
 - [ ] NOQA-CODES and TYPE-IGNORE-CODES: ruff or mypy run, the code of each error read and
   written into the bare comment.
 - [ ] JS-LINTER: a minimal flat ESLint config, as `add_ruff` does for Python.
@@ -1968,7 +1968,7 @@ The second half of T-173: rules on the code itself, each change proven by the re
   obvious, left to judgment otherwise.
 - [ ] BARE-EXCEPT: `except:` → `except Exception:`, kept only when the tests stay green.
 
-### T-175 · `kiln fix` runs the checks once, then bisects on red
+### ion-repo#T-175 · `kiln fix` runs the checks once, then bisects on red
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
@@ -1976,14 +1976,14 @@ The second half of T-173: rules on the code itself, each change proven by the re
 - **Origin**: review of `kiln fix` asked by antoine, 24 October 2026
 
 Today the whole test suite runs after each converter: ten rules, ten runs, which kiln-bot pays
-in CI minutes (T-59).
+in CI minutes (ion-repo#T-59).
 - [ ] Every converter applied, one commit each, then the checks once; when red, a bisection
   over the commits finds the culprit, which alone is undone.
 - [ ] The network lookups (commit SHAs, image digests) resolved in parallel before the
   converters start.
 - [ ] The time saved measured on the two training copies, written in the release note.
 
-### T-176 · `kiln fix` options: several rules, `--skip`, `--json`, `--pr`, `--dry-run --verify`
+### ion-repo#T-176 · `kiln fix` options: several rules, `--skip`, `--json`, `--pr`, `--dry-run --verify`
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
@@ -1993,12 +1993,12 @@ in CI minutes (T-59).
 - [ ] `--rule` takes several rules; `--skip RULE` leaves some out.
 - [ ] `--json`: the outcomes for the CI and the skills (`/kiln:modernize`, kiln-bot).
 - [ ] `--pr`: the branch pushed and a pull request opened with the score before and after and
-  the why of each commit (the base kiln-bot reuses, T-59).
+  the why of each commit (the base kiln-bot reuses, ion-repo#T-59).
 - [ ] `--dry-run --verify`: the checks run on the throwaway copy too.
 - [ ] The references in both languages and the README updated with the options
   (`tests/test_docs.py`).
 
-### T-169 · `kiln new` asks about your situation, not about tools
+### ion-repo#T-169 · `kiln new` asks about your situation, not about tools
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
@@ -2033,9 +2033,9 @@ empty for Claude.
   podman, serena, time zone, `compact_window`, status line, owner and team.
 - [ ] `tests/test_questions.py`, the references (both languages), and the demo
   (`docs/assets/kiln-new.tape`) re-recorded.
-- [ ] Built with T-184 (the tailored door): one recap, one machine profile for both.
+- [ ] Built with ion-repo#T-184 (the tailored door): one recap, one machine profile for both.
 
-### T-184 · `kiln new` tailored: it starts from what you know, then what the project needs
+### ion-repo#T-184 · `kiln new` tailored: it starts from what you know, then what the project needs
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
@@ -2045,7 +2045,7 @@ empty for Claude.
   for frameworks".
 
 Two doors at the start of `kiln new`: "Quick: 3 questions, kiln picks the rest" (default, made
-better by T-169) and "Tailored: your profile, your project, every setting (~5 min)", which
+better by ion-repo#T-169) and "Tailored: your profile, your project, every setting (~5 min)", which
 replaces `--all-questions` (today Copier's raw questionnaire). Rule for every question: its
 answer changes a generated file, or it is written into a "Project context" section of
 `CLAUDE.md`; none is lost. Each question says what it changes, takes "I don't know" (kiln's
@@ -2058,8 +2058,8 @@ Stage 1, on what the template already has (this ticket's effort):
   container engine; three levels per box (know well / a little / want to learn). Filled once,
   used by every `kiln new`, the quick one too; changed by `kiln set profile`.
 - [ ] Asked once at install (`kiln install`), at `kiln new` only if never answered (antoine,
-  26 October 2026, Q53); with the agent the person uses (T-357) and the profile of structure
-  (T-39).
+  26 October 2026, Q53); with the agent the person uses (ion-repo#T-357) and the profile of structure
+  (ion-repo#T-39).
 - [ ] Pre-ticked from the repos of the code directory (`fleet.py`): "3 Django repos, 1 Nuxt".
 - [ ] "Is this to ship or to learn?": ship recommends within what you know well (React, not
   Vue → Next.js); learn picks a "want to learn" box and makes the Claude rules teach (explain
@@ -2067,7 +2067,7 @@ Stage 1, on what the template already has (this ticket's effort):
 - [ ] The profile written for Claude too: "knows Python well, new to TypeScript: detail the
   front, be brief on the back".
 - [ ] Tools kiln does not generate stay tickable (Go, Rust, PHP, Ruby, C#, Kotlin, Svelte,
-  Angular…): "Go: no template yet, report it?", counted with consent like T-38's gap reports,
+  Angular…): "Go: no template yet, report it?", counted with consent like ion-repo#T-38's gap reports,
   to choose the next stacks on facts.
 - [ ] Sections: you (ship or learn, developer or not, Claude's autonomy, languages of talk, code
   and commits); the project (purpose in one sentence, type, lifetime); people (who uses it, how
@@ -2095,7 +2095,7 @@ Later stages, each its own ticket when planned:
   cost paid at each release; a stack kiln generates but `kiln score` does not grade is said so in
   the recommendation.
 
-### T-179 · A new Django repo's tests start without warnings
+### ion-repo#T-179 · A new Django repo's tests start without warnings
 - **Type**: bug
 - **Status**: todo
 - **Opened**: 2026-10-24
@@ -2108,7 +2108,7 @@ Later stages, each its own ticket when planned:
 exist before `collectstatic`. A repo kiln has just made should run its tests clean; settle it in
 the template (the test settings, or the folder created), not by silencing the warning.
 
-### T-160 · A front with no backend ships a smoke test
+### ion-repo#T-160 · A front with no backend ships a smoke test
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-20
@@ -2122,7 +2122,7 @@ dependency): Astro's `dist/index.html`, Next's prerendered `.next/server/app/ind
 prerendering `/` or its server started. Run after `build` in `ci.yml` and in `kiln check`; then
 drop the exemption.
 
-### T-153 · `statusline.ci locale`: a French value left in generated repos
+### ion-repo#T-153 · `statusline.ci locale`: a French value left in generated repos
 - **Type**: bug
 - **Status**: todo
 - **Opened**: 2026-10-20
@@ -2134,7 +2134,7 @@ writes `locale` for a CI run on the machine, read by the status line script, the
 hook and `/kiln:merge`. Write `local`, keep reading `locale` (hooks and status line are read from
 the main tree by open sessions), convert existing repos in `kiln update`.
 
-### T-45 · Update reminders at the pace you choose
+### ion-repo#T-45 · Update reminders at the pace you choose
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
@@ -2151,7 +2151,7 @@ break, skipped conversions pile up). So space the question, never the updates.
   applied without a question at the next `kiln update`, never counted as a reminder.
 - [ ] From 1.0 (strict semver): `update-level=patch|minor|all` to follow only some releases.
 
-### T-107 · After an update, Claude is told what changed in its rules
+### ion-repo#T-107 · After an update, Claude is told what changed in its rules
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
@@ -2162,12 +2162,12 @@ A session opened before an update keeps working by the old rules.
 - [ ] The session-start hook says, once, the rules added or changed by the last update (from
   the release notes and the grid's `since`), in three lines at most.
 
-### T-118 · Each milestone announced on Bluesky, dev.to, X and Mastodon
+### ion-repo#T-118 · Each milestone announced on Bluesky, dev.to, X and Mastodon
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
 - **Effort**: S · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: growth review, second batch, 16 October 2026; accounts ready (T-03)
+- **Origin**: growth review, second batch, 16 October 2026; accounts ready (ion-repo#T-03)
 
 A milestone is a reason to be seen again, from the launch on: nothing before it, so the launch
 lands as one wave. Only milestones (a new minor) are announced: a post every two days would be
@@ -2178,14 +2178,14 @@ noise (antoine, 26 October 2026, Q131; decision 41); the patch releases go out w
   through `/kiln:token`; Mastodon on an instance for open-source projects.
 - [ ] Nothing says "written with Claude" unless the platform asks (decision 3).
 
-### T-91 · Findings where people look: SARIF in pull requests and code scanning
+### ion-repo#T-91 · Findings where people look: SARIF in pull requests and code scanning
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
 - **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: growth review, 16 October 2026; rewritten 17 October 2026 for the grid
 
-- [ ] `kiln score --sarif`, uploaded by kiln-bot (T-59) and the charter workflow: findings in
+- [ ] `kiln score --sarif`, uploaded by kiln-bot (ion-repo#T-59) and the charter workflow: findings in
   the pull request diff and in GitHub code scanning.
 - [ ] Repo-local rules in the grid's format (`.kiln/grid/`), tested like kiln's; a rule that
   proves useful is proposed to kiln by `/kiln:report`.
@@ -2193,11 +2193,11 @@ noise (antoine, 26 October 2026, Q131; decision 41); the patch releases go out w
 From the kiln score ideas of 24 October 2026:
 - [ ] **L02** Complete SARIF 2.1.0: rules with `helpUri` to their page, regions,
   `partialFingerprints`, `fixes` for scripted fixes, waivers as `suppressions` with their reason
-  (T-91).
-- [ ] **R01** Repo-local rules in `.kiln/grid/` (T-91), in the same format, their examples run by
+  (ion-repo#T-91).
+- [ ] **R01** Repo-local rules in `.kiln/grid/` (ion-repo#T-91), in the same format, their examples run by
   `kiln grid test`.
 
-### T-54 · Every candidate proven on real upgrade paths
+### ion-repo#T-54 · Every candidate proven on real upgrade paths
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
@@ -2212,7 +2212,7 @@ old release.
 - [ ] The hooks, skills and status line run against the current and the previous Claude Code
   release; `claude plugin eval` suites for the main skills.
 
-### T-180 · The test suite renders each set of answers once, and copier stops asking git per file
+### ion-repo#T-180 · The test suite renders each set of answers once, and copier stops asking git per file
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
@@ -2234,12 +2234,12 @@ load of 16 workers.
   `kiln update` gain too. A pull request to copier, then the version bumped here.
 - [ ] Suite time before and after written in the merge commit.
 
-### T-181 · The session start does not wait for GitHub
+### ion-repo#T-181 · The session start does not wait for GitHub
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
 - **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: same measurement as T-180, 24 October 2026
+- **Origin**: same measurement as ion-repo#T-180, 24 October 2026
 
 `plugins/kiln/hooks/session_start.py` takes 1.3 s at every session start, almost all of it in
 one network call, `gh run list --branch develop --limit 20` (1.5 s, the red CI check), made in
@@ -2249,29 +2249,29 @@ sequence. Off the `beta` channel, `git ls-remote` of the update check comes on t
 - [ ] Otherwise, at least the network calls run at the same time, not one after the other.
 - [ ] Same messages, same cases: `tests/test_session_start.py` unchanged.
 
-### T-182 · `kiln status` in half a second
+### ion-repo#T-182 · `kiln status` in half a second
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
 - **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: same measurement as T-180, 24 October 2026
+- **Origin**: same measurement as ion-repo#T-180, 24 October 2026
 
 `kiln status` takes 1.9 s over 10 repos:
 - [ ] 0.36 s to import copier, which `status` never uses: it comes through
   `fleet → adopted → adopted_names → migrations`, which imports it at the top (so does
-  `frozen.py`). Imported inside the functions that render; T-178's note that copier is only
+  `frozen.py`). Imported inside the functions that render; ion-repo#T-178's note that copier is only
   imported by the commands that need it is not true for this path.
 - [ ] 0.42 s for `git ls-remote` in `versions.latest_release`, run before the local work: run it
   alongside.
 - [ ] ~0.5 s of 23 git calls made one repo after the other: a thread per repo.
 - [ ] `kiln update --all` and the other fleet commands get the same import fix for free.
 
-### T-183 · One hook per Bash call instead of two
+### ion-repo#T-183 · One hook per Bash call instead of two
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-24
 - **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: same measurement as T-180, 24 October 2026
+- **Origin**: same measurement as ion-repo#T-180, 24 October 2026
 
 Every Bash call of Claude Code waits for two Python processes in a row: `branch_guard.py`
 (45 ms) then `rtk.py` (100 ms: two `git config`, then `rtk hook claude`), about 150 ms paid
@@ -2284,12 +2284,12 @@ hundreds of times a session.
   never blocks Claude), `check_file.py` (70 ms), the CLI start (120 ms), `kiln score` (0.4 s),
   `kiln check` (0.8 s), `charter` (0.6 s).
 
-### T-77 · Tests in seconds after each edit: only those the change touches
+### ion-repo#T-77 · Tests in seconds after each edit: only those the change touches
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
 - **Effort**: M · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: growth review, 16 October 2026; complements T-27 (doctrine 11: only recheck what
+- **Origin**: growth review, 16 October 2026; complements ion-repo#T-27 (doctrine 11: only recheck what
   changed)
 
 Claude Code learns from fast feedback; a full suite after each edit is too slow on big repos.
@@ -2297,7 +2297,7 @@ Claude Code learns from fast feedback; a full suite after each edit is too slow 
   `kiln check` and CI.
 - [ ] Offered to Claude as the default test command in the generated rules.
 
-### T-144 · Checks as fast as they are precise: oxlint, TypeScript 7, ty or pyrefly, measured
+### ion-repo#T-144 · Checks as fast as they are precise: oxlint, TypeScript 7, ty or pyrefly, measured
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-18
@@ -2310,28 +2310,28 @@ A slow check ends up not being run, and the time goes into the tools, not into k
   replace, for time and for what it finds: oxlint next to eslint (2.7 s, fewer rules, weak on Vue
   templates), TypeScript 7's native compiler for the type check, ty or pyrefly next to mypy on
   Django code.
-- [ ] Each one a grid rule (T-123): `trial` in the template only when it finds at least what the
+- [ ] Each one a grid rule (ion-repo#T-123): `trial` in the template only when it finds at least what the
   old tool found on the rules it covers, `assess` otherwise; the measurement kept as its source.
 - [ ] kiln's own rules written as ast-grep patterns where a pattern can say them; Rust only where
   a measurement shows kiln's code is the slow part.
 
-### T-141 · Grid v2: the themes after the launch
+### ion-repo#T-141 · Grid v2: the themes after the launch
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-17
 - **Effort**: L · **Owner**: @antoine-tena · **Due**: —
-- **Origin**: vision of 17 October 2026 (the 23 themes); T-52, T-78, T-92, T-93, T-101, T-102,
-  T-103 and T-105 merged here, as rules
+- **Origin**: vision of 17 October 2026 (the 23 themes); ion-repo#T-52, ion-repo#T-78, ion-repo#T-92, ion-repo#T-93, ion-repo#T-101, ion-repo#T-102,
+  ion-repo#T-103 and ion-repo#T-105 merged here, as rules
 
 Planned box by box: the three new themes in v0.5.13, every other box with its theme's release
 in [🚀 Releases](#-releases), as the ideas that carry it.
 
-- [ ] Tests: property tests, mutation testing, API fuzzing, end-to-end journeys (with T-136).
+- [ ] Tests: property tests, mutation testing, API fuzzing, end-to-end journeys (with ion-repo#T-136).
 - [ ] Data and migrations: migrations linted before merge (django-migration-linter, squawk),
   seed data, anonymised dumps.
 - [ ] Front, accessibility and performance: axe checks, Lighthouse budgets, Core Web Vitals.
 - [ ] Operations and observability: backups with a tested restore, health checks, alerts on
-  symptoms; OpenTelemetry and SLO by profile (T-39).
+  symptoms; OpenTelemetry and SLO by profile (ion-repo#T-39).
 - [ ] Git and docs: issue and pull request templates, CODEOWNERS, a licence and the
   dependencies' licences checked, release notes written from the commits.
 - [ ] AI-assisted development: `AGENTS.md` for every agent, the context loaded at session start
@@ -2343,7 +2343,7 @@ in [🚀 Releases](#-releases), as the ideas that carry it.
   `infrastructure`, `data-science` (`MODEL-TRACED` moves there); decision 3 of 24 October
   2026 in the [kiln score ideas](#-kiln-score-the-thesis).
 
-### T-140 · The grid kept current: its sources watched every week
+### ion-repo#T-140 · The grid kept current: its sources watched every week
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-17
@@ -2358,39 +2358,39 @@ in [🚀 Releases](#-releases), as the ideas that carry it.
   doctrine (maturity, sources), never by a count.
 
 From the kiln score ideas of 24 October 2026:
-- [ ] **Q02** The weekly watch (T-140) refreshes the bundle and flags the rules whose sources
+- [ ] **Q02** The weekly watch (ion-repo#T-140) refreshes the bundle and flags the rules whose sources
   changed.
 - [ ] **Q16** A rule whose sources nobody re-read for a year leaves the score, back to assess,
   until someone does: the watch (Q02) flags what moved, this catches what nobody looked at, so
   the grid's breadth can't rot silently and a pack nobody keeps goes quiet rather than wrong.
 
-### T-363 · New tools found the week they come out, assessed before recommended
+### ion-repo#T-363 · New tools found the week they come out, assessed before recommended
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-26
 - **Effort**: M · **Owner**: — · **Due**: —
 - **Origin**: antoine, 26 October 2026 ("a technology watch, so that as soon as a tool comes out
-  kiln knows"): T-140 watches the tools the grid already names; this finds the ones it doesn't
+  kiln knows"): ion-repo#T-140 watches the tools the grid already names; this finds the ones it doesn't
 
 - [ ] Collection by script, no tokens, once a week: the lines added to the stacks' `awesome-*`
   lists (a diff of their README: curated already), the newsletters' feeds (PyCoder's Weekly,
   Django News, JavaScript Weekly, Vue and Nuxt news), Show HN above a points threshold through
   the Algolia API, the packages whose dependents grow fastest on ecosyste.ms, and the unknown
-  packages several gap reports name (T-38). Proven libraries only (`feedparser`, `httpx`, a git
+  packages several gap reports name (ion-repo#T-38). Proven libraries only (`feedparser`, `httpx`, a git
   diff): no crawler of kiln's own.
 - [ ] A deterministic filter: already seen (a state file), no stack of kiln's, no licence, no
   release in a year; what is left is a short list, about 5 to 15 a week.
-- [ ] A scheduled workflow of kiln's repo (free on a public repo, like T-349) opens or updates one
+- [ ] A scheduled workflow of kiln's repo (free on a public repo, like ion-repo#T-349) opens or updates one
   issue per week, `Watch, week N`, one line per candidate with its sources; nothing on an empty
   week.
 - [ ] Judgment by Claude on that list only, in a normal session (a step of `/kiln:backlog`, or a
   skill of its own): replaces a tool of the grid, completes one, or nothing; a yes becomes a
   ticket or a pull request that adds the rule at `assess`, its sources attached.
 - [ ] Known the week it comes out, recommended only on evidence: a new tool enters at `assess`
-  and moves to `trial` then `adopt` through T-140's doctrine (maturity, sources, G12's
+  and moves to `trial` then `adopt` through ion-repo#T-140's doctrine (maturity, sources, G12's
   `level_history`), never because it is new.
 
-### T-57 · A tutorial series: bring a Django repo up to date in an afternoon
+### ion-repo#T-57 · A tutorial series: bring a Django repo up to date in an afternoon
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-16
@@ -2402,7 +2402,7 @@ Tutorials keep bringing visitors long after a launch; a series also tests the pa
   the score, the fixes, the roadmap with Claude Code, kiln-bot, staying there.
 - [ ] Each part replayed at each minor release by a script; a broken step is a bug.
 
-### T-58 · A public roadmap on GitHub Projects
+### ion-repo#T-58 · A public roadmap on GitHub Projects
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-16
@@ -2419,7 +2419,7 @@ file.
 - [ ] Discussions (already enabled) with categories: ideas, the grid (a rule to add or to
   challenge), show and tell, questions; linked from the README and from `/kiln:report`.
 
-### T-74 · The roadmap worked unattended: one gap, one pull request
+### ion-repo#T-74 · The roadmap worked unattended: one gap, one pull request
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-16
@@ -2427,13 +2427,13 @@ file.
 - **Origin**: growth review, 16 October 2026; rewritten 17 October 2026 (v0.6.0: Claude closes
   the gaps alone)
 
-- [ ] Headless Claude Code takes the roadmap of T-129 item by item, each in its own worktree,
+- [ ] Headless Claude Code takes the roadmap of ion-repo#T-129 item by item, each in its own worktree,
   and opens a pull request when the checks pass and the gap has left the score; it never
   merges.
 - [ ] A budget per item and per night in session time, said before it starts and kept within
   the Pro quota; one item at a time (no fleet); a report in the morning.
 
-### T-76 · `kiln ci --fix`: a red CI made green by Claude Code, locally
+### ion-repo#T-76 · `kiln ci --fix`: a red CI made green by Claude Code, locally
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
@@ -2444,7 +2444,7 @@ file.
   branch with the failure as the prompt, replays the job until green or the budget is spent.
 - [ ] Never touches a test to make it pass without saying so in the commit message.
 
-### T-135 · Tests at the lowest token cost, measured on one module first
+### ion-repo#T-135 · Tests at the lowest token cost, measured on one module first
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-17
@@ -2461,7 +2461,7 @@ money module leaves 3 surviving mutants out of 16.
   by script (mutmut for Python, Stryker for TypeScript), Claude on the holes only, the rest
   thrown away unread; coverage and survivors as ratchets.
 
-### T-136 · Test generators that cost no tokens, in the template
+### ion-repo#T-136 · Test generators that cost no tokens, in the template
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-17
@@ -2471,25 +2471,25 @@ money module leaves 3 surviving mutants out of 16.
 - [ ] Schemathesis on the Django Ninja API, Hypothesis for the pure computations (prices,
   dates) with CrossHair as its engine, snapshot tests to freeze behaviour before a modernization, the Playwright recorder for
   the Nuxt journeys; each wired in the template and in `kiln check`, and each a rule of the grid
-  (T-141).
+  (ion-repo#T-141).
 
-### T-137 · Claude invents, the script repeats: a fix made twice becomes a converter
+### ion-repo#T-137 · Claude invents, the script repeats: a fix made twice becomes a converter
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-17
 - **Effort**: M · **Owner**: @antoine-tena · **Due**: —
 - **Origin**: vision of 17 October 2026 (doctrine 6)
 
-- [ ] From the log of `/kiln:modernize` (T-129): a rule fixed the same way twice, in one repo or
-  across repos (with consent, the circuit of T-38), is proposed as a converter; Claude writes it
+- [ ] From the log of `/kiln:modernize` (ion-repo#T-129): a rule fixed the same way twice, in one repo or
+  across repos (with consent, the circuit of ion-repo#T-38), is proposed as a converter; Claude writes it
   with its tests, a cost paid once per rule instead of once per repo.
 
 From the kiln score ideas of 24 October 2026:
 - [ ] **O17** After a modernize session, the points won, tokens spent and items left logged per
-  rule: the cost of a judgment gap measured, not guessed (input of T-137 and of the effort
+  rule: the cost of a judgment gap measured, not guessed (input of ion-repo#T-137 and of the effort
   estimates).
 
-### T-39 · Profiles of structure: the rules that fit an association, a company, a university
+### ion-repo#T-39 · Profiles of structure: the rules that fit an association, a company, a university
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
@@ -2511,11 +2511,11 @@ From the kiln score ideas of 24 October 2026:
 
 From the kiln score ideas of 24 October 2026:
 - [ ] **A18** Team facts from history: contributors in the last 90 days, commit rhythm, age, last
-  activity, code size by language; inputs of the profile (T-39) and of the kind (D).
-- [ ] **D04** The profile (T-39) inferred from signals, never asked: owner (person or organisation),
+  activity, code size by language; inputs of the profile (ion-repo#T-39) and of the kind (D).
+- [ ] **D04** The profile (ion-repo#T-39) inferred from signals, never asked: owner (person or organisation),
   contributors in 90 days, a deployment, personal data handled, licence, stars, a security policy.
 
-### T-87 · Fleet view: every repo of an organisation scored, without cloning
+### ion-repo#T-87 · Fleet view: every repo of an organisation scored, without cloning
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
@@ -2529,11 +2529,11 @@ From the kiln score ideas of 24 October 2026:
 
 From the kiln score ideas of 24 October 2026:
 - [ ] **K05** Remote scoring without a clone for L0 and L1 rules: the Git Trees API lists every path
-  in one call for most repos, then a few config files are fetched. Seconds, for T-87's fleet view.
-- [ ] **P17** The fleet (T-87) scores an organisation's repos remotely (K) and ranks gaps by how
+  in one call for most repos, then a few config files are fetched. Seconds, for ion-repo#T-87's fleet view.
+- [ ] **P17** The fleet (ion-repo#T-87) scores an organisation's repos remotely (K) and ranks gaps by how
   many repos share them: one fix in kiln helps them all.
 
-### T-122 · `kiln version` proposes 1.0.0
+### ion-repo#T-122 · `kiln version` proposes 1.0.0
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
@@ -2548,7 +2548,7 @@ leaving 0.x.
 - [ ] `kiln version` reads the milestones of `docs/backlog/` and says "the next release is the
   v0.6.0 milestone" instead of proposing a patch.
 
-### T-189 · A stranger's first run: no install, never a crash, the next step printed
+### ion-repo#T-189 · A stranger's first run: no install, never a crash, the next step printed
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -2557,11 +2557,11 @@ leaving 0.x.
   machine, Nothing to do), made a ticket on 25 October 2026 at antoine's request
 
 Planned in v0.5.4, "The first week with strangers": promoted after the launch.
-What the launch brings in (issues, reports, the first gap reports of T-38) comes first; these give
-way to it. From here each milestone is announced (T-118).
+What the launch brings in (issues, reports, the first gap reports of ion-repo#T-38) comes first; these give
+way to it. From here each milestone is announced (ion-repo#T-118).
 
 - [ ] On Windows without WSL, `kiln score` says what to do (WSL and its link) instead of a
-  traceback; T-94 stays declined (decision 38 of 26 October 2026).
+  traceback; ion-repo#T-94 stays declined (decision 38 of 26 October 2026).
 - [ ] **A29** Shallow clones, sparse checkouts, partial clones, worktrees, bare repos and submodules
   handled; what wasn't checked out is said, never guessed.
 - [ ] **C20** The integration branch read from the remote's HEAD (main, master, develop, trunk),
@@ -2573,9 +2573,9 @@ way to it. From here each milestone is announced (T-118).
   bug (with `/kiln:report`'s hint), and the run goes on.
 - [ ] **K11** The next step always printed as one command: "`kiln fix` closes 5 of these 9 gaps, on
   a branch, no token".
-- [ ] **K20** On a machine, `kiln install` (T-161) is the only setup; in a repo, there is none.
+- [ ] **K20** On a machine, `kiln install` (ion-repo#T-161) is the only setup; in a repo, there is none.
 
-### T-190 · False alarms gone: templates, fixtures, vendored and generated code left out
+### ion-repo#T-190 · False alarms gone: templates, fixtures, vendored and generated code left out
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -2624,7 +2624,7 @@ every note says when the grid moved.
 - [ ] **H17** A regression suite of real false positives: each one reported gets a minimal repo in
   `tests/` that must pass forever.
 
-### T-191 · Any repo scored from its URL, a percentile, a Marketplace action
+### ion-repo#T-191 · Any repo scored from its URL, a percentile, a Marketplace action
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -2642,7 +2642,7 @@ from its URL: the launch's visitors become its messengers.
 - [ ] **V03** A "kiln score" action on the GitHub Marketplace and a GitLab CI component.
 - [ ] **V06** An opt-in showcase of repos at 100, never a ranking of other people's repos by name.
 
-### T-192 · The score in Claude Code's session, context files under a budget
+### ion-repo#T-192 · The score in Claude Code's session, context files under a budget
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -2663,7 +2663,7 @@ rule ships with its passing and failing examples.
 - [ ] **AI05** `CONTEXT-BUDGET`: CLAUDE.md, the rules it loads and the skills' descriptions under a
   token budget (context length is the cost, measured on 22 October 2026). L1 · ratchet · trial.
 
-### T-193 · `kiln score` benchmarked: a startup budget, a lean path, slow candidates stopped
+### ion-repo#T-193 · `kiln score` benchmarked: a startup budget, a lean path, slow candidates stopped
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -2684,7 +2684,7 @@ install), and the score's own start, benchmarked in CI.
   little on a first run; the template's dependencies only for `new`, `adopt` and `update`.
 - [ ] **J21** A candidate more than 10 % slower on the suite waits for an explanation.
 
-### T-194 · Updates that announce their rules and show the score before and after
+### ion-repo#T-194 · Updates that announce their rules and show the score before and after
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -2703,7 +2703,7 @@ rules.
 - [ ] **P08** `kiln update` shows the score before and after, and the grid changes that touch this
   repo; a lower score stops the update unless the grid explains it.
 
-### T-195 · Fixes that close and stay closed: `kiln score --fix`, a fix block per rule
+### ion-repo#T-195 · Fixes that close and stay closed: `kiln score --fix`, a fix block per rule
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -2724,7 +2724,7 @@ fresh `kiln new` repo leaves `kiln fix` nothing to do.
 - [ ] **P02** `kiln fix` on a fresh `kiln new` repo changes nothing; when it does, the template is
   behind the grid.
 
-### T-196 · Rules that test themselves: examples in the rule file, `kiln grid new`, `test`, `lint`
+### ion-repo#T-196 · Rules that test themselves: examples in the rule file, `kiln grid new`, `test`, `lint`
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -2764,7 +2764,7 @@ and `lint` make a rule in minutes.
 - [ ] **L20** Messages in English only (decided on 16 October 2026), each finding short enough for
   one terminal line.
 
-### T-197 · Findings in the pull request: locations, fingerprints, annotations, summaries
+### ion-repo#T-197 · Findings in the pull request: locations, fingerprints, annotations, summaries
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -2782,7 +2782,7 @@ repo-local rules in the grid's format.
   `partialFingerprints`): a finding keeps its identity when lines move, so waivers and baselines
   survive edits.
 - [ ] **K08** CI detected (`GITHUB_ACTIONS`, `GITLAB_CI`, `CI`): annotations, SARIF and a job
-  summary written without a flag, colours off outside a terminal (T-116).
+  summary written without a flag, colours off outside a terminal (ion-repo#T-116).
 - [ ] **K18** Nothing written in the repo by default (as today); `--output` writes a report when
   asked.
 - [ ] **L05** A Markdown summary for pull request comments and `$GITHUB_STEP_SUMMARY`.
@@ -2790,7 +2790,7 @@ repo-local rules in the grid's format.
 - [ ] **S03** Secrets never printed: snippets redacted (`ghp_****abcd`) in every output (terminal,
   JSON, SARIF, HTML, comments).
 
-### T-198 · The exact rules first, and the template held to each new rule
+### ion-repo#T-198 · The exact rules first, and the template held to each new rule
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -2799,7 +2799,7 @@ repo-local rules in the grid's format.
   Code standards, Architecture, Application security, Front, accessibility and i18n, Containers,
   CI/CD), made a ticket on 25 October 2026 at antoine's request
 
-Planned in v0.5.13, "The grid grows: the exact rules first, three new themes": T-141 opens here, its
+Planned in v0.5.13, "The grid grows: the exact rules first, three new themes": ion-repo#T-141 opens here, its
 other boxes being the theme releases below: the rules a detector decides exactly today, the first
 rule of `licensing`, `infrastructure` and `data-science`, and the template held to every new rule by
 its own test.
@@ -2832,7 +2832,7 @@ rule ships with its passing and failing examples.
 - [ ] **CI10** `NO-PERSISTED-CREDENTIALS`: `actions/checkout` with `persist-credentials: false`
   (zizmor's artipacked). L1 · fix S · adopt.
 
-### T-199 · Three new themes open: licensing, infrastructure, data science
+### ion-repo#T-199 · Three new themes open: licensing, infrastructure, data science
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -2840,7 +2840,7 @@ rule ships with its passing and failing examples.
 - **Origin**: kiln score ideas of 24 October 2026 (Git and versions, Licensing, Infrastructure as
   code, Data science), made a ticket on 25 October 2026 at antoine's request
 
-Planned in v0.5.13, "The grid grows: the exact rules first, three new themes": T-141 opens here, its
+Planned in v0.5.13, "The grid grows: the exact rules first, three new themes": ion-repo#T-141 opens here, its
 other boxes being the theme releases below: the rules a detector decides exactly today, the first
 rule of `licensing`, `infrastructure` and `data-science`, and the template held to every new rule by
 its own test.
@@ -2859,7 +2859,7 @@ rule ships with its passing and failing examples.
 - [ ] **DS01** `MODEL-TRACED` (trial, v0.4.6): moves here from data-migrations; promoted once its
   precision is measured on data repos.
 
-### T-200 · Repos safe to hand to an agent: permissions, MCP servers, plugins, hooks
+### ion-repo#T-200 · Repos safe to hand to an agent: permissions, MCP servers, plugins, hooks
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -2897,7 +2897,7 @@ rule ships with its passing and failing examples.
 - [ ] **AI10** `HOOKS-SAFE`: hooks in committed settings exist at their paths and download nothing.
   L1 · fix J · adopt.
 
-### T-201 · Apps that call a model: keys server-side, current models, validated outputs
+### ion-repo#T-201 · Apps that call a model: keys server-side, current models, validated outputs
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -2928,7 +2928,7 @@ rule ships with its passing and failing examples.
 - [ ] **AI18** `PROMPT-CACHING`: long static system prompts marked for caching (`cache_control` on
   Anthropic's API). L2 · fix S · assess.
 
-### T-202 · The roadmap as context packs: estimated, ordered, batched, budgeted
+### ion-repo#T-202 · The roadmap as context packs: estimated, ordered, batched, budgeted
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -2951,13 +2951,13 @@ session.
 - [ ] **O06** Risk tags: config only, pure refactor, behaviour change, product decision (the skill
   already stops on the last).
 - [ ] **O07** Recipes as data for every judgment rule, so two sessions fix a gap the same way (and
-  T-137 can turn the recipe into a converter).
+  ion-repo#T-137 can turn the recipe into a converter).
 - [ ] **O09** `--roadmap --budget 2h`: the best set of items for one session (a knapsack on points
   and effort).
 - [ ] **O10** `--roadmap --json` with the packs inline: `/kiln:modernize` reads one document and
   explores nothing.
 
-### T-203 · Tests that cost no tokens: properties, mutants, API fuzzing, journeys as rules
+### ion-repo#T-203 · Tests that cost no tokens: properties, mutants, API fuzzing, journeys as rules
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -2984,7 +2984,7 @@ rule ships with its passing and failing examples.
 - [ ] **TE08** `E2E-JOURNEYS` (draft): Playwright present, its specs naming the journeys the docs
   list. L1≈ · fix J · trial.
 
-### T-204 · The unattended run kept to its places, its verdicts fed back
+### ion-repo#T-204 · The unattended run kept to its places, its verdicts fed back
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3002,7 +3002,7 @@ measured, a fix made twice turned into a converter.
 - [ ] **O12** Confirmations and dismissals of "to confirm" places fed back as labels (H), with
   consent.
 
-### T-205 · The slimming rules: dead code, unused dependencies, duplication, a dependency budget
+### ion-repo#T-205 · The slimming rules: dead code, unused dependencies, duplication, a dependency budget
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3030,7 +3030,7 @@ rule ships with its passing and failing examples.
 - [ ] **SU17** `DEPENDENCY-BUDGET`: the count of transitive dependencies tracked as a ratchet (the
   slimming pillar). L1 · ratchet · trial.
 
-### T-206 · The roadmap where the team works: issues, good first issues, other agents
+### ion-repo#T-206 · The roadmap where the team works: issues, good first issues, other agents
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3048,10 +3048,10 @@ read too.
   tagged for `/kiln:good-first-issues`.
 - [ ] **O15** A one-line summary per item for the human, in the user's language when Claude speaks
   to them.
-- [ ] **O16** A roadmap file other agents can read too (AGENTS.md style), with T-357 (every
+- [ ] **O16** A roadmap file other agents can read too (AGENTS.md style), with ion-repo#T-357 (every
   agent, decision 26 of 26 October).
 
-### T-207 · The grid's data dated at each release: end of life, grid diff, consistency, proposals
+### ion-repo#T-207 · The grid's data dated at each release: end of life, grid diff, consistency, proposals
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3078,7 +3078,7 @@ grid's diff.
 - [ ] **Q12** The decision behind each rule kept with it (why adopt, why now), like an architecture
   decision record.
 
-### T-208 · A page per rule, and the study every quarter
+### ion-repo#T-208 · A page per rule, and the study every quarter
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3099,7 +3099,7 @@ well as a repo.
   one way to get known.
 - [ ] **V02** A study of public repos repeated every quarter: "the state of Django and Nuxt repos".
 
-### T-209 · One model of the repo: components, roles, one answer for every command
+### ion-repo#T-209 · One model of the repo: components, roles, one answer for every command
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3127,11 +3127,11 @@ doesn't make a repo Python.
   repo a Python repo (today one `.py` file turns every Python rule on).
 - [ ] **A24** Findings per component, paths still relative to the repo: a Django rule never reads
   `frontend/`.
-- [ ] **A37** `kiln dev` and `kiln check` read the model: T-159's "checks found beyond the root"
+- [ ] **A37** `kiln dev` and `kiln check` read the model: ion-repo#T-159's "checks found beyond the root"
   falls out of it.
 - [ ] **P12** `kiln dev`, `kiln doctor` and `kiln check` read the repo model (A).
 
-### T-210 · Facts per component: versions, runtimes, tools, evidence, `--facts`
+### ion-repo#T-210 · Facts per component: versions, runtimes, tools, evidence, `--facts`
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3165,9 +3165,9 @@ alone.
 - [ ] **A25** The repo's score aggregates its components' (weighted by code size); each component
   scorable alone (`kiln score backend/`).
 - [ ] **A36** A correction exists when detection is wrong (`kiln set components.ignore=…`), is never
-  needed, and each use is a signal for T-38.
+  needed, and each use is a signal for ion-repo#T-38.
 
-### T-211 · Rules that say what they mean: applicability as an expression, `any_of`, `unknown`
+### ion-repo#T-211 · Rules that say what they mean: applicability as an expression, `any_of`, `unknown`
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3202,7 +3202,7 @@ meet one practice, conditions across files, evidence for passes, an honest `unkn
 - [ ] **G24** Typed settings with defaults, for project data only (time zone, currency, integration
   branch): never a knob that weakens a rule (doctrine 1).
 
-### T-212 · The syntax engine: ast-grep, one parse per file, settings and configs resolved
+### ion-repo#T-212 · The syntax engine: ast-grep, one parse per file, settings and configs resolved
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3216,7 +3216,7 @@ negatives found on 24 October close.
 
 - [ ] **E03** A `syntax` detector kind on ast-grep (Rust, tree-sitter, YAML rules with `pattern`,
   `inside`, `has`, `not`, `constraints`): declarative like today's regexes, matching code instead of
-  text (doctrine 11, T-144).
+  text (doctrine 11, ion-repo#T-144).
 - [ ] **E04** One parse per file, shared by every syntax rule, the tree cached by blob SHA.
 - [ ] **E12** Symbol tables per language (functions, classes, variables, booleans, constants) from
   tree-sitter queries: CASE, BOOLEANS, GENERIC-NAMES and ONE-CLASS for every language.
@@ -3239,7 +3239,7 @@ negatives found on 24 October close.
 - [ ] **J16** The syntax engine runs all syntax rules of a language in one native pass (`ast-grep
   scan` over a rules folder), in parallel.
 
-### T-213 · Mature tools as detectors: ruff and shellcheck, pinned and deduplicated
+### ion-repo#T-213 · Mature tools as detectors: ruff and shellcheck, pinned and deduplicated
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3275,7 +3275,7 @@ ones they would replace.
   `--deep`".
 - [ ] **F24** A `kiln-cli[tools]` extra bringing the tools that ship as wheels in one install.
 
-### T-214 · Instant the second time: one listing, one index, a cache by blob SHA
+### ion-repo#T-214 · Instant the second time: one listing, one index, a cache by blob SHA
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3310,7 +3310,7 @@ cache keyed by blob SHA: a warm run recomputes nothing unchanged, in under 50 ms
   in 30 ms (0.22 ms each), so the plan's 800 or so would cost about 170 ms on every run; budget:
   under 30 ms whatever the grid's size.
 
-### T-215 · Python standards ruff already decides: modern syntax, formatting, linting
+### ion-repo#T-215 · Python standards ruff already decides: modern syntax, formatting, linting
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3342,7 +3342,7 @@ rule ships with its passing and failing examples.
 - [ ] **CS22** `NO-MUTABLE-DEFAULTS` (Python): ruff's B006. L4 · fix S · adopt.
 - [ ] **CS23** `NO-STAR-IMPORTS` (Python): F403, settings modules aside. L4 · fix J · adopt.
 
-### T-216 · Error handling, shell scripts and encodings, decided by tools
+### ion-repo#T-216 · Error handling, shell scripts and encodings, decided by tools
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3372,7 +3372,7 @@ rule ships with its passing and failing examples.
 - [ ] **CS42** `UTF8-SOURCES`: text files in UTF-8 without a BOM. L1 · fix S · adopt.
 - [ ] **CS43** `NO-MIXED-INDENTATION`: tabs and spaces never mixed in one file. L1 · fix S · adopt.
 
-### T-217 · Secrets in the tree cap the score; session cookies, headers, CSRF
+### ion-repo#T-217 · Secrets in the tree cap the score; session cookies, headers, CSRF
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3415,7 +3415,7 @@ rule ships with its passing and failing examples.
 - [ ] **AS22** `CSRF-ON`: CSRF middleware on; `@csrf_exempt` only with a justification marker. L2 ·
   fix J · adopt.
 
-### T-218 · Settings that leak: CORS, passwords, HTTPS, front secrets, debug modes
+### ion-repo#T-218 · Settings that leak: CORS, passwords, HTTPS, front secrets, debug modes
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3456,7 +3456,7 @@ rule ships with its passing and failing examples.
   `APP_DEBUG`, Rails' `consider_all_requests_local`, Flask's `debug=True`, Spring's Actuator
   exposing more than health and info. L2 · fix S · adopt.
 
-### T-219 · The corpus: precision and recall per rule at every candidate
+### ion-repo#T-219 · The corpus: precision and recall per rule at every candidate
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3496,7 +3496,7 @@ moves on that evidence only.
   adopt needs 99 % precision on the corpus (strict rules) and fresh sources; adopt to hold when the
   practice is superseded.
 
-### T-220 · A quality sheet in every release note
+### ion-repo#T-220 · A quality sheet in every release note
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3511,7 +3511,7 @@ moves on that evidence only.
 - [ ] **T01** A quality sheet in each release note: scored rules, rules with a detector, median
   precision, recall on seeded faults, speed on the suite, crashes on the corpus.
 
-### T-221 · A number that can't lie: severity, the critical cap, confidence, anti-gaming
+### ion-repo#T-221 · A number that can't lie: severity, the critical cap, confidence, anti-gaming
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3548,7 +3548,7 @@ nothing, a report can be verified.
 - [ ] **S06** Reproducible: the report carries kiln's version, the grid's hash, the data's date and
   the commit; `kiln score --verify report.json` runs again and compares.
 
-### T-222 · Locks and installs you can trust: every lockfile, frozen installs, pinned runtimes
+### ion-repo#T-222 · Locks and installs you can trust: every lockfile, frozen installs, pinned runtimes
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3595,7 +3595,7 @@ rule ships with its passing and failing examples.
   (pnpm's `minimumReleaseAge`, uv's `exclude-newer`), not only in the bot. L1 · fix S · trial.
 - [ ] **SU32** `DEPENDABOT-GROUPED`: updates grouped to keep the noise down. L1 · fix S · trial.
 
-### T-223 · Nothing runs unpinned: install scripts, indexes, git dependencies, tools
+### ion-repo#T-223 · Nothing runs unpinned: install scripts, indexes, git dependencies, tools
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3627,7 +3627,7 @@ rule ships with its passing and failing examples.
 - [ ] **SU21** `PINNED-TOOLS`: tools run through `npx`, `uvx`, `pipx run` or `go run` in CI and
   scripts carry a version. L1 · fix S · adopt.
 
-### T-224 · Nothing downloaded blind: curl pipes, checksums, binaries, tokens in config
+### ion-repo#T-224 · Nothing downloaded blind: curl pipes, checksums, binaries, tokens in config
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3657,7 +3657,7 @@ rule ships with its passing and failing examples.
 - [ ] **SU36** `NO-BINARY-ARTIFACTS`: no executable, `.jar`, `.class`, `.dll` or wheel committed
   outside declared fixtures (Scorecard's Binary-Artifacts). L0 · fix J · adopt.
 
-### T-225 · What is on its way out: support calendars, hold rules and their converters
+### ion-repo#T-225 · What is on its way out: support calendars, hold rules and their converters
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3710,7 +3710,7 @@ rule ships with its passing and failing examples.
 - [ ] **CI13** `NO-DEPRECATED-COMMANDS`: no `::set-output` or `::save-state`; `$GITHUB_OUTPUT` and
   `$GITHUB_STATE`. L2 · fix S · adopt.
 
-### T-226 · Dockerfiles built right: digests, base images, non-root, stages
+### ion-repo#T-226 · Dockerfiles built right: digests, base images, non-root, stages
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3750,7 +3750,7 @@ rule ships with its passing and failing examples.
 - [ ] **CO10** `CACHE-MOUNTS`: `RUN --mount=type=cache` for uv, pnpm, pip and apt. L2 · fix S ·
   trial.
 
-### T-227 · Dockerfiles that behave: build secrets, signals, pipefail, one process
+### ion-repo#T-227 · Dockerfiles that behave: build secrets, signals, pipefail, one process
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3779,7 +3779,7 @@ rule ships with its passing and failing examples.
 - [ ] **CO29** `ONE-PROCESS`: no supervisord or `&` chain running several services in one container.
   L2 · fix J · trial.
 
-### T-228 · Compose for a small server: hardening, no socket, logs and limits
+### ion-repo#T-228 · Compose for a small server: hardening, no socket, logs and limits
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3809,7 +3809,7 @@ rule ships with its passing and failing examples.
   without end by default). L1 · fix S · adopt.
 - [ ] **CO22** `RESOURCE-LIMITS`: memory and CPU limits per service. L1 · fix S · trial.
 
-### T-229 · Compose that survives: restarts, volumes, secrets, scanned and signed images
+### ion-repo#T-229 · Compose that survives: restarts, volumes, secrets, scanned and signed images
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3838,7 +3838,7 @@ rule ships with its passing and failing examples.
 - [ ] **CO30** `ROOTLESS-FRIENDLY`: compose files that run under rootless Podman as under Docker
   (`kiln dev` runs Podman). L1 · fix J · assess.
 
-### T-230 · One CI model: every step resolved, injection and privileges on any CI
+### ion-repo#T-230 · One CI model: every step resolved, injection and privileges on any CI
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3882,7 +3882,7 @@ rule ships with its passing and failing examples.
   Vitest, `go test`, `cargo test`, `mvn verify`), on any CI (C), through `make`, `just` and package
   scripts, not a regex for `pytest`.
 
-### T-231 · The scored CI rules read from the CI model
+### ion-repo#T-231 · The scored CI rules read from the CI model
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3901,7 +3901,7 @@ rule ships with its passing and failing examples.
 - [ ] **CI01** `CI-PRESENT` (scored): "every change is checked before it ships" (decision 6): fast
   checks at each commit and the whole CI before each release, on the forge or on the machine with
   its verdict kept (`kiln ci`), or a CI on every pull request; read from any CI (C) with its
-  triggers. With profiles (T-39), company and enterprise ask for CI on every pull request.
+  triggers. With profiles (ion-repo#T-39), company and enterprise ask for CI on every pull request.
 - [ ] **CI02** `LINT-IN-CI` (scored): lint commands read per component from any CI, as for
   `TESTS-IN-CI` (TE), through `make`, `just`, `task`, `nox`, `tox` and package scripts.
 - [ ] **CI03** `WORKFLOW-INJECTION` (scored): zizmor's template-injection audit (F) instead of one
@@ -3911,7 +3911,7 @@ rule ships with its passing and failing examples.
 - [ ] **CI05** `PULL-REQUEST-TARGET` (scored): flagged when the workflow checks out or runs the pull
   request's head; `workflow_run` with downloaded artifacts too (zizmor's dangerous-triggers).
 
-### T-232 · Fast pipelines: concurrency, caches, runners, actionlint, zizmor
+### ion-repo#T-232 · Fast pipelines: concurrency, caches, runners, actionlint, zizmor
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3940,7 +3940,7 @@ rule ships with its passing and failing examples.
 - [ ] **CI17** `CACHE-POISONING`: release workflows restore no cache that pull requests can write
   (zizmor's cache-poisoning). L4 · fix J · trial.
 
-### T-233 · Safe pipelines: secrets through `env`, pinned reusable workflows, provenance
+### ion-repo#T-233 · Safe pipelines: secrets through `env`, pinned reusable workflows, provenance
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -3966,13 +3966,13 @@ rule ships with its passing and failing examples.
 - [ ] **CI22** `MATRIX-COVERS-SUPPORT`: a library's CI matrix covers the versions it claims
   (`requires-python`, `engines`). L1 · fix S · trial.
 - [ ] **CI23** `PROVENANCE`: release artifacts attested (`actions/attest-build-provenance`, PyPI's
-  attestations); T-90 asks it of kiln. L1 · fix S · trial.
+  attestations); ion-repo#T-90 asks it of kiln. L1 · fix S · trial.
 - [ ] **CI24** `BUILD-ONCE`: the artifact deployed is the one tested (an image promoted by digest),
   never rebuilt per environment. L2≈ · fix J · assess.
 - [ ] **CI25** `CI-REPLAYABLE`: the CI's commands run on a laptop too (`kiln ci`, `make ci`, `just
   ci`). L1≈ · fix J · trial.
 
-### T-234 · Tests counted right: presence, clock, network, coverage, strict pytest
+### ion-repo#T-234 · Tests counted right: presence, clock, network, coverage, strict pytest
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4008,7 +4008,7 @@ rule ships with its passing and failing examples.
 - [ ] **TE16** `NO-SKIPPED-TESTS`: every `skip` and `xfail` gives a reason, and their count only
   goes down. L2 · ratchet · trial.
 
-### T-235 · Tests that prove something: no sleeps, random order, assertions, names
+### ion-repo#T-235 · Tests that prove something: no sleeps, random order, assertions, names
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4044,7 +4044,7 @@ rule ships with its passing and failing examples.
 - [ ] **TE28** `LOAD-SCENARIO`: a k6 or Locust scenario kept in the repo of an app with an SLO. L0 ·
   fix J · assess.
 
-### T-236 · No new finding: history, the score of a change, `--compare`, PR comments
+### ion-repo#T-236 · No new finding: history, the score of a change, `--compare`, PR comments
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4073,7 +4073,7 @@ with any ref, gates on new findings only, scores kept in git notes and drawn as 
   cached).
 - [ ] **P10** `kiln check` includes "no new finding against the integration branch".
 
-### T-237 · One funnel for every repo: baselines, `kiln adopt` scored before and after
+### ion-repo#T-237 · One funnel for every repo: baselines, `kiln adopt` scored before and after
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4096,7 +4096,7 @@ started from recognised; `kiln new` as the same funnel run on an empty folder.
   tickets; each step a commit on its branch.
 - [ ] **P07** `kiln adopt --dry-run` shows the score it would reach.
 
-### T-238 · Only what changed: `--changed`, `--watch`, the edit hook
+### ion-repo#T-238 · Only what changed: `--changed`, `--watch`, the edit hook
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4113,7 +4113,7 @@ changed files only, on save and in Claude Code's edit hook, in milliseconds.
 - [ ] **J13** The Claude Code edit hook re-scores the edited file in milliseconds and tells Claude
   only what is new; one engine with the charter's `check_file.py`.
 
-### T-239 · The score explained like a senior engineer would
+### ion-repo#T-239 · The score explained like a senior engineer would
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4145,7 +4145,7 @@ numbers.
 - [ ] **K15** Explanations a newcomer understands (one sentence, no jargon) and `--explain` for the
   details: "like a senior engineer would, even if you're not one".
 
-### T-240 · A report you can share: every format, HTML, `--quiet`, `--porcelain`
+### ion-repo#T-240 · A report you can share: every format, HTML, `--quiet`, `--porcelain`
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4170,7 +4170,7 @@ report, links to each rule's page and to the line on the forge, nothing personal
   known (`https://github.com/o/r/blob/<sha>/path#L12`).
 - [ ] **S04** Shareable reports: no absolute paths, user names or e-mail addresses.
 
-### T-241 · Code that can be attacked: taint, permissions, uploads, injections, crypto
+### ion-repo#T-241 · Code that can be attacked: taint, permissions, uploads, injections, crypto
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4208,9 +4208,9 @@ rule ships with its passing and failing examples.
   S305). L4 · fix J · adopt.
 - [ ] **AS48** `NO-SQL-INJECTION`: no query built from a variable by concatenation, `%` or an
   f-string: `raw`, `extra` and `RawSQL` of Django, `text` of SQLAlchemy, a DB-API `execute`; each
-  stack's pack adds its own APIs (T-336, T-337, T-338, T-339). L2 · fix J · adopt.
+  stack's pack adds its own APIs (ion-repo#T-336, ion-repo#T-337, ion-repo#T-338, ion-repo#T-339). L2 · fix J · adopt.
 
-### T-242 · Code that can be attacked: redirects, SSRF, paths, escaping, JWT, SAST
+### ion-repo#T-242 · Code that can be attacked: redirects, SSRF, paths, escaping, JWT, SAST
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4244,7 +4244,7 @@ rule ships with its passing and failing examples.
 - [ ] **AS47** `EXPRESS-HARDENED`: Helmet or equivalent headers, `x-powered-by` off. L2 · fix S ·
   trial.
 
-### T-243 · A metrics pass and misspellings, in any language
+### ion-repo#T-243 · A metrics pass and misspellings, in any language
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4261,7 +4261,7 @@ feeds the size and complexity ratchets; names, cases and misspellings judged fro
 - [ ] **F15** typos (Rust) for misspellings in identifiers and comments, with very few false
   positives.
 
-### T-244 · Sizes and names measured: files, functions, complexity, naming
+### ion-repo#T-244 · Sizes and names measured: files, functions, complexity, naming
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4296,7 +4296,7 @@ rule ships with its passing and failing examples.
 - [ ] **CS45** `TYPOS`: no common misspelling in identifiers and comments (the typos dictionary). L4
   · fix S · trial.
 
-### T-245 · oxlint or Biome mapped, barrel files counted
+### ion-repo#T-245 · oxlint or Biome mapped, barrel files counted
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4313,11 +4313,11 @@ converter closes the gap or `fix J` when it takes judgment, then the radar level
 rule ships with its passing and failing examples.
 
 - [ ] **F07** oxlint or Biome for JS/TS rules (no-eval, eqeqeq, no-debugger, accessibility) as
-  native binaries (T-144 measures them).
+  native binaries (ion-repo#T-144 measures them).
 - [ ] **ST12** `NO-BARREL-FILES`: no `index.ts` re-exporting a whole folder (slower bundles and
   tests, one more hop for Claude). L2 · fix J · assess.
 
-### T-246 · TypeScript and Vue standards from the syntax tree
+### ion-repo#T-246 · TypeScript and Vue standards from the syntax tree
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4341,7 +4341,7 @@ rule ships with its passing and failing examples.
   promises with `--deep`, since they need types. L2 · fix J · assess.
 - [ ] **CS19** `NO-PRINT-DEBUG`: no `print()` or `console.log` in shipped code (ruff's T20,
   no-console), command-line tools aside. L2 · fix J · adopt.
-- [ ] **CS20** `TODO-WITH-TICKET`: each TODO or FIXME cites a ticket (`T-12`, `#123`); the backlog
+- [ ] **CS20** `TODO-WITH-TICKET`: each TODO or FIXME cites a ticket (`ion-repo#T-12`, `#123`); the backlog
   is the only list. L2 · ratchet · trial.
 - [ ] **CS32** `NO-GLOBAL-MUTATION`: no `global` statements, no module-level state changed by
   functions. L2 · fix J · trial.
@@ -4354,7 +4354,7 @@ rule ships with its passing and failing examples.
 - [ ] **CS39** `NO-VAR` and `STRICT-EQUALITY` (JS): `let` and `const`, `===`. L2 · fix S · adopt.
 - [ ] **CS44** `NO-NESTED-TERNARY`. L2 · fix J · trial.
 
-### T-247 · API contracts: the schema committed and frozen, typed routes, pagination
+### ion-repo#T-247 · API contracts: the schema committed and frozen, typed routes, pagination
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4389,7 +4389,7 @@ rule ships with its passing and failing examples.
 - [ ] **AT09** `TYPE-CHECK-IN-CI`: a type checker runs in CI (mypy, pyright, ty or pyrefly; tsc,
   vue-tsc or `nuxi typecheck`). L1 · fix S · adopt.
 
-### T-248 · Strict typing everywhere: libraries, annotations, TypeScript options, problem details
+### ion-repo#T-248 · Strict typing everywhere: libraries, annotations, TypeScript options, problem details
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4418,7 +4418,7 @@ rule ships with its passing and failing examples.
 - [ ] **AT18** `API-VERSIONED`: public APIs carry a version, in the path or a header. L2≈ · fix J ·
   assess.
 
-### T-249 · Clients and schemas generated, not copied: OpenAPI lint, GraphQL, Protobuf, settings
+### ion-repo#T-249 · Clients and schemas generated, not copied: OpenAPI lint, GraphQL, Protobuf, settings
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4446,7 +4446,7 @@ rule ships with its passing and failing examples.
 - [ ] **AT29** `SETTINGS-TYPED`: application settings parsed into a typed object (pydantic-settings,
   a schema-checked runtime config). L2≈ · fix J · trial.
 
-### T-250 · The import graph: cycles, feature folders, change coupling
+### ion-repo#T-250 · The import graph: cycles, feature folders, change coupling
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4473,7 +4473,7 @@ rule ships with its passing and failing examples.
   · trial.
 - [ ] **ST13** `NO-IMPORT-CYCLES`: no cycle between modules or packages. L3 · ratchet · trial.
 
-### T-251 · Architecture you can see: thin views, a service layer, sealed domains
+### ion-repo#T-251 · Architecture you can see: thin views, a service layer, sealed domains
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4505,7 +4505,7 @@ rule ships with its passing and failing examples.
 - [ ] **AR09** `NO-GOD-MODULES`: no module both large and imported by most of the code. L3 · ratchet
   · assess.
 
-### T-252 · Boundaries between front, back and services: stores, async, one database each
+### ion-repo#T-252 · Boundaries between front, back and services: stores, async, one database each
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4533,7 +4533,7 @@ rule ships with its passing and failing examples.
 - [ ] **AR18** `FLAGS-IN-ONE-PLACE`: feature flags read through one module or library, not scattered
   `if settings.X`. L2≈ · fix J · assess.
 
-### T-253 · Migrations safe and reversible, linted in CI
+### ion-repo#T-253 · Migrations safe and reversible, linted in CI
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4570,7 +4570,7 @@ rule ships with its passing and failing examples.
 - [ ] **DM10** `MIGRATION-NAMES`: no `00xx_auto_<date>`: a migration's name says what it changes. L0
   · fix J · trial.
 
-### T-254 · Data modelled right: constraints, public IDs, connections, seeds, the real engine in tests
+### ion-repo#T-254 · Data modelled right: constraints, public IDs, connections, seeds, the real engine in tests
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4609,7 +4609,7 @@ rule ships with its passing and failing examples.
 - [ ] **TE23** `MIGRATIONS-CHECKED`: `makemigrations --check --dry-run` in CI, and a migration from
   an empty database. L1 · fix S · adopt.
 
-### T-255 · Background tasks that survive: retries, outbox, idempotence, limits
+### ion-repo#T-255 · Background tasks that survive: retries, outbox, idempotence, limits
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4638,7 +4638,7 @@ rule ships with its passing and failing examples.
   L2 · fix S · trial.
 - [ ] **BG07** `SAFE-SERIALIZER`: tasks serialized as JSON, never pickle. L2 · fix S · adopt.
 
-### T-256 · Schedulers and workers watched: one scheduler, health, visibility, dead letters
+### ion-repo#T-256 · Schedulers and workers watched: one scheduler, health, visibility, dead letters
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4666,7 +4666,7 @@ rule ships with its passing and failing examples.
   task. L2 · fix J · trial.
 - [ ] **BG13** `DEAD-LETTERS`: failed tasks land where a human sees them. L2≈ · fix J · assess.
 
-### T-257 · Concurrency: atomic updates, locks, timeouts, async servers, Celery made exact
+### ion-repo#T-257 · Concurrency: atomic updates, locks, timeouts, async servers, Celery made exact
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4703,7 +4703,7 @@ rule ships with its passing and failing examples.
 - [ ] **FP06** Celery · the BG theme's rules, made exact for Celery's settings (`task_acks_late`,
   `task_time_limit`, the serializer, the beat replica). L1 · fix S · adopt.
 
-### T-258 · Caches that invalidate and stay private
+### ion-repo#T-258 · Caches that invalidate and stay private
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4732,7 +4732,7 @@ rule ships with its passing and failing examples.
 - [ ] **CA07** `REDIS-EVICTION`: Redis runs with `maxmemory` and the eviction policy its use needs
   (a cache evicts, a broker never does). L1 · fix S · trial.
 
-### T-259 · Fast back ends: N+1 queries, query counts, indexes, benchmarks
+### ion-repo#T-259 · Fast back ends: N+1 queries, query counts, indexes, benchmarks
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4761,7 +4761,7 @@ rule ships with its passing and failing examples.
   middleware). L1 · fix S · assess.
 - [ ] **PE19** `COLD-START`: serverless functions' bundle size tracked. L1 · ratchet · assess.
 
-### T-260 · Errors and logs you can follow
+### ion-repo#T-260 · Errors and logs you can follow
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4799,7 +4799,7 @@ rule ships with its passing and failing examples.
 - [ ] **EL11** `UNHANDLED-REJECTIONS` (Node): a process-level handler that logs and exits. L2 · fix
   J · trial.
 
-### T-261 · Requests traced: request IDs, OpenTelemetry, front errors, an audit trail
+### ion-repo#T-261 · Requests traced: request IDs, OpenTelemetry, front errors, an audit trail
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4827,7 +4827,7 @@ rule ships with its passing and failing examples.
 - [ ] **OB09** `AUDIT-TRAIL`: security-relevant actions (login, role change, export, deletion)
   written to an append-only log. L2≈ · fix J · trial.
 
-### T-262 · An accessible front: names, alt text, focus, motion, ARIA
+### ion-repo#T-262 · An accessible front: names, alt text, focus, motion, ARIA
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4860,7 +4860,7 @@ rule ships with its passing and failing examples.
 - [ ] **FA12** `SKIP-LINK`: a skip-to-content link in layouts. L2≈ · fix S · trial.
 - [ ] **FA13** `ARIA-VALID`: ARIA roles and attributes valid and not redundant. L2 · fix J · adopt.
 
-### T-263 · Accessible and translated: headings, contrast, the EU Accessibility Act, i18n keys
+### ion-repo#T-263 · Accessible and translated: headings, contrast, the EU Accessibility Act, i18n keys
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4895,7 +4895,7 @@ rule ships with its passing and failing examples.
 - [ ] **FA30** `RTL-READY`: logical CSS properties once a right-to-left locale is configured. L2 ·
   fix S · assess.
 
-### T-264 · A fast front: Core Web Vitals, budgets, images, fonts, lazy loading
+### ion-repo#T-264 · A fast front: Core Web Vitals, budgets, images, fonts, lazy loading
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4930,7 +4930,7 @@ rule ships with its passing and failing examples.
 - [ ] **PE15** `CACHEABLE-PUBLIC-PAGES`: anonymous pages cacheable (Nuxt's `routeRules` with `swr`
   or `isr`, `Cache-Control` on public views). L2≈ · fix J · trial.
 
-### T-265 · A front that renders safely: UI states, SSR and hydration, SEO, error pages
+### ion-repo#T-265 · A front that renders safely: UI states, SSR and hydration, SEO, error pages
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4963,7 +4963,7 @@ rule ships with its passing and failing examples.
   and `500.html`). L0 · fix S · trial.
 - [ ] **FA31** `WEB-MANIFEST`: icons and a web manifest for installable apps. L0 · fix S · assess.
 
-### T-266 · Where it deploys: services and deploy configs read, compression, static files
+### ion-repo#T-266 · Where it deploys: services and deploy configs read, compression, static files
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -4993,7 +4993,7 @@ rule ships with its passing and failing examples.
 - [ ] **PE08** `STATIC-BY-PROXY`: static files hashed and served by the proxy, WhiteNoise or a CDN
   (`ManifestStaticFilesStorage`), never by the framework's dev server. L2 · fix S · adopt.
 
-### T-267 · Deploys you can undo: health probes, config that fails fast, OIDC, graceful shutdown
+### ion-repo#T-267 · Deploys you can undo: health probes, config that fails fast, OIDC, graceful shutdown
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5031,7 +5031,7 @@ rule ships with its passing and failing examples.
 - [ ] **OP20** `AUTOMATIC-TLS`: certificates renewed by themselves (Caddy, cert-manager, the
   platform's). L1 · fix S · adopt.
 
-### T-268 · Production that holds: backups restored, runbooks, uptime, recovery targets
+### ion-repo#T-268 · Production that holds: backups restored, runbooks, uptime, recovery targets
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5070,7 +5070,7 @@ rule ships with its passing and failing examples.
 - [ ] **OP24** `DATA-RESIDENCY`: regions in the IaC and settings inside the EU for profiles that
   promise it. L1 · fix J · assess.
 
-### T-269 · Production watched: SLOs, alerts on symptoms, private metrics, dashboards
+### ion-repo#T-269 · Production watched: SLOs, alerts on symptoms, private metrics, dashboards
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5097,7 +5097,7 @@ rule ships with its passing and failing examples.
 - [ ] **OB12** `LOG-RETENTION`: retention set in the log stack, with `RETENTION` (PD). L1 · fix S ·
   assess.
 
-### T-270 · A tidy tree: the root, the layout, one config per tool, small folders
+### ion-repo#T-270 · A tidy tree: the root, the layout, one config per tool, small folders
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5137,7 +5137,7 @@ rule ships with its passing and failing examples.
 - [ ] **ST11** `NO-GRAB-BAG-FILES`: no `utils.py`, `helpers.ts`, `misc.py` or `common.js` past about
   200 lines; the name says nothing of what's inside. L0 · fix J · trial.
 
-### T-271 · A tree that checks out anywhere: marked files, no build output, line endings, paths
+### ion-repo#T-271 · A tree that checks out anywhere: marked files, no build output, line endings, paths
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5171,7 +5171,7 @@ rule ships with its passing and failing examples.
 - [ ] **GV15** `PORTABLE-PATHS`: no name Windows refuses (`CON`, `aux.py`, a trailing dot or space,
   `:*?"<>|`). L0 · fix J · adopt.
 
-### T-272 · The map tells the truth: links, the repo map, entry points, decisions
+### ion-repo#T-272 · The map tells the truth: links, the repo map, entry points, decisions
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5208,7 +5208,7 @@ rule ships with its passing and failing examples.
 - [ ] **AR11** `ARCHITECTURE-DIAGRAM`: a diagram as code (Mermaid, Structurizr) for repos with
   several services. L1 · fix J · assess.
 
-### T-273 · Docs that tell the truth: README, commands, links, docstrings, context files
+### ion-repo#T-273 · Docs that tell the truth: README, commands, links, docstrings, context files
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5249,7 +5249,7 @@ rule ships with its passing and failing examples.
   removed from `package.json` while CLAUDE.md still says `npm test` fails it (as `agentsgen check`
   does, seen 26 October 2026). L3.
 
-### T-274 · Set up in one command: pre-commit, editor files, a task runner, tool versions
+### ion-repo#T-274 · Set up in one command: pre-commit, editor files, a task runner, tool versions
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5283,10 +5283,10 @@ rule ships with its passing and failing examples.
   `npx`), never `sudo pip install` or `npm -g` in the docs. L2 · fix J · trial.
 - [ ] **DX06** `EDITOR-SETTINGS-SHARED`: recommended extensions and format-on-save shared, personal
   settings ignored. L0 · fix S · assess.
-- [ ] **DX08** `DEVCONTAINER` ⚠ T-48 (declined): a dev container for teams that want one, at `hold`
-  while T-48 stands. L0 · hold.
+- [ ] **DX08** `DEVCONTAINER` ⚠ ion-repo#T-48 (declined): a dev container for teams that want one, at `hold`
+  while ion-repo#T-48 stands. L0 · hold.
 
-### T-275 · Sensitive data found by itself, encrypted, isolated per tenant
+### ion-repo#T-275 · Sensitive data found by itself, encrypted, isolated per tenant
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5310,7 +5310,7 @@ rule ships with its passing and failing examples.
 - [ ] **AS11** `ROW-LEVEL-SECURITY` (draft, Postgres): RLS policies in migrations for multi-tenant
   tables. L2≈ · fix J · assess.
 
-### T-276 · Personal data the GDPR way
+### ion-repo#T-276 · Personal data the GDPR way
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5351,7 +5351,7 @@ rule ships with its passing and failing examples.
 - [ ] **AI17** `PII-TO-LLM`: personal fields sent to a model's API flagged (PD). L3≈ · fix J ·
   trial.
 
-### T-277 · Money, payments and webhooks done right, accounts protected
+### ion-repo#T-277 · Money, payments and webhooks done right, accounts protected
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5390,7 +5390,7 @@ rule ships with its passing and failing examples.
 - [ ] **BD08** `EMAILS-CASE-INSENSITIVE`: e-mail uniqueness ignores case (a `Lower()` unique
   constraint, `citext`). L2 · fix J · trial.
 
-### T-278 · People's data as given: phones, names, dates, invoices, mail that arrives
+### ion-repo#T-278 · People's data as given: phones, names, dates, invoices, mail that arrives
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5420,7 +5420,7 @@ rule ships with its passing and failing examples.
 - [ ] **BD15** `MAIL-AUTHENTICATED`: SPF, DKIM and DMARC for the sending domain, checked in DNS with
   `--online`. L6 · fix J · trial.
 
-### T-279 · History: secrets ever committed, heavy blobs, hotspots
+### ion-repo#T-279 · History: secrets ever committed, heavy blobs, hotspots
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5458,7 +5458,7 @@ rule ships with its passing and failing examples.
 - [ ] **GV12** `LFS-FOR-BINARIES`: large binary assets tracked by LFS or stored elsewhere. L0 · fix
   J · trial.
 
-### T-280 · History: commit habits, signatures, release rhythm, regression tests
+### ion-repo#T-280 · History: commit habits, signatures, release rhythm, regression tests
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5485,7 +5485,7 @@ rule ships with its passing and failing examples.
 - [ ] **TE10** `REGRESSION-TEST` (draft): `fix:` commits of the last hundred that touch no test,
   with `--history`. L5 · ratchet · trial.
 
-### T-281 · Git and versions rules from history: commits, branches, releases, tags
+### ion-repo#T-281 · Git and versions rules from history: commits, branches, releases, tags
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5524,7 +5524,7 @@ rule ships with its passing and failing examples.
 - [ ] **CM08** `MAINTAINED`: commits or releases in the last 90 days, or the README says the project
   is finished or archived (Scorecard's Maintained). L5 · fix J · trial.
 
-### T-282 · The forge's settings read: tokens, secrets, alerts, environments, required checks
+### ion-repo#T-282 · The forge's settings read: tokens, secrets, alerts, environments, required checks
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5555,15 +5555,15 @@ rule ships with its passing and failing examples.
 - [ ] **TE29** `TEST-DURATION`: suite time and slowest tests read from the CI's JUnit reports with
   `--online`, as a ratchet. L6 · ratchet · assess.
 - [ ] **OP10** `PROTECTED-ENVIRONMENTS`: production jobs run in a forge environment with reviewers
-  or branch rules (L6, T-158). L6 · fix J · trial.
+  or branch rules (L6, ion-repo#T-158). L6 · fix J · trial.
 - [ ] **CI06** `FAST-CI` (draft): median duration and runs that passed on retry read from the forge
   (L6); caches and concurrency as the static part. L6 · fix J · trial.
 - [ ] **CI16** `NO-SELF-HOSTED-ON-PUBLIC`: no self-hosted runner reachable from a public repo's pull
   requests; critical. L1 + L6 · fix J · adopt.
-- [ ] **CI21** `REQUIRED-CHECKS`: the integration branch requires the CI's checks (L6, T-158). L6 ·
+- [ ] **CI21** `REQUIRED-CHECKS`: the integration branch requires the CI's checks (L6, ion-repo#T-158). L6 ·
   fix J · trial.
 
-### T-283 · Repo hygiene on the forge: submodules, CODEOWNERS, force pushes, stale branches
+### ion-repo#T-283 · Repo hygiene on the forge: submodules, CODEOWNERS, force pushes, stale branches
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5586,11 +5586,11 @@ rule ships with its passing and failing examples.
 - [ ] **GV18** `CODEOWNERS-VALID`: paths that exist and owners that exist (L6), for team profiles.
   L1 · fix J · trial.
 - [ ] **GV19** `NO-FORCE-PUSH-ON-MAIN`: force pushes and deletions blocked on the release and
-  integration branches (L6, T-158). L6 · fix J · adopt.
+  integration branches (L6, ion-repo#T-158). L6 · fix J · adopt.
 - [ ] **GV20** `STALE-BRANCHES`: branches merged long ago and still on the remote (`/kiln:cleanup`,
   for the forge). L6 · fix S · assess.
 
-### T-284 · What you depend on, checked at the registry: vulnerabilities, malware, licences
+### ion-repo#T-284 · What you depend on, checked at the registry: vulnerabilities, malware, licences
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5633,7 +5633,7 @@ rule ships with its passing and failing examples.
   project's and its profile (no AGPL in a closed service without a decision), from the registries
   (L6) or a bundled cache. L6 · fix J · trial.
 
-### T-285 · `--deep`: the repo's own checks in a sandbox
+### ion-repo#T-285 · `--deep`: the repo's own checks in a sandbox
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5674,7 +5674,7 @@ rule ships with its passing and failing examples.
 - [ ] **DX07** `CLEAN-CLONE-WORKS`: a fresh clone installs and passes its checks with the documented
   commands (`--deep`, in a sandbox). L7 · fix J · trial.
 
-### T-286 · `--deep`: the app built, served and probed
+### ion-repo#T-286 · `--deep`: the app built, served and probed
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5710,7 +5710,7 @@ rule ships with its passing and failing examples.
 - [ ] **PE18** `IMAGE-SIZE-BUDGET`: the final container image's size tracked; `--deep` builds it. L7
   · ratchet · assess.
 
-### T-287 · What the grid doesn't know, shown: every file claimed
+### ion-repo#T-287 · What the grid doesn't know, shown: every file claimed
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5732,8 +5732,8 @@ corrections counted as signals.
   reason, or one rule waived across many repos of a fleet, flags the rule for review.
 - [ ] **Q07** A coverage map, themes by ecosystems with the number of scored rules in each cell,
   holes visible (`kiln grid --coverage`).
-- [ ] **S05** No silent telemetry: T-38's report, with consent and the exact lines shown, as
-  v0.4.6 does, and the opt-in counts of T-348 (antoine reversed "no telemetry, ever" on
+- [ ] **S05** No silent telemetry: ion-repo#T-38's report, with consent and the exact lines shown, as
+  v0.4.6 does, and the opt-in counts of ion-repo#T-348 (antoine reversed "no telemetry, ever" on
   26 October 2026); every later signal (U) goes through one of the two.
 - [ ] **T02** User effort measured: manual corrections needed per 100 corpus repos for a right score
   (target 0).
@@ -5749,11 +5749,11 @@ corrections counted as signals.
   4 drafts, 0 scored") and still never a private name.
 - [ ] **U04** Practices found but unclassified (a `scripts/backup.sh`, a `docs/runbook.md`, a
   `chaos/` folder), named so the grid can learn them.
-- [ ] **U05** T-38's report (v0.4.6: stacks, notable packages, misfiring rules) also carries the
+- [ ] **U05** ion-repo#T-38's report (v0.4.6: stacks, notable packages, misfiring rules) also carries the
   kinds of unclaimed files (a config's name, never a path) and the corrections users made; the most
   reported become tickets first, counted by `/kiln:backlog`.
 
-### T-288 · Never a crash, whatever the repo
+### ion-repo#T-288 · Never a crash, whatever the repo
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5788,7 +5788,7 @@ the corpus at each candidate.
 - [ ] **S02** Hardened parsers: YAML alias bombs, deep nesting, huge JSON, path traversal through
   symlinks, linear-time regexes; limits on file size, file count, time and memory.
 
-### T-289 · Python beyond Django: every packaging tool, FastAPI and Flask
+### ion-repo#T-289 · Python beyond Django: every packaging tool, FastAPI and Flask
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5830,7 +5830,7 @@ rule ships with its passing and failing examples.
 - [ ] **AS23** (FastAPI's part) `CORS-STRICT`: `CORSMiddleware` never with `allow_origins=["*"]` and
   `allow_credentials=True` together. L2 · fix S · adopt.
 
-### T-290 · JavaScript beyond Nuxt: every framework and package manager
+### ion-repo#T-290 · JavaScript beyond Nuxt: every framework and package manager
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5856,7 +5856,7 @@ rule ships with its passing and failing examples.
 - [ ] **FP27** Tauri · `TAURI-CAPABILITIES`: the capabilities of Tauri 2 grant each window only the
   commands it uses, and a CSP is set. L1 · fix J · adopt.
 
-### T-291 · Framework packs: Next.js, React, Angular, Svelte, Astro
+### ion-repo#T-291 · Framework packs: Next.js, React, Angular, Svelte, Astro
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5904,12 +5904,12 @@ rule ships with its passing and failing examples.
 - [ ] Vue's rules (`VUE-MULTI-WORD-COMPONENTS`, `API-CALLS`, `STATE-IN-STORES` and the rest) read a
   Vite + Vue repo as they read Nuxt, each with a passing and a failing example without Nuxt.
 
-### T-336 · Node back ends: Express, Fastify, NestJS, Hono
+### ion-repo#T-336 · Node back ends: Express, Fastify, NestJS, Hono
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-26
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-291 by the framework coverage review of 26 October 2026, at antoine's
+- **Origin**: split from ion-repo#T-291 by the framework coverage review of 26 October 2026, at antoine's
   request (the most used frameworks of the 2025 surveys checked against the plan): the Node back
   ends get their own release instead of a share of the fronts'
 
@@ -5937,7 +5937,7 @@ rule ships with its passing and failing examples.
   of Prisma, `raw` of Knex, `query` of TypeORM and `sql.raw` of Drizzle never built from a variable.
   L2 · fix J · adopt.
 
-### T-292 · Data science repos: notebooks, data out of git, seeds, locked environments
+### ion-repo#T-292 · Data science repos: notebooks, data out of git, seeds, locked environments
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5949,7 +5949,7 @@ Planned in v0.6.58, "Data science repos": The first outside issues came from dat
 without outputs or secrets, data out of git, seeds and environments locked, models loaded safely.
 
 The first data repos came through issues (#43, #44): v0.4.6 deploys a Streamlit or Dash front
-(T-155) and adds `MODEL-TRACED` (T-156). This theme gathers what such repos need.
+(ion-repo#T-155) and adds `MODEL-TRACED` (ion-repo#T-156). This theme gathers what such repos need.
 
 Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
 converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
@@ -5972,7 +5972,7 @@ rule ships with its passing and failing examples.
 - [ ] **DS08** `ENVIRONMENT-LOCKED`: the analysis environment locked (uv, conda-lock, pixi, renv).
   L1 · fix S · adopt.
 
-### T-293 · Data science repos: pipelines, model loading, experiments, Streamlit
+### ion-repo#T-293 · Data science repos: pipelines, model loading, experiments, Streamlit
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -5984,7 +5984,7 @@ Planned in v0.6.58, "Data science repos": The first outside issues came from dat
 without outputs or secrets, data out of git, seeds and environments locked, models loaded safely.
 
 The first data repos came through issues (#43, #44): v0.4.6 deploys a Streamlit or Dash front
-(T-155) and adds `MODEL-TRACED` (T-156). This theme gathers what such repos need.
+(ion-repo#T-155) and adds `MODEL-TRACED` (ion-repo#T-156). This theme gathers what such repos need.
 
 Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
 converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
@@ -6008,7 +6008,7 @@ rule ships with its passing and failing examples.
 - [ ] **FP38** Gradio · `GRADIO-SHARE-OFF`: no `launch(share=True)` in committed code, which opens
   the app to the whole Internet through a public link. L2 · fix S · adopt.
 
-### T-294 · Licences right: files, manifests, notices, assets, community health
+### ion-repo#T-294 · Licences right: files, manifests, notices, assets, community health
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -6039,7 +6039,7 @@ rule ships with its passing and failing examples.
 - [ ] **LI08** `SIGN-OFF`: contributions under a DCO sign-off or a CLA, for profiles that need one.
   L5 · fix J · assess.
 
-### T-295 · Open source done right: contributing, conduct, security policy, issue forms
+### ion-repo#T-295 · Open source done right: contributing, conduct, security policy, issue forms
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -6051,7 +6051,7 @@ Planned in v0.6.59, "Open source done right": A licence that says the same every
 contributing, conduct and security policies, issue forms, sponsors, the OpenSSF badge.
 
 For the open-source profile; kiln's own vitrine (CONTRIBUTING, Code of Conduct, SECURITY, templates,
-FUNDING with T-119) is the reference example.
+FUNDING with ion-repo#T-119) is the reference example.
 
 Rule notation: the detector's rung (`L0` to `L7`; `≈` when Claude confirms), `fix S` when a
 converter closes the gap or `fix J` when it takes judgment, then the radar level it enters at. Each
@@ -6073,7 +6073,7 @@ rule ships with its passing and failing examples.
 - [ ] **CM10** `OPENSSF-BADGE`: the OpenSSF Best Practices badge, read with `--online`. L6 · fix J ·
   assess.
 
-### T-296 · Packages published cleanly: trusted publishing, attestations, contents
+### ion-repo#T-296 · Packages published cleanly: trusted publishing, attestations, contents
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -6104,7 +6104,7 @@ rule ships with its passing and failing examples.
 - [ ] **PK07** `PACKAGE-CONTENTS`: the sdist holds the tests and the licence, the wheel holds
   neither tests nor secrets (`--deep` builds both). L7 · fix J · trial.
 
-### T-297 · Packages that behave: typed exports, engines, one version source, CLIs
+### ion-repo#T-297 · Packages that behave: typed exports, engines, one version source, CLIs
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -6133,7 +6133,7 @@ rule ships with its passing and failing examples.
 - [ ] **PK13** `REPRODUCIBLE-BUILD`: `SOURCE_DATE_EPOCH` honoured; two builds give the same hash
   (`--deep`). L7 · fix J · assess.
 
-### T-298 · Infrastructure as code: Terraform locked, scanned, private, encrypted
+### ion-repo#T-298 · Infrastructure as code: Terraform locked, scanned, private, encrypted
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -6168,7 +6168,7 @@ rule ships with its passing and failing examples.
   · fix S · adopt.
 - [ ] **IN09** `K8S-RESOURCES`: memory requests and limits, CPU requests. L1 · fix S · adopt.
 
-### T-299 · Kubernetes, Helm and Ansible by the book
+### ion-repo#T-299 · Kubernetes, Helm and Ansible by the book
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -6200,7 +6200,7 @@ rule ships with its passing and failing examples.
 - [ ] **IN17** `IAC-TAGS`: resources tagged with an owner and a cost centre, for company profiles.
   L1 · fix S · assess.
 
-### T-300 · Every kind of repo, each with its rules
+### ion-repo#T-300 · Every kind of repo, each with its rules
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -6235,7 +6235,7 @@ rule ships with its passing and failing examples.
 - [ ] **D07** Thresholds that scale: a 200-line script isn't held to a monorepo's architecture
   rules; ratchets on a big repo start from its own numbers.
 - [ ] **D11** Kind and profile on the report's first lines with their evidence; `kiln set
-  kind=library` exists, is never needed, and each use is a T-38 signal.
+  kind=library` exists, is never needed, and each use is a ion-repo#T-38 signal.
 - [ ] **D12** The forge's topics and description read with `--online` as hints (`homework`,
   `tutorial`, `template`, `awesome`).
 - [ ] **D13** Template repos (`is_template`, `copier.yml`) scored on what they generate: rendered
@@ -6252,7 +6252,7 @@ rule ships with its passing and failing examples.
 - [ ] **FP43** Solidity · `SOLIDITY-CHECKED`: Foundry or Hardhat tests and Slither in CI, the
   compiler version pinned exactly (`pragma solidity 0.8.28;`, not `^`). L1 · fix S · trial.
 
-### T-301 · GitLab too: its CI, its forge, its reports
+### ion-repo#T-301 · GitLab too: its CI, its forge, its reports
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -6283,7 +6283,7 @@ rule ships with its passing and failing examples.
 - [ ] **CI26** `GITLAB-PIPELINE-HYGIENE`: `interruptible`, `timeout`, `rules:` rather than `only`
   and `except`, includes pinned to a commit, protected variables. L1 · fix S · adopt (GitLab).
 
-### T-302 · Profiles read from the repo: stages, criticality, team signals
+### ion-repo#T-302 · Profiles read from the repo: stages, criticality, team signals
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -6305,7 +6305,7 @@ rules as ratchets.
 - [ ] **G11** Profiles stay a membership list, never weights (decision 2): a rule outside the repo's
   profile is not applicable, so `SLO` asks nothing of a solo repo.
 
-### T-303 · Coursework and research repos
+### ion-repo#T-303 · Coursework and research repos
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -6328,7 +6328,7 @@ rule ships with its passing and failing examples.
 - [ ] **CM09** `CITATION`: `CITATION.cff` for research software (the university profile). L0 · fix S
   · trial.
 
-### T-365 · Claude can't call a task done with new findings: a Stop hook
+### ion-repo#T-365 · Claude can't call a task done with new findings: a Stop hook
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-27
@@ -6339,7 +6339,7 @@ rule ships with its passing and failing examples.
 Planned in v0.6.26, "Only what changed, right after each edit". kiln checks each file after an
 edit (`check_file.py`, `PostToolUse`) but has no `Stop` hook: Claude can say "done" with a
 finding still open.
-- [ ] A `Stop` hook runs the charter (then the grid, with T-238's `--changed`) on the files the
+- [ ] A `Stop` hook runs the charter (then the grid, with ion-repo#T-238's `--changed`) on the files the
   session changed and hands Claude the findings at or above a threshold.
 - [ ] Only what the session introduced: a finding the file already had is never reported, so
   Claude doesn't wander off fixing code nobody asked it to touch.
@@ -6347,7 +6347,7 @@ finding still open.
   can't run (no git, a broken config), Claude carries on.
 - [ ] The threshold is a `kiln set` key; its cost per stop measured and written in the reference.
 
-### T-366 · The session's place kept before compaction, a pause offered near the usage limit
+### ion-repo#T-366 · The session's place kept before compaction, a pause offered near the usage limit
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-27
@@ -6365,7 +6365,7 @@ and the 5-hour window. `kiln pause` only runs when someone asks for it.
 - [ ] Measured before shipping: the work kept across a compaction, with and without the hook, on
   one real session.
 
-### T-367 · No bulk staging: `git add -A`, `git add .` and `git commit -a` refused
+### ion-repo#T-367 · No bulk staging: `git add -A`, `git add .` and `git commit -a` refused
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-27
@@ -6376,12 +6376,12 @@ and the 5-hour window. `kiln pause` only runs when someone asks for it.
 Planned in v0.5.14, "Repos safe to hand to an agent". "Commit only the task's files" is an
 instruction today; the branch guard can make it mechanical.
 - [ ] `branch_guard.py` refuses `git add -A`, `git add --all`, `git add .`, `git commit -a` and
-  `git commit --all`, and says to name the files; with T-167, judged in the repo the command
+  `git commit --all`, and says to name the files; with ion-repo#T-167, judged in the repo the command
   runs in.
 - [ ] A test per form, and the forms that stay allowed (`git add -p`, a named path, `git add -u
   <path>`).
 
-### T-368 · Recorded demos replayed by a test: an output that changed fails until re-recorded
+### ion-repo#T-368 · Recorded demos replayed by a test: an output that changed fails until re-recorded
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-27
@@ -6396,7 +6396,7 @@ types what kiln no longer offers; it doesn't see a demo whose output changed.
   and the text refreshed.
 - [ ] `kiln-rescue.tape`'s commands that need no network and no Claude, the same way.
 
-### T-369 · Worktrees ready however they are made: a `WorktreeCreate` hook, a port per worktree
+### ion-repo#T-369 · Worktrees ready however they are made: a `WorktreeCreate` hook, a port per worktree
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-27
@@ -6413,7 +6413,7 @@ two worktrees ask for the same ports.
 - [ ] A port offset per worktree, derived from its name, so the same worktree always gets the
   same ports; `kiln dev` and the copied `.env*` use it.
 
-### T-370 · Worktree cleanup decided by a script: safe, review, protected, undo
+### ion-repo#T-370 · Worktree cleanup decided by a script: safe, review, protected, undo
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-27
@@ -6432,7 +6432,7 @@ nowhere else.
 
 ## ⚪ Background — long-running work, debt and ideas
 
-### T-353 · A leaderboard of the best-scored public repos
+### ion-repo#T-353 · A leaderboard of the best-scored public repos
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -6443,10 +6443,10 @@ nowhere else.
 Public rankings by a quality score exist and are welcome when they celebrate (best-of-python
 ranks projects by a project-quality score; Scorecard publishes every repo's checks); shaming the
 worst is what is frowned upon.
-- [ ] A page of the best-scored public repos by stack, from the corpus and the badges (T-154),
-  top only, a repo removed on its maintainers' request; built after T-191.
+- [ ] A page of the best-scored public repos by stack, from the corpus and the badges (ion-repo#T-154),
+  top only, a repo removed on its maintainers' request; built after ion-repo#T-191.
 
-### T-178 · A lighter install: copier's dependencies trimmed, not fetched later
+### ion-repo#T-178 · A lighter install: copier's dependencies trimmed, not fetched later
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-24
@@ -6464,18 +6464,18 @@ fails offline, versions no longer pinned by one `uv tool install`, a slower firs
 - [ ] Only worth doing if the gain is real (several MB or a visible install time); otherwise
   close it as measured.
 
-### T-98 · Tab completion for zsh and fish
+### ion-repo#T-98 · Tab completion for zsh and fish
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
 - **Effort**: S · **Owner**: a contributor (good first issue at the launch) · **Due**: —
-- **Origin**: growth review, second batch, 16 October 2026; follows T-20 (bash)
+- **Origin**: growth review, second batch, 16 October 2026; follows ion-repo#T-20 (bash)
 
 zsh is the default shell on macOS: most newcomers there get no completion today.
 - [ ] `kiln completion zsh` and `kiln completion fish`, built from the parser like bash; the
   README line for each.
 
-### T-116 · An accessible CLI: `NO_COLOR`, `--plain`, screen readers, CI logs
+### ion-repo#T-116 · An accessible CLI: `NO_COLOR`, `--plain`, screen readers, CI logs
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
@@ -6485,7 +6485,7 @@ zsh is the default shell on macOS: most newcomers there get no completion today.
 - [ ] `NO_COLOR` and `--plain` respected everywhere (no spinner, no box drawing, words instead
   of symbols); tested like the output outside a terminal.
 
-### T-10 · Interface polish
+### ion-repo#T-10 · Interface polish
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-15
@@ -6494,7 +6494,7 @@ zsh is the default shell on macOS: most newcomers there get no completion today.
 
 - [ ] `kiln check`: the step title and the `✓` line say the same thing (one command per step).
 
-### T-99 · `kiln doctor --fix`: the fixes applied, not just printed
+### ion-repo#T-99 · `kiln doctor --fix`: the fixes applied, not just printed
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-16
@@ -6504,7 +6504,7 @@ zsh is the default shell on macOS: most newcomers there get no completion today.
 - [ ] Each problem `kiln doctor` finds and can fix safely (pre-commit missing, plugin not
   installed, outdated kiln) is fixed after one confirmation; the others keep their command and
   direct link.
-### T-138 · Less code to carry, measured first: the compressor's dry run
+### ion-repo#T-138 · Less code to carry, measured first: the compressor's dry run
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-17
@@ -6522,11 +6522,11 @@ zsh is the default shell on macOS: most newcomers there get no completion today.
 
 From the kiln score ideas of 24 October 2026:
 - [ ] **M10** Code untouched for years and imported by nothing: candidates for the compressor
-  (T-138).
+  (ion-repo#T-138).
 
-### T-139 · The compressor: removals proven by types, tests and behaviour
+### ion-repo#T-139 · The compressor: removals proven by types, tests and behaviour
 - **Type**: idea
-- **Status**: in progress — started before T-138's number, at antoine's request (21 October
+- **Status**: in progress — started before ion-repo#T-138's number, at antoine's request (21 October
   2026); the compressor's own dry run gives that number. Merged into develop on 22 October
   2026: `kiln fix --rule DEAD-CODE` and `--rule UNUSED-DEPENDENCIES`, proven by the type
   checker and the tests; the behaviour comparison and the dependency replacement remain
@@ -6535,14 +6535,14 @@ From the kiln score ideas of 24 October 2026:
 - **Origin**: vision of 17 October 2026, fourth pillar
 
 No open tool removes existing code with a proof.
-- [ ] `kiln fix` removes what T-138 found, each removal proven in steps (type checker, then
+- [ ] `kiln fix` removes what ion-repo#T-138 found, each removal proven in steps (type checker, then
   tests, then behaviour compared); an unproven removal is not applied. Type first, compress
   after.
 - [x] Never rewritten: cryptography, parsers, time zones, Unicode.
 - [ ] Replacing a dependency by the part actually used comes second, after measurements: the
   most striking, and the riskiest.
 
-### T-145 · A public benchmark: Claude Code with and without kiln
+### ion-repo#T-145 · A public benchmark: Claude Code with and without kiln
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-18
@@ -6551,20 +6551,20 @@ No open tool removes existing code with a proof.
   and without kiln, that could serve as proof"); widened on 21 October 2026 at antoine's
   request: the tokens kiln saves, shown each session
 
-T-53 measures one hypothesis (small files); this one measures the whole promise. Only rtk's
+ion-repo#T-53 measures one hypothesis (small files); this one measures the whole promise. Only rtk's
 savings are measured live (`rtk gain`); the rest (repo map, skills, charter) can only be
 estimated, and an estimate is credible only from a published A/B run.
 - [ ] The same tasks given to headless Claude Code (`claude -p`, its usage read per run) on
   local copies of the training repos, with and without kiln, then before and after `kiln fix`
   and `/kiln:modernize`, several runs each: tokens, turns, red CIs, rules broken, tasks done;
   its cost on the Pro quota said before it runs, stopped at the budget.
-- [ ] Published with its method and script whatever the result; after T-53, which sets the
-  method. If the number is net, it joins the README and the launch (T-03).
+- [ ] Published with its method and script whatever the result; after ion-repo#T-53, which sets the
+  method. If the number is net, it joins the README and the launch (ion-repo#T-03).
 - [ ] Status line: rtk's savings since the session started (measured, cached), and the
   benchmark's figure marked `≈` with a link to its method; tokens, never dollars (a Pro plan
   pays no tokens).
 
-### T-69 · Community grid packs from any git repo
+### ion-repo#T-69 · Community grid packs from any git repo
 - **Type**: idea
 - **Status**: todo
 - **Opened**: 2026-10-16
@@ -6574,18 +6574,18 @@ estimated, and an estimate is credible only from a published A/B run.
 
 An ecosystem is what turns a tool into a project people star and contribute to.
 - [ ] `kiln grid add github:someone/kiln-grid-fastapi`: rules for a stack or a domain kiln does
-  not cover, in the format of T-123, scored like kiln's own, with a trust prompt that shows what
+  not cover, in the format of ion-repo#T-123, scored like kiln's own, with a trust prompt that shows what
   their detectors and fixers run.
 - [ ] An index of reviewed packs in kiln; an author kit (template, contract tests, a workflow
   that tests the pack against each kiln release).
 
 From the kiln score ideas of 24 October 2026:
-- [ ] **B23** Ecosystem packs written as data and proven by examples, so the community (T-69) adds
+- [ ] **B23** Ecosystem packs written as data and proven by examples, so the community (ion-repo#T-69) adds
   one without touching kiln's code.
-- [ ] **R02** Packs from any git repo (T-69), pinned by SHA, behind a trust prompt that shows what
+- [ ] **R02** Packs from any git repo (ion-repo#T-69), pinned by SHA, behind a trust prompt that shows what
   their detectors run; declarative detectors only unless trusted (a Python check is code execution).
 
-### T-304 · A whole organisation's repos: CSV, local scores, organisation packs
+### ion-repo#T-304 · A whole organisation's repos: CSV, local scores, organisation packs
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -6605,7 +6605,7 @@ cloning, gaps ranked by how many repos share them.
 - [ ] **R03** Organisation packs for the v0.7.0 targets: a university's rules for student repos, an
   association network's.
 
-### T-305 · Compliance views: Scorecard, ASVS, SLSA, the CRA and the EAA
+### ion-repo#T-305 · Compliance views: Scorecard, ASVS, SLSA, the CRA and the EAA
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -6638,7 +6638,7 @@ checkable.
 - [ ] **R10** Each security rule traced to its OWASP cheat sheet, so a reviewer can follow every
   rule to its source.
 
-### T-306 · Delivery measured, the organisation's settings read
+### ion-repo#T-306 · Delivery measured, the organisation's settings read
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -6658,7 +6658,7 @@ organisation profiles.
 - [ ] **M22** Organisations: two-factor authentication required, base permissions, SSO (organisation
   profiles).
 
-### T-307 · The charter and the grid, one engine
+### ion-repo#T-307 · The charter and the grid, one engine
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -6680,14 +6680,14 @@ rule IDs with their regime, converted by `kiln update`.
   grid, `charter.toml` listing rule IDs with their regime and budget, the charter's IDs kept as
   aliases.
 
-### T-310 · Java and Kotlin read: Maven, Gradle, Spring Boot, the LTS lines
+### ion-repo#T-310 · Java and Kotlin read: Maven, Gradle, Spring Boot, the LTS lines
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
 - **Origin**: kiln score ideas of 24 October 2026 (Every ecosystem, API, contracts and typing,
   Supply chain), made a ticket on 25 October 2026 at antoine's request; one stack per ticket from
-  the same day (.NET in T-322)
+  the same day (.NET in ion-repo#T-322)
 
 Planned in v0.7.4, "Java and Kotlin repos, read": The road to v0.8.0: every common stack scored and
 fixed by script as Django is at v0.5.0, stack by stack (decision 1) in the order the corpus measures
@@ -6714,13 +6714,13 @@ rule ships with its passing and failing examples.
   `LOCKED-DEPENDENCIES`, `DEPENDENCY-UPDATES`, `VULNERABILITY-AUDIT`, `SUPPORTED-RUNTIMES`) read
   Java and Kotlin repos too, each with a passing and a failing example from Java and Kotlin.
 
-### T-311 · The Java and Kotlin pack
+### ion-repo#T-311 · The Java and Kotlin pack
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
 - **Origin**: kiln score ideas of 24 October 2026 (Stack packs), made a ticket on 25 October 2026 at
-  antoine's request; one stack per ticket from the same day (C# in T-323)
+  antoine's request; one stack per ticket from the same day (C# in ion-repo#T-323)
 
 Planned in v0.7.5, "The Java and Kotlin pack": A supported LTS, a verified wrapper, locked
 dependencies and a bug finder in the build, then Spring Boot's own rules, counted once ten corpus
@@ -6745,7 +6745,7 @@ rule ships with its passing and failing examples.
 - [ ] Ten corpus repos of Java and Kotlin scored and their findings checked before the pack counts
   (B24), each false alarm fixed in the engine.
 
-### T-337 · The Spring Boot pack
+### ion-repo#T-337 · The Spring Boot pack
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -6783,12 +6783,12 @@ rule ships with its passing and failing examples.
 - [ ] Ten corpus repos of Spring Boot scored and their findings checked before the pack counts
   (B24), each false alarm fixed in the engine.
 
-### T-322 · C# and .NET read: projects, central packages, nullable, supported lines
+### ion-repo#T-322 · C# and .NET read: projects, central packages, nullable, supported lines
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-310 on 25 October 2026, one stack per ticket (kiln score ideas of 24
+- **Origin**: split from ion-repo#T-310 on 25 October 2026, one stack per ticket (kiln score ideas of 24
   October 2026: Every ecosystem, API, contracts and typing, Supply chain)
 
 Planned in v0.7.6, "C# and .NET repos, read": Projects, solutions and central package management
@@ -6809,12 +6809,12 @@ rule ships with its passing and failing examples.
   `LOCKED-DEPENDENCIES`, `DEPENDENCY-UPDATES`, `VULNERABILITY-AUDIT`, `SUPPORTED-RUNTIMES`) read C#
   repos too, each with a passing and a failing example from C#.
 
-### T-323 · The C# pack
+### ion-repo#T-323 · The C# pack
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-311 on 25 October 2026, one stack per ticket (kiln score ideas of 24
+- **Origin**: split from ion-repo#T-311 on 25 October 2026, one stack per ticket (kiln score ideas of 24
   October 2026: Stack packs)
 
 Planned in v0.7.7, "The C# pack": NuGetAudit, lock files, warnings as errors and a pinned SDK, then
@@ -6841,7 +6841,7 @@ rule ships with its passing and failing examples.
 - [ ] Ten corpus repos of C# scored and their findings checked before the pack counts (B24), each
   false alarm fixed in the engine.
 
-### T-338 · The ASP.NET Core and Blazor pack
+### ion-repo#T-338 · The ASP.NET Core and Blazor pack
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -6878,14 +6878,14 @@ rule ships with its passing and failing examples.
 - [ ] Ten corpus repos of ASP.NET Core and Blazor scored and their findings checked before the pack
   counts (B24), each false alarm fixed in the engine.
 
-### T-312 · PHP read: Composer, Laravel, Symfony, WordPress
+### ion-repo#T-312 · PHP read: Composer, Laravel, Symfony, WordPress
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
 - **Origin**: kiln score ideas of 24 October 2026 (Every ecosystem, API, contracts and typing), made
   a ticket on 25 October 2026 at antoine's request; one stack per ticket from the same day (Ruby in
-  T-324)
+  ion-repo#T-324)
 
 Planned in v0.7.8, "PHP repos, read": Composer, Laravel, Symfony and WordPress read, with their
 analysers, formatters, tests and auditor.
@@ -6903,13 +6903,13 @@ rule ships with its passing and failing examples.
   `LOCKED-DEPENDENCIES`, `DEPENDENCY-UPDATES`, `VULNERABILITY-AUDIT`, `SUPPORTED-RUNTIMES`) read PHP
   repos too, each with a passing and a failing example from PHP.
 
-### T-313 · The PHP pack
+### ion-repo#T-313 · The PHP pack
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
 - **Origin**: kiln score ideas of 24 October 2026 (Stack packs), made a ticket on 25 October 2026 at
-  antoine's request; one stack per ticket from the same day (Ruby in T-325, Elixir in T-326)
+  antoine's request; one stack per ticket from the same day (Ruby in ion-repo#T-325, Elixir in ion-repo#T-326)
 
 Planned in v0.7.9, "The PHP pack": Strict types, `composer audit` in CI, a supported PHP and no
 `phpinfo()` left, then the rules of Laravel, Symfony and WordPress, counted once ten corpus repos of
@@ -6931,7 +6931,7 @@ rule ships with its passing and failing examples.
 - [ ] Ten corpus repos of PHP scored and their findings checked before the pack counts (B24), each
   false alarm fixed in the engine.
 
-### T-339 · The Laravel, Symfony and WordPress pack
+### ion-repo#T-339 · The Laravel, Symfony and WordPress pack
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -6972,12 +6972,12 @@ rule ships with its passing and failing examples.
 - [ ] Ten corpus repos of Laravel, Symfony and WordPress scored and their findings checked before
   the pack counts (B24), each false alarm fixed in the engine.
 
-### T-327 · C and C++ read: CMake, Meson, Bazel, Conan, vcpkg
+### ion-repo#T-327 · C and C++ read: CMake, Meson, Bazel, Conan, vcpkg
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-314 on 25 October 2026, one stack per ticket (kiln score ideas of 24
+- **Origin**: split from ion-repo#T-314 on 25 October 2026, one stack per ticket (kiln score ideas of 24
   October 2026: Every ecosystem)
 
 Planned in v0.7.10, "C and C++ repos, read": CMake, Meson, Bazel, Conan and vcpkg read, with
@@ -6994,12 +6994,12 @@ rule ships with its passing and failing examples.
   `LOCKED-DEPENDENCIES`, `DEPENDENCY-UPDATES`, `VULNERABILITY-AUDIT`, `SUPPORTED-RUNTIMES`) read C
   and C++ repos too, each with a passing and a failing example from C and C++.
 
-### T-328 · The C and C++ pack
+### ion-repo#T-328 · The C and C++ pack
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-315 on 25 October 2026, one stack per ticket (kiln score ideas of 24
+- **Origin**: split from ion-repo#T-315 on 25 October 2026, one stack per ticket (kiln score ideas of 24
   October 2026: Stack packs)
 
 Planned in v0.7.11, "The C and C++ pack": Warnings as errors, sanitizers in CI, clang-tidy, fuzzing
@@ -7025,14 +7025,14 @@ rule ships with its passing and failing examples.
 - [ ] Ten corpus repos of C and C++ scored and their findings checked before the pack counts (B24),
   each false alarm fixed in the engine.
 
-### T-308 · Go read: modules, toolchains, race tests, errors
+### ion-repo#T-308 · Go read: modules, toolchains, race tests, errors
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
 - **Origin**: kiln score ideas of 24 October 2026 (Every ecosystem, Mature tools as detectors,
   Concurrency, Errors and logs, Supply chain), made a ticket on 25 October 2026 at antoine's
-  request; one stack per ticket from the same day (Rust in T-320)
+  request; one stack per ticket from the same day (Rust in ion-repo#T-320)
 
 Planned in v0.7.12, "Go repos, read": go.mod, go.sum and the toolchain read, with golangci-lint,
 govulncheck, race tests and wrapped errors, `go.sum` held to the rules that span stacks.
@@ -7044,22 +7044,22 @@ rule ships with its passing and failing examples.
 - [ ] **B06** Go: go.mod and go.sum, the `go` and `toolchain` directives, golangci-lint, gofmt,
   govulncheck, `go vet`, `-race` in CI, vendoring. Gin, Echo, Fiber and chi recognised.
 - [ ] **F10** govulncheck for Go (reachable vulnerabilities only); cargo-deny, `composer audit` and
-  bundler-audit come with their stacks (T-320, T-312, T-324).
+  bundler-audit come with their stacks (ion-repo#T-320, ion-repo#T-312, ion-repo#T-324).
 - [ ] **CC09** `GO-RACE`: `go test -race` in CI. L1 · fix S · adopt.
 - [ ] **EL12** `GO-ERROR-WRAPPING`: `fmt.Errorf("…: %w", err)`. L2 · fix J · trial.
-- [ ] **SU33** `LOCKS-COMMITTED`: `go.sum` committed (`Cargo.lock` comes with Rust, T-320). L0 · fix
+- [ ] **SU33** `LOCKS-COMMITTED`: `go.sum` committed (`Cargo.lock` comes with Rust, ion-repo#T-320). L0 · fix
   J · adopt.
 - [ ] The rules that span stacks (`TESTS-PRESENT`, `TESTS-IN-CI`, `LINT-IN-CI`,
   `LOCKED-DEPENDENCIES`, `DEPENDENCY-UPDATES`, `VULNERABILITY-AUDIT`, `SUPPORTED-RUNTIMES`) read Go
   repos too, each with a passing and a failing example from Go.
 
-### T-309 · The Go pack
+### ion-repo#T-309 · The Go pack
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
 - **Origin**: kiln score ideas of 24 October 2026 (Stack packs), made a ticket on 25 October 2026 at
-  antoine's request; one stack per ticket from the same day (Rust in T-321)
+  antoine's request; one stack per ticket from the same day (Rust in ion-repo#T-321)
 
 Planned in v0.7.13, "The Go pack": Go's own rules with their examples and converters, from a tidy
 `go.mod` to no `panic` in a library, counted once ten corpus repos of Go were checked (B24).
@@ -7087,12 +7087,12 @@ rule ships with its passing and failing examples.
 - [ ] **FP28** Go · `GO-HTTP-TIMEOUTS`: an `http.Server` with `ReadHeaderTimeout`, never a bare
   `http.ListenAndServe` in a server (gosec G112, G114). L2 · fix J · adopt.
 
-### T-320 · Rust read: Cargo, clippy, editions, `unsafe`, locks
+### ion-repo#T-320 · Rust read: Cargo, clippy, editions, `unsafe`, locks
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-308 on 25 October 2026, one stack per ticket (kiln score ideas of 24
+- **Origin**: split from ion-repo#T-308 on 25 October 2026, one stack per ticket (kiln score ideas of 24
   October 2026: Every ecosystem, Mature tools as detectors, Concurrency, Supply chain)
 
 Planned in v0.7.14, "Rust repos, read": Cargo, clippy, the edition and `unsafe` read, `Cargo.lock`
@@ -7112,12 +7112,12 @@ rule ships with its passing and failing examples.
   `LOCKED-DEPENDENCIES`, `DEPENDENCY-UPDATES`, `VULNERABILITY-AUDIT`, `SUPPORTED-RUNTIMES`) read
   Rust repos too, each with a passing and a failing example from Rust.
 
-### T-321 · The Rust pack
+### ion-repo#T-321 · The Rust pack
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-309 on 25 October 2026, one stack per ticket (kiln score ideas of 24
+- **Origin**: split from ion-repo#T-309 on 25 October 2026, one stack per ticket (kiln score ideas of 24
   October 2026: Stack packs)
 
 Planned in v0.7.15, "The Rust pack": Rust's own rules, from clippy with warnings as errors to a
@@ -7145,12 +7145,12 @@ rule ships with its passing and failing examples.
 - [ ] Ten corpus repos of Rust scored and their findings checked before the pack counts (B24), each
   false alarm fixed in the engine.
 
-### T-324 · Ruby read: Bundler, Rails, RuboCop, bundler-audit
+### ion-repo#T-324 · Ruby read: Bundler, Rails, RuboCop, bundler-audit
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-312 on 25 October 2026, one stack per ticket (kiln score ideas of 24
+- **Origin**: split from ion-repo#T-312 on 25 October 2026, one stack per ticket (kiln score ideas of 24
   October 2026: Every ecosystem, API, contracts and typing)
 
 Planned in v0.7.16, "Ruby repos, read": Bundler and Rails read, with RuboCop, Sorbet or RBS, RSpec
@@ -7167,12 +7167,12 @@ rule ships with its passing and failing examples.
   `LOCKED-DEPENDENCIES`, `DEPENDENCY-UPDATES`, `VULNERABILITY-AUDIT`, `SUPPORTED-RUNTIMES`) read
   Ruby repos too, each with a passing and a failing example from Ruby.
 
-### T-325 · The Ruby pack
+### ion-repo#T-325 · The Ruby pack
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-313 on 25 October 2026, one stack per ticket (kiln score ideas of 24
+- **Origin**: split from ion-repo#T-313 on 25 October 2026, one stack per ticket (kiln score ideas of 24
   October 2026: Stack packs)
 
 Planned in v0.7.17, "The Ruby pack": Brakeman and bundler-audit in CI, RuboCop configured, a
@@ -7198,14 +7198,14 @@ rule ships with its passing and failing examples.
 - [ ] **AS01** (Rails' part) `SECRETS`: `config/master.key` and `config/credentials/*.key` never
   committed. L0 · fix J · adopt.
 
-### T-314 · iOS, Android and Flutter read: SwiftPM, the manifest, pubspec
+### ion-repo#T-314 · iOS, Android and Flutter read: SwiftPM, the manifest, pubspec
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
 - **Origin**: kiln score ideas of 24 October 2026 (Every ecosystem, Application security), made a
   ticket on 25 October 2026 at antoine's request; one stack per ticket from the same day (Elixir in
-  T-326, C and C++ in T-327, the long tail in T-329)
+  ion-repo#T-326, C and C++ in ion-repo#T-327, the long tail in ion-repo#T-329)
 
 Planned in v0.7.18, "iOS, Android and Flutter repos, read": SwiftPM, CocoaPods, the Android manifest
 and Flutter's pubspec read; App Transport Security and exported components checked.
@@ -7216,7 +7216,7 @@ rule ships with its passing and failing examples.
 
 - [ ] **B12** Swift (SwiftPM, CocoaPods, SwiftLint), Android (manifest, R8), Dart and Flutter
   (pubspec, analysis_options); React Native and Expo (`app.json`, `app.config.*`, `eas.json`);
-  Kotlin Multiplatform, Ionic and Capacitor, .NET MAUI's mobile targets; Elixir's part is in T-326.
+  Kotlin Multiplatform, Ionic and Capacitor, .NET MAUI's mobile targets; Elixir's part is in ion-repo#T-326.
 - [ ] **AS41** `ANDROID-MANIFEST`: not debuggable, no cleartext traffic, backups off, every
   component's `exported` explicit. L1 · fix S · adopt.
 - [ ] **AS42** `IOS-ATS`: App Transport Security left on. L1 · fix J · adopt.
@@ -7225,13 +7225,13 @@ rule ships with its passing and failing examples.
   Swift, Android and Flutter repos too, each with a passing and a failing example from Swift,
   Android and Flutter.
 
-### T-315 · The mobile pack
+### ion-repo#T-315 · The mobile pack
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
 - **Origin**: kiln score ideas of 24 October 2026 (Stack packs), made a ticket on 25 October 2026 at
-  antoine's request; one stack per ticket from the same day (C and C++ in T-328)
+  antoine's request; one stack per ticket from the same day (C and C++ in ion-repo#T-328)
 
 Planned in v0.7.19, "The mobile pack": What the stores require and what an app bundle gives away:
 the privacy manifest, the target SDK, no server secret in the app, signing keys out of git, counted
@@ -7262,14 +7262,14 @@ rule ships with its passing and failing examples.
 - [ ] **AS36** (Expo's part) `NO-SECRETS-IN-FRONT`: `EXPO_PUBLIC_*` variables too, compiled into the
   app. L2 · fix J · adopt.
 
-### T-340 · Game repos: Unity, Godot, Unreal, Roblox, Lua
+### ion-repo#T-340 · Game repos: Unity, Godot, Unreal, Roblox, Lua
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-26
 - **Effort**: L · **Owner**: — · **Due**: —
 - **Origin**: stack coverage review of 26 October 2026, at antoine's request ("sois sûr que kiln
   couvre bien tout"): Lua at 9 % of the 2025 Stack Overflow survey and game repos had two boxes in
-  T-300, nothing that read them
+  ion-repo#T-300, nothing that read them
 
 Planned in v0.7.20, "Game repos, read and packed": Unity, Godot, Unreal and Roblox repos read on top
 of the C# and C++ packs, with Lua and Luau: the engine's version pinned, assets in Git LFS, caches
@@ -7308,7 +7308,7 @@ rule ships with its passing and failing examples.
 - [ ] Ten corpus repos of games scored and their findings checked before the pack counts (B24),
   each false alarm fixed in the engine.
 
-### T-341 · R read and its pack: renv, lintr, testthat, R CMD check
+### ion-repo#T-341 · R read and its pack: renv, lintr, testthat, R CMD check
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-26
@@ -7331,7 +7331,7 @@ rule ships with its passing and failing examples.
 
 - [ ] **B14** (R's part) R: `DESCRIPTION` and `NAMESPACE`, `renv.lock`, lintr, styler, testthat,
   `R CMD check` in CI (r-lib/actions), Shiny apps; R Markdown and Quarto stay read as notebooks
-  (T-292).
+  (ion-repo#T-292).
 - [ ] **SP45** R · `RENV-LOCKED`: `renv.lock` committed for an analysis or an app, restored in CI.
   L0 · fix S · adopt.
 - [ ] **SP46** R · `R-CMD-CHECK`: a package passes `R CMD check` in CI without error or warning. L1
@@ -7345,12 +7345,12 @@ rule ships with its passing and failing examples.
 - [ ] Ten corpus repos of R scored and their findings checked before the pack counts (B24), each
   false alarm fixed in the engine.
 
-### T-326 · Elixir read and its pack: mix, Phoenix, Credo, Sobelow
+### ion-repo#T-326 · Elixir read and its pack: mix, Phoenix, Credo, Sobelow
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-313 and T-314 on 25 October 2026, one stack per ticket (kiln score ideas
+- **Origin**: split from ion-repo#T-313 and ion-repo#T-314 on 25 October 2026, one stack per ticket (kiln score ideas
   of 24 October 2026: Every ecosystem, Stack packs)
 
 Planned in v0.7.22, "Elixir repos, read and packed": A smaller ecosystem, read and packed in one
@@ -7375,12 +7375,12 @@ rule ships with its passing and failing examples.
 - [ ] Ten corpus repos of Elixir scored and their findings checked before the pack counts (B24),
   each false alarm fixed in the engine.
 
-### T-329 · The long tail as data packs
+### ion-repo#T-329 · The long tail as data packs
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: M · **Owner**: — · **Due**: —
-- **Origin**: split from T-314 on 25 October 2026, one stack per ticket (kiln score ideas of 24
+- **Origin**: split from ion-repo#T-314 on 25 October 2026, one stack per ticket (kiln score ideas of 24
   October 2026: Every ecosystem)
 
 Planned in v0.8.0, "Every common stack scored": Milestone decided by antoine (25 October 2026),
@@ -7391,13 +7391,13 @@ at v0.5.0.
 
 Below the stacks that make 95 % of the corpus's repos: each language's facts as data (manifests,
 locks, tools), read by the rules that span stacks, and a pack of its own only once the corpus or a
-community pack (T-69) asks for one.
+community pack (ion-repo#T-69) asks for one.
 
 - [ ] **B14** The long tail as data packs: Scala (sbt, Mill), Haskell, OCaml, Clojure, Erlang, F#,
-  Julia, Perl, Zig, Nim, Fortran (fpm), MATLAB, Solidity (its rules in T-300); R has its release
-  (T-341), Lua comes with the games (T-340).
+  Julia, Perl, Zig, Nim, Fortran (fpm), MATLAB, Solidity (its rules in ion-repo#T-300); R has its release
+  (ion-repo#T-341), Lua comes with the games (ion-repo#T-340).
 
-### T-330 · Every common stack scored, measured: the corpus's 95 %
+### ion-repo#T-330 · Every common stack scored, measured: the corpus's 95 %
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -7411,43 +7411,43 @@ languages come as data packs that the community packs of v1.0.0 will extend; the
 corpus re-scored and each stack among those that make 95 % of its repos shown at the level of Django
 at v0.5.0.
 
-The gate of v0.8.0, as T-03 is the launch's: the milestone is cut only once these hold.
+The gate of v0.8.0, as ion-repo#T-03 is the launch's: the milestone is cut only once these hold.
 
-- [ ] The corpus re-scored (T-219): the share of its repos, and of its code, whose stacks each have
+- [ ] The corpus re-scored (ion-repo#T-219): the share of its repos, and of its code, whose stacks each have
   a pack (B01); 95 % or more, otherwise the missing stack gets its releases before v0.8.0.
 - [ ] Each of those packs at the level of Django at v0.5.0: its facts, its rules with their
   examples, its converters, its precision on ten corpus repos (B24, H03), no strict rule under 99 %.
 - [ ] Every change the stacks forced on the rule format listed with its conversion: the evidence
   that the format can freeze.
 - [ ] The milestone's note: the stacks and their precision, the order the corpus gave, what is left
-  to community packs (T-69).
+  to community packs (ion-repo#T-69).
 
-### T-316 · The CIs used most after GitHub's and GitLab's: Forgejo, Bitbucket, Azure, CircleCI
+### ion-repo#T-316 · The CIs used most after GitHub's and GitLab's: Forgejo, Bitbucket, Azure, CircleCI
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
 - **Origin**: kiln score ideas of 24 October 2026 (Every forge, CI, host and machine, Nothing to do,
   Outputs and integrations), made a ticket on 25 October 2026 at antoine's request; cut in four the
-  same day (T-331 to T-333)
+  same day (ion-repo#T-331 to ion-repo#T-333)
 
 Planned in v0.8.1, "The CIs used most after GitHub's and GitLab's": The road to v0.9.0: any CI, any
 machine, any size, the last before the format freezes. First the CIs used most after GitHub's and
 GitLab's (v0.6.63), read into the CI model of v0.6.21 with their pinning and their untrusted text
 (appendix B).
 
-- [ ] **C03** The CIs used most after GitHub's and GitLab's, read into the CI model (T-230): Forgejo
+- [ ] **C03** The CIs used most after GitHub's and GitLab's, read into the CI model (ion-repo#T-230): Forgejo
   and Gitea Actions (GitHub's format), Bitbucket Pipelines, Azure Pipelines, CircleCI (orbs pinned);
-  the others in T-331.
+  the others in ion-repo#T-331.
 - [ ] Each one's pinning and untrusted text (appendix B) checked by the CI rules that already read
   GitHub's, with an example per CI.
 
-### T-331 · Every other CI read: Jenkins, Buildkite, Woodpecker, the clouds', Tekton
+### ion-repo#T-331 · Every other CI read: Jenkins, Buildkite, Woodpecker, the clouds', Tekton
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-316 on 25 October 2026 (kiln score ideas of 24 October 2026: Every forge,
+- **Origin**: split from ion-repo#T-316 on 25 October 2026 (kiln score ideas of 24 October 2026: Every forge,
   CI, host and machine)
 
 Planned in v0.8.2, "Every other CI": Jenkins, Buildkite, Woodpecker, the clouds' own CIs, Tekton and
@@ -7458,18 +7458,18 @@ the rest, read the same way.
   Argo Workflows, Dagger, Earthly.
 - [ ] The same CI rules on each of them, with an example per CI.
 
-### T-332 · Every machine and every network: macOS, WSL, ARM64, musl, offline, proxies
+### ion-repo#T-332 · Every machine and every network: macOS, WSL, ARM64, musl, offline, proxies
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-316 on 25 October 2026 (kiln score ideas of 24 October 2026: Every forge,
+- **Origin**: split from ion-repo#T-316 on 25 October 2026 (kiln score ideas of 24 October 2026: Every forge,
   CI, host and machine)
 
 Planned in v0.8.3, "Every machine, every network": macOS and WSL tested beside Linux, ARM64 and
-musl, air-gapped and corporate networks; native Windows only if T-94 reopens.
+musl, air-gapped and corporate networks; native Windows only if ion-repo#T-94 reopens.
 
-- [ ] **C14** kiln score runs on Linux, macOS, WSL and native Windows (it is Python and git) ⚠ T-94
+- [ ] **C14** kiln score runs on Linux, macOS, WSL and native Windows (it is Python and git) ⚠ ion-repo#T-94
   declined Windows without WSL for kiln as a whole; the score alone may cost little, tested in CI if
   taken.
 - [ ] **C15** x86-64 and ARM64 (Apple Silicon, Graviton, Raspberry Pi), glibc and musl (Alpine):
@@ -7478,16 +7478,16 @@ musl, air-gapped and corporate networks; native Windows only if T-94 reopens.
   `HTTPS_PROXY` and custom certificate authorities (`SSL_CERT_FILE`); the data bundle downloadable
   as one file (`--data bundle.tar.zst`).
 
-### T-333 · No Python needed: a signed binary, npx, the browser
+### ion-repo#T-333 · No Python needed: a signed binary, npx, the browser
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-316 on 25 October 2026 (kiln score ideas of 24 October 2026: Every forge,
+- **Origin**: split from ion-repo#T-316 on 25 October 2026 (kiln score ideas of 24 October 2026: Every forge,
   CI, host and machine, Outputs and integrations)
 
 Planned in v0.8.4, "No Python needed": A single signed binary, `npx kiln-cli score` for JavaScript
-machines, and the score in a browser if the forges allow it; a language server only if T-117
+machines, and the score in a browser if the forges allow it; a language server only if ion-repo#T-117
 reopens.
 
 - [ ] **K02** A single signed binary for machines without Python or uv (PyApp, which bootstraps
@@ -7497,35 +7497,35 @@ reopens.
 - [ ] **K06** In the browser with Pyodide, on a tarball fetched from the forge's API, no server at
   all; to verify (CORS on the tarball endpoints).
 - [ ] **L12** A language server: diagnostics for place rules in any editor, code actions for
-  scripted fixes ⚠ T-117 (a VS Code extension) is declined for now; a language server serves every
+  scripted fixes ⚠ ion-repo#T-117 (a VS Code extension) is declined for now; a language server serves every
   editor at once, only if adopters ask.
 
-### T-317 · Monorepos and big trees: project graphs, rules in parallel, a time budget
+### ion-repo#T-317 · Monorepos and big trees: project graphs, rules in parallel, a time budget
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
 - **Origin**: kiln score ideas of 24 October 2026 (Every forge, CI, host and machine, Speed), made a
-  ticket on 25 October 2026 at antoine's request; the million files split off the same day (T-334)
+  ticket on 25 October 2026 at antoine's request; the million files split off the same day (ion-repo#T-334)
 
 Planned in v0.8.5, "Monorepos and big trees": Monorepo tools' project graphs read for components and
-their links (T-86 staying declined for generating them), rules run in parallel, and a time budget
+their links (ion-repo#T-86 staying declined for generating them), rules run in parallel, and a time budget
 that says what it left out.
 
 - [ ] **C19** Monorepo tools' project graphs (Nx, Turborepo, Bazel, Pants, Rush, Moon) read for
-  components and their links ⚠ T-86 (declined) is about generating monorepos; scoring them is
+  components and their links ⚠ ion-repo#T-86 (declined) is about generating monorepos; scoring them is
   another matter.
 - [ ] **J09** Rules in parallel: threads for I/O-bound rules, processes on big repos; free-threaded
   Python 3.14 measured.
 - [ ] **J17** A time budget (`--budget 2s`): rules by value per cost, and what didn't run is said
   ("not checked: budget").
 
-### T-334 · A million files: sampling, Rust where a profile points, the speed published
+### ion-repo#T-334 · A million files: sampling, Rust where a profile points, the speed published
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: split from T-317 on 25 October 2026 (kiln score ideas of 24 October 2026: Speed)
+- **Origin**: split from ion-repo#T-317 on 25 October 2026 (kiln score ideas of 24 October 2026: Speed)
 
 Planned in v0.8.6, "A million files": Sampling with a stated margin, Rust only where a profile
 points, then the speed published as uv and ruff publish theirs.
@@ -7540,7 +7540,7 @@ points, then the speed published as uv and ruff publish theirs.
 - [ ] **J20** Speed published as uv and ruff publish theirs: "0.3 s on Django's own repo, 4 s on a
   million files". Speed is part of the pitch.
 
-### T-335 · Any CI, any machine, any size: the bar's matrix, run
+### ion-repo#T-335 · Any CI, any machine, any size: the bar's matrix, run
 - **Type**: task
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -7560,7 +7560,7 @@ The gate of v0.9.0: the milestone is cut only once the matrix is green.
   musl; offline; a monorepo and a million-file tree, each within its budget.
 - [ ] The milestone's note: what each cell measured, and what a cell leaves "unknown".
 
-### T-318 · Does the score mean anything? Seniors, incidents and tokens, measured
+### ion-repo#T-318 · Does the score mean anything? Seniors, incidents and tokens, measured
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -7581,12 +7581,12 @@ says.
 - [ ] **T04** Seniors' agreement (H) measured again each quarter.
 - [ ] **T05** Does the score predict anything? Public repos' advisories and incidents against their
   score at the time: evidence for the launch's claim, or a humbling result to publish anyway.
-- [ ] **T06** Does readability lower Claude's tokens? T-53's A/B test run again with the readability
+- [ ] **T06** Does readability lower Claude's tokens? ion-repo#T-53's A/B test run again with the readability
   pillar's score as the variable.
 - [ ] **U06** Suggestions from the corpus ("repos like yours, Django with Celery and Nuxt, usually
   also have X"): association rules mined from the corpus as `assess` candidates, never findings.
 
-### T-319 · The grid others build on: the JSON schema, packs indexed, everything pinned
+### ion-repo#T-319 · The grid others build on: the JSON schema, packs indexed, everything pinned
 - **Type**: improvement
 - **Status**: todo
 - **Opened**: 2026-10-25
@@ -7598,7 +7598,7 @@ Planned in v1.0.0, "The grid others build on": Milestone decided by antoine (16 
 bar set on 25 October 2026: the public stability promise, once the rule format has held without
 breaking on the stacks that make about 95% of the corpus's repos (B01), on GitHub's, GitLab's and
 one more CI, on Linux, macOS and WSL, and on monorepos, each scored and fixed by script as Django is
-at v0.5.0; the long tail comes as community packs (T-69). From here, strict semver: breaking →
+at v0.5.0; the long tail comes as community packs (ion-repo#T-69). From here, strict semver: breaking →
 major, `feat` → minor.
 
 - [ ] **L13** The `--json` schema published (`schema.json`), versioned with a changelog, stable at
@@ -7621,9 +7621,9 @@ An audit writes its dated report next to these files (`audit-<topic>-YYYY-MM-DD.
 runs, copies its open findings into this file (with a pointer to their lines), then moves to `docs/_archive/YYYY-MM-DD-topic/`. Archives **can be read, but everything in them
 is old and must be checked** against the current code; they are never edited.
 
-**A ticket** = a `### T-NN · Title` heading, then five fixed lines, then the details:
+**A ticket** = a `### ion-repo#T-NN · Title` heading, then five fixed lines, then the details:
 
-    ### T-NN · Short title that says what to achieve
+    ### ion-repo#T-NN · Short title that says what to achieve
     - **Type**: task
     - **Status**: todo
     - **Opened**: YYYY-MM-DD
@@ -7632,10 +7632,13 @@ is old and must be checked** against the current code; they are never edited.
 
     Why, what to do (as a `- [ ]` checklist when there are several steps), where to look.
 
-- **ID** `T-NN`: stable, never reused, quoted as is in commits and branches (tickets opened
-  before 16 October 2026 were `AF-NN`, same number). The next free one is at the top of this file
-  (`Next free: T-NN`). A bare `T-NN` always means a ticket of this repo; a ticket of another repo
-  is cited with that repo's name (`ion-learn#T-03`).
+- **ID** `ion-repo#T-NN`: stable, never reused, always written whole, here too, and quoted as is
+  in commits and pull requests (decision of antoine, 1 November 2026; a branch keeps the number
+  alone, `fix/t07`; tickets opened before 16 October 2026 were `AF-NN`, same number). A ticket of
+  another repo carries that repo's name (`ion-learn#T-03`). The next free one is at the top of
+  this file (`Next free: ion-repo#T-NN`). A renamed repo: `ion repo set name=…` moves its own
+  prefix in its own tracking, same numbers; citations in other repos keep the old name, which
+  the forge redirects; old commits are never rewritten.
 - **Type**, one of: `bug` (something is broken); `improvement` (it works, it could work
   better); `idea` (nothing exists yet, to be explored); `task` (work that is neither: a release,
   a decision, a check).
@@ -7659,11 +7662,11 @@ is old and must be checked** against the current code; they are never edited.
   kiln score idea in a planned release (`/kiln:backlog plan`); numbers are planned, not promised,
   until the candidate is cut.
 - **Closing a ticket**: remove it from its section and add a line at the top of
-  [done.md](done.md): `- **YYYY-MM-DD** · T-NN · Title — what was done (branch) · opened YYYY-MM-DD`.
+  [done.md](done.md): `- **YYYY-MM-DD** · ion-repo#T-NN · Title — what was done (branch) · opened YYYY-MM-DD`.
 - **Details in archived audits**: when a ticket quotes lines of `docs/_archive/`, the original
   finding is there in full; it is old, check it against the current code.
 - **Locations quoted are hints, not addresses.**
-- Overview: `grep -E '^(## |### T-|- \*\*Status)' docs/backlog/backlog.md`.
+- Overview: `grep -E '^(## |### ([a-z0-9-]+#)?T-|- \*\*Status)' docs/backlog/backlog.md`.
 
 ---
 
@@ -7673,9 +7676,9 @@ Why the tickets above exist and how they are judged. Drafted in French on 17 Oct
 long research conversation, two real repos measured that day (the reference repo and a
 university repo; the details stay private, see "Repos d'entraînement" in `CLAUDE.md`) and web
 research; moved here and condensed on 24 October 2026. What the vision planned became tickets
-(the grid as data T-123, `kiln score` T-46, `kiln fix` T-126 to T-128, the roadmap T-129, gap
-reports T-38, profiles T-39, the A/B test T-53, tests at the lowest cost T-135
-and T-136, the compressor T-138 and T-139, the benchmark T-145); its ideas in reserve and the
+(the grid as data ion-repo#T-123, `kiln score` ion-repo#T-46, `kiln fix` ion-repo#T-126 to ion-repo#T-128, the roadmap ion-repo#T-129, gap
+reports ion-repo#T-38, profiles ion-repo#T-39, the A/B test ion-repo#T-53, tests at the lowest cost ion-repo#T-135
+and ion-repo#T-136, the compressor ion-repo#T-138 and ion-repo#T-139, the benchmark ion-repo#T-145); its ideas in reserve and the
 paths it dropped are in [rejected.md](rejected.md).
 
 ### In one sentence
@@ -7719,9 +7722,9 @@ sourced.
 3. **Readable by Claude**: a folder per feature, a file per idea (about 50 to 300 lines), names
    that serve as a table of contents, few levels of indirection, the repo map in `CLAUDE.md`,
    tools that read function by function (Serena, LSP). The small-files hypothesis is not proven
-   yet (T-53).
+   yet (ion-repo#T-53).
 4. **Slim down** (a lead): remove unused dependencies and code with a proof that behaviour does
-   not change (T-138, T-139). Writing code costs almost nothing now; its mass is the problem.
+   not change (ion-repo#T-138, ion-repo#T-139). Writing code costs almost nothing now; its mass is the problem.
    The true measure is the surface to review, not the line count; typing helps (the cheapest
    proof, and it removes defensive code): type first, compress after.
 5. **Versions**: delegated to Dependabot or Renovate; kiln checks they are set, with a cooldown.
@@ -7735,9 +7738,9 @@ sourced.
   first** large companies: AWS and Moderne serve them.
 - **Django and Nuxt first**, the reference repo's stacks, brought to the top of the grid; each
   stack counts alone (a Django repo with a React front still gets the Django profile). The
-  reference repo is the training ground (its score at every release, T-134); the university repo
+  reference repo is the training ground (its score at every release, ion-repo#T-134); the university repo
   and other ordinary repos are the test for repos kiln did not create, always on local copies.
-- **The other templates are frozen** (T-133): generated and tested, no new grid work for them;
+- **The other templates are frozen** (ion-repo#T-133): generated and tested, no new grid work for them;
   scoring opens stack by stack after the launch (decision 1 of the
   [kiln score ideas](#-kiln-score-the-thesis)).
 
@@ -7765,7 +7768,7 @@ frozen then abandoned in 2025, shows what happens when the one way stops moving.
    reproducible, no tokens. Claude gets only what needs judgment, with the exact place and the
    rule; it never walks the repo looking for problems.
 6. **Claude invents, the script repeats.** A fix Claude makes twice the same way becomes a rule
-   or a converter (T-137): paid once per rule, not once per repo.
+   or a converter (ion-repo#T-137): paid once per rule, not once per repo.
 7. **A vague rule is worse than none.** A rule that flags wrongly costs tokens and trust; it goes
    strict only once its false positives are under control.
 8. **Nothing without proof**: tests, types and CI green, measured before and after.
@@ -7775,7 +7778,7 @@ frozen then abandoned in 2025, shows what happens when the one way stops moving.
 11. **The fastest, at equal precision.** A slow check stops being run: the fastest tools among
     those precise and mature enough, only what changed rechecked (cache, changed files,
     parallelism), our own rules declarative for a fast engine such as ast-grep; Rust of our own
-    only where a measurement shows our code is the slow part (T-144).
+    only where a measurement shows our code is the slow part (ion-repo#T-144).
 12. **A living choice is never a finding.** The one way governs how a stack is run, never which
     living stack a repo picked: a Django repo is held to Django at its best, never told to become
     FastAPI, since each fits its own job (`kiln new` picks one per job: Django for a full app,
@@ -7783,18 +7786,18 @@ frozen then abandoned in 2025, shows what happens when the one way stops moving.
     is past its end (`SUPPORTED-FRAMEWORKS`), its maintainers deprecated it and name a successor
     (the `hold` rules), or it is abandoned with open advisories (`ABANDONED-DEPENDENCIES`). kiln
     then names the successor its maintainers name, never one of its own taste, and splits the
-    move into steps the score proves, never a rewrite in one go (T-225; antoine's question of
+    move into steps the score proves, never a rewrite in one go (ion-repo#T-225; antoine's question of
     26 October 2026).
 13. **Breadth costs data, not weight.** `kiln new` keeps few complete stacks (decision 1); the
     grid reads every stack, and a stack is mostly facts for the rules that span stacks (about
     four planned rules in five on 26 October 2026; 5 of the grid's 138 rules belong to a
     framework), its own rules a thin layer, its mature tools (Brakeman, Sobelow, SpotBugs…) run
-    rather than rewritten. A repo loads only its stacks' rules (T-214), and a rule nobody re-read
-    for a year leaves the score (T-140): a pack nobody keeps goes quiet rather than wrong.
+    rather than rewritten. A repo loads only its stacks' rules (ion-repo#T-214), and a rule nobody re-read
+    for a year leaves the score (ion-repo#T-140): a pack nobody keeps goes quiet rather than wrong.
 14. **No tool invented.** As many tools as possible that spend no tokens, the fastest, and
     existing ones: where a maintained open-source tool does the job, kiln runs it; kiln's own
     code is the glue, the standard and what nobody else does (antoine, 26 October 2026: "invent no
-    tool, go find existing repos on GitHub"; T-359).
+    tool, go find existing repos on GitHub"; ion-repo#T-359).
 
 ### How it works: the script finds, Claude judges
 
@@ -7820,16 +7823,16 @@ any modernization.
 
 **The circuit.** Updates go down through `kiln update`; gaps come up: where kiln runs, the score
 notices what the grid does not know and the rules that get in the way wrongly, and Claude drafts
-the report to kiln (T-38). Its rules: never without consent (the user sees exactly what leaves);
+the report to kiln (ion-repo#T-38). Its rules: never without consent (the user sees exactly what leaves);
 anonymised (no code, paths, internal names or secrets, only the gap's signature); one issue per
 gap, not per user (a further report adds a voice), a PR only when the fix is obvious and local,
 any outside PR through `/kiln:contribution`; a signal, not a decision (the doctrine decides, so
 the grid cannot be poisoned by fake reports); the most frequent gaps become tickets first.
 
 **Tests, the most for the fewest tokens**: generators without a model first (Schemathesis,
-Hypothesis and CrossHair, snapshots, the Playwright recorder: T-136), holes measured by coverage
+Hypothesis and CrossHair, snapshots, the Playwright recorder: ion-repo#T-136), holes measured by coverage
 and mutation (mutmut, Stryker), Claude on the holes only, a test kept only if it passes five
-times and kills a mutant or adds coverage, then ratchets (T-135). Meta's mutation-guided ACH saw
+times and kills a mutant or adds coverage, then ratchets (ion-repo#T-135). Meta's mutation-guided ACH saw
 73 % of its generated tests accepted; CoverUp reaches 89 % line and branch coverage on its
 benchmark. No tool lifts the last limit: a generated test checks what the code *does*, not what
 it *should* do, which is why property tests and killed mutants are worth more than coverage.
@@ -7870,7 +7873,7 @@ migrating, ruff's credibility), and speed changed habits. The Claude Code projec
 in 2026 share a one-line install, a number in the tagline and a pain felt in the first session.
 For kiln: unify scattered tools (Dependabot, linters, templates, checkers like sp-repo-review)
 and show a striking number, a before and after score. Distribution weighs as much as the idea
-(ECC broke out after a hackathon win, Superpowers on its author's name): hence the launch (T-03).
+(ECC broke out after a hackathon win, Superpowers on its author's name): hence the launch (ion-repo#T-03).
 
 **What Claude users need** (17 October 2026; JetBrains' survey the soundest source): Claude Code
 is used at work by 39 % of professional developers; the needs, strongest first: checking agents'
@@ -7888,9 +7891,9 @@ measurements gains 7 points of success and saves 12 % of tokens.
 
 antoine answered 220 questions offline (the file names people and private repos: it lives in
 `kiln-measures`). Below, what changes; where he wrote "decide", Claude settled it, with the
-reason. T-342 to T-358 come from here; "Q" numbers are the file's.
+reason. ion-repo#T-342 to ion-repo#T-358 come from here; "Q" numbers are the file's.
 
-**Launch (T-03).**
+**Launch (ion-repo#T-03).**
 1. Hacker News restricts Show HN from new accounts since March 2026
    (https://news.ycombinator.com/showlim: "take some time to get to know the community",
    criteria vague on purpose), and antoine has no HN account and no Reddit karma (Q11, Q12).
@@ -7903,29 +7906,29 @@ reason. T-342 to T-358 come from here; "Q" numbers are the file's.
    strangers' repos to calibrate on, and the name left to whoever ships first.
 2. The HN title stays antoine's (he dislikes "Dependabot for your methods"), `kiln score` first.
    LinkedIn: a post the day kiln takes off, written by Claude, posted by antoine. About ten
-   people around antoine use kiln, four of them often: T-142 starts with them.
+   people around antoine use kiln, four of them often: ion-repo#T-142 starts with them.
 3. Claude never adds "written with Claude" on its own (Q129: "never"); where a platform asks
    (dev.to's AI disclosure tier) the true answer is given, or the post is not made. HN stays
    antoine's words only. The video is silent.
 
-**Promise and README (T-30, T-33).**
+**Promise and README (ion-repo#T-30, ion-repo#T-33).**
 4. `kiln score` first, then `adopt` and `new`, which stand on it (Q20, Q21, Q192): the trio is the
    promise. Draft tagline: "Make any repo production-grade: score it, raise it, keep it there".
    antoine wants the best README in the world.
 5. The Ubuntu image goes from public texts (too abstract). The grid is called **the kiln
-   standard** wherever a user reads it (T-346). The standard is the grid, not the score:
+   standard** wherever a user reads it (ion-repo#T-346). The standard is the grid, not the score:
    `kiln score` keeps its name, beside `kiln check` and `kiln ci` (Q113, antoine is fine with
    the three).
 6. The score: a number out of 100 in Lighthouse's bands (0-49 red, 50-89 orange, 90-100 green;
    the cap at 49 lands in red by construction), no letter; colourful in the terminal, a Markdown
-   page of Mermaid charts on request (T-352).
-7. English only for kiln's own docs: T-177 stands (Q27, "do as you like").
+   page of Mermaid charts on request (ion-repo#T-352).
+7. English only for kiln's own docs: ion-repo#T-177 stands (Q27, "do as you like").
 8. A sourced why for the README: output per developer doubled while reviewers grew 1.5× (CMU and
    Stanford, in the sources below); "right first costs fewer tokens than refactoring later" only
-   with a measure (T-145), otherwise left out.
-9. A logo, still and animated, and a mascot to discuss (T-347).
+   with a measure (ion-repo#T-145), otherwise left out.
+9. A logo, still and animated, and a mascot to discuss (ion-repo#T-347).
 
-**The study (T-131, T-132, dropped by antoine on 30 October 2026).**
+**The study (ion-repo#T-131, ion-repo#T-132, dropped by antoine on 30 October 2026).**
 10. Calibration before conclusions: a standard that finds nothing well made is worthless
     (antoine, Q30). Repos known for their quality are scored before the launch; every point they
     lose is a gap their maintainers would recognize, with its source, or a defect fixed first.
@@ -7937,29 +7940,29 @@ reason. T-342 to T-358 come from here; "Q" numbers are the file's.
     never in bulk.
 13. The university repo is never cited by kiln, not even as aggregates (Q34; one day kiln runs on
     it and a PR goes to its teacher). The association's site is never named (Q35).
-14. T-53 before the launch, run once; T-145 matters.
+14. ion-repo#T-53 before the launch, run once; ion-repo#T-145 matters.
 
 **The standard and the score.**
 15. The six decisions of 24 October stand, re-read; the cap at 49 too (SSL Labs' logic: a tracked
     `.env` is an incident, not a style point).
-16. Not using an agent is not a fault (Q42, T-342).
+16. Not using an agent is not a fault (Q42, ion-repo#T-342).
 17. One recommended way per profile, and an accepted other where the community is split at equal
     quality (Q40, Q41: podman recommended, Docker accepted). Every question kiln asks offers
     "I don't know: choose for me", the recommended answer.
-18. Tools move from trial to adopt on Claude's call, with sources (Q43). More profiles (T-39):
+18. Tools move from trial to adopt on Claude's call, with sources (Q43). More profiles (ion-repo#T-39):
     student project, teacher, startup, small company, freelance delivery, open-source project,
     personal project.
 19. Telemetry: S05 ("no telemetry, ever") reversed by antoine (Q96): opt-in, anonymous,
-    documented (T-348). Gap reports, issues and PRs reach him as a daily mail (T-349).
+    documented (ion-repo#T-348). Gap reports, issues and PRs reach him as a daily mail (ion-repo#T-349).
 
-**kiln fix and kiln-bot (T-59, T-170).**
+**kiln fix and kiln-bot (ion-repo#T-59, ion-repo#T-170).**
 20. kiln-bot is a workflow each repo installs (free, no server); a hosted App later if kiln grows,
     the association's server lending a little meanwhile. It never breaks production: each commit
-    proven (T-170), the PR a proposal the repo's CI judges.
+    proven (ion-repo#T-170), the PR a proposal the repo's CI judges.
 21. `kiln fix --pr` allowed. A fix that turns the repo's tests red leaves the batch, kept on its own
     branch with its log and handed to Claude: never merged red, never dropped silently.
 
-**kiln new and adopt (T-169, T-184, T-188).**
+**kiln new and adopt (ion-repo#T-169, ion-repo#T-184, ion-repo#T-188).**
 22. Two doors, quick or tailored; the long questionnaire (the machine profile) is asked once at
     install, and at `kiln new` only if never answered. Three concrete questions replace the
     sizes. The frozen templates stay offered, marked frozen with their score; FastAPI at the
@@ -7968,67 +7971,67 @@ reason. T-342 to T-358 come from here; "Q" numbers are the file's.
 **Plan to 1.0.**
 23. Numbering (Q58): antoine wants small patch numbers. antoine said yes the same day to a minor
     every ten releases or so, each a themed milestone holding its breaking changes, as uv and
-    ruff do; the plan is renumbered by T-360.
+    ruff do; the plan is renumbered by ion-repo#T-360.
 24. The best on every stack (Q59, unchanged); someone antoine knows waits for GitLab; the
     compressor uses proven tools only (vulture, knip), Q62.
 
 **Claude Code, agents, plugins.**
 25. kiln's way is the world's best, not antoine's (Q67): the generated flow follows the evidence
-    (T-358). Its tools too: token-free, the fastest, existing ones first (Q5, doctrine 14,
-    T-359). His own habits (one session, no subagents, CI only at the release) stay his; the
+    (ion-repo#T-358). Its tools too: token-free, the fastest, existing ones first (Q5, doctrine 14,
+    ion-repo#T-359). His own habits (one session, no subagents, CI only at the release) stay his; the
     first two are not generated (checked).
-26. Every agent, and none (Q22, Q72, T-357); Claude Code first at the launch, where the audience
+26. Every agent, and none (Q22, Q72, ion-repo#T-357); Claude Code first at the launch, where the audience
     is.
 27. The plugin directory lists one plugin, `kiln`; the stack plugins come with `kiln new` and
     `kiln adopt`. Serena stays opt-in (it is), context7 stays (current library docs serve "the most
     up to date"), rtk stays on. Pro plan only.
 
 **Community and money.**
-28. Free forever; Sponsors still to open (T-119); no maintainer rights to anyone; Discussions are
-    enabled, their categories in T-58. Licence `MIT OR Apache-2.0` (T-345): antoine asked for
+28. Free forever; Sponsors still to open (ion-repo#T-119); no maintainer rights to anyone; Discussions are
+    enabled, their categories in ion-repo#T-58. Licence `MIT OR Apache-2.0` (ion-repo#T-345): antoine asked for
     Apache-2.0 as "the best"; the pair keeps Apache's patent grant and MIT's reach, as uv does;
     he said yes to it.
 29. Contact: security through GitHub's private reporting (SECURITY.md has it); companies through
     antoine's GitHub and LinkedIn. A kiln page on the association's site is declined (it would
     name it): GitHub Pages, with the docs site after the launch. The site is static (docs, rule
     pages, the leaderboard drawn at build): Pages serves it from the repo, built by a workflow,
-    with no other account; Vercel, antoine's first idea, only if a server part comes (T-348's
+    with no other account; Vercel, antoine's first idea, only if a server part comes (ion-repo#T-348's
     collector).
 30. antoine can take about 50 issues or PRs a day; each is answered in its own language.
 
 **Way of working.**
-31. The backlog is for Claude alone (Q82, Q214): condensed (T-163). It stays in `docs/backlog/`
+31. The backlog is for Claude alone (Q82, Q214): condensed (ion-repo#T-163). It stays in `docs/backlog/`
     (ripgrep skips dot-folders by default; contributors and good first issues read it), with
     `ROADMAP.md` as the human view; launch texts, contacts and metrics go to `kiln-measures`
-    (T-350). The plan stays public (contributors, trust, building in public); antoine may still
+    (ion-repo#T-350). The plan stays public (contributors, trust, building in public); antoine may still
     ask for it private (Q138).
 32. Estimates are ceilings: antoine always goes faster (Q84).
 33. CI only at the release stays (nothing slipped through, Q86), as complete and fast as possible
-    (Q85, T-354).
-34. annway stays off limits, its copy `annway-copie` may serve kiln (the Java pack, T-310); kiln
+    (Q85, ion-repo#T-354).
+34. annway stays off limits, its copy `annway-copie` may serve kiln (the Java pack, ion-repo#T-310); kiln
     trains on sweep and polytech-vision up to 100, in their own sessions (Q91, Q92).
-35. Two habits of antoine's global instructions go to every repo (T-343). The repo's update is
-    offered outside Claude Code too (T-355); strangers may follow the candidates (T-356). A
-    session paused in seconds is found again at the next start (Q6, T-344). The session messages
+35. Two habits of antoine's global instructions go to every repo (ion-repo#T-343). The repo's update is
+    offered outside Claude Code too (ion-repo#T-355); strangers may follow the candidates (ion-repo#T-356). A
+    session paused in seconds is found again at the next start (Q6, ion-repo#T-344). The session messages
     stay as they are (Q7): the logo only comes with an update on offer, as a message that costs
     no tokens.
 36. The questions file: offered again before big milestones, not every time.
 
 **Security, ideas, commands.**
 37. What `kiln score` reads from GitHub's settings stays on the owner's machine; what leaves it
-    (badge, report to kiln, a public CI summary) carries the score and rule IDs alone (T-158).
-38. Score by URL (T-191); a leaderboard of the best only (T-353); the VS Code extension reopened
-    (T-117, free on the Marketplace and Open VSX); Windows without WSL stays declined (T-94), but
-    `kiln score` says what to do there instead of failing (T-189); a teacher is ready to try the
-    teacher mode (T-87).
+    (badge, report to kiln, a public CI summary) carries the score and rule IDs alone (ion-repo#T-158).
+38. Score by URL (ion-repo#T-191); a leaderboard of the best only (ion-repo#T-353); the VS Code extension reopened
+    (ion-repo#T-117, free on the Marketplace and Open VSX); Windows without WSL stays declined (ion-repo#T-94), but
+    `kiln score` says what to do there instead of failing (ion-repo#T-189); a teacher is ready to try the
+    teacher mode (ion-repo#T-87).
 39. A quiet launch: same plan, measure, ask the testers, fix the first minute, launch again at the
     next milestone. A loud one: the digest, Discussions, a pinned issue of known problems.
 40. `kiln check` (seconds, while coding), `kiln ci` (the whole CI on the machine, before a
     release) and `kiln score` (the repo against the standard), one line each in the README and
-    `--help` (T-30): antoine did not know the first two apart (Q113). Merging two waits for
-    telemetry (T-10). `kiln dev` must run any repo without being told (Q111, T-351).
-41. Waivers keep their expiry (already by tiers); reminders weekly, security at once (T-45).
-    Announcements: milestones only, on Bluesky, dev.to, X and Mastodon (T-118); no newsletter
+    `--help` (ion-repo#T-30): antoine did not know the first two apart (Q113). Merging two waits for
+    telemetry (ion-repo#T-10). `kiln dev` must run any repo without being told (Q111, ion-repo#T-351).
+41. Waivers keep their expiry (already by tiers); reminders weekly, security at once (ion-repo#T-45).
+    Announcements: milestones only, on Bluesky, dev.to, X and Mastodon (ion-repo#T-118); no newsletter
     before 1,000 stars.
 
 **Technical choices** left to "the best in the world" (Q145 to Q180): the standard settles them
@@ -8047,10 +8050,10 @@ after 1.0; `uvx` first; kiln's CLI in English until 1.0; Django with HTMX as a l
    companies).
 2. The grid is endless work: the starting scope keeps it tractable, the gap circuit feeds it.
 3. Agents make applying a change easy for everyone: the value is in the choice and the proof.
-4. "The best" depends on the context: profiles of structure (T-39).
+4. "The best" depends on the context: profiles of structure (ion-repo#T-39).
 5. Old repos without tests break when modernized blind: a test net first.
-6. Upkeep tools earn few stars (deptry about 1,000): a striking number is needed (T-145).
-7. The small-files hypothesis is not proven (T-53).
+6. Upkeep tools earn few stars (deptry about 1,000): a striking number is needed (ion-repo#T-145).
+7. The small-files hypothesis is not proven (ion-repo#T-53).
 8. Gap reports raise privacy, noise and grid poisoning: the circuit's rules above.
 
 ### Sources
@@ -8111,7 +8114,7 @@ after 1.0; `uvx` first; kiln's CLI in English until 1.0; Django with HTMX as a l
 
 **1,070 ideas**: 433 on the engine and the product (sections A to V), and 637 on rules (31 themes
 and packs): 520 new rules, 98 drafts or trials given a detector, 19 scored rules made sharper. They
-are tickets now, in the sections above: T-186 to T-319, plus boxes added to the existing tickets
+are tickets now, in the sections above: ion-repo#T-186 to ion-repo#T-319, plus boxes added to the existing tickets
 they extended (under "From the kiln score ideas of 24 October 2026"). Each box keeps its ID
 (`- [ ] **A30** …`), so a search for `**A30**` finds it; what stays here is the thesis that
 orders them and the reference tables to build from.
@@ -8174,7 +8177,7 @@ measure, so that "better" is a number rather than a feeling:
   They already disagree: `stack.py` knows a Vite + React front since today, the grid's facts don't.
 - **Every rule weighs the same**: a committed `.env` costs as much as a missing README, and no
   finding caps the score.
-- **GitHub Actions only** for CI rules; forge settings aren't read (T-158).
+- **GitHub Actions only** for CI rules; forge settings aren't read (ion-repo#T-158).
 - **End-of-life data** for Python and Node only, bundled; `--online` refreshes those two.
 - **Outputs**: terminal, JSON (schema 1), a static badge. No SARIF, HTML, delta or history.
 - **Speed**: 0.56 s on kiln (666 files), about 1 s on the reference repo, no cache. Importing the
@@ -8185,7 +8188,7 @@ measure, so that "better" is a number rather than a feeling:
   can't ship them.
 - **What the grid doesn't know** is named: stacks (Go, Rust, Java…), 28 notable packages it doesn't
   cover (Celery, FastAPI, React…), rules waived again and again. Since v0.4.6 these lines can go
-  to kiln as issues, with the user's yes (T-38, `gap_report.py`). The repo is then scored on
+  to kiln as issues, with the user's yes (ion-repo#T-38, `gap_report.py`). The repo is then scored on
   universal rules only.
 
 #### The twelve moves
@@ -8236,12 +8239,12 @@ with its reason; the ideas below follow them.
 
 1. **Every stack scored; the templates stay frozen.** `kiln adopt` promises to bring any repo up,
    and a Go or Java repo scored on the 14 universal rules and those of its tools gets a hollow
-   number. Generating keeps T-133's line (Django and Nuxt first, the other templates frozen;
+   number. Generating keeps ion-repo#T-133's line (Django and Nuxt first, the other templates frozen;
    `rejected.md` now says "templates"); scoring opens stack by stack after the launch, in the
-   order the corpus and T-38's gap reports show, each pack with its facts, rules, examples and
+   order the corpus and ion-repo#T-38's gap reports show, each pack with its facts, rules, examples and
    measured precision.
 2. **Equal weights stay; critical findings cap the score.** The number keeps meaning "the share
-   of the rules that apply, met" (T-46): weights would be numbers to defend, and would shift
+   of the rules that apply, met" (ion-repo#T-46): weights would be numbers to defend, and would shift
    every score as the grid grows. A short closed list of critical rules (a secret in the tree or
    its history, a tracked `.env` or Terraform state, the Docker socket mounted, a malicious
    package, a self-hosted runner open to public pull requests, card numbers on the server, a
@@ -8252,7 +8255,7 @@ with its reason; the ideas below follow them.
 3. **Three new themes, three folded.** `licensing` (a legal concern no theme holds, Scorecard's
    License check), `infrastructure` (Terraform and Kubernetes, apart from containers) and
    `data-science` (the first outside issues were data repos, and `MODEL-TRACED` sits badly in
-   data-migrations) join `THEMES`, each with its first rule, in T-141. Developer experience goes
+   data-migrations) join `THEMES`, each with its first rule, in ion-repo#T-141. Developer experience goes
    to `structure` and `docs-tracking`, packaging to `supply-chain` and `ci-cd`, community to
    `docs-tracking`: a dozen presence checks each don't earn a line in `kiln grid`.
 4. **The charter and the grid become one engine by v1.0.0, without breaking.** First one
@@ -8269,12 +8272,12 @@ with its reason; the ideas below follow them.
    reading triggers would fail every generated repo, and `kiln new` must meet the grid. The rule
    becomes "every change is checked before it ships": fast checks at each commit, the whole CI
    before each release; a CI on every pull request is the other accepted way. With profiles
-   (T-39), company and enterprise ask for CI on every pull request, where integration breaks
+   (ion-repo#T-39), company and enterprise ask for CI on every pull request, where integration breaks
    between people.
 
-Ideas that brush a declined ticket carry ⚠ and its number (T-94 Windows without WSL, T-48
-devcontainers, T-86 monorepos, T-71 `kiln mcp`): those stay declined until someone reopens them,
-as antoine reopened T-117, the editor extension, on 26 October 2026.
+Ideas that brush a declined ticket carry ⚠ and its number (ion-repo#T-94 Windows without WSL, ion-repo#T-48
+devcontainers, ion-repo#T-86 monorepos, ion-repo#T-71 `kiln mcp`): those stay declined until someone reopens them,
+as antoine reopened ion-repo#T-117, the editor extension, on 26 October 2026.
 
 #### Order of battle
 
@@ -8283,7 +8286,7 @@ Every idea is a box of a ticket listed under its release in [🚀 Releases](#-re
 
 | Releases | From these ideas | Why then |
 |---|---|---|
-| v0.4.10 to v0.5.0, before the launch | what their tickets already do (T-158's GitHub settings, T-159's containers run on a copy, kiln-bot, the study as the first corpus, kiln's repos at 100) and three small ones: the two silent passes (A30, A31) and the potential line (I07) | the launch's releases are full: a new idea there would push the gate |
+| v0.4.10 to v0.5.0, before the launch | what their tickets already do (ion-repo#T-158's GitHub settings, ion-repo#T-159's containers run on a copy, kiln-bot, the study as the first corpus, kiln's repos at 100) and three small ones: the two silent passes (A30, A31) and the potential line (I07) | the launch's releases are full: a new idea there would push the gate |
 | v0.5.4 to v0.5.16 | what strangers meet first (K), the false alarms (A, E, H), the badge (L), speed, updates, `kiln fix`, rules that test themselves (G), the outputs where people look (L), the exact rules and the AI rules (Part III), the roadmap as context packs (O), tests at the lowest cost | the launch brings repos nobody here has seen, and v0.6.0 needs the roadmap and the tests |
 | v0.6.0 | O: the unattended run's scope guard, its labels and its costs | the milestone |
 | v0.6.1 to v0.6.11 | slimming, the grid's weekly watch, the repo model (A), rule format v2 (E, G), the syntax engine, mature tools (F), the cache (J) | the engine every later rule stands on |
@@ -8292,7 +8295,7 @@ Every idea is a box of a ticket listed under its release in [🚀 Releases](#-re
 | v0.7.4 to v0.8.0 | the other ecosystems, two releases a stack (B, SP), the long tail as data packs, the gate measured on the corpus | the format has to hold on every common stack before it freezes, in the order the corpus measures |
 | v0.8.1 to v0.9.0 | every CI and machine (C, K), monorepos and huge trees (J), the bar's matrix run | and on every CI, machine and size |
 | v0.9.1 | the score itself measured on every stack (T) | the last proof before the promise |
-| v1.0.0 | packs (R, T-69), the published JSON schema, every executable thing pinned | the format is the public API; the long tail comes as packs |
+| v1.0.0 | packs (R, ion-repo#T-69), the published JSON schema, every executable thing pinned | the format is the public API; the long tail comes as packs |
 
 Among the ecosystems, generic Python and JS/TS come first (v0.6.55 to v0.6.57); the order of the
 others is a guess until the corpus measures it (B01).
@@ -8347,12 +8350,12 @@ Where each CI keeps its files, how a step is pinned, and where outside text gets
 #### C · OpenSSF Scorecard and the grid
 
 Scorecard grades the same things from outside; kiln would answer each check, or say why not.
-T-90 asks kiln to pass Scorecard itself.
+ion-repo#T-90 asks kiln to pass Scorecard itself.
 
 | Scorecard check | Grid rule today | From this file |
 |---|---|---|
 | Binary-Artifacts | none | `NO-BINARY-ARTIFACTS` (SU) |
-| Branch-Protection | none | `NO-FORCE-PUSH-ON-MAIN`, `REQUIRED-CHECKS` (L6, T-158) |
+| Branch-Protection | none | `NO-FORCE-PUSH-ON-MAIN`, `REQUIRED-CHECKS` (L6, ion-repo#T-158) |
 | CI-Tests | `TESTS-IN-CI` | pull requests' checks read from the forge (L6) |
 | CII-Best-Practices | none | `OPENSSF-BADGE` (CM) |
 | Code-Review | none | `NO-COMMIT-ON-INTEGRATION` from history, reviews read from the forge (L6) |
@@ -8370,7 +8373,7 @@ T-90 asks kiln to pass Scorecard itself.
 | Signed-Releases | none | `ATTESTATIONS`, `IMAGES-SIGNED`, `PROVENANCE` |
 | Token-Permissions | `WORKFLOW-PERMISSIONS` | `write-all` and job-level writes |
 | Vulnerabilities | `VULNERABILITY-AUDIT` (an audit step exists) | `KNOWN-VULNERABILITIES` (the locked versions themselves) |
-| Webhooks | none | the forge's webhooks with a secret (L6, T-158) |
+| Webhooks | none | the forge's webhooks with a secret (L6, ion-repo#T-158) |
 
 #### D · Data to bundle or read
 
