@@ -146,6 +146,25 @@ def test_promote_waits_for_the_soak_and_a_repo_then_publishes(
     assert [tag.name for tag in read_tags(repo)][-1] == "v0.1.2-rc.1"
 
 
+def test_promote_from_the_release_worktree_removes_it_and_its_branch(
+    repo: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    publish(repo, "feat: one")
+    shipping.cut(repo)
+    tree = repo / ".claude/worktrees/release-v0.1.1"
+    rewrite_draft(tree)
+    shipping.cut(repo)
+    monkeypatch.setattr(release, "SOAK", datetime.timedelta(0))
+    monkeypatch.setattr(shipping, "_adoption", lambda: {"v0.1.1-rc.1": ["club"]})
+    monkeypatch.chdir(tree)  # where `/repo:release` and `cut` leave you
+
+    shipping.promote(tree)
+
+    assert not tree.exists()
+    assert "release/v0.1.1" not in git(repo, "branch", "-a")
+    assert "release/v0.1.1" not in git(repo, "ls-remote", "--heads", "origin")
+
+
 def test_promote_refuses_a_candidate_not_ready() -> None:
     now = datetime.datetime.now(datetime.UTC)
     tags = [Tag("v0.1.1-rc.1", Version("0.1.1rc1"), now - datetime.timedelta(days=2))]

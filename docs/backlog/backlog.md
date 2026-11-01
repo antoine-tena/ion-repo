@@ -67,7 +67,6 @@ Before that theme, this release moves everyone to Ion: the last `kiln-cli`, on a
 ### v0.4.12 · What the last sessions tripped on
 Real sessions of late October hit these, each small: the release, the merge, a long session, a
 first `kiln check`. They cost time now, so they go before the moves.
-- T-396 · `kiln version promote` crashes when run from the release worktree (XS)
 - T-388 · `/kiln:release` publishes to PyPI from the machine when Actions is blocked (S)
 - T-378 · `/kiln:merge` from an isolated worktree: leave it before merging, plain commands only (S)
 - T-381 · A long session fetches the integration branch before building on it (S)
@@ -907,19 +906,6 @@ its branch `kiln/bot`, `KILN_BOT_TOKEN`), kiln's own CI `kiln.yml`, the images
 fallback read of the old name, and `ion repo update` converts what a repo carries; the demos are
 re-recorded at the next candidate that shows them.
 Also `src/kiln/`, the `kiln` alias of `ion-repo` and `kiln_move.py`'s state in `~/.local/state/kiln/`.
-
-### T-396 · `kiln version promote` crashes when run from the release worktree
-- **Type**: bug
-- **Status**: todo
-- **Opened**: 2026-10-30
-- **Effort**: XS · **Owner**: — · **Due**: —
-- **Origin**: v0.4.10, 30 October 2026: promoted from `.claude/worktrees/release-v0.4.10`, where
-  `/kiln:release` and `cut` leave you
-
-`_remove_release_branch` removes the worktree the command runs in; the next `run` then raises
-`FileNotFoundError` with a raw traceback. Tag, `main` and `develop` were already pushed, and the
-release branch stayed, local and remote, to delete by hand. Run every step after the removal from
-the main tree, and test a promotion started from the worktree.
 
 ### T-388 · `/kiln:release` publishes to PyPI from the machine when Actions is blocked
 - **Type**: improvement

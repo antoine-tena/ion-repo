@@ -388,7 +388,7 @@ def promote(root: Path, wanted: str | None = None, is_urgent: bool = False) -> N
     run(["git", "pull", "-q", "--ff-only", "origin", "develop"], tree)
     run(["git", "merge", "-q", "--no-ff", name, "-m", f"Merge tag '{name}' into develop"], tree)
     run(["git", "push", "-q", "origin", "develop"], tree)
-    _remove_release_branch(root, version)
+    _remove_release_branch(tree, version)  # `root` may be the release worktree it removes
     ui.success(f"{name} promoted: pypi.yml publishes ion-repo and the GitHub Release")
     ui.note("then, with consent: ion repo update --all")
 
