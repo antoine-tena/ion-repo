@@ -28,6 +28,10 @@ ION_PREFIX = "ion-"
 DISTRIBUTION_CITED = (
     r"DISTRIBUTION\s*=\s*[\"']|(?:uv tool install|uv pip install|pip install|pipx install|uvx)\s+"
 )
+# A file named after the project (`ion-host.toml`) may sit in the projects that use it, beyond
+# this repo's reach: its name stays, as the PyPI name does, and the update says so. Its dot may
+# be escaped, in a test's pattern (`match=r"ion-host\.toml"`).
+FILE_NAMED = r"\\?\.(?:toml|ya?ml|json|ini|cfg|conf|env|txt|md|lock|db|sqlite3?|log)(?![\w-])"
 
 
 def default_plugin_name(name: str) -> str:
@@ -114,7 +118,7 @@ class Renaming:
             start = before if "-" in old or "_" in old else before_plain
             pinned = rf"({DISTRIBUTION_CITED})?" if old == self.distribution else "()"
             text = re.sub(
-                rf"{pinned}{start}{re.escape(old)}{after}",
+                rf"{pinned}{start}{re.escape(old)}{after}(?!{FILE_NAMED})",
                 lambda match, new=new: match.group(0) if match.group(1) else new,
                 text,
             )
@@ -124,6 +128,14 @@ class Renaming:
             text = re.sub(rf"(?<![\w-]){typed}(?![\w-])", new_typed, text)
         return text
 
+    def files_named(self, text: str) -> set[str]:
+        """The file names after the old name that `mentions` kept."""
+        if not self.renamed:
+            return set()
+        olds = "|".join(re.escape(old) for old in {self.old_name, self.old_package})
+        found = re.findall(rf"(?<![\w-])(?:{olds}){FILE_NAMED}", text)
+        return {name.replace("\\.", ".") for name in found}
+
     def words_beside(self, text: str, render: str) -> str:
         """`words`, sparing a line the new render still holds as it is: it cites a name that did
         not move with the project's (`pypi_name`), and renaming it would invent a change."""
@@ -132,18 +144,6 @@ class Renaming:
             line if line.rstrip("\r\n") in held else self.words(line)
             for line in text.splitlines(keepends=True)
         )
-
-    def file_name(self, name: str) -> str:
-        """A file of the project named after it (`ion-host.toml`), whose code now looks for the
-        new name. A one-word name moves only as the whole stem (`sweep.toml`, not `sweeper.py`)."""
-        if not self.renamed:
-            return name
-        for old, new in ((self.old_name, self.new_name), (self.old_package, self.new_package)):
-            if "-" in old or "_" in old:
-                name = re.sub(rf"(?<![\w-]){re.escape(old)}(?![\w-])", new, name)
-            elif Path(name).stem == old:
-                name = new + Path(name).suffix
-        return name
 
     def mentions_beside(self, text: str, render: str) -> str:
         """`mentions`, sparing a line the new render still holds, as `words_beside`."""
@@ -209,10 +209,14 @@ def move_renamed_dirs(
             for old, new in folders:
                 _move_folder(root, old, new, old_render, new_render, renaming)
                 done.append(f"{old}/ moved to {new}/")
-        for old, new in _rename_project_files(root, renaming, spared, new_render):
-            done.append(f"{old} renamed {new}")
-        if _rewrite_project(root, renaming, spared, new_render):
+        changed, kept = _rewrite_project(root, renaming, spared, new_render)
+        if changed:
             done.append("what cites the old names follows the new ones")
+        if kept:
+            done.append(
+                f"{', '.join(sorted(kept))} kept: the projects that use it may hold that file;"
+                " to rename it, read the old name as a fallback"
+            )
     return done
 
 
@@ -323,43 +327,17 @@ def _remove_old_folder(root: Path, old: str, new: str) -> None:
     shutil.rmtree(folder)
 
 
-def _project_files(root: Path) -> list[str]:
-    listed = capture(["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard"], root)
-    return sorted({name for name in listed.split("\0") if name})
-
-
-def _rename_project_files(
-    root: Path, renaming: Renaming, spared: set[str], new_render: Path | None
-) -> list[tuple[str, str]]:
-    """Its mentions follow the new name (`mentions`), so must the files they look for. A file the
-    new render still holds under its old name is the template's, and stays."""
-    renamed = []
-    for name in _project_files(root):
-        path = root / name
-        new_name = renaming.file_name(path.name)
-        target = path.with_name(new_name)
-        if (
-            new_name == path.name
-            or name in UNTOUCHED
-            or name in spared
-            or not path.is_file()
-            or target.exists()
-            or (new_render is not None and (new_render / name).exists())
-        ):
-            continue
-        path.rename(target)
-        renamed.append((name, target.relative_to(root).as_posix()))
-    return renamed
-
-
 def _rewrite_project(
     root: Path, renaming: Renaming, spared: set[str], new_render: Path | None
-) -> bool:
-    changed = False
-    for name in _project_files(root):
+) -> tuple[bool, set[str]]:
+    """Whether a file changed, and the file names after the old name left as they were."""
+    listed = capture(["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard"], root)
+    changed, kept = False, set()
+    for name in sorted(set(listed.split("\0"))):
         path = root / name
         if (
-            name in UNTOUCHED
+            not name
+            or name in UNTOUCHED
             or name in spared
             or path.suffix not in TEXT_SUFFIXES
             or not path.is_file()
@@ -369,6 +347,7 @@ def _rewrite_project(
             text = path.read_text()
         except UnicodeDecodeError:
             continue
+        kept |= renaming.files_named(text)
         rendered = new_render / name if new_render is not None else None
         rewritten = (
             renaming.mentions_beside(text, rendered.read_text())
@@ -378,4 +357,4 @@ def _rewrite_project(
         if rewritten != text:
             path.write_text(rewritten)
             changed = True
-    return changed
+    return changed, kept
