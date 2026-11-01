@@ -142,38 +142,30 @@ def test_a_rename_takes_along_a_project_comment_beside_the_pypi_name_that_stays(
     )
 
 
-def test_a_file_named_after_the_project_follows_what_looks_for_it(project: Path) -> None:
+def test_a_file_named_after_the_project_keeps_its_name_and_the_update_says_so(
+    project: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     (project / "old-tool.toml").write_text("key = 1\n")
     code = project / "backend/old_tool/settings.py"
-    code.write_text('FILE = "old-tool.toml"\n')
+    code.write_text('FILE = "old-tool.toml"  # read by old-tool\n')
     commit(project, "own settings file")
 
     update.apply_template(project, {"name": "new-tool", "plugin_name": "new-tool"})
 
-    assert not (project / "old-tool.toml").exists()
-    assert (project / "new-tool.toml").read_text() == "key = 1\n"
-    assert (project / "backend/new_tool/settings.py").read_text() == 'FILE = "new-tool.toml"\n'
+    assert (project / "old-tool.toml").is_file()
+    assert (project / "backend/new_tool/settings.py").read_text() == (
+        'FILE = "old-tool.toml"  # read by new-tool\n'
+    )
+    assert "old-tool.toml kept" in capsys.readouterr().out
     assert update.conflicted_files(project) == []
-
-
-@pytest.mark.parametrize(
-    ("old", "new", "before", "after"),
-    [
-        ("ion-host", "foyer", "ion-host.toml", "foyer.toml"),
-        ("ion-host", "foyer", "ion_host.example.toml", "foyer.example.toml"),
-        ("ion-host", "foyer", "ion-hosts.txt", "ion-hosts.txt"),
-        ("sweep", "broom", "sweep.toml", "broom.toml"),
-        ("sweep", "broom", "sweeper.py", "sweeper.py"),
-    ],
-)
-def test_which_file_names_follow(old: str, new: str, before: str, after: str) -> None:
-    assert Renaming(old, new, None, None, True).file_name(before) == after
 
 
 @pytest.mark.parametrize(
     ("before", "after"),
     [
-        ("run `ion host dns`, see ion-host.toml", "run `foyer dns`, see foyer.toml"),
+        ("run `ion host dns`, see ion-host.toml", "run `foyer dns`, see ion-host.toml"),
+        ('SETTINGS = "ion-host.toml"', 'SETTINGS = "ion-host.toml"'),
+        ("ion_host.cli.main, ion-host.", "foyer.cli.main, foyer."),
         ("ion-host holds it", "foyer holds it"),
         ("USER_AGENT = 'ion-host'", "USER_AGENT = 'foyer'"),
         ("~/code/Ion/host/ion-host/backend", "~/code/Ion/host/ion-host/backend"),
