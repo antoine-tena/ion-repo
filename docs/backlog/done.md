@@ -4,6 +4,8 @@ The closed tickets of kiln, most recent first, one line each:
 `- **YYYY-MM-DD** · ion-repo#T-NN · Title — what was done (branch) · opened YYYY-MM-DD`.
 
 - **2026-11-01** · ion-repo#T-404 · Tickets written `<repo>#T-NN` everywhere, the prefix from the repo's name — `ion repo tickets` (shown first, written on a yes, rerun free), offered by `ion repo update`; readers take both forms; `ion repo set name=…` moves the own prefix (feat/ticket-repo-prefix) · opened 2026-11-01
+- **2026-11-01** · ion-repo#T-384 · A session start warns when another session is working on the same repo — `others.py`: running sessions written in the last ten minutes with a `cwd` in the repo or its worktrees, told to Claude at start and resume (feat/t381-t384) · opened 2026-10-30
+- **2026-11-01** · ion-repo#T-381 · A long session fetches the integration branch before building on it — rule `[FETCH-FIRST]` in the generated `project.md` (feat/t381-t384) · opened 2026-10-30
 - **2026-11-01** · ion-repo#T-388 · `/repo:release` publishes to PyPI from the machine when Actions is blocked — the local path, the repo's own token, no provenance said, `pypi.yml` kept (fix/t378-t388) · opened 2026-10-30
 - **2026-11-01** · ion-repo#T-378 · `/repo:merge` from an isolated worktree — it leaves the worktree before merging; `/repo:worktree` lists what isolation refuses (fix/t378-t388) · opened 2026-10-30
 - **2026-11-01** · ion-repo#T-405 · A generated tool's releases numbered `vX.Y.Z`, never `vN` — `/repo:release`, the template, `pypi_name`'s docs and the eval say `vX.Y.Z`; the default number is semver from `v0.1.0` (fix/t405-vxyz) · opened 2026-11-01

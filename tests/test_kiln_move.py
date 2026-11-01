@@ -1,6 +1,7 @@
 """The last `kiln-cli` moving its tester to Ion; uv and the process replacement simulated."""
 
 import os
+import shutil
 import sys
 from pathlib import Path
 
@@ -24,7 +25,7 @@ def tool(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.setattr(kiln_move, "ATTEMPT_FILE", tmp_path / "state" / "attempt")
     monkeypatch.setattr(kiln_move, "LOCK_FILE", tmp_path / "state" / "lock")
     monkeypatch.delenv(kiln_move.OPT_OUT_VARIABLE, raising=False)
-    monkeypatch.setattr(kiln_move.shutil, "which", lambda name: None)
+    monkeypatch.setattr(shutil, "which", lambda name: None)
 
     def execvp(command: str, args: list[str]) -> None:
         raise HandedError(args)

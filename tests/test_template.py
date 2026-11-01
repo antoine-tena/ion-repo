@@ -652,3 +652,12 @@ def test_kiln_bot_runs_on_its_schedule_and_is_off_by_default(
     assert job["uses"].startswith("antoine-tena/ion-repo/.github/workflows/bot.yml@")
     assert job["secrets"] == {"token": "${{ secrets.KILN_BOT_TOKEN }}"}
     assert f"update_bot: {bot}" in (project / ".copier-answers.yml").read_text()
+
+
+def test_workflows_run_the_command_they_install() -> None:
+    # A runner has `ion-repo` only: `ion repo` needs `ion-sh`, a tester's machine has both.
+    workflows = (Path(__file__).parent.parent / ".github/workflows").glob("*.yml")
+    for workflow in workflows:
+        for job in yaml.safe_load(workflow.read_text())["jobs"].values():
+            for step in job.get("steps", []):
+                assert "ion repo " not in step.get("run", ""), (workflow.name, step["run"])

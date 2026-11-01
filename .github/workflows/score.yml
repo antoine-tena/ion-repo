@@ -44,7 +44,7 @@ jobs:
         env:
           BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
-          ion repo score --against "$BASE" > "$RUNNER_TEMP/score.md"
+          ion-repo score --against "$BASE" > "$RUNNER_TEMP/score.md"
           cat "$RUNNER_TEMP/score.md" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Comment

@@ -2,7 +2,7 @@
 # ion-repo, l'outil de la famille Ion qui tient les repos (kiln jusqu'au 31 octobre 2026). `pypi.yml`
 # publie une dernière fois le même code sous `kiln-cli`, à v0.4.11 : il y fait passer ses testeurs.
 name = "ion-repo"
-version = "0.4.10"
+version = "0.4.11"
 description = "Claude Code's workshop: start every new project, and rescue every old one, like a senior engineer would — even if you're not one."
 # README.md, its relative images and links made absolute for PyPI (fancy-pypi-readme, below).
 dynamic = ["readme"]

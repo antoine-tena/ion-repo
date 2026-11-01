@@ -67,8 +67,6 @@ Before that theme, this release moves everyone to Ion: the last `kiln-cli`, on a
 ### v0.4.12 · What the last sessions tripped on
 Real sessions of late October hit these, each small: the release, the merge, a long session, a
 first `kiln check`. They cost time now, so they go before the moves.
-- ion-repo#T-381 · A long session fetches the integration branch before building on it (S)
-- ion-repo#T-384 · A session start warns when another session is working on the same repo (S)
 - ion-repo#T-376 · `kiln check` ran no test on emberstudio, and left a `.env` towards a stopped PostgreSQL (S)
 - ion-repo#T-377 · An agent cannot document a new variable: `.env.example` is under the `.env*` deny (S)
 - ion-repo#T-375 · [CLOCK] names freezegun, which [NEW-DEPENDENCY] refuses (S)
@@ -1010,7 +1008,7 @@ Step 4 of the skill calls stylus when it is installed, and still falls back on t
 
 ### ion-repo#T-373 · `kiln-cli` retired, the testers moved to `ion-repo` and `ion-sh`
 - **Type**: task
-- **Status**: in progress — code, proof and workflow on `develop`; publication waits for antoine's go
+- **Status**: in progress — published and proven 1 November 2026; what is left waits for the testers and the next release
 - **Opened**: 2026-10-29
 - **Effort**: S · **Owner**: — · **Due**: —
 - **Origin**: antoine, 1 November 2026: "dès la prochaine maj de kiln, je veux que tout le monde
@@ -1020,11 +1018,11 @@ v0.4.11 is the last `kiln-cli`: at its first run as a uv tool it installs `ion-s
 removes itself and moves the Claude Code catalogue (`src/ion_repo/kiln_move.py`). Proven on a real
 0.4.10 from PyPI with the real next wheels on a local index, GitHub on a local copy.
 - [x] `ion-sh` 0.1.0 published first, 1 November 2026 (tag `v0.1.0` of `antoine-tena/ion`).
-- [ ] v0.4.11 promoted: `pypi.yml` publishes `ion-repo`, then the last `kiln-cli`; check both pages
-  and the tap's `formula_renames.json` (Homebrew not tried: no brew on this machine).
-- [ ] Right after it, on a clean machine or `HOME`: `uv tool install ion-sh`, then `ion add repo`
-  from the real PyPI (1 November 2026: fails as expected on the 404, passes with the candidate's
-  wheel on a local index); the real migration from the published `kiln-cli` 0.4.10.
+- [x] v0.4.11 promoted, 1 November 2026: `pypi.yml` published `ion-repo` and the last `kiln-cli`; both
+  pages and the tap's `formula_renames.json` checked (Homebrew not tried: no brew on this machine).
+- [x] Right after it, in a clean `HOME`, from the real PyPI: `uv tool install ion-sh`, then `ion add repo`;
+  the real migration from the published `kiln-cli` 0.4.10 (`uv tool install kiln-cli@latest`, an exact pin
+  stays on 0.4.10). In the first minute after publishing, uv still answered "not found".
 - [ ] The `kiln` entry of the catalogue removed once no tester is left on 0.4.10 (its hook installs
   `kiln@kiln`; without the entry the plugin disappears), not before the v0.5 milestone.
 - [ ] The release after: `pypi.yml`'s `kiln-cli` and `keramos-kiln` steps removed, the `kiln-cli` script out of
@@ -1586,20 +1584,6 @@ A merge is the real end of a piece of work. Step 6 of `/kiln:merge` adds one lin
 `/grog:distill` on this session?", only when grog's plugin is installed, and only after a session
 with something to learn (a refused command, a rule worked around, a fix redone).
 
-### ion-repo#T-381 · A long session fetches the integration branch before building on it
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-30
-- **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: emberstudio session `feat/auth`, 30 October 2026
-
-While the session built its front on `features.noScripts` (no Nuxt JavaScript anywhere),
-another session merged into `develop` a per-route `noScripts` with the opposite default. It only
-showed at the merge, after the pages, the measures and a question to the user had been done on
-the old setup. A rule of the way of working: before a decision that rests on the project's
-setup, and at least before the last commits, `git fetch` and read what the integration branch
-gained (`git log HEAD..origin/<integration>`); merge it into the branch early rather than late.
-
 ### ion-repo#T-383 · `/kiln:worktree` reports two false failures
 - **Type**: bug
 - **Status**: todo
@@ -1615,22 +1599,6 @@ gained (`git log HEAD..origin/<integration>`); merge it into the branch early ra
 - [ ] Step 4: `EnterWorktree` refuses ("the current directory is not in a git repository") when
   the session was opened above the repo (`~/code/Keramos`, twice). The skill says so and goes on
   with absolute paths, instead of a bare error.
-
-### ion-repo#T-384 · A session start warns when another session is working on the same repo
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-10-30
-- **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: grog `/grog:distill` over four sessions of 29 October 2026: two sessions on the
-  same repo for half an hour
-
-antoine's rule is one session at a time on a project; nothing tells him when two are open. Two
-sessions worked on the same repo at once: one found a gitleaks alert that came from the other's
-commit, the other built on a setting the first was changing (ion-repo#T-381). A third learned at its end
-that another session was still open on its subject.
-- [ ] The `SessionStart` hook lists the other sessions whose transcript
-  (`~/.claude/projects/<project>/`) was written in the last minutes with a `cwd` in the same repo
-  (its worktrees included), with their branch, and asks whether to go on.
 
 ### ion-repo#T-385 · `kiln session move`: a session filed under its repo afterwards
 - **Type**: improvement
