@@ -79,8 +79,8 @@ ion add repo                 # ion-repo
 ion repo install             # outside a repo: ion-repo's Claude Code plugin in every session
 ```
 
-Coming from kiln: the last `kiln-cli` moves you at its first run (`uv tool upgrade kiln-cli`, then run
-it once).
+Coming from kiln: the last `kiln-cli` moves you at its first run (`uv tool install kiln-cli@latest`, then
+run it once).
 
 With Homebrew: `brew install antoine-tena/ion/ion-repo`. Or try it without installing anything:
 `uvx ion-repo new my-app` for a new repo, `uvx ion-repo adopt` in one you already have. macOS,
