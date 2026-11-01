@@ -1008,7 +1008,7 @@ Step 4 of the skill calls stylus when it is installed, and still falls back on t
 
 ### T-373 · `kiln-cli` retired, the testers moved to `ion-repo` and `ion-sh`
 - **Type**: task
-- **Status**: in progress — code, proof and workflow on `develop`; publication waits for antoine's go
+- **Status**: in progress — published and proven 1 November 2026; what is left waits for the testers and the next release
 - **Opened**: 2026-10-29
 - **Effort**: S · **Owner**: — · **Due**: —
 - **Origin**: antoine, 1 November 2026: "dès la prochaine maj de kiln, je veux que tout le monde
@@ -1018,11 +1018,11 @@ v0.4.11 is the last `kiln-cli`: at its first run as a uv tool it installs `ion-s
 removes itself and moves the Claude Code catalogue (`src/ion_repo/kiln_move.py`). Proven on a real
 0.4.10 from PyPI with the real next wheels on a local index, GitHub on a local copy.
 - [x] `ion-sh` 0.1.0 published first, 1 November 2026 (tag `v0.1.0` of `antoine-tena/ion`).
-- [ ] v0.4.11 promoted: `pypi.yml` publishes `ion-repo`, then the last `kiln-cli`; check both pages
-  and the tap's `formula_renames.json` (Homebrew not tried: no brew on this machine).
-- [ ] Right after it, on a clean machine or `HOME`: `uv tool install ion-sh`, then `ion add repo`
-  from the real PyPI (1 November 2026: fails as expected on the 404, passes with the candidate's
-  wheel on a local index); the real migration from the published `kiln-cli` 0.4.10.
+- [x] v0.4.11 promoted, 1 November 2026: `pypi.yml` published `ion-repo` and the last `kiln-cli`; both
+  pages and the tap's `formula_renames.json` checked (Homebrew not tried: no brew on this machine).
+- [x] Right after it, in a clean `HOME`, from the real PyPI: `uv tool install ion-sh`, then `ion add repo`;
+  the real migration from the published `kiln-cli` 0.4.10 (`uv tool install kiln-cli@latest`, an exact pin
+  stays on 0.4.10). In the first minute after publishing, uv still answered "not found".
 - [ ] The `kiln` entry of the catalogue removed once no tester is left on 0.4.10 (its hook installs
   `kiln@kiln`; without the entry the plugin disappears), not before the v0.5 milestone.
 - [ ] The release after: `pypi.yml`'s `kiln-cli` and `keramos-kiln` steps removed, the `kiln-cli` script out of
