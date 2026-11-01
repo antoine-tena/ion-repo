@@ -60,7 +60,8 @@ aucune IA et ne demande aucune clé d'API.
 - Des skills pour les worktrees, les fusions, les versions et les relectures ; des hooks qui
   tiennent Claude à l'écart de `main` et `develop` ; une status line qui montre la CI, les
   tickets et la production ; un compte rendu de fin de travail, le style de sortie `debrief`,
-  qui donne l'état git réel, ce qui est cassé et la suite.
+  qui donne l'état git réel, ce qui est cassé et la suite (seul, sans le reste :
+  `claude plugin install debrief@ion-repo`).
 - La CI d'un repo privé tourne sur votre poste (`ion repo ci`, son verdict gardé en note git) et ne
   coûte aucune minute GitHub ; celle d'un repo public tourne sur GitHub, où c'est gratuit.
 

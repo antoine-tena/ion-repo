@@ -95,6 +95,13 @@ def test_former_plugin_paths_still_exist() -> None:
     assert [path for path in LEGACY_PATHS if not (ROOT / path).is_file()] == []
 
 
+def test_the_debrief_plugin_carries_the_repo_plugins_style() -> None:
+    style = "output-styles/debrief.md"
+    assert (ROOT / "plugins/debrief" / style).read_text() == (
+        ROOT / "plugins/repo" / style
+    ).read_text()
+
+
 def test_hooks_point_at_existing_files() -> None:
     for hooks in (ROOT / "plugins").glob("*/hooks/hooks.json"):
         for path in re.findall(r"\$\{CLAUDE_PLUGIN_ROOT\}/([^\"\\]+)", hooks.read_text()):

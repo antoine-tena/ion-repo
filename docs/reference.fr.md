@@ -77,6 +77,10 @@ Les plugins Claude Code vivent dans [`plugins/`](../plugins/), catalogue `ion-re
   fichier, définition et références d'un symbole), activé par `ion repo set serena=true` sur un gros
   repo ; les éditions restent aux outils de Claude Code, où sont branchés les hooks de `ion-repo`.
 
+- `debrief` (le style de sortie `debrief` de `repo` seul, imposé de la même façon, sans ses
+  skills, ses hooks ni sa status line : pour un poste qui veut le compte rendu de fin de travail
+  et garde ses propres habitudes git, `claude plugin install debrief@ion-repo`).
+
 - `kiln` (le plugin `repo` sous son ancien nom, gardé pour les machines qui viennent de kiln : la
   commande de mise à jour de kiln 0.4.10 installe `kiln@kiln` ; `ion repo install --machine` le
   remplace par `repo@ion-repo`). Installer `repo`.
