@@ -55,6 +55,18 @@ Project's commands (often `scripts/ops/deploy-backend.sh --dry-run`, then withou
 No deployment (no `scripts/ops/deploy-*.sh`, nothing in `CLAUDE.md`): release ends at the tag on `main`; say so, go to step 9.
 PyPI command (`.github/workflows/pypi.yml`, `ion repo set pypi_name=…`): pushed tag deploys, version `X.Y.Z` from `vX.Y.Z`. `gh run watch`, then check `https://pypi.org/project/<pypi_name>/X.Y.Z/`; a red run names its step. First tag needs either a `PYPI_TOKEN` secret in the `pypi` environment ("Entire account" to create the project, `/repo:token`), or a publisher on https://pypi.org/manage/account/publishing/ (repository, workflow `pypi.yml`, environment `pypi`). A PyPI version can never be re-uploaded: fix a broken one with the next tag.
 
+Actions blocked (billing): don't wait on a queued run, whose job can sit for minutes before the refusal shows in its annotations; `gh run cancel` it, so it cannot publish later, and publish from the machine. The repo stays untouched:
+```bash
+dir="$(mktemp -d ~/.cache/publish.XXXXXX)"
+git archive vX.Y.Z | tar -x -C "$dir"
+cd "$dir"                                              # then the backend directory, if any
+uv version --frozen X.Y.Z
+uv build --out-dir dist
+uvx --isolated --from dist/*.whl <command> --version   # and --help of each area
+UV_PUBLISH_TOKEN="$(cat <repo root>/.pypi/token)" uv publish dist/*
+```
+Then check the project's page as above and delete `$dir`. Token: only the repo's own `.pypi/`, never printed. None: stop, `/repo:token`; another repo's only with the user's yes. Say in the report that this upload has no build provenance (`attest-build-provenance` runs only on GitHub). `pypi.yml` stays: budget back, the next tag publishes with provenance; meanwhile a failed run per tag is the only cost.
+
 ## 9. Merge back, tidy
 ```bash
 git merge --no-ff release/vX.Y.Z -m "Merge branch 'release/vX.Y.Z' into develop"   # from develop
