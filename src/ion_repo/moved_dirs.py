@@ -133,6 +133,18 @@ class Renaming:
             for line in text.splitlines(keepends=True)
         )
 
+    def file_name(self, name: str) -> str:
+        """A file of the project named after it (`ion-host.toml`), whose code now looks for the
+        new name. A one-word name moves only as the whole stem (`sweep.toml`, not `sweeper.py`)."""
+        if not self.renamed:
+            return name
+        for old, new in ((self.old_name, self.new_name), (self.old_package, self.new_package)):
+            if "-" in old or "_" in old:
+                name = re.sub(rf"(?<![\w-]){re.escape(old)}(?![\w-])", new, name)
+            elif Path(name).stem == old:
+                name = new + Path(name).suffix
+        return name
+
     def mentions_beside(self, text: str, render: str) -> str:
         """`mentions`, sparing a line the new render still holds, as `words_beside`."""
         held = set(render.splitlines())
@@ -197,6 +209,8 @@ def move_renamed_dirs(
             for old, new in folders:
                 _move_folder(root, old, new, old_render, new_render, renaming)
                 done.append(f"{old}/ moved to {new}/")
+        for old, new in _rename_project_files(root, renaming, spared, new_render):
+            done.append(f"{old} renamed {new}")
         if _rewrite_project(root, renaming, spared, new_render):
             done.append("what cites the old names follows the new ones")
     return done
@@ -309,16 +323,43 @@ def _remove_old_folder(root: Path, old: str, new: str) -> None:
     shutil.rmtree(folder)
 
 
+def _project_files(root: Path) -> list[str]:
+    listed = capture(["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard"], root)
+    return sorted({name for name in listed.split("\0") if name})
+
+
+def _rename_project_files(
+    root: Path, renaming: Renaming, spared: set[str], new_render: Path | None
+) -> list[tuple[str, str]]:
+    """Its mentions follow the new name (`mentions`), so must the files they look for. A file the
+    new render still holds under its old name is the template's, and stays."""
+    renamed = []
+    for name in _project_files(root):
+        path = root / name
+        new_name = renaming.file_name(path.name)
+        target = path.with_name(new_name)
+        if (
+            new_name == path.name
+            or name in UNTOUCHED
+            or name in spared
+            or not path.is_file()
+            or target.exists()
+            or (new_render is not None and (new_render / name).exists())
+        ):
+            continue
+        path.rename(target)
+        renamed.append((name, target.relative_to(root).as_posix()))
+    return renamed
+
+
 def _rewrite_project(
     root: Path, renaming: Renaming, spared: set[str], new_render: Path | None
 ) -> bool:
-    listed = capture(["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard"], root)
     changed = False
-    for name in sorted(set(listed.split("\0"))):
+    for name in _project_files(root):
         path = root / name
         if (
-            not name
-            or name in UNTOUCHED
+            name in UNTOUCHED
             or name in spared
             or path.suffix not in TEXT_SUFFIXES
             or not path.is_file()
