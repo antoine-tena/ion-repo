@@ -317,7 +317,7 @@ def read_changelog() -> str:
 
 
 def parse_changelog(text: str) -> list[ReleaseNotes]:
-    """`## vN — date` entries of the changelog, in file order (latest first)."""
+    """`## vX.Y.Z — date` entries of the changelog, in file order (latest first)."""
     notes: list[ReleaseNotes] = []
     for line in text.splitlines():
         heading = RELEASE_HEADING.match(line)

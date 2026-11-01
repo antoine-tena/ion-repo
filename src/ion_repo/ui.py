@@ -285,7 +285,7 @@ def recap(command: str, started: float, *, succeeded: bool) -> None:
 
 
 def panel(title: str, lines: list[str]) -> None:
-    """Frame: a title in fire, then lines (a `vN …` line in bold, `- …` as a bullet). A long
+    """Frame: a title in fire, then lines (a `vX.Y.Z …` line in bold, `- …` as a bullet). A long
     line wraps under its own text, never cut; `code` spans of the changelog show in colour,
     without their backticks."""
     if not is_styled():
