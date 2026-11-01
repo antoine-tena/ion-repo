@@ -1,4 +1,4 @@
-"""The Homebrew formula of a promoted release, printed on stdout (T-12).
+"""The Homebrew formula of a promoted release, printed on stdout (ion-repo#T-12).
 
     uv run python scripts/homebrew_formula.py 0.4.5 > Formula/ion-repo.rb
 

@@ -58,7 +58,7 @@ No ion-repo stack: common part only (CI, hooks, rules, charter).
 
 ## State
 - README describes the project now: a command, setting, route or run change updates it in the same branch.
-- `docs/backlog/`, only work list (`/repo:backlog`): `backlog.md` (open `T-NN` by priority, format in its `README.md`), `done.md`, `rejected.md`, `urgent.md` (human-only).
+- `docs/backlog/`, only work list (`/repo:backlog`): `backlog.md` (open `{{ name }}#T-NN` by priority, format in its `README.md`), `done.md`, `rejected.md`, `urgent.md` (human-only).
 - `.claude/` committed: `settings.json`, `skills/`, `rules/`, `hooks/`, `plans/`; ignored: `settings.local.json`, `worktrees/`, `memory/`, `sessions/`.
 - `charter.toml`: checked rules, budgets. `kiln-waivers.toml`: deviations. `.copier-answers.yml`: settings, via `ion repo set` only.
 {%- if deploy == 'vps' %}

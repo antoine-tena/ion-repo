@@ -3,7 +3,7 @@ title = "No unused dependency: each one declared is imported somewhere"
 pillar = "slimming"
 theme = "supply-chain"
 scope = { kind = "universal" }
-# Out of the score until T-138 measures it on real repos; `ion repo fix --rule UNUSED-DEPENDENCIES`
+# Out of the score until ion-repo#T-138 measures it on real repos; `ion repo fix --rule UNUSED-DEPENDENCIES`
 # runs it.
 level = "trial"
 regime = "review"

@@ -3,7 +3,7 @@ title = "A latency budget per read route (p95), slower routes justified"
 pillar = "methods"
 theme = "performance"
 scope = { kind = "universal" }
-# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+# A draft from the reference repo (ion-repo#T-124): assessed, out of the score until sourced.
 level = "assess"
 regime = "review"
 profiles = ["association", "company", "university", "enterprise"]

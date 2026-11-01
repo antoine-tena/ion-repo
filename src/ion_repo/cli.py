@@ -29,7 +29,7 @@ LANGUAGES = ("en", "fr")
 
 # Home screen: commands by section; the role of each comes from its argparse help.
 COMMAND_GROUPS = (
-    ("Project", ("new", "adopt", "install", "publish", "update", "set", "waive")),
+    ("Project", ("new", "adopt", "install", "publish", "update", "set", "tickets", "waive")),
     (
         "Day to day",
         ("dev", "check", "ci", "contract", "doctor", "pause", "frame", "eval-skills", "completion"),
@@ -221,6 +221,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="this machine's settings, even from a repo",
     )
+    tickets_parser = commands.add_parser(
+        "tickets", help="write the repo's ticket IDs as <repo>#T-NN, shown before writing"
+    )
+    tickets_parser.add_argument("paths", nargs="*", help="more files to convert")
+    tickets_parser.add_argument("--yes", action="store_true", help="write without asking")
+    tickets_parser.add_argument("--dry-run", action="store_true", help="show, write nothing")
     _add_waive_command(commands)
     completion_parser = commands.add_parser(
         "completion", help="shell completion script (eval it in ~/.bashrc)"
@@ -750,6 +756,17 @@ def _dispatch_in_repo(arguments: argparse.Namespace, root: Path) -> None:
         contract.generate_api_contract(root, load_stack(root))
     elif command == "waive":
         _dispatch_waive(root, arguments)
+    elif command == "tickets":
+        from ion_repo.dev.menu import is_interactive
+        from ion_repo.tickets import migrate
+
+        migrate(
+            root,
+            also=arguments.paths,
+            assume_yes=arguments.yes,
+            dry_run=arguments.dry_run,
+            ask=input if is_interactive() else None,
+        )
     elif command == "set":
         from ion_repo import settings
 

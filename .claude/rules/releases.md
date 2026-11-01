@@ -28,10 +28,10 @@ The number dates a release; the release note says what changes. From Next.js, th
 - In 0.x every release bumps the patch (`v0.3.1`, `v0.3.2`… `v0.3.192` if need be).
 - The minor moves about every ten releases (`ion repo version cut --minor`), at a themed milestone
   holding its breaking changes, as uv and ruff do (antoine, 26 October 2026). Decided before
-  that rule, until T-360 renumbers them:
-  v0.5.0 public launch (T-03), v0.6.0 Claude works alone in the repo, v0.7.0 ion-repo for teams and
+  that rule, until ion-repo#T-360 renumbers them:
+  v0.5.0 public launch (ion-repo#T-03), v0.6.0 Claude works alone in the repo, v0.7.0 ion-repo for teams and
   organizations, v0.8.0 every common stack scored, v0.9.0 any CI, machine and size, v1.0.0 the
-  stability promise, just before the community modules (T-69). Their content and the v1.0.0 bar
+  stability promise, just before the community modules (ion-repo#T-69). Their content and the v1.0.0 bar
   are in the backlog (`## 🚀 Releases`, `## 🧭 Vision`); `ROADMAP.md`'s two hand-written
   milestone tables follow them.
 - From 1.0, strict semver like Next.js: breaking → major (rare and planned), `feat` → minor, the
@@ -44,7 +44,7 @@ run on the `internal` channel before its promotion (promoted 45 minutes after it
 candidate has checked nothing). Breaking changes stay grouped at the milestones; a security fix
 ships at once. What spares users is grouping the question: `ion repo update` crosses every late
 release at once (one note per release crossed), the in-session reminder only comes back at the
-pace set by `ion repo set update-reminders` (once a week by default, T-45), and kiln-bot (T-59) will
+pace set by `ion repo set update-reminders` (once a week by default, ion-repo#T-45), and kiln-bot (ion-repo#T-59) will
 make the update free.
 
 **Two stages**, through `/repo:release` (no deployment: the tag publishes, and the promoted tag

@@ -1,4 +1,5 @@
-"""`charter file`: the bans on the edited file alone, for the hook after each edit (T-27)."""
+"""`charter file`: the bans on the edited file alone, for the hook after each edit
+(ion-repo#T-27)."""
 
 import datetime
 import json

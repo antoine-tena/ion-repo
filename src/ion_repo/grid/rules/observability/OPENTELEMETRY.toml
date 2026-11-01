@@ -3,7 +3,7 @@ title = "Distributed traces with W3C trace context, from the front to the databa
 pillar = "methods"
 theme = "observability"
 scope = { kind = "tool", name = "opentelemetry" }
-# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+# A draft from the reference repo (ion-repo#T-124): assessed, out of the score until sourced.
 level = "assess"
 regime = "review"
 profiles = ["company", "enterprise"]

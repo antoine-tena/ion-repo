@@ -130,7 +130,8 @@ def replacing_legacy(source: str) -> str:
 
 
 def install_source() -> str:
-    """Where the tool comes from: `pypi`, `homebrew` (the tap's formula, T-12), `git` (a GitHub
+    """Where the tool comes from: `pypi`, `homebrew` (the tap's formula, ion-repo#T-12), `git` (a
+    GitHub
     revision) or `folder` (a checkout)."""
     if HOMEBREW_CELLAR in Path(sys.prefix).resolve().parts:
         return "homebrew"

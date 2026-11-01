@@ -1,4 +1,4 @@
-"""Converters of `ion repo fix`: containers and runtimes (T-128, T-159).
+"""Converters of `ion repo fix`: containers and runtimes (ion-repo#T-128, ion-repo#T-159).
 
 Images are not built here: `ion repo fix` builds an image a converter touched when podman or docker
 is there. Compose services are hardened only where podman proves they still start hardened, on a

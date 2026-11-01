@@ -9,16 +9,15 @@ again. `--write` turns the items into tickets of `docs/backlog/backlog.md`, once
 """
 
 import datetime
-import re
 from pathlib import Path
 
 from ion_repo import ui
 from ion_repo.grid import checks
 from ion_repo.grid.score import Finding, Report
 from ion_repo.shell import KilnError
+from ion_repo.tickets import NEXT_FREE, ticket_id
 
 BACKLOG = Path("docs") / "backlog" / "backlog.md"
-NEXT_FREE = re.compile(r"Next free: T-(\d+)")
 NORMAL_SECTION = "## 🟡 Normal"
 SHOWN_LOCATIONS = 5
 FALSE_POSITIVE = 'ion repo waive {rule} --paths <file> --permanent --reason "false positive: …"'
@@ -77,19 +76,19 @@ def write_tickets(root: Path, report: Report, today: datetime.date | None = None
     text = path.read_text()
     match = NEXT_FREE.search(text)
     if match is None or NORMAL_SECTION not in text:
-        raise KilnError(f"{BACKLOG}: no 'Next free: T-NN' or no '{NORMAL_SECTION}' section")
+        raise KilnError(f"{BACKLOG}: no 'Next free: <repo>#T-NN' or no '{NORMAL_SECTION}' section")
     number = int(match.group(1))
     day = (today or datetime.date.today()).isoformat()
     written, tickets = [], []
     for found in report.roadmap():
         if _marker(found.rule) in text:
             continue
-        tickets.append(_ticket(number, found, day))
-        written.append(f"T-{number:02d}")
+        tickets.append(_ticket(ticket_id(root, number), found, day))
+        written.append(ticket_id(root, number))
         number += 1
     if not tickets:
         return []
-    text = NEXT_FREE.sub(f"Next free: T-{number:02d}", text, count=1)
+    text = NEXT_FREE.sub(f"Next free: {ticket_id(root, number)}", text, count=1)
     text = text.replace(NORMAL_SECTION, NORMAL_SECTION + "\n\n" + "\n\n".join(tickets), 1)
     path.write_text(text)
     return written
@@ -99,11 +98,11 @@ def _marker(rule_id: str) -> str:
     return f"grid rule `{rule_id}`"
 
 
-def _ticket(number: int, found: Finding, day: str) -> str:
+def _ticket(written_id: str, found: Finding, day: str) -> str:
     where = "\n".join(f"- [ ] `{location}`" for location in found.locations)
     confirm = " Candidates to confirm: a false positive is dismissed by a waiver." * found.confirm
     lines = [
-        f"### T-{number:02d} · {found.title}",
+        f"### {written_id} · {found.title}",
         "- **Type**: improvement",
         "- **Status**: todo",
         f"- **Opened**: {day}",

@@ -1,4 +1,5 @@
-"""`ion repo fix` (T-126) and its first converters (T-127, T-128): one commit per rule on a work
+"""`ion repo fix` (ion-repo#T-126) and its first converters (ion-repo#T-127, ion-repo#T-128): one
+commit per rule on a work
 branch, undone when the checks turn red, nothing written by a dry run, and each converter
 closing its rule. The network (commit SHAs, digests) is faked."""
 
@@ -228,7 +229,7 @@ def test_an_old_runtime_on_an_old_debian_moves_both_at_once(
 def test_requirements_alone_become_a_uv_project_or_are_restored(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    # T-159: pyproject.toml and uv.lock from requirements.txt, which stays as their export.
+    # ion-repo#T-159: pyproject.toml and uv.lock from requirements.txt, which stays as their export.
     root = make(tmp_path, {"requirements.txt": "flask\n", "requirements-dev.txt": "pytest\n"})
     ran: list[list[str]] = []
 
@@ -279,7 +280,7 @@ def test_one_commit_per_rule_on_a_work_branch(tmp_path: Path) -> None:
 
     fixed = {found.rule for found in outcomes if found.status == "fixed"}
     assert {"NO-OBSOLETE-BACKPORTS", "TS-EXPECT-ERROR", "CI-PRESENT"} <= fixed
-    # T-171: the user's tree stays where it was, only the branch remains.
+    # ion-repo#T-171: the user's tree stays where it was, only the branch remains.
     assert git(root, "branch", "--show-current").strip() == "main"
     assert git(root, "status", "--porcelain") == ""
     assert git(root, "worktree", "list").count("\n") == 1
@@ -302,7 +303,8 @@ def test_the_checks_type_the_files_the_mypy_config_names(tmp_path: Path) -> None
 
 
 def test_checks_are_found_one_folder_down(tmp_path: Path) -> None:
-    # Most repos keep their code in backend/ and frontend/: every commit was "unverified" (T-159).
+    # Most repos keep their code in backend/ and frontend/: every commit was "unverified"
+    # (ion-repo#T-159).
     root = make(
         tmp_path,
         {
@@ -391,7 +393,7 @@ def test_a_converter_that_turns_the_checks_red_is_undone_and_handed_to_claude(
 
     assert [(found.rule, found.status) for found in outcomes] == [("TS-EXPECT-ERROR", "reverted")]
     assert "@ts-ignore" in (root / "a.ts").read_text()
-    # T-170: never merged red, never dropped: the commit waits on a branch of its own.
+    # ion-repo#T-170: never merged red, never dropped: the commit waits on a branch of its own.
     aside = fix_branch(root)
     assert aside.endswith("-ts-expect-error")
     assert "@ts-expect-error" in git(root, "show", f"{aside}:a.ts")
@@ -409,7 +411,7 @@ def test_a_converter_that_turns_the_checks_red_is_undone_and_handed_to_claude(
 def test_an_image_a_converter_touched_is_built(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, built_before: bool, status: str
 ) -> None:
-    # T-159: a converter that breaks the image is undone; an image red before cannot judge.
+    # ion-repo#T-159: a converter that breaks the image is undone; an image red before cannot judge.
     root = make(tmp_path, CONVERTED["NON-ROOT-CONTAINERS"])
     monkeypatch.setattr(checks, "find", lambda root: [checks.Check(("true",))])
     build = checks.Check(("sh", "-c", "echo 'useradd: not found'; exit 1"))
@@ -521,7 +523,8 @@ def test_docker_hub_images_are_asked_of_its_registry(name: str, expected: tuple[
 
 
 def test_kiln_update_converts_in_place_and_spares_frozen_files(tmp_path: Path) -> None:
-    """`ion repo update`'s pass (T-159): the converters run in the tree, nothing committed, and a
+    """`ion repo update`'s pass (ion-repo#T-159): the converters run in the tree, nothing
+    committed, and a
     frozen file comes out as it went in."""
     frozen = ".github/workflows/deploy.yml"
     unpinned = "jobs:\n  a:\n    steps:\n      - uses: actions/checkout@v4\n"
@@ -568,7 +571,8 @@ jobs:
 
 
 def test_event_text_reaches_the_shell_through_env_and_the_rest_stays(tmp_path: Path) -> None:
-    """T-173: a bare context read moves to the step's `env:` (its own, or one added after the
+    """ion-repo#T-173: a bare context read moves to the step's `env:` (its own, or one added after
+    the
     script); an expression with more in it, `github-script` and pwsh stay for judgment."""
     root = make(tmp_path, {WORKFLOW: INJECTED})
     assert FIXERS["move_to_env"].convert(read_repo(root)) == [WORKFLOW]
@@ -695,7 +699,8 @@ def test_the_throwaway_worktree_has_what_the_checks_need(tmp_path: Path) -> None
     assert (root / "web/node_modules/x").is_dir()
 
 
-# --- each commit proven (T-170) ---------------------------------------------------------------
+# --- each commit proven (ion-repo#T-170)
+# ---------------------------------------------------------------
 
 
 def converter(
@@ -769,7 +774,7 @@ def test_a_converter_bug_is_caught_and_the_tree_put_back(
 
 
 def test_each_commit_says_the_points_it_won(tmp_path: Path) -> None:
-    """T-187: in the commit, in the outcome, in the summary."""
+    """ion-repo#T-187: in the commit, in the outcome, in the summary."""
     root = make(tmp_path, CONVERTED["TS-EXPECT-ERROR"])
     [outcome] = fix.fix(root, only="TS-EXPECT-ERROR")
     assert outcome.points is not None and outcome.points > 0

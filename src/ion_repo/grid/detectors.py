@@ -431,7 +431,7 @@ def strict_typescript(repo: Repo) -> Outcome:
 
 
 # End of life of each runtime line, from endoflife.date (checked 2026-10-20); bundled so that
-# the check stays offline (T-46 refreshes it at release time).
+# the check stays offline (ion-repo#T-46 refreshes it at release time).
 END_OF_LIFE = {
     "python": {
         "3.8": "2024-10-07",

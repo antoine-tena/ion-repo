@@ -293,5 +293,21 @@ ION_VARIABLES = (
     "API_HEALTH", "PROD_DOC", "CHARTER_SCRIPT", "TEMPLATE", "VERBOSE", "NO_UPDATE_CHECK",
     "PG_CONTAINER", "PG_PORT", "PG_USER", "PG_DATABASE", "PG_READ_ROLE", "PG_IMAGE",
 )  # fmt: skip
+# The Ion family's former repo names (each redirects on GitHub), cited in its backlogs as
+# `hearth's T-07`; `ion repo tickets` reads them in the family's repos only.
+FAMILY_TOOLS: Mapping[str, str] = {
+    "kiln": "ion-repo",
+    "keramos": "ion",
+    "grog": "ion-learn",
+    "hearth": "ion-host",
+    "cone": "ion-score",
+    "slake": "ion-render",
+    "seal": "ion-deal",
+    "saggar": "ion-secure",
+    "glaze": "ion-design",
+    "wedge": "ion-media",
+    "stylus": "ion-words",
+    "raku": "ion-launch",
+}
 LEGACY_RULES_DIR = ".claude/rules/kiln"
 RULES_DIR = ".claude/rules/ion-repo"

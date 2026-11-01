@@ -1,4 +1,4 @@
-"""`ion repo bot`: kiln-bot's weekly run (T-59), "Dependabot for your methods".
+"""`ion repo bot`: kiln-bot's weekly run (ion-repo#T-59), "Dependabot for your methods".
 
 On the branch `kiln/bot`, started again from the last commit at each run: in an ion-repo repo
 `ion repo update` first (the template, then the converters after it), then `ion repo fix`, each

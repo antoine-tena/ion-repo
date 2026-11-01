@@ -3,7 +3,7 @@ title = "Merges into the integration branch keep their history (no squash)"
 pillar = "methods"
 theme = "git-versions"
 scope = { kind = "tool", name = "git" }
-# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+# A draft from the reference repo (ion-repo#T-124): assessed, out of the score until sourced.
 level = "assess"
 regime = "review"
 profiles = ["association", "company", "university", "enterprise"]

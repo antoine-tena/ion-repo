@@ -1,4 +1,4 @@
-"""The compressor (T-139): dead code and unused dependencies removed, each removal proven.
+"""The compressor (ion-repo#T-139): dead code and unused dependencies removed, each removal proven.
 
 vulture, deptry and knip propose (`candidates`), guards keep what no static tool can see, and
 `proof` decides: the type checker, then the tests compared one by one with a run before

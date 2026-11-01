@@ -48,7 +48,7 @@ that a stranger can do without knowing the project:
 Prefer variety (a bug, a doc fix, a small improvement) and what a newcomer learns the project
 from. Check in the code that each ticket is still to do. If fewer tickets fit than missing, say
 so: a smaller stock is better than a vague issue. A large ticket can be split in the backlog
-first (a new `T-NN` for the small part) when the split is obvious.
+first (a new `<repo>#T-NN` for the small part) when the split is obvious.
 
 ## 3. Write the issues
 

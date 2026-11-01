@@ -1,4 +1,4 @@
-"""The grid as data (T-123): every rule holds, and its detector says pass and fail where it
+"""The grid as data (ion-repo#T-123): every rule holds, and its detector says pass and fail where it
 should, on an example of each."""
 
 import datetime

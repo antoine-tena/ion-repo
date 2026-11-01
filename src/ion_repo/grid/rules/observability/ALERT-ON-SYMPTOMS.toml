@@ -3,7 +3,7 @@ title = "Alerts on what users suffer (errors, latency), not on causes"
 pillar = "methods"
 theme = "observability"
 scope = { kind = "universal" }
-# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+# A draft from the reference repo (ion-repo#T-124): assessed, out of the score until sourced.
 level = "assess"
 regime = "review"
 profiles = ["association", "company", "university", "enterprise"]

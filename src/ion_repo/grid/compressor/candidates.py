@@ -37,7 +37,7 @@ CONVENTIONAL = re.compile(
     r"apps\.py|admin\.py|signals\.py|wsgi\.py|asgi\.py|manage\.py|setup\.py|__main__\.py|"
     r"test_[^/]*|[^/]*_test\.py)($|/)"
 )
-# Never touched, even proven (T-139): code where a missing branch is a silent security or
+# Never touched, even proven (ion-repo#T-139): code where a missing branch is a silent security or
 # correctness bug that tests rarely cover.
 SENSITIVE_PATH = re.compile(
     r"(?i)(crypt|cipher|hash|hmac|sign|token|auth|password|secret|"

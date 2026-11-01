@@ -4,7 +4,7 @@ Copier template, `ion-repo` command, `charter` engine, Claude Code plugins, reus
 
 ## Repo map
 
-- `src/ion_repo/`: `cli.py`; one command per module: `new.py` (`questions.py`), `adopt.py` (kept files listed under `kept` in `.copier-answers.yml`), `install.py`, `dev/` (`processes`, `backing`, `menu`, `background`, `foreground`, `containers`), `check.py`, `settings.py`, `machine.py`, `waive.py`, `pause.py`, `frame.py`, `eval_skills.py` (`claude plugin eval` of `plugins/repo/evals/`, three ok first), `bot.py` (kiln-bot on `kiln/bot`; bench `antoine-tena/kiln-bot-test`), `update.py`, `contract.py`, `release.py`, `shipping.py` (`version cut|promote`), `github_ci.py`, `doctor.py`, `tool_update.py`, `fleet.py`, `adopted.py`, `adopted_names.py`, `rehearsal.py`. Core: `stack.py`, `template.py`, `deps.py`, `github.py`, `rules.py`, `statusline.py`, `versions.py`, `frozen.py`, `renames.py`, `ion_names.py`, `moved_dirs.py`, `kiln_move.py` (the last `kiln-cli` moves its tester to Ion), `banner.py`, `ui.py`, `shell.py`, `config.py`, `trailers.py`, `migrations.py`.
+- `src/ion_repo/`: `cli.py`; one command per module: `new.py` (`questions.py`), `adopt.py` (kept files listed under `kept` in `.copier-answers.yml`), `install.py`, `dev/` (`processes`, `backing`, `menu`, `background`, `foreground`, `containers`), `check.py`, `settings.py`, `machine.py`, `waive.py`, `pause.py`, `frame.py`, `eval_skills.py` (`claude plugin eval` of `plugins/repo/evals/`, three ok first), `bot.py` (kiln-bot on `kiln/bot`; bench `antoine-tena/kiln-bot-test`), `update.py`, `contract.py`, `release.py`, `shipping.py` (`version cut|promote`), `github_ci.py`, `doctor.py`, `tool_update.py`, `fleet.py`, `adopted.py`, `adopted_names.py`, `rehearsal.py`. Core: `stack.py`, `template.py`, `deps.py`, `github.py`, `rules.py`, `statusline.py`, `versions.py`, `frozen.py`, `renames.py`, `ion_names.py`, `moved_dirs.py`, `kiln_move.py` (the last `kiln-cli` moves its tester to Ion), `banner.py`, `ui.py`, `shell.py`, `config.py`, `trailers.py`, `migrations.py`, `tickets.py` (`ion repo tickets`: IDs written `<repo>#T-NN`, prefix from the repo's name).
 - `src/ion_repo/grid/`: `rules/<theme>/<ID>.toml`, `model.py`, `facts.py`, `detectors.py`, `forge.py` (`gh`, cached a day), `fixers/`, `fix.py`, `checks.py`, `show.py`, `score.py`, `gap_report.py`, `roadmap.py`; each rule has pass/fail examples in `tests/test_grid.py`.
 - `src/ion_repo/ci/`: `ion repo ci` (verdict in git note). `src/ion_repo/charter/`: engine (`bans`, `ratchets`, `python_tools`, `waivers`).
 - `hatch_build.py`: writes build commit to `ion_repo/_build.json`.
@@ -31,7 +31,7 @@ Trains on the association's repo (Django+Nuxt reference, grid ground; path in gl
 
 ## Releases
 
-0.x: each release bumps patch, even features/breaking; minor about every ten (`version cut --minor`), at a themed milestone. One release per two days. Plan: `backlog.md`, shown by `ROADMAP.md`; public launch T-03. Candidates, promotion, channels: `.claude/rules/releases.md`, read before `/repo:release`.
+0.x: each release bumps patch, even features/breaking; minor about every ten (`version cut --minor`), at a themed milestone. One release per two days. Plan: `backlog.md`, shown by `ROADMAP.md`; public launch ion-repo#T-03. Candidates, promotion, channels: `.claude/rules/releases.md`, read before `/repo:release`.
 
 ## Checks
 

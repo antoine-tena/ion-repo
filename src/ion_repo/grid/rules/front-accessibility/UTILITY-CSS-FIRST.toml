@@ -3,7 +3,7 @@ title = "Utility classes by default, scoped styles only as named exceptions"
 pillar = "standards"
 theme = "front-accessibility"
 scope = { kind = "tool", name = "tailwind" }
-# A draft from the reference repo (T-124): assessed, out of the score until sourced.
+# A draft from the reference repo (ion-repo#T-124): assessed, out of the score until sourced.
 level = "assess"
 regime = "review"
 profiles = ["association", "company", "university", "enterprise"]

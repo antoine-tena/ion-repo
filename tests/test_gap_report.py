@@ -1,4 +1,4 @@
-"""What the grid does not know, told to ion-repo with the user's yes (T-38)."""
+"""What the grid does not know, told to ion-repo with the user's yes (ion-repo#T-38)."""
 
 import json
 import subprocess

@@ -567,7 +567,8 @@ def test_doctor_without_a_chosen_system_detects_it(monkeypatch: pytest.MonkeyPat
 
 
 def test_doctor_knows_kilns_own_repo(tmp_path: Path) -> None:
-    # ion-repo is the template's source: no answers, no charter, and not a stranger's repo (T-362).
+    # ion-repo is the template's source: no answers, no charter, and not a stranger's repo
+    # (ion-repo#T-362).
     (tmp_path / "template").mkdir()
     (tmp_path / "copier.yml").write_text("_subdirectory: template\n")
     stranger = repo_findings(tmp_path, None)[0]
@@ -665,7 +666,8 @@ def test_promoted_candidate_does_not_conflict_on_kiln_workflow_refs(
     tmp_path: Path, local_edit: str, pinned: bool
 ) -> None:
     """Le tag promu pose sur le commit de sa candidate : Copier rend l'ancienne version sous le
-    nom promu, et seul le `@<tag>` des workflows d'ion-repo différerait du projet (T-18). Une
+    nom promu, et seul le `@<tag>` des workflows d'ion-repo différerait du projet (ion-repo#T-18).
+    Une
     vraie modification locale au même endroit reste un conflit à arbitrer. Épinglé par SHA
     (`@<sha> # <tag>`), le SHA ne change pas à la promotion : seul le tag du commentaire."""
     ref = (
@@ -974,7 +976,8 @@ def test_pnpm_install_frozen_only_with_a_lockfile(tmp_path: Path) -> None:
 
 def test_a_kiln_workflow_pinned_by_kiln_fix_follows_the_template(tmp_path: Path) -> None:
     """`@<sha> # v0.4.10` (ion repo fix) against the old render `@v0.4.10` and the new `@v0.4.11`:
-    no conflict left, the new tag taken, for the update's converters to pin again (T-159)."""
+    no conflict left, the new tag taken, for the update's converters to pin again
+    (ion-repo#T-159)."""
     from ion_repo.update import CONFLICT_MARKER, resolve_kiln_ref_conflicts
 
     def run_git(*arguments: str, given: str | None = None) -> str:

@@ -3,8 +3,8 @@ name: pypi
 # Publishes ion-repo on PyPI at the tag of a promoted release, `vX.Y.Z`; never a candidate `-rc.N`,
 # which only the internal channel follows, through GitHub. Then the GitHub Release of the tag, its notes taken
 # from the tag's `CHANGELOG.md` entry (what the repo page and its watchers see), and the Homebrew
-# formula of the tap (T-12), pushed with the deploy key in the secret `HOMEBREW_TAP_KEY`. The built
-# packages carry a build provenance attestation (Sigstore, T-90) and are attached to the Release:
+# formula of the tap (ion-repo#T-12), pushed with the deploy key in the secret `HOMEBREW_TAP_KEY`. The built
+# packages carry a build provenance attestation (Sigstore, ion-repo#T-90) and are attached to the Release:
 # `gh attestation verify ion_repo-X.Y.Z-py3-none-any.whl -R antoine-tena/ion-repo`.
 on:
   push:
@@ -38,7 +38,7 @@ jobs:
         run: uv build
       # The very last `kiln-cli` and `keramos-kiln`, the same code but for their name and description:
       # at its first run each moves its tester to ion-repo (`kiln_move.py`). Published at this tag
-      # only (T-373).
+      # only (ion-repo#T-373).
       - name: Build the last kiln-cli and keramos-kiln
         if: github.ref_name == 'v0.4.11'
         run: |

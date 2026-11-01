@@ -34,6 +34,7 @@ INTEGRATION_REF = "origin/develop"
 SOAK = datetime.timedelta(hours=24)
 FIX_SOAK = datetime.timedelta(hours=2)
 BACKLOG = Path("docs") / "backlog" / "backlog.md"
+PLANNED_TICKET = re.compile(r"- (?:[a-z][a-z0-9-]*#)?T-\d+")
 PLANNED_RELEASE = re.compile(r"^### v(\d+\.\d+\.\d+) · (.+)$")
 VERSION_MODULE = Path("src") / "ion_repo" / "versions.py"
 
@@ -119,7 +120,7 @@ def planned_release(root: Path, cut: set[Version]) -> tuple[str, str, list[str]]
                 return current
             if Version(match.group(1)) not in cut:
                 current = (match.group(1), match.group(2), [])
-        elif current and line.startswith("- T-"):
+        elif current and PLANNED_TICKET.match(line):
             current[2].append(line.removeprefix("- "))
     return current
 

@@ -1,4 +1,4 @@
-"""The Homebrew formula (T-12): written from `uv.lock` and PyPI, upgraded by brew."""
+"""The Homebrew formula (ion-repo#T-12): written from `uv.lock` and PyPI, upgraded by brew."""
 
 import importlib.util
 import sys

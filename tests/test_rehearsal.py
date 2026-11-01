@@ -1,4 +1,5 @@
-"""`ion repo update --rehearse`: the update on a throwaway clone, the repo untouched (T-150)."""
+"""`ion repo update --rehearse`: the update on a throwaway clone, the repo untouched
+(ion-repo#T-150)."""
 
 import subprocess
 import tempfile

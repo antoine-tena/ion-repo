@@ -624,7 +624,8 @@ def test_tool_update_moves_an_installed_plugin_to_the_marketplace_version(
     )
 
 
-# --- sessions kept by /repo:pause (T-344) -----------------------------------------------------
+# --- sessions kept by /repo:pause (ion-repo#T-344)
+# -----------------------------------------------------
 
 
 def test_a_paused_session_is_listed_at_the_next_start_then_leaves_the_list(

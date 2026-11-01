@@ -33,7 +33,7 @@ NOT_COVERED = ": not covered by the grid yet"
 # Facts that say how the repo is worked rather than what it is made of.
 NOT_STACKS = frozenset({"agent", "github"})
 # Manifests of stacks the grid does not cover yet: named beside the stacks it scores, listed at
-# the end, never counted (T-38).
+# the end, never counted (ion-repo#T-38).
 UNCOVERED = {
     "composer.json": "PHP",
     "go.mod": "Go",
@@ -63,7 +63,8 @@ UNCOVERED_SOURCES = {
     ".dart": "Dart",
 }
 # Packages that call for practices of their own, by public name, with what they are. The grid
-# covers one when a rule's scope names it; otherwise it is listed at the end (T-38). Only these
+# covers one when a rule's scope names it; otherwise it is listed at the end (ion-repo#T-38). Only
+# these
 # names can leave the machine: a private package is never one of them.
 NOTABLE_PACKAGES = {
     "celery": "task queue",

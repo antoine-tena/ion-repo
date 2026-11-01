@@ -78,7 +78,8 @@ def test_every_stack_renders_valid_files(tmp_path: Path, backend: str, frontend:
 def test_every_stack_follows_its_code_to_the_root(
     tmp_path: Path, backend: str, frontend: str
 ) -> None:
-    # An adopted repo with its code at the root (T-166): the paths of CI, hooks, rules, charter
+    # An adopted repo with its code at the root (ion-repo#T-166): the paths of CI, hooks, rules,
+    # charter
     # and Dependabot go there, never to a `backend/` or `frontend/` it does not have.
     where = {"backend_dir": "."} if backend != "none" else {"frontend_dir": "."}
     kept = ["backend"] if backend != "none" else ["frontend"]
@@ -183,7 +184,7 @@ def test_backlog_is_always_there(tmp_path: Path) -> None:
     backlog = (project_dir / "docs/backlog/backlog.md").read_text()
     assert "North star: **the demo online**." in backlog
     assert "- **Type**: task" in backlog
-    assert "**Next free: T-02.**" in backlog
+    assert "**Next free: demo#T-02.**" in backlog
     assert "Done" not in backlog
     how_to = (project_dir / "docs/backlog/README.md").read_text()
     assert "**Each member writes only their own login**" in how_to
@@ -491,7 +492,7 @@ def test_a_released_project_scores_100_on_kiln_grid(
     # The lockfiles are written by `ion repo new` right after the template (`lock_dependencies`).
     expected = {"LOCKED-DEPENDENCIES"}
     if backend == "none" and frontend in ("nuxt", "next", "astro"):
-        expected.add("TESTS-PRESENT")  # a front alone has no test yet (T-160)
+        expected.add("TESTS-PRESENT")  # a front alone has no test yet (ion-repo#T-160)
     assert {gap.rule for gap in report.gaps} <= expected
 
 
@@ -638,7 +639,8 @@ def test_large_files_kept_on_purpose_pass_the_size_ceiling(tmp_path: Path) -> No
 def test_kiln_bot_runs_on_its_schedule_and_is_off_by_default(
     tmp_path: Path, bot: str, cron: str
 ) -> None:
-    """T-59: off by default (a private repo pays its minutes), the answer kept only when set."""
+    """ion-repo#T-59: off by default (a private repo pays its minutes), the answer kept only when
+    set."""
     default = generate(tmp_path / "default")
     assert not (default / ".github/workflows/kiln-bot.yml").exists()
     assert "update_bot" not in (default / ".copier-answers.yml").read_text()

@@ -1,4 +1,4 @@
-"""What the grid does not know, told to ion-repo with the user's yes (T-38).
+"""What the grid does not know, told to ion-repo with the user's yes (ion-repo#T-38).
 
 `ion repo score` ends with what it met that the grid does not cover (a stack, a known package) and
 the rules that misfire (a waiver renewed again and again). In a terminal, it then offers to tell

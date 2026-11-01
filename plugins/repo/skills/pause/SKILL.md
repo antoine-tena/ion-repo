@@ -7,7 +7,7 @@ argument-hint: "[what this session is about]"
 Talk to the user in their language; a few seconds, nothing else touched.
 
 1. In a few words, what this session works on (`$ARGUMENTS` if given): the task, the ticket if
-   there is one (`T-170: ion repo fix proves each commit`). Then the next step, one concrete
+   there is one (`<repo>#T-170: ion repo fix proves each commit`). Then the next step, one concrete
    sentence someone resuming cold can act on (`merge feat/fix-proof once the tests pass`).
 2. Uncommitted work stays where it is: say which worktree holds it, never commit or stash it on
    your own to pause.
