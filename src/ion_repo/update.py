@@ -230,7 +230,7 @@ def resolve_kiln_ref_conflicts(root: Path) -> None:
         if merged is not None:
             (root / name).write_text(merged)
             # No more conflict in the index: a change of the template like any other.
-            run(["git", "reset", "-q", "--", name], root)
+            run(["git", "reset", "-q", "--no-refresh", "--", name], root)
 
 
 def _kiln_refs(text: str) -> set[str]:
@@ -253,10 +253,12 @@ def settle_rename_conflicts(root: Path, renaming: Renaming) -> None:
         if None in stages:
             continue
         base, ours, theirs = (str(text) for text in stages)
-        merged = _merge_cleanly(renaming.words(base), renaming.words(ours), theirs)
+        merged = _merge_cleanly(
+            renaming.words_beside(base, theirs), renaming.words_beside(ours, theirs), theirs
+        )
         if merged is not None:
             (root / name).write_text(merged)
-            run(["git", "reset", "-q", "--", name], root)
+            run(["git", "reset", "-q", "--no-refresh", "--", name], root)
 
 
 def _index_stage(root: Path, stage: int, name: str) -> str | None:

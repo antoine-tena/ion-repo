@@ -97,6 +97,15 @@ class Renaming:
                 text = re.sub(rf"(?<![\w-]){re.escape(old)}(?![\w-])", new, text)
         return text
 
+    def words_beside(self, text: str, render: str) -> str:
+        """`words`, sparing a line the new render still holds as it is: it cites a name that did
+        not move with the project's (`pypi_name`), and renaming it would invent a change."""
+        held = set(render.splitlines())
+        return "".join(
+            line if line.rstrip("\r\n") in held else self.words(line)
+            for line in text.splitlines(keepends=True)
+        )
+
 
 def renaming_of(previous: Mapping[str, object], current: Mapping[str, object]) -> Renaming | None:
     """None when the answers say nothing of a name that moved (a template without `name`)."""
@@ -208,10 +217,11 @@ def _merged_file(
     if ours == base:
         return theirs
     try:
+        render = theirs.decode()
         merged = _merge_text(
-            base=renaming.words(base.decode()) if base is not None else "",
-            ours=renaming.words(ours.decode()),
-            theirs=theirs.decode(),
+            base=renaming.words_beside(base.decode(), render) if base is not None else "",
+            ours=renaming.words_beside(ours.decode(), render),
+            theirs=render,
         )
     except UnicodeDecodeError:
         return ours

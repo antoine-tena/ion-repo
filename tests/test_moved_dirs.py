@@ -117,6 +117,32 @@ def test_a_real_conflict_stays_marked(project: Path) -> None:
     assert not (project / "plugins/old-tool").exists()
 
 
+def test_a_rename_keeps_a_project_comment_beside_the_pypi_name_that_stays(project: Path) -> None:
+    commit(project, "mine")
+    update.apply_template(project, {"pypi_name": "old-tool"})
+    pyproject = project / "backend/pyproject.toml"
+    comment = "the command stays `old-tool`"
+    assert comment in pyproject.read_text()
+    pyproject.write_text(pyproject.read_text().replace(comment, "the command stays `old tool`"))
+    commit(project, "own comment")
+
+    update.apply_template(project, {"name": "new-tool", "plugin_name": "new-tool"})
+
+    assert update.conflicted_files(project) == []
+    text = pyproject.read_text()
+    assert "the command stays `old tool`" in text
+    assert 'name = "old-tool"' in text
+    assert 'new-tool = "new_tool.cli:main"' in text
+
+
+def test_a_line_the_new_render_still_holds_keeps_the_old_name() -> None:
+    renaming = Renaming("old-tool", "new-tool", None, None, True)
+    render = 'name = "old-tool"\n'
+    assert renaming.words_beside('name = "old-tool"\nrun old-tool\n', render) == (
+        'name = "old-tool"\nrun new-tool\n'
+    )
+
+
 def test_nothing_moves_without_a_new_name(project: Path) -> None:
     assert (
         renaming_of(
