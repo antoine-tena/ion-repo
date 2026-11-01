@@ -349,6 +349,9 @@ def test_tool_project_can_be_published_on_pypi(tmp_path: Path) -> None:
     actions = [step["uses"] for step in steps if "uses" in step]
     assert actions
     assert all(re.fullmatch(r"[^@]+@[0-9a-f]{40}", action) for action in actions)
+    # GitHub refuses an attestation on a user's private repo: it must not stop the publication.
+    attest = next(step for step in steps if "attest-build-provenance" in step.get("uses", ""))
+    assert attest["if"] == "${{ !github.event.repository.private }}"
     assert steps[-1]["run"] == "uv publish --trusted-publishing automatic"
     assert steps[-1]["env"] == {"UV_PUBLISH_TOKEN": "${{ secrets.PYPI_TOKEN }}"}
     assert "`uv tool install keramos-demo`" in (project_dir / "README.md").read_text()

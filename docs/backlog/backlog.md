@@ -67,6 +67,7 @@ Before that theme, this release moves everyone to Ion: the last `kiln-cli`, on a
 ### v0.4.12 · What the last sessions tripped on
 Real sessions of late October hit these, each small: the release, the merge, a long session, a
 first `kiln check`. They cost time now, so they go before the moves.
+- T-405 · A generated tool's releases numbered `vX.Y.Z`, never `vN` (XS)
 - T-388 · `/kiln:release` publishes to PyPI from the machine when Actions is blocked (S)
 - T-378 · `/kiln:merge` from an isolated worktree: leave it before merging, plain commands only (S)
 - T-381 · A long session fetches the integration branch before building on it (S)
@@ -906,6 +907,16 @@ its branch `kiln/bot`, `KILN_BOT_TOKEN`), kiln's own CI `kiln.yml`, the images
 fallback read of the old name, and `ion repo update` converts what a repo carries; the demos are
 re-recorded at the next candidate that shows them.
 Also `src/kiln/`, the `kiln` alias of `ion-repo` and `kiln_move.py`'s state in `~/.local/state/kiln/`.
+
+### T-405 · A generated tool's releases numbered `vX.Y.Z`, never `vN`
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-01
+- **Effort**: XS · **Owner**: — · **Due**: —
+- **Origin**: antoine, 1 November 2026, on `ion-sh`'s `v2`: the same numbering as ion-repo's
+
+`/repo:release`, the template's `pypi.yml` comments and `pypi_name`'s docs still say `vN`. A tool
+published on PyPI gets `vX.Y.Z` by default, as `ion-sh` now does through its own `CLAUDE.md`.
 
 ### T-388 · `/kiln:release` publishes to PyPI from the machine when Actions is blocked
 - **Type**: improvement
