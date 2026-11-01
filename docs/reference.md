@@ -120,7 +120,7 @@ ion-repo's workflows work from any repository, ion-repo-generated or not:
 ```yaml
 jobs:
   backend:
-    uses: antoine-tena/ion-repo/.github/workflows/django.yml@v0.4.10   # an ion-repo release tag
+    uses: antoine-tena/ion-repo/.github/workflows/django.yml@v0.4.11   # an ion-repo release tag
 ```
 
 `django.yml`, `python.yml`, `maven.yml`, `pnpm.yml`, `charter.yml`, `security.yml` (`uv audit`,
@@ -148,7 +148,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    uses: antoine-tena/ion-repo/.github/workflows/bot.yml@v0.4.10
+    uses: antoine-tena/ion-repo/.github/workflows/bot.yml@v0.4.11
     secrets:
       token: ${{ secrets.KILN_BOT_TOKEN }}  # optional, see below
 ```

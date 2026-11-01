@@ -6,6 +6,32 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 `release/vX.Y.Z` branch, rewritten before its first candidate. Names are those of their release:
 entries before v0.4.0 quote kiln's former French names.
 
+## v0.4.11 — 2026-11-01
+<!-- draft: rewrite for users, breaking changes first, then delete this line -->
+- **Breaking**: Kiln becomes ion-repo, typed `ion repo`, plugin repo@ion-repo
+- **Breaking**: Kiln becomes ion-repo: package ion_repo, plugin repo in the ion-repo catalogue
+- A private repo publishes on PyPI without build provenance
+- Version promote survives running from the release worktree (T-396)
+- Kiln 0.4.10's update keeps its plugin, keramos-kiln moves too
+- A new project's first commit passes
+- The last kiln-cli moves its testers to ion-repo and ion-sh
+- Next tickets in Next
+- Skills report in the debrief format
+- Debrief output style, forced for the end-of-work report
+- Ion repo eval-skills, the skill trigger eval
+- No frame on a question or a stop
+- A repo marked .ion-repo-frozen stays out of the commands over all repos
+- Template leftovers of the rename: /repo:… skills, the .claude/kiln link, ion-repo@ion-repo
+- A renamed project's package and plugin folders move with what it made of them
+- Plugin_name, a generated tool's Claude plugin named without the ion- prefix
+- /kiln:prompt writes a clean prompt, ready to paste (T-397)
+- Keramos skill frame drawn by kiln frame, no corners
+- Kiln frame draws a skill answer's rules at terminal width
+- Frame every Keramos tool's skill answer with double-line rules
+- Update the repo's installed Claude Code plugin after the push
+- Next 16.4.3, out of the critical advisories
+- **After updating**: run `ion repo install --machine` once on each machine, so that its Claude Code catalogue moves from kiln to ion-repo.
+
 ## v0.4.10 — 2026-10-30
 - **Breaking**: the four sizes get plain names, `tiny`, `small`, `medium` and `large`, instead of `spark`, `ember`, `flame` and `blaze`. `kiln update` renames a repo's size by itself; `--size` and `kiln set size=` still read the old names, with a warning.
 - **Security**: the Next template moves to 16.4.3, out of GHSA-673q-mjm6-r5xr and GHSA-2464-fhr4-w9xw (unauthenticated remote code execution) and GHSA-p3m5-59mp-jv5r (denial of service) of Next 16.4.0. `kiln update` brings it to a repo.
