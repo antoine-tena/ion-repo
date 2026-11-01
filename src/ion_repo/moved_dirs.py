@@ -29,8 +29,9 @@ DISTRIBUTION_CITED = (
     r"DISTRIBUTION\s*=\s*[\"']|(?:uv tool install|uv pip install|pip install|pipx install|uvx)\s+"
 )
 # A file named after the project (`ion-host.toml`) may sit in the projects that use it, beyond
-# this repo's reach: its name stays, as the PyPI name does, and the update says so.
-FILE_NAMED = r"\.(?:toml|ya?ml|json|ini|cfg|conf|env|txt|md|lock|db|sqlite3?|log)(?![\w-])"
+# this repo's reach: its name stays, as the PyPI name does, and the update says so. Its dot may
+# be escaped, in a test's pattern (`match=r"ion-host\.toml"`).
+FILE_NAMED = r"\\?\.(?:toml|ya?ml|json|ini|cfg|conf|env|txt|md|lock|db|sqlite3?|log)(?![\w-])"
 
 
 def default_plugin_name(name: str) -> str:
@@ -132,7 +133,8 @@ class Renaming:
         if not self.renamed:
             return set()
         olds = "|".join(re.escape(old) for old in {self.old_name, self.old_package})
-        return set(re.findall(rf"(?<![\w-])(?:{olds}){FILE_NAMED}", text))
+        found = re.findall(rf"(?<![\w-])(?:{olds}){FILE_NAMED}", text)
+        return {name.replace("\\.", ".") for name in found}
 
     def words_beside(self, text: str, render: str) -> str:
         """`words`, sparing a line the new render still holds as it is: it cites a name that did

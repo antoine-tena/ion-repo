@@ -165,6 +165,7 @@ def test_a_file_named_after_the_project_keeps_its_name_and_the_update_says_so(
     [
         ("run `ion host dns`, see ion-host.toml", "run `foyer dns`, see ion-host.toml"),
         ('SETTINGS = "ion-host.toml"', 'SETTINGS = "ion-host.toml"'),
+        ('match=r"ion-host\\.toml"', 'match=r"ion-host\\.toml"'),
         ("ion_host.cli.main, ion-host.", "foyer.cli.main, foyer."),
         ("ion-host holds it", "foyer holds it"),
         ("USER_AGENT = 'ion-host'", "USER_AGENT = 'foyer'"),
