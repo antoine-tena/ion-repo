@@ -432,14 +432,19 @@ def changelog_entry(changelog: str, version: str) -> str:
     raise KilnError(f"no v{version} entry in {CHANGELOG}")
 
 
+def merge_message(name: str, entry: str) -> str:
+    """`Version vX.Y.Z: <first line of the entry>`, its `<!-- … -->` markers skipped."""
+    lines = [line for line in map(str.strip, entry.splitlines()) if line and line[:4] != "<!--"]
+    summary = lines[0].removeprefix("- ")[:60] if lines else ""
+    return f"Version {name}" + (f": {summary}" if summary else "")
+
+
 def _merge_into_main(root: Path, name: str, entry: str) -> None:
     tree = main_tree(root) / ".claude" / "worktrees" / "main"
     ui.step("Into main")
     run(["git", "worktree", "add", "-q", "-B", "main", str(tree), "origin/main"], root)
     try:
-        summary = entry.splitlines()[0].removeprefix("- ")[:60] if entry else ""
-        message = f"Version {name}" + (f": {summary}" if summary else "")
-        run(["git", "merge", "-q", "--no-ff", name, "-m", message], tree)
+        run(["git", "merge", "-q", "--no-ff", name, "-m", merge_message(name, entry)], tree)
         run(["git", "push", "-q", "origin", "main", name], tree)
     finally:
         run(["git", "worktree", "remove", "--force", str(tree)], root)
