@@ -24,5 +24,5 @@ an argument, propose one from the task.
    the status line, the hooks and the relative paths then describe the branch being worked on,
    not the main tree's integration branch. Without that tool, work only in the worktree
    (absolute paths). Give its path. Claude Code's isolation then refuses a command it cannot read
-   (a variable, a heredoc, `git -C`, several commands chained around git): send git commands plain
+   (a variable even in a plain path, a heredoc, `cd`, a loop, `$(…)`, `git -C`, several commands chained around git): send git commands plain
    and one by one, and put the rest in a script.
