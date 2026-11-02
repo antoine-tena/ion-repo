@@ -16,11 +16,11 @@ from collections.abc import Callable
 from pathlib import Path
 
 import yaml  # brought by copier
+from ion_score import ui
+from ion_score.fixers import resolve
 
-from ion_repo import ui
 from ion_repo.adopted_names import convert_legacy_names, remaining_mentions, ticket_mentions
 from ion_repo.backlog import BACKLOG_DIR, LEGACY_DIR, migrate_legacy_backlog
-from ion_repo.grid.fixers import resolve
 from ion_repo.ion_names import convert_ion_names
 from ion_repo.shell import KilnError, step
 from ion_repo.versions import is_beta, latest_release

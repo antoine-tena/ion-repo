@@ -17,7 +17,8 @@ import time
 from pathlib import Path
 from typing import Any
 
-from ion_repo import ui
+from ion_score import ui
+
 from ion_repo.shell import environment
 from ion_repo.versions import (
     install_source,

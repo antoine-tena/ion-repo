@@ -6,10 +6,10 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from ion_score import checks
+from ion_score.fixers import containers, resolve
 
 from ion_repo import bot
-from ion_repo.grid import checks
-from ion_repo.grid.fixers import containers, resolve
 from ion_repo.shell import KilnError
 
 SHA = "b4ffde65f46336ab88eb53be808477a3936bae11"

@@ -19,7 +19,8 @@ import time
 from pathlib import Path
 from typing import Any
 
-from ion_repo import ui
+from ion_score import ui
+
 from ion_repo.dev.foreground import PREFIX_COLORS, service_prefix, stop_all
 from ion_repo.dev.processes import runs_beyond_front, signal_group, spawn
 from ion_repo.shell import KilnError, capture, spinner_line

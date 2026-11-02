@@ -13,7 +13,8 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
-from ion_repo import ui
+from ion_score import ui
+
 from ion_repo.shell import KilnError, capture, run, step
 from ion_repo.update import conflicted_files, require_under_kiln, update_project
 

@@ -10,10 +10,11 @@ from pathlib import Path
 
 import copier
 import pytest
+from ion_score import ui
 from packaging.version import Version
 from plumbum import ProcessExecutionError
 
-from ion_repo import check, cli, deps, github, ui
+from ion_repo import check, cli, deps, github
 from ion_repo.banner import LOGO, _project_summary, render_logo
 from ion_repo.check import _check_commands, _ci_django_job
 from ion_repo.ci.jobs import Plan, Services

@@ -14,6 +14,7 @@ import subprocess
 import tempfile
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
+from functools import partial
 from pathlib import Path
 
 from ion_repo import migrations, renames
@@ -119,7 +120,7 @@ class Renaming:
             pinned = rf"({DISTRIBUTION_CITED})?" if old == self.distribution else "()"
             text = re.sub(
                 rf"{pinned}{start}{re.escape(old)}{after}(?!{FILE_NAMED})",
-                lambda match, new=new: match.group(0) if match.group(1) else new,
+                partial(_unless_cited, new=new),
                 text,
             )
         if self.old_name.startswith(ION_PREFIX):
@@ -358,3 +359,8 @@ def _rewrite_project(
             path.write_text(rewritten)
             changed = True
     return changed, kept
+
+
+def _unless_cited(match: re.Match[str], new: str) -> str:
+    """The new name, except where the old one is cited as a pinned distribution."""
+    return match.group(0) if match.group(1) else new

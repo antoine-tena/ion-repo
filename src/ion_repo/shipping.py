@@ -22,9 +22,10 @@ import re
 from collections.abc import Callable
 from pathlib import Path
 
+from ion_score import ui
 from packaging.version import Version
 
-from ion_repo import github_ci, ui
+from ion_repo import github_ci
 from ion_repo.backlog import AFTER_UPDATING
 from ion_repo.release import (
     VERSION_MODULE,

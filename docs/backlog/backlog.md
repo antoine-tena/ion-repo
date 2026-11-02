@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: ion-repo#T-407.**
+**Next free: ion-repo#T-408.**
 
 ---
 
@@ -92,7 +92,7 @@ generated tree, the `deploy` question, `--vps`, the `vps` skills, with their con
 ### v0.4.16 · The grid in cone
 The last move, after kiln runs on slake (ion-render#T-07, one engine at a time). It closes the map of
 the moves.
-- ion-repo#T-393 · The grid leaves kiln for cone (L) (blocked: ion-score#T-01)
+- ion-repo#T-393 · The grid leaves ion-repo for ion-score (L)
 - ion-repo#T-387 · What belongs to another craft leaves kiln for its tool (L)
 
 ### v0.5.0 · Public launch: the proof and the page
@@ -987,19 +987,24 @@ Decide it once, before the first move:
 Step 4 of the skill calls stylus when it is installed, and still falls back on the project's
 `CLAUDE.md`, which keeps how the announcement is sent.
 
-### ion-repo#T-393 · The grid leaves kiln for cone
+### ion-repo#T-393 · The grid leaves ion-repo for ion-score
 - **Type**: task
-- **Status**: blocked — waiting for ion-score#T-01; after ion-render#T-07, one engine at a time
+- **Status**: in progress — branch refactor/grid-to-ion-score, since 2026-11-02
 - **Opened**: 2026-10-30
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: ion-repo#T-387. ⚠ breaking only if a charter rule ID or a command changes: neither should
+- **Origin**: ion-repo#T-387. ⚠ breaking only if a charter rule ID or a command changes: neither does
 
-- [ ] kiln depends on `keramos-cone`, and `src/kiln/grid/` keeps only what changes a repo (the
-  split is in ion-score#T-01).
-- [ ] What imports the grid moves to cone's contract: `cli.py`, `adopted.py`, `update.py`, `bot.py`,
-  `charter/cli.py`, and the tests (`test_grid.py`, `test_score.py`, `test_fix.py`, `test_forge.py`,
-  `test_gap_report.py`, `test_bot.py`, `test_compressor.py`…).
-- [ ] `kiln score` gives the same result, rule by rule, on the training repos.
+antoine, 2 November 2026: the whole grid moves (fixers, roadmap and gap report included), ion-repo
+depends on the `ion-score` package, no subprocess; ion-score also holds the ground both share
+(`ui`, `shell`, waivers, rule IDs).
+
+- [x] ion-repo depends on `ion-score`; `src/ion_repo/grid/` gone, with its history in ion-score.
+- [x] `cli.py`, `adopted.py`, `update.py`, `bot.py`, `charter/cli.py` import `ion_score`; `ion repo
+  grid|score|fix` build on `ion_score.cli`; the grid's tests live in ion-score, `test_grid_rules.py`
+  (grid vs template) stays here.
+- [x] `ion repo score` gives the same result, rule by rule, on the training repos (four copies).
+- [ ] ion-score on PyPI and public before the next ion-repo release: until then the dependency is a
+  git source on a private repo, which this public repo's CI and PyPI's wheel cannot install.
 
 ### ion-repo#T-373 · `kiln-cli` retired, the testers moved to `ion-repo` and `ion-sh`
 - **Type**: task
@@ -1519,6 +1524,19 @@ before a deployment; the release of hearth v0.1.0 went through on it, its tests 
   2026 (hearth v0.1.1, grog v0.1.0, keramos v1), pytest and mypy run by hand each time.
 
 ## 🟡 Normal
+
+### ion-repo#T-407 · `ion repo check` is red on ion-repo itself: no `charter.toml`
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: ion-repo#T-393's branch, reproduced on a clean copy of develop (358244a)
+
+In ion-repo's own tree, `ion repo check` (and `--all`) runs the charter step alone, which stops on
+"charter: no charter.toml at the root of the repo": no ruff, mypy nor pytest run, the verdict is
+red whatever the change. Either ion-repo gets a `charter.toml` of its own (and meets it), or
+`check` knows ion-repo's stack (ruff, mypy, pytest) and skips a charter the repo does not declare,
+saying so.
 
 ### ion-repo#T-375 · [CLOCK] names freezegun, which [NEW-DEPENDENCY] refuses
 - **Type**: bug

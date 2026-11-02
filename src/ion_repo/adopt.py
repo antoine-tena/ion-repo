@@ -21,8 +21,9 @@ import tempfile
 from pathlib import Path
 
 import copier
+from ion_score import ui
 
-from ion_repo import adopted, ui
+from ion_repo import adopted
 from ion_repo.charter.config import LEGACY_CHARTER_FILE
 from ion_repo.migrations import ci_runner_for
 from ion_repo.new import user_defaults

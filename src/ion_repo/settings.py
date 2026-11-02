@@ -11,8 +11,9 @@ from collections.abc import Mapping
 from pathlib import Path
 
 import yaml  # fourni par copier
+from ion_score import ui
 
-from ion_repo import renames, ui
+from ion_repo import renames
 from ion_repo.check import check_project
 from ion_repo.deps import lock_dependencies, sync_dependencies
 from ion_repo.moved_dirs import default_plugin_name

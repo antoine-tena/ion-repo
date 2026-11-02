@@ -19,9 +19,10 @@ import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
+from ion_score import ui
 from packaging.version import Version
 
-from ion_repo import github_ci, ui
+from ion_repo import github_ci
 from ion_repo.config import load_config
 from ion_repo.fleet import find_repos
 from ion_repo.shell import KilnError, capture

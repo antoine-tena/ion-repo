@@ -13,7 +13,8 @@ keeping the databases (`foreground`). `--containers` runs the whole stack in pod
 import shutil
 from pathlib import Path
 
-from ion_repo import ui
+from ion_score import ui
+
 from ion_repo.dev import background, containers, menu
 from ion_repo.dev.backing import (
     app_services,

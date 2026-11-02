@@ -21,7 +21,9 @@ from html import escape
 from pathlib import Path
 from unittest import mock
 
-from ion_repo import banner, cli, ui, update, versions
+from ion_score import ui
+
+from ion_repo import banner, cli, update, versions
 
 ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "docs/assets"

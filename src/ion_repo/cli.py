@@ -9,7 +9,9 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, NoReturn
 
-from ion_repo import banner, renames, tool_update, ui
+from ion_score import ui
+
+from ion_repo import banner, renames, tool_update
 from ion_repo.config import load_config
 from ion_repo.shell import KilnError, repo_root
 from ion_repo.versions import installed_version
@@ -290,96 +292,41 @@ def _dispatch_version(arguments: argparse.Namespace, root: Path) -> None:
 
 
 def _dispatch_score(arguments: argparse.Namespace) -> None:
-    from ion_repo.grid import score
+    from ion_score import cli as score_cli
 
-    root = arguments.path.resolve()
-    if not root.is_dir():
-        raise KilnError(f"no folder {arguments.path}")
-    if arguments.online:
-        from ion_repo.grid import forge
+    from ion_repo.dev.menu import is_interactive
 
-        score.refresh_end_of_life()
-        forge.REFRESH = True
-    report = score.score_repo(root)
-    if arguments.against:
-        from ion_repo.grid import fix
-
-        with fix.scratch_worktree(root, "--detach", ref=arguments.against) as copy:
-            print("\n".join(score.compared(score.score_repo(copy), report)))
-        return
-    if arguments.rule or arguments.roadmap:
-        from ion_repo.grid import roadmap
-
-        if arguments.rule:
-            roadmap.show_rule(report, score.rule_finding(report, arguments.rule), arguments.rule)
-            return
-        if arguments.write:
-            written = roadmap.write_tickets(root, report)
-            print(f"{len(written)} ticket(s) written in {roadmap.BACKLOG}: {', '.join(written)}")
-        roadmap.show_roadmap(report)
-    elif arguments.json:
-        print(score.as_json(report))
-    elif arguments.badge:
-        print(score.badge(report))
-    else:
-        score.show(report, every=arguments.all)
-        from ion_repo.dev.menu import is_interactive
-        from ion_repo.grid import gap_report
-
-        # Only a person at a terminal says yes: a script or a Claude session is never asked.
-        gap_report.offer(root, report, input if is_interactive() else None)
+    # Only a person at a terminal says yes: a script or a Claude session is never asked.
+    score_cli.run_score(arguments, input if is_interactive() else None, sys.stdout)
 
 
 def _add_grid_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
-    from ion_repo.grid.model import LEVELS, THEMES
+    from ion_score import cli as score_cli
 
-    grid_parser = commands.add_parser(
-        "grid", help="the rules ion-repo holds as the best, with sources"
+    score_cli.add_grid_arguments(
+        commands.add_parser("grid", help="the rules ion-repo holds as the best, with sources")
     )
-    grid_parser.add_argument("rule", nargs="?", help="one rule, in full (its ID)")
-    grid_parser.add_argument("--theme", choices=THEMES, help="only this theme")
-    grid_parser.add_argument(
-        "--scope", help="universal, language, framework, tool, domain, or a name"
-    )
-    grid_parser.add_argument("--level", choices=LEVELS, help="only this level")
 
 
 def _add_score_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
-    score_parser = commands.add_parser(
-        "score", help="any repo measured against the grid, in seconds, no token"
-    )
-    score_parser.add_argument(
-        "path", type=Path, nargs="?", default=Path(), help="the repo (default: here)"
-    )
-    score_parser.add_argument("--json", action="store_true", help="the report as JSON")
-    score_parser.add_argument("--all", action="store_true", help="every rule and every location")
-    score_parser.add_argument("--badge", action="store_true", help="a README badge (Markdown)")
-    score_parser.add_argument(
-        "--online",
-        action="store_true",
-        help="refresh end-of-life dates from endoflife.date and the GitHub settings",
-    )
-    score_parser.add_argument(
-        "--roadmap", action="store_true", help="what needs judgment, for Claude, with its places"
-    )
-    score_parser.add_argument(
-        "--write", action="store_true", help="with --roadmap: the items as backlog tickets"
-    )
-    score_parser.add_argument("--rule", help="one rule only: fails while its gap is open")
-    score_parser.add_argument(
-        "--against", metavar="REF", help="the change since a commit (a pull request's base)"
+    from ion_score import cli as score_cli
+
+    score_cli.add_score_arguments(
+        commands.add_parser(
+            "score",
+            help="any repo measured against the grid, in seconds, no token",
+        )
     )
 
 
 def _add_fix_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
-    fix_parser = commands.add_parser(
-        "fix", help="close by script every gap a script can close, on a branch, with proof"
+    from ion_score import cli as score_cli
+
+    score_cli.add_fix_arguments(
+        commands.add_parser(
+            "fix", help="close by script every gap a script can close, on a branch, with proof"
+        )
     )
-    fix_parser.add_argument(
-        "path", type=Path, nargs="?", default=Path(), help="the repo (default: here)"
-    )
-    fix_parser.add_argument("--dry-run", action="store_true", help="the plan and the diff only")
-    fix_parser.add_argument("--rule", help="only this rule (its ID)")
 
 
 def _add_bot_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
@@ -640,18 +587,15 @@ def dispatch(arguments: argparse.Namespace) -> list[str]:
 
         doctor.run_doctor(Path.cwd())
     elif arguments.command == "grid":
-        from ion_repo.grid import show
+        from ion_score import cli as score_cli
 
-        if arguments.rule:
-            show.show_rule(arguments.rule)
-        else:
-            show.list_rules(theme=arguments.theme, scope=arguments.scope, level=arguments.level)
+        score_cli.run_grid(arguments, sys.stdout)
     elif arguments.command == "score":
         _dispatch_score(arguments)
     elif arguments.command == "fix":
-        from ion_repo.grid import fix
+        from ion_score import cli as score_cli
 
-        fix.fix(arguments.path.resolve(), dry_run=arguments.dry_run, only=arguments.rule)
+        score_cli.run_fix(arguments)
     elif arguments.command == "bot":
         from ion_repo import bot
 

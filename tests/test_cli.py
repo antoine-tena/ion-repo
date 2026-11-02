@@ -4,8 +4,9 @@ import sys
 from pathlib import Path
 
 import pytest
+from ion_score import ui
 
-from ion_repo import cli, fleet, ui
+from ion_repo import cli, fleet
 from ion_repo.shell import KilnError
 
 

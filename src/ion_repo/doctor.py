@@ -12,7 +12,8 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 
-from ion_repo import ui
+from ion_score import ui
+
 from ion_repo.charter.config import charter_path
 from ion_repo.config import UserConfig, config_path, detect_system, load_config
 from ion_repo.install import (

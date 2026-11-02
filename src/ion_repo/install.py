@@ -8,7 +8,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from ion_repo import ui
+from ion_score import ui
+
 from ion_repo.adopted_names import HOOKS_FILE
 from ion_repo.config import UserConfig, ensure_system, load_config
 from ion_repo.dev.backing import start_backing_services

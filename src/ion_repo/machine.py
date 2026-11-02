@@ -9,7 +9,9 @@ alone. Keys and values of before kiln 0.4.0 (`canal=interne`) are still accepted
 from dataclasses import replace
 from pathlib import Path
 
-from ion_repo import renames, ui
+from ion_score import ui
+
+from ion_repo import renames
 from ion_repo.config import (
     BETA_CHANNEL,
     CHANNELS,
