@@ -13,7 +13,8 @@ The names of before kiln 0.4.0 (`sobre`, `bandeau`, `classique`, `classique-fond
 `perso`) are still read. `--style <name>` forces a style, for a preview.
 
 The palette, stone and fire by default, is chosen the same way (`ion repo set
-statusline_palette=…`: `stone-fire`, `solarized`, `nord`, `mono`); `--palette <name>` forces one.
+statusline_palette=…`, ten palettes, `rose` among them); `--palette <name>` forces one. Each
+comes dark or light after Claude Code's theme (`/theme`); `--theme dark|light` forces it.
 
 Colors tell importance: gray when all is well, then glow (to watch), fire (to handle), ember
 (urgent). In a repo: branch, git state, CI, prod, tasks, containers, each shown only when the
@@ -59,29 +60,251 @@ FALLBACK_COLUMNS = 160  # width assumed when the terminal's is unknown
 CLAUDE_MARGIN = 4  # columns Claude Code keeps around the status line
 
 # Palettes (`ion repo set statusline_palette=…`), each in the roles of ion-repo's stone and fire
-# (src/ion_repo/ui.py, copied: the script runs without ion-repo): light, mid and dark grays, the
-# repo's pill, then the levels to watch (glow), to handle (fire) and urgent (ember), white, soot.
-PALETTES = {
-    "stone-fire": (
-        ((185, 185, 180), (140, 140, 135), (95, 95, 92)),
-        ((180, 75, 35), (255, 225, 120), (247, 150, 40), (205, 50, 35)),
-        ((255, 255, 255), (25, 25, 25)),
-    ),
-    "solarized": (
-        ((147, 161, 161), (131, 148, 150), (88, 110, 117)),
-        ((38, 139, 210), (181, 137, 0), (203, 75, 22), (220, 50, 47)),
-        ((253, 246, 227), (0, 43, 54)),
-    ),
-    "nord": (
-        ((216, 222, 233), (150, 160, 178), (76, 86, 106)),
-        ((94, 129, 172), (235, 203, 139), (208, 135, 112), (191, 97, 106)),
-        ((236, 239, 244), (46, 52, 64)),
-    ),
-    "mono": (
-        ((200, 200, 200), (145, 145, 145), (95, 95, 95)),
-        ((80, 80, 80), (215, 215, 215), (255, 255, 255), (220, 50, 47)),
-        ((255, 255, 255), (20, 20, 20)),
-    ),
+# (src/ion_repo/ui.py, copied: the script runs without ion-repo), for a dark terminal then a light
+# one: strong, mid and faint grays, the repo's pill, then the levels to watch (glow), to handle
+# (fire) and urgent (ember), the main text, the band.
+Palette = tuple[tuple[int, int, int], ...]
+PALETTES: dict[str, dict[str, Palette]] = {
+    "stone-fire": {
+        "dark": (
+            (185, 185, 180),
+            (140, 140, 135),
+            (95, 95, 92),
+            (180, 75, 35),
+            (255, 225, 120),
+            (247, 150, 40),
+            (205, 50, 35),
+            (255, 255, 255),
+            (25, 25, 25),
+        ),
+        "light": (
+            (70, 70, 66),
+            (105, 105, 100),
+            (150, 150, 145),
+            (170, 65, 30),
+            (175, 120, 0),
+            (215, 110, 10),
+            (190, 35, 25),
+            (20, 20, 20),
+            (238, 236, 230),
+        ),
+    },
+    "rose": {
+        "dark": (
+            (250, 205, 230),
+            (225, 150, 195),
+            (160, 95, 135),
+            (235, 60, 150),
+            (255, 200, 230),
+            (255, 120, 190),
+            (255, 40, 120),
+            (255, 240, 250),
+            (45, 15, 35),
+        ),
+        "light": (
+            (120, 40, 85),
+            (175, 80, 135),
+            (220, 150, 190),
+            (225, 50, 140),
+            (230, 120, 180),
+            (215, 50, 145),
+            (200, 0, 90),
+            (85, 15, 55),
+            (255, 228, 242),
+        ),
+    },
+    "solarized": {
+        "dark": (
+            (147, 161, 161),
+            (131, 148, 150),
+            (88, 110, 117),
+            (38, 139, 210),
+            (181, 137, 0),
+            (203, 75, 22),
+            (220, 50, 47),
+            (253, 246, 227),
+            (0, 43, 54),
+        ),
+        "light": (
+            (88, 110, 117),
+            (101, 123, 131),
+            (147, 161, 161),
+            (38, 139, 210),
+            (181, 137, 0),
+            (203, 75, 22),
+            (220, 50, 47),
+            (0, 43, 54),
+            (238, 232, 213),
+        ),
+    },
+    "nord": {
+        "dark": (
+            (216, 222, 233),
+            (150, 160, 178),
+            (76, 86, 106),
+            (94, 129, 172),
+            (235, 203, 139),
+            (208, 135, 112),
+            (191, 97, 106),
+            (236, 239, 244),
+            (46, 52, 64),
+        ),
+        "light": (
+            (59, 66, 82),
+            (76, 86, 106),
+            (150, 160, 178),
+            (94, 129, 172),
+            (180, 140, 50),
+            (200, 110, 80),
+            (191, 97, 106),
+            (46, 52, 64),
+            (229, 233, 240),
+        ),
+    },
+    "dracula": {
+        "dark": (
+            (248, 248, 242),
+            (160, 165, 195),
+            (98, 114, 164),
+            (189, 147, 249),
+            (241, 250, 140),
+            (255, 184, 108),
+            (255, 85, 85),
+            (248, 248, 242),
+            (40, 42, 54),
+        ),
+        "light": (
+            (40, 42, 54),
+            (85, 90, 120),
+            (150, 155, 185),
+            (130, 80, 220),
+            (160, 140, 0),
+            (215, 120, 30),
+            (215, 40, 40),
+            (30, 30, 40),
+            (245, 245, 250),
+        ),
+    },
+    "gruvbox": {
+        "dark": (
+            (235, 219, 178),
+            (168, 153, 132),
+            (102, 92, 84),
+            (69, 133, 136),
+            (250, 189, 47),
+            (254, 128, 25),
+            (251, 73, 52),
+            (251, 241, 199),
+            (40, 40, 40),
+        ),
+        "light": (
+            (60, 56, 54),
+            (124, 111, 100),
+            (168, 153, 132),
+            (69, 133, 136),
+            (181, 118, 20),
+            (175, 58, 3),
+            (157, 0, 6),
+            (40, 40, 40),
+            (251, 241, 199),
+        ),
+    },
+    "catppuccin": {
+        "dark": (
+            (205, 214, 244),
+            (166, 173, 200),
+            (108, 112, 134),
+            (203, 166, 247),
+            (249, 226, 175),
+            (250, 179, 135),
+            (243, 139, 168),
+            (205, 214, 244),
+            (30, 30, 46),
+        ),
+        "light": (
+            (76, 79, 105),
+            (108, 111, 133),
+            (156, 160, 176),
+            (136, 57, 239),
+            (223, 142, 29),
+            (254, 100, 11),
+            (210, 15, 57),
+            (76, 79, 105),
+            (239, 241, 245),
+        ),
+    },
+    "tokyo-night": {
+        "dark": (
+            (192, 202, 245),
+            (154, 165, 206),
+            (86, 95, 137),
+            (122, 162, 247),
+            (224, 175, 104),
+            (255, 158, 100),
+            (247, 118, 142),
+            (220, 225, 252),
+            (26, 27, 38),
+        ),
+        "light": (
+            (52, 59, 88),
+            (90, 98, 130),
+            (150, 155, 180),
+            (52, 84, 138),
+            (143, 94, 21),
+            (150, 80, 40),
+            (140, 67, 81),
+            (52, 59, 88),
+            (225, 226, 231),
+        ),
+    },
+    "forest": {
+        "dark": (
+            (200, 215, 190),
+            (145, 165, 135),
+            (90, 105, 85),
+            (60, 130, 75),
+            (230, 215, 110),
+            (225, 145, 60),
+            (210, 70, 50),
+            (240, 248, 235),
+            (20, 30, 22),
+        ),
+        "light": (
+            (40, 60, 40),
+            (80, 100, 75),
+            (140, 160, 130),
+            (45, 115, 60),
+            (160, 130, 0),
+            (195, 105, 20),
+            (185, 45, 30),
+            (25, 40, 25),
+            (235, 242, 230),
+        ),
+    },
+    "mono": {
+        "dark": (
+            (200, 200, 200),
+            (145, 145, 145),
+            (95, 95, 95),
+            (80, 80, 80),
+            (215, 215, 215),
+            (255, 255, 255),
+            (220, 50, 47),
+            (255, 255, 255),
+            (20, 20, 20),
+        ),
+        "light": (
+            (50, 50, 50),
+            (100, 100, 100),
+            (160, 160, 160),
+            (90, 90, 90),
+            (70, 70, 70),
+            (0, 0, 0),
+            (200, 30, 30),
+            (0, 0, 0),
+            (240, 240, 240),
+        ),
+    },
 }
 DEFAULT_PALETTE = "stone-fire"
 
@@ -105,12 +328,36 @@ def chosen_palette(settings: dict) -> str:
     return name if name in PALETTES else DEFAULT_PALETTE
 
 
+def light_terminal() -> bool:
+    """`--theme light|dark`, else Claude Code's theme (`/theme`, in `~/.claude.json`: `light`,
+    `light-daltonized`, `light-ansi`…), else `COLORFGBG` set by some terminals; dark otherwise."""
+    if "--theme" in sys.argv[1:-1]:
+        return sys.argv[sys.argv.index("--theme") + 1] == "light"
+    try:
+        with open(os.path.expanduser("~/.claude.json"), "rb") as file:
+            theme = str(json.load(file).get("theme") or "")
+    except OSError, ValueError, AttributeError:
+        theme = ""
+    if theme.startswith(("light", "dark")):
+        return theme.startswith("light")
+    background = os.environ.get("COLORFGBG", "").rpartition(";")[2]
+    return background in ("7", "15")
+
+
 SETTINGS = machine_settings()
 (
-    (STONE_LIGHT, STONE, STONE_DARK),
-    (BRICK, GLOW, FIRE, EMBER),
-    (WHITE, SOOT),
-) = PALETTES[chosen_palette(SETTINGS)]
+    STONE_LIGHT,
+    STONE,
+    STONE_DARK,
+    BRICK,
+    GLOW,
+    FIRE,
+    EMBER,
+    TEXT,
+    SOOT,
+) = PALETTES[chosen_palette(SETTINGS)]["light" if light_terminal() else "dark"]
+# on a pill: the lighter of the text and the band on dark colors, the darker on bright ones
+WHITE, INK = sorted((TEXT, SOOT), key=sum, reverse=True)
 
 # states of a backlog ticket, in English (docs/backlog) or French (former docs/a-faire)
 STATES = (
@@ -859,7 +1106,7 @@ def visible_width(text: str) -> int:
 
 
 # band pills, per level: (background, text)
-PILLS = {1: (mix(GLOW, SOOT, 0.78), GLOW), 2: (FIRE, SOOT), 3: (EMBER, WHITE)}
+PILLS = {1: (mix(GLOW, SOOT, 0.78), GLOW), 2: (FIRE, INK), 3: (EMBER, WHITE)}
 
 
 class Painter:
@@ -875,6 +1122,9 @@ class Painter:
         return self.base + fg(color) + style + t + (NORMAL if style else "")
 
     def pill(self, t: str, back: tuple[int, int, int], front: tuple[int, int, int]) -> str:
+        if front in (WHITE, INK):  # pastel palettes: dark letters on a bright pill
+            r, g, bl = back
+            front = INK if 0.299 * r + 0.587 * g + 0.114 * bl > 150 else WHITE
         return bg(back) + fg(front) + BOLD + f" {t} " + NORMAL + (self.base or RESET)
 
     def gauge(self, item: Item) -> str:
@@ -897,7 +1147,7 @@ class Painter:
             return (
                 self.pill(item.shown, BRICK, WHITE)
                 if self.band
-                else self.text(item.shown, WHITE, BOLD)
+                else self.text(item.shown, TEXT, BOLD)
             )
         if item.role == "strong":
             return self.text(item.shown, STONE_LIGHT, BOLD)

@@ -29,8 +29,20 @@ STATUSLINE_STYLES = ("plain", "band", "classic", "classic-band")
 NO_STATUSLINE, CUSTOM_STATUSLINE = "none", "custom"
 STATUSLINE_CHOICES = (*STATUSLINE_STYLES, NO_STATUSLINE, CUSTOM_STATUSLINE)
 DEFAULT_STATUSLINE = "plain"
-# Its colors: ion-repo's stone and fire, or a palette the terminal world knows.
-STATUSLINE_PALETTES = ("stone-fire", "solarized", "nord", "mono")
+# Its colors: ion-repo's stone and fire, or a palette the terminal world knows; each in a dark and
+# a light version, after Claude Code's theme.
+STATUSLINE_PALETTES = (
+    "stone-fire",
+    "rose",
+    "solarized",
+    "nord",
+    "dracula",
+    "gruvbox",
+    "catppuccin",
+    "tokyo-night",
+    "forest",
+    "mono",
+)
 DEFAULT_PALETTE = "stone-fire"
 # Whether Claude's commits and pull requests say Claude helped (`Co-Authored-By: Claude`):
 # disclosed by default, as the AI policies of several large open-source projects ask.
