@@ -3,6 +3,7 @@
 The closed tickets of kiln, most recent first, one line each:
 `- **YYYY-MM-DD** · ion-repo#T-NN · Title — what was done (branch) · opened YYYY-MM-DD`.
 
+- **2026-11-02** · ion-repo#T-400 · `ion repo update` stopped by a conflict never runs the converters — `ion repo fix`'s converters now run on every update, so the `--no-template` run that follows a resolved conflict pins again; test of the two runs, both references (fix/update-conflict-converters) · opened 2026-10-31
 - **2026-11-02** · ion-repo#T-394 · How a tool's piece reaches a repo ion-repo generated — decided: each tool ships its piece as a Copier-format template in its repo (`piece/`, `.copier-answers.<tool>.yml`), its skills from its own catalogue, `ion repo update` updates every piece with the same engine, ion-repo's answers passed to all; handover conversion and private repos settled; written in both references, proven in ion-repo-sandbox with ion-host's `heal` piece; the build is ion-repo#T-418 (docs/pieces-des-outils) · opened 2026-10-30
 - **2026-11-02** · ion-repo#T-391 · `/nuxt:polish` leaves kiln for glaze — now `/design:polish` of ion-design, for any frontend; `/nuxt:polish` only forwards to it, `/nuxt:preview` stays (feat/polish-to-design) · opened 2026-10-30
 - **2026-11-01** · ion-repo#T-404 · Tickets written `<repo>#T-NN` everywhere, the prefix from the repo's name — `ion repo tickets` (shown first, written on a yes, rerun free), offered by `ion repo update`; readers take both forms; `ion repo set name=…` moves the own prefix (feat/ticket-repo-prefix) · opened 2026-11-01
