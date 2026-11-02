@@ -67,8 +67,9 @@ Les plugins Claude Code vivent dans [`plugins/`](../plugins/), catalogue `ion-re
   style se choisit par poste : `ion repo set statusline=plain|band|classic|classic-band`,
   `none` (retirée) ou `custom` (ion-repo ne touche plus à la `statusLine` de l'utilisateur, choix
   automatique s'il en a déjà une) ;
-- `nuxt` (skills `nuxt`, `vue-best-practices`, `vue-testing-best-practices`, `vitest`, `polish`,
-  `preview` — captures sur trois téléphones et un ordinateur ; MCP playwright) et `django` (skills
+- `nuxt` (skills `nuxt`, `vue-best-practices`, `vue-testing-best-practices`, `vitest`,
+  `preview` — captures sur trois téléphones et un ordinateur ; MCP playwright ; `polish` renvoie
+  à `/design:polish` d'ion-design, où vit désormais l'audit visuel d'une page) et `django` (skills
   `migration`, `regen-api`, `postgres-read`), activés par le `.claude/settings.json` généré
   selon la stack ;
 - `vps` (skills `deploy`, `prod-logs`, `prod-dump`) et `stripe` (MCP en mode test),

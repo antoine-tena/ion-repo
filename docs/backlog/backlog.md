@@ -80,7 +80,6 @@ first `kiln check`. They cost time now, so they go before the moves.
 How a tool's skill and files get into a generated repo gets decided, then proven on the three
 smallest moves. ⚠ breaking: skill names, each with a forward and its conversion in `kiln update`.
 - ion-repo#T-394 · How a tool's piece reaches a repo kiln generated (M)
-- ion-repo#T-391 · `/nuxt:polish` leaves kiln for glaze (S)
 - ion-repo#T-371 · `/kiln:token`: a paste prompt in kiln's own style (S)
 - ion-repo#T-390 · `/kiln:token` leaves kiln for saggar (S)
 - ion-repo#T-392 · The announcement of `/kiln:release` goes through stylus (S)
@@ -919,7 +918,7 @@ Each tool takes the piece before kiln drops it (a project never loses a file bet
 - [ ] First, how a tool's piece reaches a repo: ion-repo#T-394.
 - [ ] **hearth**: the server: ion-repo#T-389, ion-host#T-07.
 - [ ] **saggar**: `/kiln:token`: ion-repo#T-390, ion-secure#T-01.
-- [ ] **glaze**: `/nuxt:polish`: ion-repo#T-391, ion-design#T-01.
+- [x] **glaze**: `/nuxt:polish`: ion-repo#T-391, ion-design#T-01.
 - [ ] **stylus**: the announcement of `/kiln:release`: ion-repo#T-392, ion-words#T-01.
 - [ ] **cone**: the grid: ion-repo#T-393, ion-score#T-01.
 - [ ] **slake**: rendering and updating, Copier today: ion-render#T-07 (no kiln ticket of its own).
@@ -975,15 +974,6 @@ Decide it once, before the first move:
   `docs/reference.md`.
 - [ ] Read `security.md` in full and confirm it stays. ion-repo#T-387 first moved it to saggar, but its one
   heading is "Browser security" and it has 18 lines: it looks like a code rule.
-
-### ion-repo#T-391 · `/nuxt:polish` leaves kiln for glaze
-- **Type**: task
-- **Status**: blocked — waiting for ion-design#T-01 and ion-repo#T-394
-- **Opened**: 2026-10-30
-- **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: ion-repo#T-387. ⚠ breaking: a skill's name; a forward from the old one
-
-Remove the skill and its mention in `docs/reference.md`. `/nuxt:preview` stays.
 
 ### ion-repo#T-392 · The announcement of `/kiln:release` goes through stylus
 - **Type**: task

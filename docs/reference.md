@@ -183,7 +183,7 @@ claude plugin install repo@ion-repo
 | `debrief` | The `debrief` output style of `repo` alone, forced the same way, without its skills, hooks or status line: for a machine that wants the end-of-work report and keeps its own git habits (`claude plugin install debrief@ion-repo`). |
 | `kiln` | The `repo` plugin under its old name, kept for the machines still moving from kiln (the update command of kiln 0.4.10 installs `kiln@kiln`); `ion repo install --machine` replaces it by `repo@ion-repo`. Install `repo`. |
 | `django` | Skills `migration`, `regen-api` (API types regenerated) and `postgres-read` (read-only PostgreSQL MCP). |
-| `nuxt` | Skills `nuxt`, `vue-best-practices`, `vue-testing-best-practices`, `vitest`, `polish` (UI polish) and `preview` (screenshots on three phones and a desktop, Playwright MCP). |
+| `nuxt` | Skills `nuxt`, `vue-best-practices`, `vue-testing-best-practices`, `vitest` and `preview` (screenshots on three phones and a desktop, Playwright MCP); `polish` only forwards to `/design:polish` of ion-design, where the visual audit of a page now lives. |
 | `vps` | Skills `deploy`, `prod-logs` (read-only diagnosis) and `prod-dump` (production copied into a throwaway database). |
 | `stripe` | Stripe MCP in test mode. |
 | `serena` | Read-only [Serena](https://github.com/oraios/serena) MCP for symbol navigation in big repos. |

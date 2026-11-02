@@ -3,6 +3,7 @@
 The closed tickets of kiln, most recent first, one line each:
 `- **YYYY-MM-DD** · ion-repo#T-NN · Title — what was done (branch) · opened YYYY-MM-DD`.
 
+- **2026-11-02** · ion-repo#T-391 · `/nuxt:polish` leaves kiln for glaze — now `/design:polish` of ion-design, for any frontend; `/nuxt:polish` only forwards to it, `/nuxt:preview` stays (feat/polish-to-design) · opened 2026-10-30
 - **2026-11-01** · ion-repo#T-404 · Tickets written `<repo>#T-NN` everywhere, the prefix from the repo's name — `ion repo tickets` (shown first, written on a yes, rerun free), offered by `ion repo update`; readers take both forms; `ion repo set name=…` moves the own prefix (feat/ticket-repo-prefix) · opened 2026-11-01
 - **2026-11-01** · ion-repo#T-384 · A session start warns when another session is working on the same repo — `others.py`: running sessions written in the last ten minutes with a `cwd` in the repo or its worktrees, told to Claude at start and resume (feat/t381-t384) · opened 2026-10-30
 - **2026-11-01** · ion-repo#T-381 · A long session fetches the integration branch before building on it — rule `[FETCH-FIRST]` in the generated `project.md` (feat/t381-t384) · opened 2026-10-30
