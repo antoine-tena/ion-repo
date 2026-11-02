@@ -7,8 +7,7 @@ from pathlib import Path
 import copier
 import pytest
 import yaml
-
-from ion_repo.grid import score
+from ion_score import score
 
 TEMPLATE_DIR = Path(__file__).resolve().parent.parent
 ANSWERS = {

@@ -4,8 +4,9 @@ from pathlib import Path
 
 import copier
 import pytest
+from ion_score import ui
 
-from ion_repo import new, ui
+from ion_repo import new
 from ion_repo.new import NewProjectRequest, create_project, next_steps
 
 
