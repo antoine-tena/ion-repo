@@ -19,8 +19,17 @@ def test_kiln_s_names_become_ion_repo_s() -> None:
     )
 
 
+def test_the_vps_plugin_s_names_become_ion_host_s() -> None:
+    text = 'Run /vps:deploy, then /vps-podman:prod-logs; "vps@ion-repo", "vps@kiln"'
+
+    assert rewrite(text) == (
+        'Run /host:deploy, then /host:prod-logs; "host@ion-host", "host@ion-host"'
+    )
+
+
 def test_what_is_not_one_of_kiln_s_names_stays() -> None:
     text = "kiln-bot uses KILN_BOT_TOKEN; antoine-tena/kiln-measures; kiln:other; a kiln of clay"
+    text += "; config/vps:deploy-remote.sh; vps:backup"
 
     assert rewrite(text) == text
 

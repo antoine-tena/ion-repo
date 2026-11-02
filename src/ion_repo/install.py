@@ -40,8 +40,10 @@ LEGACY_BASE_PLUGINS = ("kiln@kiln", "repo@kiln", "base@kiln")
 LEGACY_PLUGIN_NAMES = {
     "pile-django@kiln": "django",
     "pile-nuxt@kiln": "nuxt",
-    "vps-podman@kiln": "vps",
 }
+# Left ion-repo's catalogue for ion-host's (`host@ion-host`), enabled by the repos that deploy to
+# a server of their own: nothing to install for the whole machine.
+LEGACY_PLUGINS_MOVED_OUT = ("vps@kiln", "vps-podman@kiln")
 
 SECRET_KEY_VARIABLE = "DJANGO_SECRET_KEY"
 SECRET_KEY_BYTES = 50
@@ -165,7 +167,9 @@ def plugins_of_legacy_catalogue() -> list[str]:
     return [
         f"{(LEGACY_PLUGIN_NAMES.get(name) or name).removesuffix(suffix)}@{MARKETPLACE}"
         for name, enabled in plugins.items()
-        if enabled and name.endswith(suffix) and name not in LEGACY_BASE_PLUGINS
+        if enabled
+        and name.endswith(suffix)
+        and name not in (*LEGACY_BASE_PLUGINS, *LEGACY_PLUGINS_MOVED_OUT)
     ]
 
 

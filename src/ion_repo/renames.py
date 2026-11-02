@@ -276,13 +276,20 @@ def machine_value(key: str, value: str) -> str:
 # kiln became ion-repo (31 October 2026): its plugin `kiln@kiln` is `repo@ion-repo`, the stack
 # plugins move to the `ion-repo` catalogue, its skills are `/repo:…`, its variables `ION_REPO_…`,
 # its rules in a project `.claude/rules/ion-repo/`.
-STACK_PLUGINS = ("django", "nuxt", "vps", "stripe", "serena")
+STACK_PLUGINS = ("django", "nuxt", "stripe", "serena")
+# The `vps` plugin left for ion-host, the family's hosting tool (2 November 2026): its skills are
+# `/host:deploy`, `/host:prod-logs`, `/host:prod-dump`.
+HOST_PLUGIN = "host@ion-host"
+HOST_SKILLS = ("deploy", "prod-logs", "prod-dump")
 ION_PLUGINS: Mapping[str, str] = {
     "kiln@kiln": "repo@ion-repo",
     "base@kiln": "repo@ion-repo",
     "repo@kiln": "repo@ion-repo",
     "ion-repo@ion-repo": "repo@ion-repo",  # the family's repos, renamed by hand first
     **{f"{name}@kiln": f"{name}@ion-repo" for name in STACK_PLUGINS},
+    "vps@kiln": HOST_PLUGIN,
+    "vps-podman@kiln": HOST_PLUGIN,
+    "vps@ion-repo": HOST_PLUGIN,
 }
 ION_SKILLS = (
     "adopt", "backlog", "cleanup", "contribution", "good-first-issues", "merge", "modernize",
