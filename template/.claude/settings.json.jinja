@@ -37,19 +37,30 @@
       "autoUpdate": true
     }
 {%- set own_plugin = (claude_plugin | default(false)) and owner %}
-{#- A server of one's own is run by ion-host, the family's hosting tool: its catalogue, on GitHub
-    at `main` too, brings the `host` plugin (deploy, production logs, a copy of its database). #}
-{%- set host_plugin = deploy == 'vps' and not (own_plugin and name == 'ion-host') %}
-{%- if host_plugin %},
-    "ion-host": {
+{#- The other Ion tools whose piece the answers bring (`pieces` in ion-repo's `copier.yml`): each
+    catalogue, on GitHub at `main` too, brings its plugin (`deploy=vps`: ion-host's `host`, to
+    deploy, read production logs, copy its database). #}
+{%- set tools = namespace(brought=[], plugins=[]) %}
+{%- for piece in pieces %}
+{%- set piece_on = namespace(on=name != piece.tool) %}
+{%- for key, value in piece.when.items() %}
+{%- if _copier_answers.get(key) != value %}{% set piece_on.on = false %}{% endif %}
+{%- endfor %}
+{%- if piece_on.on %}
+{%- set tools.brought = tools.brought + [piece] %}
+{%- set tools.plugins = tools.plugins + [piece.plugin ~ '@' ~ piece.tool] %}
+{%- endif %}
+{%- endfor %}
+{%- for piece in tools.brought %},
+    "{{ piece.tool }}": {
       "source": {
         "source": "github",
-        "repo": "antoine-tena/ion-host",
+        "repo": "{{ piece.repo }}",
         "ref": "main"
       },
       "autoUpdate": true
     }
-{%- endif %}
+{%- endfor %}
 {#- The repo's own plugin, from its GitHub repo at `main` too: its sessions use the released
     plugin, the one every other repo gets. #}
 {%- if own_plugin %},
@@ -63,7 +74,7 @@
     }
 {%- endif %}
   },
-{%- set plugins = ['repo@ion-repo'] + ([plugin_name ~ '@' ~ name] if own_plugin else []) + (['django@ion-repo'] if backend == 'django' else []) + (['nuxt@ion-repo'] if frontend == 'nuxt' else []) + (['host@ion-host'] if host_plugin else []) + (['serena@ion-repo'] if serena else []) %}
+{%- set plugins = ['repo@ion-repo'] + ([plugin_name ~ '@' ~ name] if own_plugin else []) + (['django@ion-repo'] if backend == 'django' else []) + (['nuxt@ion-repo'] if frontend == 'nuxt' else []) + tools.plugins + (['serena@ion-repo'] if serena else []) %}
   "enabledPlugins": {
 {%- for plugin in plugins %}
     "{{ plugin }}": true{{ "," if not loop.last }}

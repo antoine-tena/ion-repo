@@ -46,6 +46,7 @@ def test_conflicts_stop_the_update_after_the_template(
     monkeypatch.setattr(update, "template_revision", lambda source: "v1")
     monkeypatch.setattr(update, "_template_source", lambda root: "")
     monkeypatch.setattr(update, "apply_template", lambda root: None)
+    monkeypatch.setattr(update, "apply_pieces", lambda *a: None)
     monkeypatch.setattr(update, "conflicted_files", lambda root: ["frontend/pnpm-workspace.yaml"])
     monkeypatch.setattr(update, "update_dependencies", lambda *a, **k: calls.append("deps"))
     update.update_project(
@@ -73,6 +74,7 @@ def test_the_follow_up_of_a_conflict_runs_the_converters(
         "mention_newer_release",
         "report_changes",
         "apply_template",
+        "apply_pieces",
         "generate_api_contract",
         "write_unverified_rules",
         "update_dependencies",

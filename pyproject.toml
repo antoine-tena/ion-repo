@@ -47,6 +47,8 @@ packages = ["src/ion_repo"]
 # Le journal des versions voyage avec l'outil : `kiln update` en montre les nouveautés.
 [tool.hatch.build.targets.wheel.force-include]
 "CHANGELOG.md" = "ion_repo/CHANGELOG.md"
+# The pieces table of `copier.yml` (`pieces.py`), at the tool's own release.
+"copier.yml" = "ion_repo/copier.yml"
 
 # The commit the tool is built from (`kiln/_build.json`): a folder install says what it is.
 [tool.hatch.build.targets.wheel.hooks.custom]

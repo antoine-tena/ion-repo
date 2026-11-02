@@ -89,7 +89,6 @@ every update, so they go before the moves, which ship through the same update.
 The way decided in ion-repo#T-394 (docs/reference.md, "Pieces of other Ion tools") built into
 `ion repo new` and `ion repo update`, then proven on the three smallest moves. ⚠ breaking: skill
 names, each with a forward and its conversion in `ion repo update`.
-- ion-repo#T-418 · Tools' pieces rendered and updated by `ion repo new` and `ion repo update` (M)
 - ion-repo#T-371 · `/repo:token`: a paste prompt in ion-repo's own style (S)
 - ion-repo#T-390 · `/repo:token` leaves ion-repo for ion-secure (S)
 - ion-repo#T-392 · The announcement of `/repo:release` goes through ion-words (S)
@@ -1005,7 +1004,7 @@ Also `src/kiln/`, the `kiln` alias of `ion-repo` and `kiln_move.py`'s state in `
 
 Each tool takes the piece before kiln drops it (a project never loses a file between two
 `kiln update`). The inventory, 30 October 2026:
-- [x] First, how a tool's piece reaches a repo: ion-repo#T-394 (decided 2026-11-02, built by ion-repo#T-418).
+- [x] First, how a tool's piece reaches a repo: ion-repo#T-394 (decided 2026-11-02, built by ion-repo#T-418, 2026-11-02).
 - [ ] **hearth**: the server: ion-repo#T-389, ion-host#T-07.
 - [ ] **saggar**: `/kiln:token`: ion-repo#T-390, ion-secure#T-01.
 - [x] **glaze**: `/nuxt:polish`: ion-repo#T-391, ion-design#T-01.
@@ -1019,34 +1018,9 @@ issues drawn from the backlog: not visibility work), `/nuxt:preview`, the `strip
 charter's rules on data and backups, kiln's own showcase (`scripts/screenshots.py`,
 `scripts/social_preview.py`, the demos, the roadmap).
 
-### ion-repo#T-418 · Tools' pieces rendered and updated by `ion repo new` and `ion repo update`
+### ion-repo#T-389 · The server leaves ion-repo for ion-host
 - **Type**: task
-- **Status**: todo
-- **Opened**: 2026-11-02
-- **Effort**: M · **Owner**: — · **Due**: —
-- **Origin**: the decision of ion-repo#T-394 (docs/reference.md, "Pieces of other Ion tools"), proven
-  on a copy in ion-repo-sandbox (`pieces-T-394/`) with ion-host's `heal` piece
-
-- [ ] One table of the pieces (tool, catalogue, plugin, template repo, condition on the answers),
-  read by `.claude/settings.json.jinja` (today's `host_plugin` condition moves there) and by the
-  update.
-- [ ] `ion repo new`: each piece rendered after the template, its answers file
-  `.copier-answers.<tool>.yml` written.
-- [ ] `ion repo update`: each piece updated after the template, at its tool's latest tag
-  (candidates on `beta`), all of `.copier-answers.yml` passed as data, never recorded in the
-  piece's answers file; frozen and kept files spared. Found on the copy: a piece that receives only
-  the answers it declares renders `title` empty.
-- [ ] A piece that cannot be fetched (no access to a private repo, offline): a note, the rest of the
-  update, its files untouched.
-- [ ] The handover conversion: Copier deletes a file the template dropped, even one the project
-  changed (seen on the copy); the moved files are put back from the last commit, the tool's piece
-  laid without overwriting (`skip_if_exists`), its answers file written.
-- [ ] A test replaying the sandbox's scenario: generated, changed by hand, handed over, then the
-  tool's next release merged with the change.
-
-### ion-repo#T-389 · The server leaves kiln for hearth
-- **Type**: task
-- **Status**: blocked — waiting for ion-host#T-07, ion-repo#T-418, and ion-host's repo made public (antoine)
+- **Status**: blocked — waiting for ion-host#T-07 and ion-host's repo made public (antoine)
 - **Opened**: 2026-10-30
 - **Effort**: L · **Owner**: — · **Due**: —
 - **Origin**: ion-repo#T-387. ⚠ breaking: the generated tree, the `deploy` question of `copier.yml`,

@@ -22,6 +22,7 @@ from ion_repo.deps import lock_dependencies, sync_dependencies, update_dependenc
 from ion_repo.frozen import frozen_files, report_frozen_drift
 from ion_repo.ion_names import convert_ion_names
 from ion_repo.moved_dirs import Renaming, move_renamed_dirs, renaming_of
+from ion_repo.pieces import apply_pieces
 from ion_repo.rules import write_unverified_rules
 from ion_repo.shell import (
     KilnError,
@@ -92,6 +93,8 @@ def update_project(
         target = template_revision(_template_source(root))
         step(f"Architecture: changes of the template ({previous or '?'} → {target})")
         apply_template(root)
+        # Then the other Ion tools' pieces, conflicts named with the template's below.
+        apply_pieces(root, _template_source(root), [*frozen_files(root), *kept_of(root)])
         show_release_notes(root, previous, template_commit(root))
         report_frozen_drift(root, _template_source(root), previous, template_commit(root))
         mention_newer_release()
