@@ -29,8 +29,9 @@ def context(cwd: str, current: str, now: float | None = None) -> str:
     lines = "\n".join(f"- {branch or 'no branch'}, session {name}" for branch, name in found)
     return (
         f"ion-repo [OTHER-SESSION]: another session is working on {root.name} right now:\n{lines}\n"
-        "Before anything else, tell the user in one line and ask whether to go on here: "
-        "the rule is one session at a time on a project."
+        "Tell the user in one line, then go on without asking: work in your own worktree "
+        "(/repo:worktree), never in the main tree, and fetch before merging ([FETCH-FIRST]). "
+        "Stop and ask only when your task needs one of the branches listed above."
     )
 
 
