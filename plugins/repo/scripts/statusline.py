@@ -14,7 +14,8 @@ The names of before kiln 0.4.0 (`sobre`, `bandeau`, `classique`, `classique-fond
 
 The palette, stone and fire by default, is chosen the same way (`ion repo set
 statusline_palette=…`, ten palettes, `rose` among them); `--palette <name>` forces one. Each
-comes dark or light after Claude Code's theme (`/theme`); `--theme dark|light` forces it.
+comes dark or light after Claude Code's theme (`/theme`), with color-blind safe levels under its
+`-daltonized` themes; `--theme dark|light|dark-daltonized|light-daltonized` forces it.
 
 Colors tell importance: gray when all is well, then glow (to watch), fire (to handle), ember
 (urgent). In a repo: branch, git state, CI, prod, tasks, containers, each shown only when the
@@ -328,23 +329,34 @@ def chosen_palette(settings: dict) -> str:
     return name if name in PALETTES else DEFAULT_PALETTE
 
 
-def light_terminal() -> bool:
-    """`--theme light|dark`, else Claude Code's theme (`/theme`, in `~/.claude.json`: `light`,
-    `light-daltonized`, `light-ansi`…), else `COLORFGBG` set by some terminals; dark otherwise."""
+# Levels for color-blind eyes (Okabe-Ito, safe for every common color blindness): sky blue to
+# watch, orange to handle, vermilion urgent, on a blue pill; taken by Claude Code's `-daltonized`
+# themes, in place of the palette's glow, fire, ember and brick.
+DALTONIZED = {
+    "dark": ((0, 114, 178), (86, 180, 233), (230, 159, 0), (213, 94, 0)),
+    "light": ((0, 114, 178), (0, 114, 178), (190, 120, 0), (200, 70, 0)),
+}
+
+
+def claude_theme() -> str:
+    """`--theme <name>`, else Claude Code's theme (`/theme`, in `~/.claude.json`: `light`,
+    `light-daltonized`, `dark-ansi`…), else `COLORFGBG` set by some terminals; dark otherwise."""
     if "--theme" in sys.argv[1:-1]:
-        return sys.argv[sys.argv.index("--theme") + 1] == "light"
+        return sys.argv[sys.argv.index("--theme") + 1]
     try:
         with open(os.path.expanduser("~/.claude.json"), "rb") as file:
             theme = str(json.load(file).get("theme") or "")
     except OSError, ValueError, AttributeError:
         theme = ""
     if theme.startswith(("light", "dark")):
-        return theme.startswith("light")
+        return theme
     background = os.environ.get("COLORFGBG", "").rpartition(";")[2]
-    return background in ("7", "15")
+    return "light" if background in ("7", "15") else "dark"
 
 
 SETTINGS = machine_settings()
+THEME = claude_theme()
+SHADE = "light" if THEME.startswith("light") else "dark"
 (
     STONE_LIGHT,
     STONE,
@@ -355,7 +367,9 @@ SETTINGS = machine_settings()
     EMBER,
     TEXT,
     SOOT,
-) = PALETTES[chosen_palette(SETTINGS)]["light" if light_terminal() else "dark"]
+) = PALETTES[chosen_palette(SETTINGS)][SHADE]
+if "daltonized" in THEME:
+    BRICK, GLOW, FIRE, EMBER = DALTONIZED[SHADE]
 # on a pill: the lighter of the text and the band on dark colors, the darker on bright ones
 WHITE, INK = sorted((TEXT, SOOT), key=sum, reverse=True)
 
