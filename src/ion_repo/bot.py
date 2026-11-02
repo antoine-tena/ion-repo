@@ -12,8 +12,8 @@ import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from ion_repo import ui
-from ion_repo.grid import fix, score
+from ion_score import fix, score, ui
+
 from ion_repo.shell import KilnError
 from ion_repo.stack import ANSWERS_FILE
 

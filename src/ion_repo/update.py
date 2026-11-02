@@ -10,15 +10,16 @@ from pathlib import Path
 
 import copier
 from copier.errors import UserMessageError
+from ion_score import ui
+from ion_score.fix import convert_in_place
 from plumbum import ProcessExecutionError
 
-from ion_repo import migrations, ui
+from ion_repo import migrations
 from ion_repo.backlog import add_after_update_ticket, migrate_legacy_backlog, split_backlog
 from ion_repo.check import check_project
 from ion_repo.contract import generate_api_contract
 from ion_repo.deps import lock_dependencies, sync_dependencies, update_dependencies
 from ion_repo.frozen import frozen_files, report_frozen_drift
-from ion_repo.grid.fix import convert_in_place
 from ion_repo.ion_names import convert_ion_names
 from ion_repo.moved_dirs import Renaming, move_renamed_dirs, renaming_of
 from ion_repo.rules import write_unverified_rules

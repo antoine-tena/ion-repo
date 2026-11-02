@@ -36,13 +36,14 @@ import sys
 from collections.abc import Callable, Iterator
 from pathlib import Path
 
+from ion_score.waivers import RULE_ID, WAIVERS_FILE, Waivers, check_targets
+from ion_score.waivers import load as load_waivers
+
 from ion_repo.charter.bans import BANS
 from ion_repo.charter.config import CHARTER_FILE, charter_path, load
 from ion_repo.charter.python_tools import coverage, types
 from ion_repo.charter.ratchets import COUNTERS
 from ion_repo.charter.repo import Params, Repo, failure
-from ion_repo.charter.waivers import RULE_ID, WAIVERS_FILE, Waivers, check_targets
-from ion_repo.charter.waivers import load as load_waivers
 from ion_repo.rules import charter_rules
 
 # A repo's own rule: `check(repo, params)` returns its failures.
@@ -89,7 +90,7 @@ def waivers_of(repo: Repo, today: datetime.date | None = None) -> Waivers:
     """Waivers of `kiln-waivers.toml` as of `today`, checked against the rules and the files of
     the repo; a rule of the grid counts (a false positive of `ion repo score` dismissed on its
     path)."""
-    from ion_repo.grid.model import load_rules
+    from ion_score.model import load_rules
 
     waivers = load_waivers(repo.root, today)
     known = [
