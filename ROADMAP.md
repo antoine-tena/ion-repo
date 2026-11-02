@@ -41,15 +41,18 @@ the backlog it takes (its tickets). Something missing, or wanted sooner?
 
 <!-- roadmap:start: drawn from docs/backlog/backlog.md by scripts/roadmap.py -->
 
-### v0.4.x · 5 releases
+### v0.4.x · 8 releases
 
 | Release | What it brings | Why together | Planned work |
 |---|---|---|---|
 | v0.4.11 | Never lets it rot, kiln first | kiln-bot runs kiln's workflows with write access in other people's repos: each commit it brings is proven first, and kiln's own workflows pass zizmor and carry provenance before anyone runs them. kiln-bot on a test repo is a box of the launch gate (ion-repo#T-03). Before that theme, this release moves everyone to Ion: the last `kiln-cli`, on antoine's request of 1 November 2026. | 2 tickets |
-| v0.4.13 | What the last sessions tripped on | Real sessions of late October hit these, each small: the release, the merge, a long session, a first `kiln check`. They cost time now, so they go before the moves. | 5 tickets |
-| v0.4.14 | A tool's piece reaches a repo: the small moves | How a tool's skill and files get into a generated repo gets decided, then proven on the three smallest moves. ⚠ breaking: skill names, each with a forward and its conversion in `kiln update`. | 4 tickets |
-| v0.4.15 | The server in hearth | The biggest move, alone in its release: production deployments depend on it. ⚠ breaking: the generated tree, the `deploy` question, `--vps`, the `vps` skills, with their conversion. | 1 ticket |
-| v0.4.16 | The grid in cone | The last move, after kiln runs on slake (ion-render#T-07, one engine at a time). It closes the map of the moves. | 2 tickets |
+| v0.4.13 | What the last sessions tripped on | Real sessions of late October hit these, each small: the release, the merge, a long session, a first `kiln check`. They cost time now, so they go before the moves. | 8 tickets |
+| v0.4.14 | Ion all the way: the last kiln names, a family updated at once | The rename to Ion left names behind and made a family of repos slow to update; both are felt at every update, so they go before the moves, which ship through the same update. | 3 tickets |
+| v0.4.15 | A tool's piece reaches a repo: the small moves | The way decided in ion-repo#T-394 (docs/reference.md, "Pieces of other Ion tools") built into `ion repo new` and `ion repo update`, then proven on the three smallest moves. ⚠ breaking: skill names, each with a forward and its conversion in `ion repo update`. | 4 tickets |
+| v0.4.16 | The server in ion-host | The biggest move, alone in its release: production deployments depend on it. ⚠ breaking: the generated tree, the `deploy` question, `--vps`, with their conversion. | 1 ticket |
+| v0.4.17 | The grid in ion-score | The last move, after ion-repo runs on ion-render (ion-render#T-07, one engine at a time). It closes the map of the moves. | 2 tickets |
+| v0.4.18 | A client site's foundations: mail, dates, personal data | What annski and the booking site of emberstudio needed and the Django template lacks: mail that arrives, calendar dates that hold across daylight saving, a person's data exported and erased, the stack's versions in one checked file. | 6 tickets |
+| v0.4.19 | Bookings and payments that hold | The money side of a client site: a slot booked once, a payment provider switched without a code change, a form guarded without locking people out. | 3 tickets |
 
 ### v0.5.x · 18 releases
 
