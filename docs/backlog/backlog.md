@@ -1023,9 +1023,15 @@ removes itself and moves the Claude Code catalogue (`src/ion_repo/kiln_move.py`)
   PyPI), and a real `kiln` 0.4.10 formula became `ion-repo` 0.4.12 with `kiln` kept, through
   `brew upgrade` in the `homebrew/brew` container (Homebrew 7.0.11, tap trusted).
 - [ ] The `kiln` entry of the catalogue removed once no tester is left on 0.4.10 (its hook installs
-  `kiln@kiln`; without the entry the plugin disappears), not before the v0.5 milestone.
-- [ ] The release after: `pypi.yml`'s `kiln-cli` and `keramos-kiln` steps removed, the `kiln-cli` script out of
-  `pyproject.toml`, `session_start.py`'s `replacing_tool` kept for late testers.
+  `kiln@kiln`; without the entry the plugin disappears), not before the v0.5 milestone. With it
+  `plugins/kiln/`, `ion_names.py` and the kiln → ion-repo part of `renames.py`, once each repo of
+  `~/code` has had `ion repo update` past v0.4.10-28 (2 November 2026, still on kiln's names:
+  annway, annway-copie, studio, sweep, vision, learnagement, mobilite-mcp, all with `kiln@kiln`;
+  adopted annski, SteamLens, VoyageProjet, info734). `moved_dirs.py` and the 0.4.0 and size
+  names of `renames.py` stay: any project rename and old adopted repos use them.
+- [x] The release after (2 November 2026, antoine's yes): `pypi.yml`'s `kiln-cli` and `keramos-kiln` steps
+  removed, the `kiln` and `kiln-cli` scripts, `src/kiln/` and `kiln_move.py` out, the Homebrew formula
+  without `kiln`; `session_start.py`'s `replacing_tool` kept for late testers.
 - [ ] The project left on PyPI (never deleted: a deleted name can be taken again), the PyPI token
   scoped to `kiln-cli` revoked, `PYPI_TOKEN` removed; the "Entire account" `KERAMOS_PYPI_TOKEN`
   replaced by a token scoped to `ion-repo`.
