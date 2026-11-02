@@ -955,7 +955,9 @@ Decide it once, before the first move:
 - **Origin**: ion-repo#T-387. ⚠ breaking: the generated tree, the `deploy` question of `copier.yml`,
   `--vps`, the `vps` plugin's skill names; its conversion ships in `kiln update`
 
-- [ ] Remove the `vps` plugin (`deploy`, `prod-dump`, `prod-logs`), keeping forwards.
+- [x] Remove the `vps` plugin (`deploy`, `prod-dump`, `prod-logs`): its skills are ion-host's
+  `host` plugin, which the template enables for `deploy=vps`; no forward, `ion repo update`
+  rewrites `/vps:…` into `/host:…` (2026-11-02).
 - [ ] Remove `config/vps/`, `scripts/ops/` and `docs/operations/` from the template, once hearth
   renders them. The `frontend_deploy == "vercel"` script of `scripts/ops/` is decided there too.
 - [ ] Split `production.md`: it is also generated without a VPS (`podman`, any size above `tiny`),
