@@ -31,11 +31,6 @@
       "description": "Django: migrations, OpenAPI contract, read-only postgres MCP server"
     },
     {
-      "name": "vps",
-      "source": "./plugins/vps",
-      "description": "VPS with podman-compose: deployment, diagnosis, copy of the production database"
-    },
-    {
       "name": "stripe",
       "source": "./plugins/stripe",
       "description": "Stripe MCP server, test mode only"
@@ -49,7 +44,6 @@
   "renames": {
     "base": "repo",
     "pile-django": "django",
-    "pile-nuxt": "nuxt",
-    "vps-podman": "vps"
+    "pile-nuxt": "nuxt"
   }
 }

@@ -37,6 +37,19 @@
       "autoUpdate": true
     }
 {%- set own_plugin = (claude_plugin | default(false)) and owner %}
+{#- A server of one's own is run by ion-host, the family's hosting tool: its catalogue, on GitHub
+    at `main` too, brings the `host` plugin (deploy, production logs, a copy of its database). #}
+{%- set host_plugin = deploy == 'vps' and not (own_plugin and name == 'ion-host') %}
+{%- if host_plugin %},
+    "ion-host": {
+      "source": {
+        "source": "github",
+        "repo": "antoine-tena/ion-host",
+        "ref": "main"
+      },
+      "autoUpdate": true
+    }
+{%- endif %}
 {#- The repo's own plugin, from its GitHub repo at `main` too: its sessions use the released
     plugin, the one every other repo gets. #}
 {%- if own_plugin %},
@@ -50,7 +63,7 @@
     }
 {%- endif %}
   },
-{%- set plugins = ['repo@ion-repo'] + ([plugin_name ~ '@' ~ name] if own_plugin else []) + (['django@ion-repo'] if backend == 'django' else []) + (['nuxt@ion-repo'] if frontend == 'nuxt' else []) + (['vps@ion-repo'] if deploy == 'vps' else []) + (['serena@ion-repo'] if serena else []) %}
+{%- set plugins = ['repo@ion-repo'] + ([plugin_name ~ '@' ~ name] if own_plugin else []) + (['django@ion-repo'] if backend == 'django' else []) + (['nuxt@ion-repo'] if frontend == 'nuxt' else []) + (['host@ion-host'] if host_plugin else []) + (['serena@ion-repo'] if serena else []) %}
   "enabledPlugins": {
 {%- for plugin in plugins %}
     "{{ plugin }}": true{{ "," if not loop.last }}
