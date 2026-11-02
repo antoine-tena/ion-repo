@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: ion-repo#T-407.**
+**Next free: ion-repo#T-408.**
 
 ---
 
@@ -1524,6 +1524,19 @@ before a deployment; the release of hearth v0.1.0 went through on it, its tests 
   2026 (hearth v0.1.1, grog v0.1.0, keramos v1), pytest and mypy run by hand each time.
 
 ## 🟡 Normal
+
+### ion-repo#T-407 · `ion repo check` is red on ion-repo itself: no `charter.toml`
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: ion-repo#T-393's branch, reproduced on a clean copy of develop (358244a)
+
+In ion-repo's own tree, `ion repo check` (and `--all`) runs the charter step alone, which stops on
+"charter: no charter.toml at the root of the repo": no ruff, mypy nor pytest run, the verdict is
+red whatever the change. Either ion-repo gets a `charter.toml` of its own (and meets it), or
+`check` knows ion-repo's stack (ruff, mypy, pytest) and skips a charter the repo does not declare,
+saying so.
 
 ### ion-repo#T-375 · [CLOCK] names freezegun, which [NEW-DEPENDENCY] refuses
 - **Type**: bug
