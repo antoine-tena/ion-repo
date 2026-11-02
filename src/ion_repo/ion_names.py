@@ -6,6 +6,7 @@ cites the old ones: its rules filed in `.claude/rules/kiln/`, a skill `/kiln:mer
 `[REPORT-TO-KILN]`, a variable `KILN_PROJECT`, a plugin `kiln@kiln`, the address
 `antoine-tena/kiln`. Each is rewritten where it stands; the project's prose about "kiln" is its
 own and stays. Nothing happens in a project that has none of them, so running it again is free.
+The `vps` plugin's skills went to ion-host the same way: `/vps:deploy` is `/host:deploy`.
 """
 
 import re
@@ -25,6 +26,10 @@ Replacement = str | Callable[[re.Match[str]], str]
 REWRITES: tuple[tuple[re.Pattern[str], Replacement], ...] = (
     (re.compile(r"(?<![\w/-])(/?)kiln:(" + "|".join(renames.ION_SKILLS) + r")\b"), r"\1repo:\2"),
     (re.compile(r"\[REPORT-TO-KILN\]"), "[REPORT-TO-ION-REPO]"),
+    (
+        re.compile(r"(?<![\w/-])(/?)(?:vps|vps-podman):(" + "|".join(renames.HOST_SKILLS) + r")\b"),
+        r"\1host:\2",
+    ),
     (re.compile(r"\bKILN_(" + "|".join(renames.ION_VARIABLES) + r")\b"), r"ION_REPO_\1"),
     (
         re.compile(r"(?<![\w-])(" + "|".join(map(re.escape, renames.ION_PLUGINS)) + r")\b"),

@@ -81,6 +81,19 @@ def test_podman_formats_survive_rendering(tmp_path: Path) -> None:
     assert "--format '{{.Names}}'" in (project_dir / "config/vps/heal.sh").read_text()
 
 
+def test_vps_enables_ion_host_s_plugin(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", **VPS_ANSWERS)
+
+    settings = json.loads((project_dir / ".claude/settings.json").read_text())
+    assert settings["extraKnownMarketplaces"]["ion-host"]["source"] == {
+        "source": "github",
+        "repo": "antoine-tena/ion-host",
+        "ref": "main",
+    }
+    assert settings["enabledPlugins"]["host@ion-host"] is True
+    assert not any(plugin.startswith("vps@") for plugin in settings["enabledPlugins"])
+
+
 def test_no_vps_files_without_deployment(tmp_path: Path) -> None:
     project_dir = generate(tmp_path / "demo", podman=True)
 

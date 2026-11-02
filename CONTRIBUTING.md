@@ -54,7 +54,7 @@ uv run pytest -q                 # renders every stack combination, ~20 s on all
 | `src/ion_repo/charter/` | The `charter` rule engine. |
 | `copier.yml`, `template/` | The Copier template: questions and generated files. |
 | `.github/workflows/` | Reusable workflows called by generated repos. |
-| `plugins/` | Claude Code plugins (`ion-repo`, `django`, `nuxt`, `vps`…). |
+| `plugins/` | Claude Code plugins (`repo`, `django`, `nuxt`, `stripe`…). |
 | `tests/` | `test_template.py` renders the template for each stack; `test_docs.py` keeps the READMEs in step with the code. |
 
 ## Good first contributions
