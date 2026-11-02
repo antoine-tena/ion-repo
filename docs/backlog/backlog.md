@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: ion-repo#T-421.**
+**Next free: ion-repo#T-427.**
 
 ---
 
@@ -858,6 +858,37 @@ packs (ion-repo#T-69). From here, strict semver: breaking → major, `feat` → 
 
 ## 🟠 Important
 
+### ion-repo#T-421 · `/repo:release` proves the deployment started, not only the merge into `main`
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-02, a site's release v0.4.0 (18:23–18:34)
+
+After the merge into `main` and the tag, the release waited ten minutes before seeing that the host
+had built nothing: the repo had moved to an organisation and the host's Git build was still tied to
+the old repo, so a push to `main` triggered nothing, silently. Within a minute of the push, the
+skill reads the host's last deployment (Cloudflare Workers: `wrangler deployments list`; VPS: the
+running image's tag) and stops on "no deployment started", naming the likely cause (Git build
+disconnected, wrong production branch) and the direct link to its settings.
+- [ ] A deployment older than the tag after one minute is reported, not waited on.
+- [ ] Reproduced on a copy with the Git build disconnected.
+
+### ion-repo#T-422 · `/repo:release` checks the host's secrets against what the code reads
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-02, a site's session after its release (19:00)
+
+Two variables the server code reads (`NUXT_*` in `.env.example`) had never been set as secrets of
+the Cloudflare Worker: two features were down in production, before and after the release, and no
+check saw it. Before promoting, list the names `.env.example` declares for production and the host's
+secrets (`wrangler secret list`, the VPS's `.env` keys), names only, never values; a missing one
+stops the release with the command that sets it (`/repo:token`, ion-repo#T-371).
+- [ ] Names compared, values never read.
+- [ ] A variable marked optional in `.env.example` only warns.
+
 ### ion-repo#T-413 · Django template: double bookings refused by the database
 - **Type**: improvement
 - **Status**: todo
@@ -1605,6 +1636,64 @@ before a deployment; the release of hearth v0.1.0 went through on it, its tests 
 
 ## 🟡 Normal
 
+### ion-repo#T-423 · `/nuxt:preview` needs `@playwright/test`, which a generated site lacks
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-02, two sessions on a Nuxt site (18:05, 18:18)
+
+`node plugins/nuxt/scripts/preview.mjs` fails with "Cannot find module '@playwright/test'": the
+generated Nuxt project does not depend on it, so each session falls back on the Playwright MCP by
+hand. Either the template adds `@playwright/test` to the dev dependencies, or the script runs from
+the plugin's own install (`npx -y`), without touching the project.
+- [ ] `/nuxt:preview` works on a fresh `ion repo new` Nuxt site.
+- [ ] The skill says where the Playwright MCP may write: `.playwright/captures/` of the project; it
+  refuses `/tmp` ("outside allowed roots"), which sessions tried each time.
+
+### ion-repo#T-424 · `/repo:merge` stops the worktree's servers and leaves it before removing it
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: XS · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-02, ion-repo (18:10) and a Nuxt site (22:15)
+
+Two endings went wrong: removing the worktree that was still the shell's directory ("The current
+working directory was deleted"), and removing one where a dev server still ran ("Directory not
+empty", processes killed by hand, then `rm -rf` and `git worktree prune`). Before `git worktree
+remove`: stop what `ion repo dev` started from that worktree, and run the removal from the main
+tree.
+- [ ] Both cases reproduced on a copy, then gone.
+
+### ion-repo#T-425 · `ion repo dev status|stop` miss the server they started on an Astro site
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-02, ion-deal session on a copy in `ion-repo-sandbox` (18:24)
+
+On an Astro site made by `ion repo new`, `ion repo dev` started the server (HTTP 200 on 4321), yet
+`status` said stopped and `stop` said "nothing was running"; it was killed by hand. Reproduce on a
+fresh Astro site in `ion-repo-sandbox`, find why the process is not recorded.
+- [ ] `status` and `stop` see the Astro server.
+
+### ion-repo#T-426 · An orchestrator session: a skill that holds the role
+- **Type**: idea
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-02, the session at the root of the family (17:18–18:16)
+
+antoine runs one session per repo in parallel and a "boss" session that does not code: it checks
+each pasted report against git and the files, compares it with the decisions, blocks what leaves
+the plan, spots duplicate or stale tickets, and gives the `cd … && claude '…'` line for the next
+session. The role was typed again as a long prompt after each `/clear`, and "what do I tell it?"
+came back on every report. A skill (`/repo:boss`) that states the role, reads the decisions from
+memory and the backlogs, verifies a report (branches merged, pushed, worktrees gone, tickets
+closed) and answers with the verdict and the next command; never codes, never spawns subagents.
+- [ ] A pasted report is checked against git, not taken on trust.
+- [ ] Survives a `/clear`: nothing to retype but `/repo:boss`.
+
 ### ion-repo#T-419 · Astro without a backend: `constants.ts` keeps the backend messages
 - **Type**: bug
 - **Status**: todo
@@ -1877,6 +1966,10 @@ success, `✗` EMBER for failure, bold titles, dim notes; bare text outside a te
 - [ ] `/kiln:token` gives that command instead of the `read -rs` line.
 - [ ] Optional: `--to <command>` pipes the secret into another tool's stdin (`wrangler secret
   put NAME`, `gh secret set NAME`) without writing it to disk.
+- [ ] `--generate [LENGTH]`: a secret the app needs (an access code, a signing key) made on the
+  machine, stored in `.<service>/`, pushed with `--to`, never shown to Claude. Seen 2026-11-02 on a
+  site: a code made by hand with `openssl` + `wrangler secret put`, the user lost, then asking
+  "can't you store the code as a token like `.cloudflare`?" (`/learn:distill` of that day).
 
 ### ion-repo#T-364 · Credentials under one `.secrets/` folder, caches hidden from the editor
 - **Type**: improvement
