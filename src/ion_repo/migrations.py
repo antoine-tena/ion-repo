@@ -20,9 +20,9 @@ from pathlib import Path
 
 import copier
 import yaml  # brought by copier
+from ion_score.waivers import WAIVERS_FILE
 
 from ion_repo import renames
-from ion_repo.charter.waivers import WAIVERS_FILE
 from ion_repo.shell import KilnError, capture
 
 LEGACY_KEYS = frozenset(renames.ANSWER_KEYS)

@@ -10,11 +10,11 @@ from typing import Any
 
 import copier
 import pytest
+from ion_score.waivers import load
 
 from ion_repo.charter.cli import check
 from ion_repo.charter.config import load as load_charter
 from ion_repo.charter.repo import Repo
-from ion_repo.charter.waivers import load
 from ion_repo.frozen import report_frozen_drift
 from ion_repo.update import apply_template, template_commit
 

@@ -15,9 +15,11 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
-from ion_repo import adopted, rehearsal, ui
+from ion_score import ui
+from ion_score.waivers import Waivers, load
+
+from ion_repo import adopted, rehearsal
 from ion_repo.charter.config import CHARTER_FILE, LEGACY_CHARTER_FILE
-from ion_repo.charter.waivers import Waivers, load
 from ion_repo.check import run_checks
 from ion_repo.config import load_config
 from ion_repo.install import install_project
