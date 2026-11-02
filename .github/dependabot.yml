@@ -1,8 +1,18 @@
 version: 2
+# ion-score is a private git dependency: every uv update relocks it, so Dependabot reads it
+# with a read-only token on that repo alone (Dependabot secret ION_SCORE_TOKEN, until 2027-11-02).
+registries:
+  ion-score:
+    type: git
+    url: https://github.com
+    username: x-access-token
+    password: ${{ secrets.ION_SCORE_TOKEN }}
 updates:
   - package-ecosystem: uv
     directories:
       - "/"
+    registries:
+      - ion-score
     schedule:
       interval: weekly
     cooldown:
