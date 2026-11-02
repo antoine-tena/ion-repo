@@ -91,7 +91,6 @@ The way decided in ion-repo#T-394 (docs/reference.md, "Pieces of other Ion tools
 names, each with a forward and its conversion in `ion repo update`.
 - ion-repo#T-371 · `/repo:token`: a paste prompt in ion-repo's own style (S)
 - ion-repo#T-390 · `/repo:token` leaves ion-repo for ion-secure (S)
-- ion-repo#T-392 · The announcement of `/repo:release` goes through ion-words (S)
 
 ### v0.4.16 · The server in ion-host
 The biggest move, alone in its release: production deployments depend on it. ⚠ breaking: the
@@ -1039,7 +1038,7 @@ Each tool takes the piece before kiln drops it (a project never loses a file bet
 - [ ] **hearth**: the server: ion-repo#T-389, ion-host#T-07.
 - [ ] **saggar**: `/kiln:token`: ion-repo#T-390, ion-secure#T-01.
 - [x] **glaze**: `/nuxt:polish`: ion-repo#T-391, ion-design#T-01.
-- [ ] **stylus**: the announcement of `/kiln:release`: ion-repo#T-392, ion-words#T-01.
+- [x] **stylus**: the announcement of `/kiln:release`: ion-repo#T-392, ion-words#T-01.
 - [ ] **cone**: the grid: ion-repo#T-393, ion-score#T-01.
 - [ ] **slake**: rendering and updating, Copier today: ion-render#T-07 (no kiln ticket of its own).
 - [ ] The generated `README.md` of each repo points to the tools that now hold each piece.
@@ -1080,16 +1079,6 @@ charter's rules on data and backups, kiln's own showcase (`scripts/screenshots.p
   `docs/reference.md`.
 - [ ] Read `security.md` in full and confirm it stays. ion-repo#T-387 first moved it to saggar, but its one
   heading is "Browser security" and it has 18 lines: it looks like a code rule.
-
-### ion-repo#T-392 · The announcement of `/kiln:release` goes through stylus
-- **Type**: task
-- **Status**: blocked — waiting for ion-words#T-01
-- **Opened**: 2026-10-30
-- **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: ion-repo#T-387
-
-Step 4 of the skill calls stylus when it is installed, and still falls back on the project's
-`CLAUDE.md`, which keeps how the announcement is sent.
 
 ### ion-repo#T-393 · The grid leaves ion-repo for ion-score
 - **Type**: task
