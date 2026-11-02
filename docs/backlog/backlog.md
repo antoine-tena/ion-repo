@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: ion-repo#T-408.**
+**Next free: ion-repo#T-418.**
 
 ---
 
@@ -831,6 +831,83 @@ packs (ion-repo#T-69). From here, strict semver: breaking → major, `feat` → 
 
 ## 🟠 Important
 
+### ion-repo#T-413 · Django template: double bookings refused by the database
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `studio/docs/business/fabrication/reservation.md`, "Ce qui va dans un outil Ion" (booking)
+
+Two requests for the same slot, a few milliseconds apart: only the database can refuse the second.
+A PostgreSQL exclusion constraint (`ExclusionConstraint` on a `tstzrange` and the resource,
+`btree_gist`), and the `IntegrityError` turned into a clear refusal (409 with an error code), not
+a 500. annski has no such constraint (its seats are counted under a lock): the pattern comes
+from booking and serves any reservation.
+
+### ion-repo#T-412 · Dates and daylight saving: UTC stored, `Europe/Paris` calendar, times that do not exist
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `studio/docs/business/fabrication/reservation.md`, "Ce qui va dans un outil Ion" · `annski/CLAUDE.md` [FUSEAU]
+
+annski's rule [FUSEAU]: store UTC, compute calendar notions (today, a departure date, a season)
+in `Europe/Paris` with `timezone.localdate()`, never `.date()` on a UTC instant. Booking adds
+the hard cases: 2:30 on the spring Sunday does not exist, 2:30 on the autumn Sunday exists twice.
+- [ ] The rule in `django.md`, with the two cases written and tested (`zoneinfo`, `fold`).
+- [ ] Helpers in the template for "a local time to an instant" that refuse the missing hour and
+  pick the first occurrence of the doubled one. Score side: ion-repo#T-278.
+
+### ion-repo#T-411 · Django template: export and erasure of a person's data (GDPR)
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: adoption of annski by ion-repo, 2026-11-02 · `studio/docs/business/fabrication/reservation.md` · `annski/backend/accounts/gdpr.py`
+
+Split decided on 2026-11-02: the code goes to the template, the rules, the audit and the record of
+processing to ion-secure (ion-secure#T-05, ion-secure#T-06).
+- [ ] An export of everything stored about one person (JSON), and an erasure that anonymises what
+  must stay (orders, invoices) instead of failing on a protected foreign key, as
+  `annski/backend/accounts/gdpr.py` does.
+- [ ] A registry of personal fields per model, so a new field without export and anonymisation is
+  seen (rule [DONNEES-PERSO] of annski).
+- [ ] The scheduled anonymisation at the end of the retention period (booking: customers seen
+  long ago), on the queue of ion-repo#T-374. Score side: ion-repo#T-276.
+
+### ion-repo#T-409 · Django template: a `.ics` attached to a mail, with a display alarm
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `studio/docs/business/fabrication/reservation.md`, "Ce qui va dans un outil Ion" (booking) · `annski/backend/events/ics.py`
+
+A confirmation that lands in the customer's calendar: an RFC 5545 event attached
+(`text/calendar; method=PUBLISH`), with a `VALARM` `ACTION:DISPLAY` reminder, a stable `UID` so an
+update or a cancellation replaces it, times in UTC with the `Europe/Paris` zone. annski serves a
+`.ics` per trip (`annski/backend/events/ics.py`), without alarm and never attached to a mail: a
+starting point. The texts of the mails: ion-words#T-03.
+
+### ion-repo#T-408 · Django template: outgoing mail that arrives (fallback relay, quota, bounces, unsubscribe)
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: adoption of annski by ion-repo, 2026-11-02 · `annski/backend/core/mail/`
+
+The template sends mail with Django's bare SMTP backend. annski learned in production what it
+takes for mail to arrive; booking (TM Coiffure) sends confirmations and reminders from day one.
+- [ ] A fallback relay when the main one's daily quota is spent (Brevo free: 300 a day):
+  `annski/backend/core/mail/fallback.py`, counter per relay and per Paris day in
+  `annski/backend/core/mail/quota.py`.
+- [ ] A `List-Unsubscribe` of the site on every mail, before the relay adds its own:
+  `annski/backend/core/mail/smtp.py`.
+- [ ] A permanent 5xx refusal marks the address and stops the retries:
+  `annski/backend/emails/bounces.py`.
+- [ ] HTML written in a back office goes through an allow-list: `annski/backend/emails/sanitize.py`
+  (the rule and its audit: ion-secure#T-04).
+- [ ] DNS side (SPF, DKIM, DMARC): ion-host#T-03. Score side: ion-repo#T-278.
+
 ### ion-repo#T-400 · `ion repo update` stopped by a conflict never runs the converters
 - **Type**: bug
 - **Status**: todo
@@ -1501,6 +1578,13 @@ breaks the rule silently or builds a whole Celery stack for three mails.
 - [ ] [IDEMPOTENCY] says which routes need it when there is no shared cache (payments,
   creations), instead of "every mutation".
 - [ ] The Django template offers that path, so the first mail of a project is not improvised.
+- [ ] Scheduled work on that same queue (completed 2026-11-02, adoption of annski and booking's
+  spec `studio/docs/business/fabrication/reservation.md`): the day-before reminder, the
+  anonymisation at the end of retention (ion-repo#T-411). annski's way: tasks published in the
+  Outbox inside the caller's transaction (`annski/backend/core/queue.py`), an APScheduler whose
+  jobs live in PostgreSQL (`annski/backend/core/scheduler_jobstore.py`), and a heartbeat that the
+  container probe reads, so a frozen scheduler is restarted (`annski/backend/core/heartbeat.py`,
+  `annski/backend/core/scheduler_health.py`).
 
 ### ion-repo#T-382 · `kiln ci` doesn't replay `python.yml`, and its verdict still says success
 - **Type**: bug
@@ -1524,6 +1608,69 @@ before a deployment; the release of hearth v0.1.0 went through on it, its tests 
   2026 (hearth v0.1.1, grog v0.1.0, keramos v1), pytest and mypy run by hand each time.
 
 ## 🟡 Normal
+
+### ion-repo#T-417 · One file for the stack's versions, checked in pre-commit and CI
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: adoption of annski by ion-repo, 2026-11-02 · `annski/scripts/ci/check_versions.py`
+
+annski writes every version of its stack (Python, Node, PostgreSQL, Redis, images) in
+`annski/docs/exploitation/versions.md`, and `annski/scripts/ci/check_versions.py` fails when a
+Containerfile, the compose files, CI or `engines` drift from it. A charter check of the same kind
+for every generated repo. Score side: ion-repo#T-210.
+
+### ion-repo#T-416 · Django template: Cloudflare Turnstile that fails open
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: XS · **Owner**: — · **Due**: —
+- **Origin**: adoption of annski by ion-repo, 2026-11-02 · `annski/backend/core/captcha.py`
+
+An anti-bot check without friction or ad tracking on public forms (contact, sign-up, booking),
+active only when `TURNSTILE_SECRET_KEY` is set; a Cloudflare outage never blocks a form.
+Taken from `annski/backend/core/captcha.py`.
+
+### ion-repo#T-415 · Django template: error reporting off by default, nothing personal sent
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: XS · **Owner**: — · **Due**: —
+- **Origin**: adoption of annski by ion-repo, 2026-11-02 · `annski/backend/core/observability.py`
+
+Sentry (or GlitchTip, self-hostable, same protocol) inactive while `SENTRY_DSN` is empty: no
+network call; when on, no cookie, header or personal field sent. Taken from
+`annski/backend/core/observability.py` into the template's settings.
+
+### ion-repo#T-414 · Django template: payments behind a provider switch, through the Outbox
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: L · **Owner**: — · **Due**: —
+- **Origin**: adoption of annski by ion-repo, 2026-11-02 · `annski/backend/core/stripe_client.py`, `annski/backend/core/helloasso_client.py`
+
+annski takes payments with Stripe or HelloAsso, chosen by `PAYMENT_PROVIDER`
+(`annski/backend/core/settings.py`), the other kept in reserve.
+- [ ] Amounts in integer cents everywhere ([ARGENT]), helpers in `annski/backend/core/money.py`.
+- [ ] Webhooks verified, recorded then handled in the Outbox, idempotent:
+  `annski/backend/core/outbox/stripe_handlers.py`, refunds in
+  `annski/backend/core/outbox/refunds.py` and `helloasso_refunds.py`.
+- [ ] An optional module of the template (`ion repo set payments=…`), off by default.
+  Score side: ion-repo#T-277.
+
+### ion-repo#T-410 · Restore test that proves the backup: missing migrations, business rows
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: adoption of annski by ion-repo, 2026-11-02 · `annski/config/vps/annski-restore-test.sh`
+
+The template's `restore-test.sh` only counts tables. annski's restores the latest dump into a
+throwaway PostgreSQL, then has the running image check that no migration is missing and count
+the rows that matter (members, orders, tickets); a failure fails the unit and alerts. Brought
+into the template now, while `config/vps/` still lives here; it moves to ion-host with the rest
+(ion-host#T-07, ion-repo#T-389).
 
 ### ion-repo#T-407 · `ion repo check` is red on ion-repo itself: no `charter.toml`
 - **Type**: bug
