@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: ion-repo#T-419.**
+**Next free: ion-repo#T-421.**
 
 ---
 
@@ -1646,6 +1646,34 @@ before a deployment; the release of hearth v0.1.0 went through on it, its tests 
   2026 (hearth v0.1.1, grog v0.1.0, keramos v1), pytest and mypy run by hand each time.
 
 ## 🟡 Normal
+
+### ion-repo#T-419 · Astro without a backend: `constants.ts` keeps the backend messages
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: XS · **Owner**: — · **Due**: —
+- **Origin**: rehearsal of the Ion family on a made-up salon, `ion-repo-sandbox/neufs/salon/ciseaux-de-lorvane`, 2026-11-02
+
+A `--type site --frontend astro` project (backend `none`) gets five `BACKEND_*` constants in
+`frontend/src/constants.ts` ("Le backend ne répond pas : lancez-le avec ion repo dev."), used by
+nothing (`grep -rn BACKEND_ frontend/src`). A defect of a generated file, to fix in the template
+under `{% if backend != "none" %}`.
+
+Reproduce: `ion repo new /tmp/x --type site --frontend astro --size small --language fr
+--no-github`, then read `/tmp/x/frontend/src/constants.ts`.
+
+### ion-repo#T-420 · A client's site does not enable the plugins of the crafts that build it
+- **Type**: idea
+- **Status**: todo
+- **Opened**: 2026-11-02
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: rehearsal of the Ion family on a made-up salon, `ion-repo-sandbox/neufs/salon/ciseaux-de-lorvane`, 2026-11-02
+
+The site `ion deal new` creates (through `ion repo new`) enables only `repo@ion-repo` in
+`.claude/settings.json`: its sessions have neither `/design:brief` nor `/deal:check`. A setting
+(`ion repo set`, or an option of `ion repo new`) that adds the `antoine-tena/ion-design` and
+`antoine-tena/ion-deal` catalogues and their plugins, for a client's site. To handle with ion-repo#T-418:
+the pieces of a tool bring its skills, so the table of pieces is where these plugins belong.
 
 ### ion-repo#T-417 · One file for the stack's versions, checked in pre-commit and CI
 - **Type**: improvement
