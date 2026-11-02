@@ -383,3 +383,19 @@ path_separator:
   type: str
   default: "/"
   when: false
+
+# The pieces other Ion tools bring to a project (ion-repo#T-394, docs/reference.md, "Pieces of
+# other Ion tools"), written once: read by `.claude/settings.json.jinja` (the tool's catalogue,
+# its plugin enabled) and by `ion repo new` and `ion repo update` (`pieces.py`, its files). `when`:
+# the answers that bring it, never in the tool's own repo. `template`: the tool's repo holding its
+# `copier.yml` and `piece/`; empty while the tool ships its skills only. A piece's files leave this
+# template only once its tool's repo is public, with their handover conversion.
+pieces:
+  type: yaml
+  when: false
+  default:
+    - tool: ion-host
+      repo: antoine-tena/ion-host
+      plugin: host
+      when: {deploy: vps}
+      template: ""
