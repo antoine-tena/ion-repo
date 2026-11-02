@@ -23,8 +23,8 @@ from ion_repo.config import BETA_CHANNEL, INTERNAL_CHANNEL, load_config
 
 ION_REPO_GIT_URL = "https://github.com/antoine-tena/ion-repo"
 # Package name on PyPI, in the Ion family's `ion-<tool>`; `kiln-cli` (kiln's name until 31 October
-# 2026) and `keramos-kiln` (its planned name) had their last release at v0.4.11, which moves their
-# testers (`kiln_move.py`), `kiln` came before PyPI.
+# 2026) and `keramos-kiln` (its planned name) had their last release at v0.4.11, which moved their
+# testers at its first run, `kiln` came before PyPI.
 PYPI_NAME = "ion-repo"
 LEGACY_PYPI_NAMES = ("kiln-cli", "keramos-kiln")
 FAMILY_PYPI_NAME = "ion-sh"
