@@ -92,7 +92,7 @@ generated tree, the `deploy` question, `--vps`, the `vps` skills, with their con
 ### v0.4.16 · The grid in cone
 The last move, after kiln runs on slake (ion-render#T-07, one engine at a time). It closes the map of
 the moves.
-- ion-repo#T-393 · The grid leaves kiln for cone (L) (blocked: ion-score#T-01)
+- ion-repo#T-393 · The grid leaves ion-repo for ion-score (L)
 - ion-repo#T-387 · What belongs to another craft leaves kiln for its tool (L)
 
 ### v0.5.0 · Public launch: the proof and the page
@@ -987,19 +987,24 @@ Decide it once, before the first move:
 Step 4 of the skill calls stylus when it is installed, and still falls back on the project's
 `CLAUDE.md`, which keeps how the announcement is sent.
 
-### ion-repo#T-393 · The grid leaves kiln for cone
+### ion-repo#T-393 · The grid leaves ion-repo for ion-score
 - **Type**: task
-- **Status**: blocked — waiting for ion-score#T-01; after ion-render#T-07, one engine at a time
+- **Status**: in progress — branch refactor/grid-to-ion-score, since 2026-11-02
 - **Opened**: 2026-10-30
 - **Effort**: L · **Owner**: — · **Due**: —
-- **Origin**: ion-repo#T-387. ⚠ breaking only if a charter rule ID or a command changes: neither should
+- **Origin**: ion-repo#T-387. ⚠ breaking only if a charter rule ID or a command changes: neither does
 
-- [ ] kiln depends on `keramos-cone`, and `src/kiln/grid/` keeps only what changes a repo (the
-  split is in ion-score#T-01).
-- [ ] What imports the grid moves to cone's contract: `cli.py`, `adopted.py`, `update.py`, `bot.py`,
-  `charter/cli.py`, and the tests (`test_grid.py`, `test_score.py`, `test_fix.py`, `test_forge.py`,
-  `test_gap_report.py`, `test_bot.py`, `test_compressor.py`…).
-- [ ] `kiln score` gives the same result, rule by rule, on the training repos.
+antoine, 2 November 2026: the whole grid moves (fixers, roadmap and gap report included), ion-repo
+depends on the `ion-score` package, no subprocess; ion-score also holds the ground both share
+(`ui`, `shell`, waivers, rule IDs).
+
+- [x] ion-repo depends on `ion-score`; `src/ion_repo/grid/` gone, with its history in ion-score.
+- [x] `cli.py`, `adopted.py`, `update.py`, `bot.py`, `charter/cli.py` import `ion_score`; `ion repo
+  grid|score|fix` build on `ion_score.cli`; the grid's tests live in ion-score, `test_grid_rules.py`
+  (grid vs template) stays here.
+- [x] `ion repo score` gives the same result, rule by rule, on the training repos (four copies).
+- [ ] ion-score on PyPI and public before the next ion-repo release: until then the dependency is a
+  git source on a private repo, which this public repo's CI and PyPI's wheel cannot install.
 
 ### ion-repo#T-373 · `kiln-cli` retired, the testers moved to `ion-repo` and `ion-sh`
 - **Type**: task
