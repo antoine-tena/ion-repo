@@ -100,7 +100,7 @@ def update_project(
             ui.note(
                 f"conflicts left by the template in {', '.join(conflicted)}: resolve them "
                 "(both sides often hold), commit, then ion repo update --no-template for the "
-                "dependencies (it needs a clean tree)"
+                "conversions and the dependencies (it needs a clean tree)"
             )
             report_changes(root)
             return
@@ -112,9 +112,9 @@ def update_project(
         sync_dependencies(root, stack)
     generate_api_contract(root, stack)
     write_unverified_rules(root, stack)
-    if should_update_template:
-        # What the template leaves to the repo (SHAs, digests, a lock): closed like ion repo fix.
-        convert_in_place(root, [*frozen_files(root), *kept_of(root)])
+    # What the template leaves to the repo (SHAs, digests, a lock): closed like ion repo fix, on
+    # every run, so the one that follows a conflict (`--no-template`) closes it too (T-400).
+    convert_in_place(root, [*frozen_files(root), *kept_of(root)])
     report_changes(root)
     if should_check:
         check_project(root)

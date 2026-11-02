@@ -75,7 +75,6 @@ first `kiln check`. They cost time now, so they go before the moves.
 - ion-repo#T-375 · [CLOCK] names freezegun, which [NEW-DEPENDENCY] refuses (S)
 - ion-repo#T-379 · Django template: `django-stubs-ext`, so `admin.ModelAdmin[Model]` runs (S)
 - ion-repo#T-380 · `/kiln:merge` ends by offering `/grog:distill` on the session (S) (blocked: ion-learn#T-01)
-- ion-repo#T-400 · `ion repo update` stopped by a conflict never runs the converters (S)
 - ion-repo#T-407 · `ion repo check` is red on ion-repo itself: no `charter.toml` (S)
 - ion-repo#T-410 · Restore test that proves the backup: missing migrations, business rows (S)
 
@@ -936,21 +935,6 @@ takes for mail to arrive; booking (TM Coiffure) sends confirmations and reminder
 - [ ] HTML written in a back office goes through an allow-list: `annski/backend/emails/sanitize.py`
   (the rule and its audit: ion-secure#T-04).
 - [ ] DNS side (SPF, DKIM, DMARC): ion-host#T-03. Score side: ion-repo#T-278.
-
-### ion-repo#T-400 · `ion repo update` stopped by a conflict never runs the converters
-- **Type**: bug
-- **Status**: todo
-- **Opened**: 2026-10-31
-- **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: session bc540ab5 (kiln becomes ion-repo), 2026-10-31, by /learn:distill
-
-`update_project` returns at the first conflict, before `convert_in_place`; the documented next
-step, `--no-template`, skips it too (`if should_update_template`). So the template's unpinned
-`uses: …@develop` replaces a pinned SHA and `PINNED-ACTIONS` fails until someone runs `ion repo
-fix`. Seen on all 18 family repos, closed by calling the function by hand.
-- [ ] After the conflicts are resolved and committed, the next `ion repo update` runs the
-  converters, whatever its flags.
-- [ ] A test: an update with a conflict, then the follow-up, ends pinned.
 
 ### ion-repo#T-401 · Updating a family of repos, stopping only at real conflicts
 - **Type**: improvement

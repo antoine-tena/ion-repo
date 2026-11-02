@@ -57,3 +57,44 @@ def test_conflicts_stop_the_update_after_the_template(
     )
     assert "deps" not in calls
     assert "report_changes" in calls
+
+
+def test_the_follow_up_of_a_conflict_runs_the_converters(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """ion-repo#T-400: stopped at a conflict, then resumed with `--no-template` once it is
+    committed, the update still closes what the template leaves (pinned SHAs)."""
+    converted: list[str] = []
+    for name in (
+        "check_working_branch",
+        "check_tool_not_older",
+        "show_release_notes",
+        "report_frozen_drift",
+        "mention_newer_release",
+        "report_changes",
+        "apply_template",
+        "generate_api_contract",
+        "write_unverified_rules",
+        "update_dependencies",
+        "lock_dependencies",
+        "sync_dependencies",
+        "load_stack",
+    ):
+        monkeypatch.setattr(update, name, lambda *a, **k: None)
+    monkeypatch.setattr(update, "require_tools", lambda *a: None)
+    monkeypatch.setattr(update, "is_adopted", lambda root: False)
+    monkeypatch.setattr(update, "template_commit", lambda root: "v0")
+    monkeypatch.setattr(update, "template_revision", lambda source: "v1")
+    monkeypatch.setattr(update, "_template_source", lambda root: "")
+    monkeypatch.setattr(update, "convert_in_place", lambda root, spared: converted.append("pin"))
+    conflicts = [["ci.yml"]]  # the first run only
+    monkeypatch.setattr(update, "conflicted_files", lambda root: conflicts and conflicts.pop())
+    for template in (True, False):
+        update.update_project(
+            tmp_path,
+            should_update_template=template,
+            should_update_deps=False,
+            allow_major=False,
+            should_check=False,
+        )
+    assert converted == ["pin"]
