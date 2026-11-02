@@ -14,6 +14,7 @@ option, setting, plugin, skill, hook or workflow is missing here.
 - [What a generated repo holds](#what-a-generated-repo-holds)
 - [Reusable GitHub workflows](#reusable-github-workflows)
 - [Claude Code plugins](#claude-code-plugins)
+- [Pieces of other Ion tools](#pieces-of-other-ion-tools)
 - [Releases](#releases)
 
 ## Commands
@@ -190,6 +191,56 @@ claude plugin install repo@ion-repo
 A repo that deploys to a server of its own (`deploy=vps`) gets `host@ion-host` instead, from the catalogue of ion-host, the family's hosting tool (`antoine-tena/ion-host`, at `main`): skills `/host:deploy`, `/host:prod-logs` (read-only diagnosis) and `/host:prod-dump` (production copied into a throwaway database). The `vps` plugin they came from is gone: `ion repo update` enables `host@ion-host` in place of `vps@ion-repo` and rewrites `/vps:deploy` and its siblings where the project cites them.
 
 Generated repos enable the right plugins for their stack automatically.
+
+## Pieces of other Ion tools
+
+A craft's know-how lives in its own tool (ion-host for the server, ion-secure for credentials…),
+not in ion-repo; a generated repo still needs that tool's skills and files. Decided on
+2 November 2026 (ion-repo#T-394), for ion-host, ion-secure, ion-maintain and every later tool:
+**a tool ships its piece of a project the way ion-repo ships its own, as a Copier-format template
+in the tool's repo, and `ion repo update` updates every piece with the same engine.**
+
+- **Skills**: from the tool's own catalogue, never from ion-repo's. The generated
+  `.claude/settings.json` adds the tool's repo as a marketplace and enables its plugin under the
+  condition that brings its piece (`deploy=vps` gives `host@ion-host`).
+- **Files**: the tool's repo holds a `copier.yml` at its root (`_subdirectory: piece`,
+  `_answers_file: .copier-answers.<tool>.yml`) and the `piece/` folder. `ion repo new` renders
+  each piece after the template, `ion repo update` updates each one after it, a three-way merge
+  with inline conflicts like the template's; frozen and kept files are spared the same way.
+- **Answers**: `.copier-answers.yml` stays the one source. ion-repo passes all of its answers to
+  each piece (a piece reads `title`, `vps_host`… without asking them); a piece's answers file only
+  records its revision and the questions of its own. Each piece follows its tool's releases (the
+  latest tag, candidates on the `beta` channel), its revision apart from ion-repo's.
+- **On the server**: what a tool installs on a server (systemd units, scripts run as root) is
+  still rendered in the repo, reviewed and committed; the tool's command carries it there at
+  deployment. Nothing lives only on the server.
+- **One table**: which tool brings a piece, its catalogue, its plugin, its template's repo and
+  the condition, are written once in ion-repo, read by the settings and by the update.
+- **A piece that leaves ion-repo for its tool**: the tool's first release renders the moved files
+  byte for byte as ion-repo's last did; improvements come in its next releases. Copier deletes a
+  file the template dropped, even one the project changed, so the ion-repo release that drops
+  them ships a conversion: `ion repo update` puts the moved files back as the project had them,
+  lays the tool's piece without overwriting a file, and writes its answers file; the tool's next
+  release then merges in three ways. A moved skill keeps its forward, and the update rewrites its
+  old name where the project cites it (as `/vps:deploy` became `/host:deploy`).
+- **Private tools**: the Ion tools' repos are private today. ion-repo, public, names a tool's repo
+  only in the repos that use its piece; a machine that cannot fetch it gets a note and the rest
+  of the update, the piece's files left as they are. A piece's files leave ion-repo's template
+  only once its tool's repo is public, so that `deploy=vps` keeps working for everyone; a skill
+  may go earlier, a missing skill breaks no file.
+- **ion-render**: nothing new in kind. A piece is one more request of its contract (template,
+  revision, answers, destination); it needs the answers file's name as an input, answers passed
+  without being recorded, and its adopt mode to lay a piece without overwriting.
+
+Turned down: ion-repo carrying the tools' files in its own template (the craft would stay in
+ion-repo, a private tool's content would land in a public template, each fix would wait for an
+ion-repo release); and each tool writing its files with a command of its own (`ion host render`:
+a second update engine per tool, without the three-way merge, the conflicts, the frozen files or
+ion-render, and a second place for the project's settings).
+Proven on a copy (ion-repo-sandbox): ion-host's `heal` piece (`config/vps/heal.sh` and its
+systemd units) moved out of a copy of ion-repo's template into a copy of ion-host; a project
+generated before the move, its `heal.sh` changed by hand, came through the handover with that
+change and its answers file, then took ion-host's next release merged with it.
 
 ## Releases
 

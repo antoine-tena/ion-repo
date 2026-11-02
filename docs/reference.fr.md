@@ -261,6 +261,61 @@ Réglages : `vps_host`, `api_domain`, `vps_port`, `vps_db_port`, `site_url`, `de
 que soit le déploiement, l'image du backend Django sert gunicorn et ses fichiers statiques
 (WhiteNoise) sans migrer au démarrage, et `/api/health` rend la version en service.
 
+## Pièces des autres outils Ion
+
+Le savoir d'un métier vit dans son outil (ion-host pour le serveur, ion-secure pour les
+identifiants…), pas dans ion-repo ; un repo généré a pourtant besoin des skills et des fichiers de
+cet outil. Décidé le 2 novembre 2026 (ion-repo#T-394), pour ion-host, ion-secure, ion-maintain et
+tout outil à venir : **un outil livre sa pièce d'un projet comme ion-repo livre la sienne, en
+modèle au format Copier dans le repo de l'outil, et `ion repo update` met à jour chaque pièce avec
+le même moteur.**
+
+- **Skills** : du catalogue de l'outil, jamais de celui d'ion-repo. Le `.claude/settings.json`
+  généré ajoute le repo de l'outil comme catalogue et active son plugin sous la condition qui
+  amène sa pièce (`deploy=vps` donne `host@ion-host`).
+- **Fichiers** : le repo de l'outil porte un `copier.yml` à sa racine (`_subdirectory: piece`,
+  `_answers_file: .copier-answers.<outil>.yml`) et le dossier `piece/`. `ion repo new` rend
+  chaque pièce après le modèle, `ion repo update` met chacune à jour après lui, fusion à trois
+  voies et conflits dans les fichiers comme pour le modèle ; fichiers gelés et gardés épargnés
+  de même.
+- **Réponses** : `.copier-answers.yml` reste la seule source. ion-repo passe toutes ses réponses
+  à chaque pièce (une pièce lit `title`, `vps_host`… sans les demander) ; le fichier de réponses
+  d'une pièce ne garde que sa révision et ses propres questions. Chaque pièce suit les versions de
+  son outil (dernier tag, candidates sur le canal `beta`), sa révision à part de celle d'ion-repo.
+- **Sur le serveur** : ce qu'un outil installe sur un serveur (unités systemd, scripts lancés en
+  root) est quand même rendu dans le repo, relu et commité ; la commande de l'outil l'y porte au
+  déploiement. Rien ne vit seulement sur le serveur.
+- **Une table** : quel outil amène une pièce, son catalogue, son plugin, le repo de son modèle et
+  la condition sont écrits une fois dans ion-repo, lus par les réglages et par la mise à jour.
+- **Une pièce qui quitte ion-repo pour son outil** : la première version de l'outil rend les
+  fichiers déplacés octet pour octet comme la dernière d'ion-repo ; les améliorations viennent
+  aux suivantes. Copier supprime un fichier que le modèle a retiré, même modifié par le projet :
+  la version d'ion-repo qui les retire livre donc une conversion. `ion repo update` remet les
+  fichiers déplacés tels que le projet les avait, pose la pièce de l'outil sans écraser un
+  fichier et écrit son fichier de réponses ; la version suivante de l'outil fusionne ensuite à
+  trois voies. Une skill déplacée garde son renvoi, et la mise à jour réécrit son ancien nom là
+  où le projet le cite (comme `/vps:deploy` devenu `/host:deploy`).
+- **Outils privés** : les repos des outils Ion sont privés aujourd'hui. ion-repo, public, ne
+  nomme le repo d'un outil que dans les repos qui utilisent sa pièce ; une machine qui ne peut pas
+  le récupérer reçoit une note et le reste de la mise à jour, les fichiers de la pièce laissés en
+  l'état. Les fichiers d'une pièce ne quittent le modèle d'ion-repo qu'une fois le repo de leur
+  outil public, pour que `deploy=vps` marche pour tous ; une skill peut partir avant, une skill
+  absente ne casse aucun fichier.
+- **ion-render** : rien de neuf en nature. Une pièce est une requête de plus de son contrat
+  (modèle, révision, réponses, destination) ; il lui faut le nom du fichier de réponses en
+  entrée, des réponses passées sans être enregistrées, et son mode adoption pour poser une pièce
+  sans écraser.
+
+Écartées : ion-repo qui porte les fichiers des outils dans son propre modèle (le métier resterait
+dans ion-repo, le contenu d'un outil privé arriverait dans un modèle public, chaque correctif
+attendrait une version d'ion-repo) ; et chaque outil qui écrit ses fichiers par une commande à lui
+(`ion host render` : un second moteur de mise à jour par outil, sans fusion à trois voies,
+conflits, fichiers gelés ni ion-render, et un second endroit pour les réglages du projet).
+Prouvé sur une copie (ion-repo-sandbox) : la pièce `heal` d'ion-host (`config/vps/heal.sh` et ses
+unités systemd) sortie d'une copie du modèle d'ion-repo vers une copie d'ion-host ; un projet
+généré avant, son `heal.sh` modifié à la main, a passé la passation avec cette modification et
+son fichier de réponses, puis a reçu la version suivante d'ion-host fusionnée avec elle.
+
 ## Front sur Vercel
 
 `frontend_deploy=vercel` (front Nuxt, `ion repo set frontend_deploy=vercel`) ajoute

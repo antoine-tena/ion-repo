@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: ion-repo#T-418.**
+**Next free: ion-repo#T-419.**
 
 ---
 
@@ -75,25 +75,54 @@ first `kiln check`. They cost time now, so they go before the moves.
 - ion-repo#T-375 · [CLOCK] names freezegun, which [NEW-DEPENDENCY] refuses (S)
 - ion-repo#T-379 · Django template: `django-stubs-ext`, so `admin.ModelAdmin[Model]` runs (S)
 - ion-repo#T-380 · `/kiln:merge` ends by offering `/grog:distill` on the session (S) (blocked: ion-learn#T-01)
+- ion-repo#T-400 · `ion repo update` stopped by a conflict never runs the converters (S)
+- ion-repo#T-407 · `ion repo check` is red on ion-repo itself: no `charter.toml` (S)
+- ion-repo#T-410 · Restore test that proves the backup: missing migrations, business rows (S)
 
-### v0.4.14 · A tool's piece reaches a repo: the small moves
-How a tool's skill and files get into a generated repo gets decided, then proven on the three
-smallest moves. ⚠ breaking: skill names, each with a forward and its conversion in `kiln update`.
-- ion-repo#T-394 · How a tool's piece reaches a repo kiln generated (M)
-- ion-repo#T-371 · `/kiln:token`: a paste prompt in kiln's own style (S)
-- ion-repo#T-390 · `/kiln:token` leaves kiln for saggar (S)
-- ion-repo#T-392 · The announcement of `/kiln:release` goes through stylus (S)
+### v0.4.14 · Ion all the way: the last kiln names, a family updated at once
+The rename to Ion left names behind and made a family of repos slow to update; both are felt at
+every update, so they go before the moves, which ship through the same update.
+- ion-repo#T-399 · The names ion-repo still keeps from kiln (S)
+- ion-repo#T-402 · A test against the half-renamed forms in the template (XS)
+- ion-repo#T-401 · Updating a family of repos, stopping only at real conflicts (M)
 
-### v0.4.15 · The server in hearth
+### v0.4.15 · A tool's piece reaches a repo: the small moves
+The way decided in ion-repo#T-394 (docs/reference.md, "Pieces of other Ion tools") built into
+`ion repo new` and `ion repo update`, then proven on the three smallest moves. ⚠ breaking: skill
+names, each with a forward and its conversion in `ion repo update`.
+- ion-repo#T-418 · Tools' pieces rendered and updated by `ion repo new` and `ion repo update` (M)
+- ion-repo#T-371 · `/repo:token`: a paste prompt in ion-repo's own style (S)
+- ion-repo#T-390 · `/repo:token` leaves ion-repo for ion-secure (S)
+- ion-repo#T-392 · The announcement of `/repo:release` goes through ion-words (S)
+
+### v0.4.16 · The server in ion-host
 The biggest move, alone in its release: production deployments depend on it. ⚠ breaking: the
-generated tree, the `deploy` question, `--vps`, the `vps` skills, with their conversion.
-- ion-repo#T-389 · The server leaves kiln for hearth (L) (blocked: ion-host#T-07)
+generated tree, the `deploy` question, `--vps`, with their conversion.
+- ion-repo#T-389 · The server leaves ion-repo for ion-host (L) (blocked: ion-host#T-07, ion-host public: antoine)
 
-### v0.4.16 · The grid in cone
-The last move, after kiln runs on slake (ion-render#T-07, one engine at a time). It closes the map of
-the moves.
+### v0.4.17 · The grid in ion-score
+The last move, after ion-repo runs on ion-render (ion-render#T-07, one engine at a time). It closes
+the map of the moves.
 - ion-repo#T-393 · The grid leaves ion-repo for ion-score (L)
-- ion-repo#T-387 · What belongs to another craft leaves kiln for its tool (L)
+- ion-repo#T-387 · What belongs to another craft leaves ion-repo for its tool (L)
+
+### v0.4.18 · A client site's foundations: mail, dates, personal data
+What annski and the booking site of emberstudio needed and the Django template lacks: mail that
+arrives, calendar dates that hold across daylight saving, a person's data exported and erased,
+the stack's versions in one checked file.
+- ion-repo#T-408 · Django template: outgoing mail that arrives (fallback relay, quota, bounces, unsubscribe) (M)
+- ion-repo#T-409 · Django template: a `.ics` attached to a mail, with a display alarm (S)
+- ion-repo#T-412 · Dates and daylight saving: UTC stored, `Europe/Paris` calendar, times that do not exist (S)
+- ion-repo#T-411 · Django template: export and erasure of a person's data (GDPR) (M)
+- ion-repo#T-415 · Django template: error reporting off by default, nothing personal sent (XS)
+- ion-repo#T-417 · One file for the stack's versions, checked in pre-commit and CI (S)
+
+### v0.4.19 · Bookings and payments that hold
+The money side of a client site: a slot booked once, a payment provider switched without a code
+change, a form guarded without locking people out.
+- ion-repo#T-413 · Django template: double bookings refused by the database (S)
+- ion-repo#T-414 · Django template: payments behind a provider switch, through the Outbox (L)
+- ion-repo#T-416 · Django template: Cloudflare Turnstile that fails open (XS)
 
 ### v0.5.0 · Public launch: the proof and the page
 Milestone decided by antoine (16 October 2026), its content
@@ -992,7 +1021,7 @@ Also `src/kiln/`, the `kiln` alias of `ion-repo` and `kiln_move.py`'s state in `
 
 Each tool takes the piece before kiln drops it (a project never loses a file between two
 `kiln update`). The inventory, 30 October 2026:
-- [ ] First, how a tool's piece reaches a repo: ion-repo#T-394.
+- [x] First, how a tool's piece reaches a repo: ion-repo#T-394 (decided 2026-11-02, built by ion-repo#T-418).
 - [ ] **hearth**: the server: ion-repo#T-389, ion-host#T-07.
 - [ ] **saggar**: `/kiln:token`: ion-repo#T-390, ion-secure#T-01.
 - [x] **glaze**: `/nuxt:polish`: ion-repo#T-391, ion-design#T-01.
@@ -1006,26 +1035,34 @@ issues drawn from the backlog: not visibility work), `/nuxt:preview`, the `strip
 charter's rules on data and backups, kiln's own showcase (`scripts/screenshots.py`,
 `scripts/social_preview.py`, the demos, the roadmap).
 
-### ion-repo#T-394 · How a tool's piece reaches a repo kiln generated
+### ion-repo#T-418 · Tools' pieces rendered and updated by `ion repo new` and `ion repo update`
 - **Type**: task
 - **Status**: todo
-- **Opened**: 2026-10-30
+- **Opened**: 2026-11-02
 - **Effort**: M · **Owner**: — · **Due**: —
-- **Origin**: the inventory of ion-repo#T-387: every move below needs this answer, none has it
+- **Origin**: the decision of ion-repo#T-394 (docs/reference.md, "Pieces of other Ion tools"), proven
+  on a copy in ion-repo-sandbox (`pieces-T-394/`) with ion-host's `heal` piece
 
-Decide it once, before the first move:
-- [ ] Skills: `.claude/settings.json.jinja` enables plugins of the `kiln` catalog only. How a
-  repo gets `saggar@…` or `hearth@…`, and who installs the tool. The tools' repos are private
-  today: a public kiln cannot point to them.
-- [ ] Files: ion-host#T-07 asks how hearth renders its files in a project (slake, or commands that
-  install them on the server). The same answer for any later tool.
-- [ ] What `kiln update` does to a repo that has the old piece: a conversion, without losing a
-  file, and a forward from each old skill name.
-- [ ] The answer written in `docs/reference.md` and `docs/reference.fr.md`.
+- [ ] One table of the pieces (tool, catalogue, plugin, template repo, condition on the answers),
+  read by `.claude/settings.json.jinja` (today's `host_plugin` condition moves there) and by the
+  update.
+- [ ] `ion repo new`: each piece rendered after the template, its answers file
+  `.copier-answers.<tool>.yml` written.
+- [ ] `ion repo update`: each piece updated after the template, at its tool's latest tag
+  (candidates on `beta`), all of `.copier-answers.yml` passed as data, never recorded in the
+  piece's answers file; frozen and kept files spared. Found on the copy: a piece that receives only
+  the answers it declares renders `title` empty.
+- [ ] A piece that cannot be fetched (no access to a private repo, offline): a note, the rest of the
+  update, its files untouched.
+- [ ] The handover conversion: Copier deletes a file the template dropped, even one the project
+  changed (seen on the copy); the moved files are put back from the last commit, the tool's piece
+  laid without overwriting (`skip_if_exists`), its answers file written.
+- [ ] A test replaying the sandbox's scenario: generated, changed by hand, handed over, then the
+  tool's next release merged with the change.
 
 ### ion-repo#T-389 · The server leaves kiln for hearth
 - **Type**: task
-- **Status**: blocked — waiting for ion-host#T-07 and ion-repo#T-394
+- **Status**: blocked — waiting for ion-host#T-07, ion-repo#T-418, and ion-host's repo made public (antoine)
 - **Opened**: 2026-10-30
 - **Effort**: L · **Owner**: — · **Due**: —
 - **Origin**: ion-repo#T-387. ⚠ breaking: the generated tree, the `deploy` question of `copier.yml`,
@@ -1034,8 +1071,9 @@ Decide it once, before the first move:
 - [x] Remove the `vps` plugin (`deploy`, `prod-dump`, `prod-logs`): its skills are ion-host's
   `host` plugin, which the template enables for `deploy=vps`; no forward, `ion repo update`
   rewrites `/vps:…` into `/host:…` (2026-11-02).
-- [ ] Remove `config/vps/`, `scripts/ops/` and `docs/operations/` from the template, once hearth
-  renders them. The `frontend_deploy == "vercel"` script of `scripts/ops/` is decided there too.
+- [ ] Remove `config/vps/`, `scripts/ops/` and `docs/operations/` from the template, once ion-host's
+  piece renders them byte for byte and ion-host's repo is public (docs/reference.md, "Pieces of
+  other Ion tools"). The `frontend_deploy == "vercel"` script of `scripts/ops/` is decided there too.
 - [ ] Split `production.md`: it is also generated without a VPS (`podman`, any size above `tiny`),
   so only the server part leaves.
 - [ ] Step 8 "Deploy" of `/kiln:release` calls hearth.
@@ -1044,7 +1082,7 @@ Decide it once, before the first move:
 
 ### ion-repo#T-390 · `/kiln:token` leaves kiln for saggar
 - **Type**: task
-- **Status**: blocked — waiting for ion-secure#T-01 and ion-repo#T-394
+- **Status**: blocked — waiting for ion-secure#T-01 and ion-repo#T-418
 - **Opened**: 2026-10-30
 - **Effort**: S · **Owner**: — · **Due**: —
 - **Origin**: ion-repo#T-387. ⚠ breaking: a skill's name; a forward from the old one
@@ -1056,7 +1094,7 @@ Decide it once, before the first move:
 
 ### ion-repo#T-392 · The announcement of `/kiln:release` goes through stylus
 - **Type**: task
-- **Status**: blocked — waiting for ion-words#T-01 and ion-repo#T-394
+- **Status**: blocked — waiting for ion-words#T-01
 - **Opened**: 2026-10-30
 - **Effort**: S · **Owner**: — · **Due**: —
 - **Origin**: ion-repo#T-387
