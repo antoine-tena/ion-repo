@@ -9,7 +9,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, NoReturn
 
-from ion_repo import banner, kiln_move, renames, tool_update, ui
+from ion_repo import banner, renames, tool_update, ui
 from ion_repo.config import load_config
 from ion_repo.shell import KilnError, repo_root
 from ion_repo.versions import installed_version
@@ -898,7 +898,6 @@ def show_home(parser: argparse.ArgumentParser) -> None:
 
 
 def main() -> None:
-    kiln_move.run()
     try:
         parser = build_parser()
         if sys.argv[1:] in HELP_FLAGS:

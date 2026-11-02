@@ -125,7 +125,7 @@ def install_machine() -> None:
     ion-repo plugin at user scope, the machine settings. Only what is missing is done."""
     config = ensure_system(load_config())
     require_tools("uv")
-    # A tool still installed as kiln-cli brings `ion-repo` too; `kiln_move.py` replaces it.
+    # A late tester's `kiln-cli` tool, its last release (v0.4.11), moves itself to `ion-repo`.
     if shutil.which("ion-repo") is None and shutil.which("kiln") is None:
         step("ion-repo command (uv tool)")
         run(["uv", "tool", "install", PYPI_NAME], Path.cwd())

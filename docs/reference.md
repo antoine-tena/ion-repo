@@ -1,6 +1,6 @@
 # ion-repo reference
 
-> **kiln is now ion-repo** (31 October 2026), the repo tool of the Ion family: the command is `ion-repo`, typed `ion repo …`; the package `ion-repo` on PyPI; the Claude Code plugin `repo` (skills `/repo:merge`…) in the `ion-repo` catalogue. kiln (the command, and the `kiln-cli` package) stays an alias for a while, which says the new name. `ion repo update` moves a project's old names: rules in `.claude/rules/ion-repo/`, skills `/repo:…`, `[REPORT-TO-ION-REPO]`, variables `ION_REPO_…` (`KILN_…` still read), plugins `repo@ion-repo`; `ion repo install --machine` moves the machine's kiln catalogue to `ion-repo`.
+> **kiln is now ion-repo** (31 October 2026), the repo tool of the Ion family: the command is `ion-repo`, typed `ion repo …`; the package `ion-repo` on PyPI; the Claude Code plugin `repo` (skills `/repo:merge`…) in the `ion-repo` catalogue. The `kiln` command is gone since v0.4.13; the last `kiln-cli` (v0.4.11) moves a late tester to `ion-repo` at its first run. `ion repo update` moves a project's old names: rules in `.claude/rules/ion-repo/`, skills `/repo:…`, `[REPORT-TO-ION-REPO]`, variables `ION_REPO_…` (`KILN_…` still read), plugins `repo@ion-repo`; `ion repo install --machine` moves the machine's kiln catalogue to `ion-repo`.
 
 Everything ion-repo offers, at the release it is: every command and option, every setting, the
 reusable workflows and the Claude Code plugins. The [README](../README.md) shows what ion-repo is
