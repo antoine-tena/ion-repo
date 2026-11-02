@@ -33,7 +33,7 @@ No production: the tag publishes. These replace the steps below.
 - **Dependencies** added or major-bumped.
 
 ## 4. Announcement
-Per `CLAUDE.md`. Check it exists for `vX.Y.Z`, describes the risks found, promises neither work left out nor a feature behind a flag staying off. Otherwise write it on the release and **have the user approve the text**.
+Per `CLAUDE.md`, which keeps where it goes and how it is sent. Check it exists for `vX.Y.Z`, describes the risks found, promises neither work left out nor a feature behind a flag staying off. Otherwise write it on the release: through `/words:announce vX.Y.Z` when the `words` plugin is installed (`claude plugin list`), else by hand; either way **have the user approve the text**.
 
 ## 5. Full checks
 `ion repo ci release/vX.Y.Z` (or GitHub CI on the branch): every job. Failure: fix on the release, commit, rerun until green. Report jobs not replayed.
