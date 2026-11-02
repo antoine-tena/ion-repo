@@ -14,6 +14,7 @@ from ion_repo import github, install, questions
 from ion_repo.config import load_config
 from ion_repo.contract import generate_api_contract
 from ion_repo.deps import lock_dependencies
+from ion_repo.pieces import apply_pieces
 from ion_repo.rules import write_unverified_rules
 from ion_repo.shell import KilnError, require_tools, run, shows_spinner, spinner_line, step
 from ion_repo.stack import load_stack, read_answers
@@ -81,6 +82,8 @@ def create_project(request: NewProjectRequest) -> Path:
             quiet=quiet,
         )
     root = request.destination.resolve()
+    # The other Ion tools' pieces the answers bring (ion-host's for a server…), after the template.
+    apply_pieces(root, source, [])
     stack = load_stack(root)
     if stack.pnpm_dir is not None:
         require_tools("pnpm")
