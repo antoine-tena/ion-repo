@@ -414,3 +414,10 @@ def test_tickets_are_counted_in_both_forms(tmp_path: Path) -> None:
     items = load_script().backlog_items(str(tmp_path))
 
     assert labels(items) == ["2 tasks", f"crit{X}1"]
+
+
+def test_statusline_palette_is_a_machine_key() -> None:
+    assert only_machine_keys(["statusline_palette=nord"])
+    assert apply_machine(UserConfig(), ["statusline_palette=nord"]).statusline_palette == "nord"
+    with pytest.raises(KilnError, match="statusline_palette"):
+        apply_machine(UserConfig(), ["statusline_palette=arc-en-ciel"])
