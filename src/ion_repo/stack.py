@@ -16,6 +16,10 @@ from pathlib import Path
 
 import yaml  # fourni par copier
 
+# pnpm 11+ fails on a dependency's build script that `allowBuilds` does not list: ion-score's CI
+# fixers and ion-repo's template install with the same option.
+from ion_score.fixers.ci import PNPM_LENIENT_BUILDS as PNPM_LENIENT_BUILDS
+
 from ion_repo import renames
 from ion_repo.charter import config as charter
 from ion_repo.shell import KilnError
@@ -32,9 +36,6 @@ MAVEN_BACKENDS = frozenset({"java"})
 MAVEN_WRAPPER = "./mvnw"
 PYTHON_FRONTENDS = frozenset({"streamlit", "dash"})
 PNPM_FRONTENDS = frozenset({"nuxt", "next", "astro", "vite-react"})
-# pnpm 11+ fails on a dependency's build script that `allowBuilds` (pnpm-workspace.yaml) does not
-# list (ERR_PNPM_IGNORED_BUILDS): a repo without that list skips them, as ion-repo's template does.
-PNPM_LENIENT_BUILDS = "--config.strict-dep-builds=false"
 NO_FRAMEWORK = "none"
 VITE_REACT = "vite-react"
 
