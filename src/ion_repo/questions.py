@@ -10,7 +10,7 @@ import sys
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 
-from ion_repo import ui
+from ion_score import ui
 
 
 @dataclass(frozen=True)

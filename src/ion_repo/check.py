@@ -16,8 +16,8 @@ import subprocess
 from pathlib import Path
 
 import yaml
+from ion_score import ui
 
-from ion_repo import ui
 from ion_repo.charter import config as charter_config
 from ion_repo.ci.execution import base_env
 from ion_repo.ci.jobs import RELAYS, Plan, plan_job

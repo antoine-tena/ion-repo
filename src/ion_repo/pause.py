@@ -14,7 +14,8 @@ import re
 import subprocess
 from pathlib import Path
 
-from ion_repo import ui
+from ion_score import ui
+
 from ion_repo.shell import KilnError
 
 STATE_DIR = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state"))
