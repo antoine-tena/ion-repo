@@ -206,7 +206,8 @@ LOG_PREAMBLE = ("### Log", "One line per closed ticket", "`- **YYYY-MM-DD** · T
 
 def split_backlog(root: Path, *, from_disk: bool = False) -> bool:
     """The former single `backlog.md` (how-to at the top, "✅ Done" log at the bottom) split:
-    the open tickets stay, the log goes to `done.md`, the how-to to the template's `README.md`.
+    the open tickets stay, the log goes to `done.md`, the how-to to `README.md` (the template's
+    has one; an adopted repo's own, kept, gets the repo's how-to at its end).
     Read from the last commit, as the repo kept it: Copier's merge of the template's new layout
     into it leaves the log loose at the bottom (`from_disk` after the move from `docs/a-faire/`,
     written this same run). Says whether it split."""
@@ -222,6 +223,7 @@ def split_backlog(root: Path, *, from_disk: bool = False) -> bool:
         return False
     open_part, log = text.split(f"\n{DONE_HEADING}", 1)
     path.write_text(_open_backlog(open_part))
+    _keep_how_to(root / BACKLOG_DIR / "README.md", _how_to(open_part))
     entries = "\n".join(
         line for line in log.splitlines()[1:] if not line.startswith(LOG_PREAMBLE)
     ).strip()
@@ -229,6 +231,22 @@ def split_backlog(root: Path, *, from_disk: bool = False) -> bool:
     intro = done.read_text() if done.exists() else "# Done\n"
     done.write_text(intro.rstrip("\n") + "\n" + (f"\n{entries}\n" if entries else ""))
     return True
+
+
+def _how_to(text: str) -> str:
+    """The how-to section of a former `backlog.md`, or an empty string."""
+    if HOW_TO_HEADING not in text:
+        return ""
+    start = text.index(HOW_TO_HEADING)
+    end = text.find("\n## ", start)
+    return text[start : end if end != -1 else len(text)].rstrip().removesuffix("---").rstrip()
+
+
+def _keep_how_to(readme: Path, how_to: str) -> None:
+    """The how-to appended to a `README.md` that has none: never lost with the split."""
+    if not how_to or not readme.exists() or HOW_TO_HEADING in readme.read_text():
+        return
+    readme.write_text(readme.read_text().rstrip("\n") + f"\n\n{how_to}\n")
 
 
 def _open_backlog(text: str) -> str:

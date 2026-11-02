@@ -269,3 +269,20 @@ def test_the_template_backlog_needs_no_split(tmp_path: Path) -> None:
 
     assert not split_backlog(tmp_path, from_disk=True)
     assert not split_backlog(tmp_path)  # not a git repo
+
+
+def test_a_kept_readme_receives_the_how_to_of_the_split(tmp_path: Path) -> None:
+    folder = tmp_path / "docs/backlog"
+    folder.mkdir(parents=True)
+    (folder / "backlog.md").write_text(FORMER_BACKLOG)
+    (folder / "README.md").write_text("# Backlog\n\nThe repo's own README.\n")
+
+    assert split_backlog(tmp_path, from_disk=True)
+
+    readme = (folder / "README.md").read_text()
+    assert readme.startswith("# Backlog\n\nThe repo's own README.\n\n## How to use")
+    assert "---" not in readme and "Critical" not in readme
+    # A README that already has one (the template's) is left alone.
+    (folder / "backlog.md").write_text(FORMER_BACKLOG)
+    assert split_backlog(tmp_path, from_disk=True)
+    assert (folder / "README.md").read_text() == readme
