@@ -7,7 +7,8 @@ import sys
 from collections.abc import Mapping
 from pathlib import Path
 
-from ion_repo import ui
+from ion_score import ui
+
 from ion_repo.shell import KilnError, run, step
 
 LOGIN_URL = "https://github.com/login/device"

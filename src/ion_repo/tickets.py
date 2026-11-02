@@ -21,7 +21,9 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from ion_repo import renames, ui
+from ion_score import ui
+
+from ion_repo import renames
 from ion_repo.shell import KilnError
 from ion_repo.stack import read_answers
 

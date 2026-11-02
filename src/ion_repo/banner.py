@@ -11,7 +11,8 @@ import textwrap
 from collections.abc import Sequence
 from pathlib import Path
 
-from ion_repo import ui
+from ion_score import ui
+
 from ion_repo.shell import KilnError
 from ion_repo.stack import NO_FRAMEWORK, answers_if_any, load_stack
 from ion_repo.versions import installed_version
