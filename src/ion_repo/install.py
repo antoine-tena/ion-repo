@@ -23,7 +23,7 @@ from ion_repo.stack import (
     answers_if_any,
     load_stack,
 )
-from ion_repo.statusline import apply_statusline_settings, ensure_statusline
+from ion_repo.statusline import apply_statusline_settings, ensure_palette, ensure_statusline
 from ion_repo.trailers import ensure_trailers
 from ion_repo.versions import PYPI_NAME
 
@@ -107,7 +107,7 @@ def install_project(root: Path) -> None:
     step("git guards (pre-commit) and status line")
     install_git_hooks(root)
     apply_statusline_settings(root)
-    ensure_trailers(ensure_statusline(config))
+    ensure_trailers(ensure_palette(ensure_statusline(config)))
     command_name = answers_if_any(root).get("name", "<command>")
     ui.success(f"Ready. {launch_hint(stack, command_name)}")
 
@@ -154,7 +154,7 @@ def install_machine() -> None:
         if LEGACY_MARKETPLACE in known:
             step("kiln's catalogue of Claude Code plugins removed")
             run(["claude", "plugin", "marketplace", "remove", LEGACY_MARKETPLACE], Path.cwd())
-    ensure_trailers(ensure_statusline(config))
+    ensure_trailers(ensure_palette(ensure_statusline(config)))
     ui.success("ion-repo is set up on this machine. Check it: ion repo doctor")
 
 

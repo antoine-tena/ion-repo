@@ -8,14 +8,17 @@ statusline.*` at each `ion repo install`, `ion repo new` and `ion repo set`.
 """
 
 import json
+import sys
 from dataclasses import replace
 from pathlib import Path
 from typing import Any, TypeGuard
 
 from ion_repo.config import (
     CUSTOM_STATUSLINE,
+    DEFAULT_PALETTE,
     DEFAULT_STATUSLINE,
     NO_STATUSLINE,
+    STATUSLINE_PALETTES,
     STATUSLINE_STYLES,
     UserConfig,
     config_path,
@@ -141,4 +144,30 @@ def ensure_statusline(config: UserConfig) -> UserConfig:
     print(apply_statusline_choice(str(updated.statusline)))
     save_config(updated)
     print(f"Choice saved in {config_path()} (change: ion repo set statusline=…).")
+    return updated
+
+
+def ask_palette() -> str:
+    """Outside a terminal, the default: stone and fire."""
+    if not sys.stdin.isatty():
+        return DEFAULT_PALETTE
+    prompt = (
+        f"Status line colors? {' / '.join(STATUSLINE_PALETTES)} "
+        f"[Enter: {DEFAULT_PALETTE}, ion-repo's own]: "
+    )
+    answer = input(prompt).strip().lower()
+    return answer if answer in STATUSLINE_PALETTES else DEFAULT_PALETTE
+
+
+def ensure_palette(config: UserConfig) -> UserConfig:
+    """Asked once, at the first `ion repo install` that sets an ion-repo status line, then kept in
+    the machine settings; the script reads it at each render."""
+    if config.statusline_palette or config.statusline not in STATUSLINE_STYLES:
+        return config
+    updated = replace(config, statusline_palette=ask_palette())
+    save_config(updated)
+    print(
+        f"Palette {updated.statusline_palette} saved in {config_path()} "
+        "(change: ion repo set statusline_palette=…)."
+    )
     return updated

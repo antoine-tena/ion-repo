@@ -12,6 +12,9 @@ The style is chosen per machine (`ion repo set statusline=…`, read in `~/.conf
 The names of before kiln 0.4.0 (`sobre`, `bandeau`, `classique`, `classique-fond`, `aucune`,
 `perso`) are still read. `--style <name>` forces a style, for a preview.
 
+The palette, stone and fire by default, is chosen the same way (`ion repo set
+statusline_palette=…`: `stone-fire`, `solarized`, `nord`, `mono`); `--palette <name>` forces one.
+
 Colors tell importance: gray when all is well, then glow (to watch), fire (to handle), ember
 (urgent). In a repo: branch, git state, CI, prod, tasks, containers, each shown only when the
 repo uses it; outside a repo (~/code): an overview of the repos below. Slow sources are read
@@ -49,19 +52,65 @@ LEGACY_STYLES = {
     "aucune": "none",
     "perso": "custom",
 }
-# tokens of every transcript of the machine, summed in the background (lifetime_tokens.py)
-LIFETIME_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "lifetime_tokens.py")
-LIFETIME_TTL = 300
 TIMES = "\u00d7"  # multiplication sign, between a name and a count (wt, br)
 INTEGRATION = ("main", "master", "develop")
 DAYS = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 FALLBACK_COLUMNS = 160  # width assumed when the terminal's is unknown
 CLAUDE_MARGIN = 4  # columns Claude Code keeps around the status line
 
-# ion-repo's stone and fire palette (src/ion_repo/ui.py), copied: the script runs without ion-repo.
-STONE_LIGHT, STONE, STONE_DARK = (185, 185, 180), (140, 140, 135), (95, 95, 92)
-BRICK, FIRE, EMBER = (180, 75, 35), (247, 150, 40), (205, 50, 35)
-GLOW, WHITE, SOOT = (255, 225, 120), (255, 255, 255), (25, 25, 25)
+# Palettes (`ion repo set statusline_palette=…`), each in the roles of ion-repo's stone and fire
+# (src/ion_repo/ui.py, copied: the script runs without ion-repo): light, mid and dark grays, the
+# repo's pill, then the levels to watch (glow), to handle (fire) and urgent (ember), white, soot.
+PALETTES = {
+    "stone-fire": (
+        ((185, 185, 180), (140, 140, 135), (95, 95, 92)),
+        ((180, 75, 35), (255, 225, 120), (247, 150, 40), (205, 50, 35)),
+        ((255, 255, 255), (25, 25, 25)),
+    ),
+    "solarized": (
+        ((147, 161, 161), (131, 148, 150), (88, 110, 117)),
+        ((38, 139, 210), (181, 137, 0), (203, 75, 22), (220, 50, 47)),
+        ((253, 246, 227), (0, 43, 54)),
+    ),
+    "nord": (
+        ((216, 222, 233), (150, 160, 178), (76, 86, 106)),
+        ((94, 129, 172), (235, 203, 139), (208, 135, 112), (191, 97, 106)),
+        ((236, 239, 244), (46, 52, 64)),
+    ),
+    "mono": (
+        ((200, 200, 200), (145, 145, 145), (95, 95, 95)),
+        ((80, 80, 80), (215, 215, 215), (255, 255, 255), (220, 50, 47)),
+        ((255, 255, 255), (20, 20, 20)),
+    ),
+}
+DEFAULT_PALETTE = "stone-fire"
+
+
+def machine_settings() -> dict:
+    """ion-repo's machine settings (`~/.config/kiln/config.toml`), empty when unreadable."""
+    base = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
+    try:
+        with open(os.path.join(base, "kiln", "config.toml"), "rb") as file:
+            return tomllib.load(file)
+    except OSError, tomllib.TOMLDecodeError:
+        return {}
+
+
+def chosen_palette(settings: dict) -> str:
+    """`--palette <name>`, else the `statusline_palette` key of the machine settings."""
+    if "--palette" in sys.argv[1:-1]:
+        name = sys.argv[sys.argv.index("--palette") + 1]
+    else:
+        name = str(settings.get("statusline_palette", DEFAULT_PALETTE))
+    return name if name in PALETTES else DEFAULT_PALETTE
+
+
+SETTINGS = machine_settings()
+(
+    (STONE_LIGHT, STONE, STONE_DARK),
+    (BRICK, GLOW, FIRE, EMBER),
+    (WHITE, SOOT),
+) = PALETTES[chosen_palette(SETTINGS)]
 
 # states of a backlog ticket, in English (docs/backlog) or French (former docs/a-faire)
 STATES = (
@@ -237,14 +286,6 @@ def compaction_point(window: int, project: str, model: str) -> int:
             own = ((settings.get("modelSettings") or {}).get(model) or {}).get("autoCompactWindow")
             point = window_tokens(own or settings.get("autoCompactWindow"))
     return min(point, window) if point and window else point or window
-
-
-def human_tokens(n: int) -> str:
-    """1234 → 1.2k, 9977454502 → 10.0G."""
-    for scale, unit in ((1e9, "G"), (1e6, "M"), (1e3, "k")):
-        if n >= scale:
-            return f"{n / scale:.1f}{unit}"
-    return str(n)
 
 
 def plural(n: int, word: str) -> str:
@@ -791,13 +832,6 @@ def collect_session(status: Status, d: dict, main: str) -> None:
             Item(f"+{c.get('total_lines_added', 0)}/-{c.get('total_lines_removed', 0)}", short="")
         )
         status.usage.append(usage)
-    lifetime_cmd = f"python3 {shlex.quote(LIFETIME_SCRIPT)}"
-    lifetime = cached("lifetime-tokens", LIFETIME_TTL, lifetime_cmd, CACHE)
-    if lifetime.isdigit():
-        # first of the usage groups: those at the end drop first when room runs out
-        exact = f"{int(lifetime):,}".replace(",", "\u202f")  # 9 977 454 502
-        short = human_tokens(int(lifetime))
-        status.usage.insert(0, [Item(f"Σ {exact} tok", short=f"Σ{short}")])
 
 
 # ---------------------------------------------------------------------------- rendering
@@ -966,12 +1000,7 @@ def chosen_style() -> str:
     if "--style" in sys.argv[1:-1]:
         style = sys.argv[sys.argv.index("--style") + 1]
     else:
-        base = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
-        try:
-            with open(os.path.join(base, "kiln", "config.toml"), "rb") as file:
-                style = str(tomllib.load(file).get("statusline", DEFAULT_STYLE))
-        except OSError, tomllib.TOMLDecodeError:
-            style = DEFAULT_STYLE
+        style = str(SETTINGS.get("statusline", DEFAULT_STYLE))
     return LEGACY_STYLES.get(style, style)
 
 
