@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Reminders: when to ask again whether to update ion-repo (the tool, or a repo), or to change
-the person's color in the chat (`color`).
+the person's color in the chat (`color`) or the names it shows (`names`).
 
-Each question has a key (`tool`, `color`, or the root of a repo). It is asked at the first
+Each question has a key (`tool`, `color`, `names`, or the root of a repo). It is asked at the first
 session where it applies, then, after each "no", again after 5, 10, 30 and 50 sessions in the
-place where it is asked (the color: 50, 200, then every 1000 sessions, and 1000 after a "yes");
-"never" closes it for good.
+place where it is asked (the color and the names: 50, 200, then every 1000 sessions, and 1000
+after a "yes"); "never" closes it for good.
 
 State: `~/.local/state/kiln/reminders.json` (`rappels.json` before kiln 0.4, migrated). Answers,
 given by Claude after the question: `python3 reminders.py yes|no|never <key>`.
@@ -28,10 +28,11 @@ LEGACY_ANSWERS = {"oui": "yes", "non": "no", "jamais": "never"}
 DELAYS = (5, 10, 30, 50)
 TOOL_KEY = "tool"
 COLOR_KEY = "color"
+NAMES_KEY = "names"
 # A question with its own pace; the last delay repeats.
-DELAYS_BY_KEY = {COLOR_KEY: (50, 200, 1000)}
+DELAYS_BY_KEY = {COLOR_KEY: (50, 200, 1000), NAMES_KEY: (50, 200, 1000)}
 # Asked again after a "yes" too, a taste being no update: the delay after it.
-DELAY_AFTER_YES = {COLOR_KEY: 1000}
+DELAY_AFTER_YES = {COLOR_KEY: 1000, NAMES_KEY: 1000}
 
 State = dict[str, Any]
 Question = dict[str, Any]
