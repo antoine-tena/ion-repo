@@ -13,8 +13,9 @@ The names of before kiln 0.4.0 (`sobre`, `bandeau`, `classique`, `classique-fond
 `perso`) are still read. `--style <name>` forces a style, for a preview.
 
 The palette, stone and fire by default, is chosen the same way (`ion repo set
-statusline_palette=…`, twenty-one palettes, `rose` among them, and `chat`: the colors of the
-person and of Claude in the chat, after the theme); `--palette <name>` forces one. Each
+statusline_palette=…`, twenty-nine palettes: one of a single hue each, `red`, `blue`…, the
+terminal themes, `rose`, and `chat`: the colors of the person and of Claude in the chat, after
+the theme); `--palette <name>` forces one. Each
 comes dark or light after Claude Code's theme (`/theme`), with color-blind safe levels under its
 `-daltonized` themes; `--theme dark|light|dark-daltonized|light-daltonized` forces it.
 `--levels` prints each palette's four levels (all well, to watch, to handle, urgent) as JSON, to
@@ -31,6 +32,7 @@ import datetime
 import fcntl
 import hashlib
 import json
+import math
 import os
 import re
 import shlex
@@ -551,6 +553,78 @@ PALETTES: dict[str, dict[str, Palette]] = {
     },
 }
 DEFAULT_PALETTE = "stone-fire"
+
+
+def oklch(lightness: float, chroma: float, hue: float) -> tuple[int, int, int]:
+    """An OKLCH color (Björn Ottosson's OKLab, in polar form) in sRGB; its chroma lowered until
+    it fits, so a hue keeps its lightness, the one thing that tells two levels apart."""
+    angle = math.radians(hue)
+    for step in range(101):
+        c = chroma * (1 - step / 100)
+        a, b = c * math.cos(angle), c * math.sin(angle)
+        long_ = (lightness + 0.3963377774 * a + 0.2158037573 * b) ** 3
+        medium = (lightness - 0.1055613458 * a - 0.0638541728 * b) ** 3
+        short = (lightness - 0.0894841775 * a - 1.2914855480 * b) ** 3
+        linear = (
+            4.0767416621 * long_ - 3.3077115913 * medium + 0.2309699292 * short,
+            -1.2684380046 * long_ + 2.6097574011 * medium - 0.3413193965 * short,
+            -0.0041960863 * long_ - 0.7034186147 * medium + 1.7076147010 * short,
+        )
+        if all(-1e-4 <= part <= 1 + 1e-4 for part in linear):
+            break
+    return tuple(  # type: ignore[return-value]
+        round(255 * (12.92 * x if x <= 0.0031308 else 1.055 * x ** (1 / 2.4) - 0.055))
+        for x in (min(max(part, 0.0), 1.0) for part in linear)
+    )
+
+
+# Palettes of one hue (`red`, `blue`…): a gray barely tinted with it for all well, then the hue
+# paler to watch, plain to handle, deepest urgent; the levels apart by their lightness in OKLCH,
+# so they stay told apart though they share a hue. Per shade, (lightness, chroma) of strong, mid
+# and faint grays, pill, glow, fire, ember, text, band, as in PALETTES.
+HUES = {
+    "red": 25,
+    "orange": 55,
+    "yellow": 95,
+    "green": 145,
+    "teal": 190,
+    "blue": 255,
+    "violet": 300,
+    "pink": 350,
+}
+HUE_RAMP = {
+    "dark": (
+        (0.88, 0.012),
+        (0.72, 0.012),
+        (0.48, 0.012),
+        (0.55, 0.14),
+        (0.90, 0.09),
+        (0.76, 0.16),
+        (0.62, 0.22),
+        (0.98, 0.005),
+        (0.20, 0.02),
+    ),
+    "light": (
+        (0.35, 0.012),
+        (0.50, 0.012),
+        (0.72, 0.012),
+        (0.50, 0.14),
+        (0.70, 0.13),
+        (0.57, 0.17),
+        (0.44, 0.19),
+        (0.20, 0.01),
+        (0.96, 0.012),
+    ),
+}
+PALETTES.update(
+    {
+        name: {
+            shade: tuple(oklch(lightness, chroma, hue) for lightness, chroma in ramp)
+            for shade, ramp in HUE_RAMP.items()
+        }
+        for name, hue in HUES.items()
+    }
+)
 
 
 def machine_settings() -> dict:

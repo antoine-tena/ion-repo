@@ -19,8 +19,9 @@ style and palette). This one asks all of them at once.
      it holds (`antoine-tena` gives `Antoine`);
    - Claude's name: keep, then `Claude` if it is not the current one;
    - the status line's colors: keep, then `chat` (their color and Claude's, following any
-     change of their color) if it is not the current one, then another palette. Its style is
-     changed through "Other" or `/repo:statusline`.
+     change of their color) if it is not the current one, then a one-hue palette of
+     `/repo:statusline` (`blue`, `pink`…). Its style is changed through "Other" or
+     `/repo:statusline`.
    Any name, color or palette typed in "Other" is taken.
 3. Apply only what changed, each by its skill's own steps (`/repo:color` step 3,
    `/repo:names` step 3, `/repo:statusline` step 4). An answer that asks for more choices ("other

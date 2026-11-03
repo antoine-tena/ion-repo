@@ -21,13 +21,17 @@ ion-repo did not generate refuses it), lists the choices and the current ones.
    - the style: the current one first, then the others of `plain`, `band`, `classic`,
      `classic-band` (`none`: no status line; `custom`: their own, left as it is, both through
      "Other").
-   - the colors: `chat` first, the person's color and Claude's from the chat, then the current
-     palette if it is another one, then two others that stand apart. "Other" takes any palette
-     `ion repo set` lists.
+   - the colors, a choice of hue, since the person picks a color, not a theme: `chat` first,
+     the person's color and Claude's from the chat, then three of the one-hue palettes (`red`,
+     `orange`, `yellow`, `green`, `teal`, `blue`, `violet`, `pink`: a gray, then the hue from
+     palest to deepest) that stand apart, the current one among them if it is one; the question
+     names the others. "Other" takes any of them, or any palette `ion repo set` lists (the
+     terminal themes, `nord`, `dracula`…, gray, yellow, orange, red each, alike).
    A palette's name says nothing to the person: offer each by its colors, from `python3 <script>
-   --levels` (each palette's four levels in the current theme, `#rrggbb`). Its label names its
-   four colors in plain words, in the user's language (`Gris, jaune, orange, rouge`), with
-   `(Recommended)` after the first; its description says what each color means, one level each:
+   --levels` (each palette's four levels in the current theme, `#rrggbb`). A one-hue palette's
+   label is its hue (`Bleu`), the others name their four colors in plain words, in the user's
+   language (`Gris, jaune, orange, rouge`), with `(Recommended)` after the first; its
+   description says what each color means, one level each:
    all well (the neutral one, most of the line), to watch (not urgent), to handle (fairly
    urgent), urgent (in French: `Normal`, `À surveiller`, `À traiter`, `Urgent`), then the
    palette's name for `ion repo set`. Its preview lists the four levels, one a line, each with
