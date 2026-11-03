@@ -2,6 +2,8 @@
 // Claude, each under its name; gray for what came from elsewhere (another session, a task, a
 // schedule), with its name. Colors are theme keys, so a custom theme (`/theme`) changes them.
 // Names come from ~/.claude/chat-names.json (`/repo:names`), else git's user.name and "Claude".
+// The time beside the name is when the message was first drawn: neither the props nor
+// `$.session.messages` carry the message's own time, so a resumed session shows the resume's.
 import type { Register } from 'claude-code'
 
 type Origin = { kind: string; server?: string; plugin?: string }
@@ -16,16 +18,24 @@ const NAMES_TTL_MS = 10_000
 const firstSeen = new Map<string, number>()
 let names: { at: number; value: Promise<Names> } | undefined
 
-const clockTime = (ms: number): string => {
+const MONTHS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.']
+
+// HH:MM today, "2 nov. 21:11" another day.
+const clockTime = (ms: number, nowMs: number): string => {
   const at = new Date(ms)
-  return `${String(at.getHours()).padStart(2, '0')}:${String(at.getMinutes()).padStart(2, '0')}`
+  const today = new Date(nowMs)
+  const time = `${String(at.getHours()).padStart(2, '0')}:${String(at.getMinutes()).padStart(2, '0')}`
+  return at.toDateString() === today.toDateString()
+    ? time
+    : `${at.getDate()} ${MONTHS[at.getMonth()]} ${time}`
 }
 
 const seenAt = async (now: () => Promise<number>, id: string): Promise<string> => {
+  const current = await now()
   if (!firstSeen.has(id)) {
-    firstSeen.set(id, await now())
+    firstSeen.set(id, current)
   }
-  return clockTime(firstSeen.get(id) as number)
+  return clockTime(firstSeen.get(id) as number, current)
 }
 
 const output = (result: Run): string => (result.exitCode === 0 ? result.stdout.trim() : '')
@@ -102,12 +112,19 @@ export const register: Register = on => {
       ? (await currentNames(await $.clock.now(), () => readNames(argv => $.process.run(argv))))
           .claude
       : null
+    const time = e.props.isFirstOfReply ? await seenAt(() => $.clock.now(), e.requestId) : null
 
     return (
       <Box flexDirection="row" marginTop={e.props.isFirstOfReply ? 1 : 0}>
         <Box width={1} backgroundColor="claude" />
         <Box flexDirection="column" flexGrow={1} marginLeft={1}>
-          {label === null ? null : <Text bold color="claude">{label}</Text>}
+          {label === null ? null : (
+            <Box flexDirection="row">
+              <Text bold color="claude">{label}</Text>
+              <Box flexGrow={1} />
+              <Text dimColor>{time}</Text>
+            </Box>
+          )}
           <Markdown text={e.props.text} />
         </Box>
       </Box>

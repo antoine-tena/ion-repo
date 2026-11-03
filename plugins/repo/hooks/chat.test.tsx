@@ -81,3 +81,39 @@ test('the names chosen with /repo:names replace the real ones', async ($, on) =>
   expect((await reply.find({ type: 'Text', text: /^Ion$/ }))?.text).toBe('Ion')
   await reply.unmount()
 })
+
+test("Claude's reply shows the time on its name's line, the first of the reply only", async ($, on) => {
+  on('clock.now', () => ({ value: NOON }))
+  on('process.run', GIT_NAME)
+  const first = await $.ui.mount({
+    plugin: 'repo',
+    component: 'AssistantMessage',
+    requestId: 'r3',
+    surface: 'terminal',
+    props: { text: 'done', isFirstOfReply: true },
+  })
+  expect((await first.find({ type: 'Text', text: /12:05/ }))?.text).toBe('12:05')
+  await first.unmount()
+  const next = await $.ui.mount({
+    plugin: 'repo',
+    component: 'AssistantMessage',
+    requestId: 'r4',
+    surface: 'terminal',
+    props: { text: 'more', isFirstOfReply: false },
+  })
+  expect(await next.find({ type: 'Text', text: /12:05/ })).toBeUndefined()
+  await next.unmount()
+})
+
+test('a message first drawn another day shows its date before the time', async ($, on) => {
+  let now = new Date(2026, 10, 2, 21, 11).getTime()
+  on('clock.now', () => ({ value: now }))
+  on('process.run', GIT_NAME)
+  const yesterday = await $.ui.mount(userMessage('m5', { kind: 'composer' }))
+  expect((await yesterday.find({ type: 'Text', text: /21:11/ }))?.text).toBe('21:11')
+  await yesterday.unmount()
+  now = NOON
+  const today = await $.ui.mount(userMessage('m5', { kind: 'composer' }))
+  expect((await today.find({ type: 'Text', text: /21:11/ }))?.text).toBe('2 nov. 21:11')
+  await today.unmount()
+})
