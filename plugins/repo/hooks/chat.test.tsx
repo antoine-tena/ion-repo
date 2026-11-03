@@ -117,3 +117,24 @@ test('a message first drawn another day shows its date before the time', async (
   expect((await today.find({ type: 'Text', text: /21:11/ }))?.text).toBe('2 nov. 21:11')
   await today.unmount()
 })
+
+test('what came from elsewhere takes the name and color chosen for it', async ($, on) => {
+  // Later than the names read by the tests above, so they are read again.
+  on('clock.now', () => ({ value: NOON + 7_200_000 }))
+  on('process.run', (_, e: { argv: string[] }) => {
+    const command = e.argv.join(' ')
+    if (command.includes('chat-names.json')) {
+      return ran('{"others": {"task-notification": "Tâches"}}')
+    }
+    return ran(command.includes('chat-colors.json') ? '{"others": "#a78bfa"}' : 'antoine-tena')
+  })
+  const task = await $.ui.mount(userMessage('m6', { kind: 'task-notification' }))
+  expect((await task.find({ type: 'Text', text: /^Tâches$/ }))?.text).toBe('Tâches')
+  expect(await barColor(task)).toBe('#a78bfa')
+  await task.unmount()
+  // Not renamed: its own name, in the same color.
+  const peer = await $.ui.mount(userMessage('m7', { kind: 'peer' }, { name: 'ion-host' }))
+  expect((await peer.find({ type: 'Text', text: /^ion-host$/ }))?.text).toBe('ion-host')
+  expect(await barColor(peer)).toBe('#a78bfa')
+  await peer.unmount()
+})
