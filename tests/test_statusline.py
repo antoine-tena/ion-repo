@@ -421,3 +421,38 @@ def test_statusline_palette_is_a_machine_key() -> None:
     assert apply_machine(UserConfig(), ["statusline_palette=nord"]).statusline_palette == "nord"
     with pytest.raises(KilnError, match="statusline_palette"):
         apply_machine(UserConfig(), ["statusline_palette=arc-en-ciel"])
+
+
+def test_the_chat_palette_takes_the_chat_colors_of_a_custom_theme(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`/repo:color` writes the person's color in a custom theme: the status line follows."""
+    monkeypatch.setenv("HOME", str(tmp_path))
+    (tmp_path / ".claude/themes").mkdir(parents=True)
+    (tmp_path / ".claude/settings.json").write_text('{"theme": "custom:mine"}')
+    (tmp_path / ".claude/themes/mine.json").write_text(
+        '{"name": "Mine", "base": "light", "overrides": {"professionalBlue": "#4ade80"}}'
+    )
+    script = load_script()
+
+    assert script.claude_theme() == "light"
+    overrides = script.custom_theme(script.theme_setting())["overrides"]
+    light = script.chat_palette("light", overrides)["light"]
+    assert light[3] == light[4] == (74, 222, 128)
+    assert light[5] == (215, 119, 87)
+
+
+def test_the_chat_palette_keeps_claude_codes_colors_without_a_custom_theme() -> None:
+    script = load_script()
+
+    dark = script.chat_palette("dark", {})["dark"]
+    assert dark[3] == (106, 155, 204)
+    assert script.chat_palette("dark-daltonized", {"claude": "ansi:red"})["dark"][5] == (
+        255,
+        153,
+        51,
+    )
+
+
+def test_statusline_palette_accepts_chat() -> None:
+    assert apply_machine(UserConfig(), ["statusline_palette=chat"]).statusline_palette == "chat"
