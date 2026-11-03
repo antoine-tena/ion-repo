@@ -88,21 +88,11 @@ def test_answers_are_recorded_from_the_command_line(reminders: ModuleType) -> No
         reminders.main(["maybe", "tool"])
 
 
-def test_the_color_question_has_its_own_pace(reminders: ModuleType) -> None:
+def test_the_version_of_a_question_of_taste_survives_a_reload(reminders: ModuleType) -> None:
     state: dict[str, Any] = {}
-    asked_at = []
-    for session in range(1, 2500):
-        reminders.count_session(state, "color")
-        if reminders.is_due(state, "color"):
-            asked_at.append(session)
-            reminders.record(state, "color", "no")
+    reminders.count_session(state, "look")
+    reminders.record(state, "look", "no")
+    reminders.save(state)
 
-    assert asked_at == [1, 51, 251, 1251, 2251]
-
-
-def test_a_yes_to_the_color_asks_again_in_1000_sessions(reminders: ModuleType) -> None:
-    state: dict[str, Any] = {}
-    reminders.count_session(state, "color")
-    reminders.record(state, "color", "yes")
-
-    assert state["questions"]["color"]["next"] == 1001
+    assert reminders.load()["questions"]["look"]["version"] == reminders.NEWS["look"]
+    assert not reminders.is_due(reminders.load(), "look")

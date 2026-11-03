@@ -1,37 +1,47 @@
 #!/usr/bin/env python3
-"""At a session's start, now and then: Claude asks whether the person wants another look for the
-status line (its style, its colors, those of the chat among them), on any machine where the
-`repo` plugin is on, in any folder.
+"""At a session's start: Claude asks whether the person wants to change the look of the chat and
+the status line (their color, their name, Claude's name, the status line's style and colors), on
+any machine where the `repo` plugin is on, in any folder.
 
-"Yes" runs the skill `/repo:statusline`; "Not now" asks again after 50, 200, then every 1000
-sessions; "Never" closes it. Paced by `reminders.py` under the key `statusline`, counted once
-per session start. Called by `session_start.py`; silent when not due.
+A question of taste, no update: asked once, then again only when what `/repo:look` offers grows
+(`NEWS` in `reminders.py`, its new things in `WHATS_NEW`), whatever the answer; "Never" closes it
+for good. "Yes" runs the skill `/repo:look`. Called by `session_start.py`; silent when not due.
 """
 
 import reminders
 
-KEY = reminders.STATUSLINE_KEY
-YES, NO, NEVER = "Change the status line", "Not now", "Never ask again"
+KEY = reminders.LOOK_KEY
+YES, NO, NEVER = "Change the look", "Not now", "Never ask again"
+# What each version of `/repo:look` brought, told when the question comes back for it.
+WHATS_NEW = {
+    1: "their color, their name and Claude's above the messages, the status line in the chat's "
+    "colors",
+}
 
 
 def answer_command(verdict: str) -> str:
     return f"`{reminders.SCRIPT} {verdict} {KEY}`"
 
 
-def question() -> str:
+def news(since: int) -> str:
+    return "; ".join(text for version, text in sorted(WHATS_NEW.items()) if version > since)
+
+
+def question(since: int) -> str:
+    new = f" (new: {news(since)})" if since > 0 else ""
     return (
         "After any other question ion-repo asks at this start, ask the user with the "
-        "AskUserQuestion tool, in their language, whether they want another look for the status "
-        "line: its style, its colors, among them those of the chat, theirs and Claude's "
-        f'("{YES}", "{NO}", "{NEVER}"). If "{YES}": skill `/repo:statusline`. If "{NO}": '
-        f'{answer_command("no")}. If "{NEVER}": {answer_command("never")}. Then resume their '
-        "request."
+        "AskUserQuestion tool, in their language, whether they want to change the look of the "
+        "chat and the status line: their color, their name and Claude's above the messages, the "
+        f'status line\'s style and colors{new} ("{YES}", "{NO}", "{NEVER}"). If "{YES}": skill '
+        f'`/repo:look`. If "{NO}": {answer_command("no")}. If "{NEVER}": '
+        f"{answer_command('never')}. Then resume their request."
     )
 
 
 def context() -> str:
     """The question when it is due, after counting this session; empty otherwise."""
     state = reminders.load()
-    reminders.count_session(state, KEY)
+    entry = reminders.count_session(state, KEY)
     reminders.save(state)
-    return question() if reminders.is_due(state, KEY) else ""
+    return question(int(entry.get("version", 0))) if reminders.is_due(state, KEY) else ""

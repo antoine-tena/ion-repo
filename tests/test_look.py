@@ -19,26 +19,44 @@ def look(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> ModuleType:
     return module
 
 
-def test_the_first_session_asks_for_the_statusline(look: ModuleType) -> None:
+def answer(look: ModuleType, verdict: str) -> None:
+    state = look.reminders.load()
+    look.reminders.record(state, "look", verdict)
+    look.reminders.save(state)
+
+
+def test_the_first_session_asks_for_the_look(look: ModuleType) -> None:
     question = look.context()
 
-    assert "/repo:statusline" in question
-    assert "reminders.py" in question and " no statusline" in question
+    assert "/repo:look" in question
+    assert "reminders.py" in question and " no look" in question
+    assert "new:" not in question
 
 
-def test_a_no_keeps_the_next_49_sessions_quiet(look: ModuleType) -> None:
+@pytest.mark.parametrize("verdict", ["yes", "no"])
+def test_an_answer_keeps_it_quiet_until_something_new(
+    look: ModuleType, monkeypatch: pytest.MonkeyPatch, verdict: str
+) -> None:
     look.context()
-    state = look.reminders.load()
-    look.reminders.record(state, "statusline", "no")
-    look.reminders.save(state)
+    answer(look, verdict)
 
-    assert [look.context() for _ in range(49)] == [""] * 49
-    assert look.context() != ""
+    assert [look.context() for _ in range(3000)] == [""] * 3000
+
+    monkeypatch.setitem(look.reminders.NEWS, "look", 2)
+    monkeypatch.setitem(look.WHATS_NEW, 2, "a fourth status line style")
+    question = look.context()
+    assert "new: a fourth status line style" in question
+    assert "their name and Claude's above the messages, the status line in" not in question
 
 
-def test_never_closes_the_question(look: ModuleType) -> None:
-    state = look.reminders.load()
-    look.reminders.record(state, "statusline", "never")
-    look.reminders.save(state)
+def test_never_closes_it_even_for_something_new(
+    look: ModuleType, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    answer(look, "never")
+    monkeypatch.setitem(look.reminders.NEWS, "look", 2)
 
-    assert [look.context() for _ in range(2000)] == [""] * 2000
+    assert look.context() == ""
+
+
+def test_each_version_says_what_it_brought(look: ModuleType) -> None:
+    assert set(look.WHATS_NEW) == set(range(1, look.reminders.NEWS["look"] + 1))

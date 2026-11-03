@@ -1,6 +1,6 @@
 ---
 name: statusline
-description: Change the look of the status line - its style, its colors, among them the chat's (the person's and Claude's) - each shown before it is chosen. Use when the user wants another status line, other colors for it, or says yes to the status line question at session start.
+description: Change the look of the status line - its style, its colors, among them the chat's (the person's and Claude's) - each shown before it is chosen. Use when the user wants another status line, other colors for it, or from `/repo:look`.
 argument-hint: "[a style] [a palette]"
 ---
 
@@ -27,7 +27,5 @@ ion-repo did not generate refuses it), lists the choices and the current ones.
    Previews cannot show colors: name them in the option's description (`chat`: their color for
    the repo and what to watch, Claude's orange for what to handle).
 4. `ion repo set statusline=<style> statusline_palette=<palette>` (only what changed).
-5. `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/reminders.py" yes statusline`: the start question comes
-   back in 1000 sessions.
-6. Ask whether it suits, the status line being redrawn already; if not, back to 3. With `chat`,
+5. Ask whether it suits, the status line being redrawn already; if not, back to 3. With `chat`,
    say it follows `/repo:color`: a new color for their messages is the status line's too.
