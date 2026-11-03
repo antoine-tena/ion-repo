@@ -92,8 +92,8 @@ def test_status_outside_a_terminal_is_plain_text(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str], tmp_path: Path
 ) -> None:
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "config"))
-    (tmp_path / "config/kiln").mkdir(parents=True)
-    (tmp_path / "config/kiln/config.toml").write_text(f'code_dir = "{tmp_path}"\n')
+    (tmp_path / "config/ion-repo").mkdir(parents=True)
+    (tmp_path / "config/ion-repo/config.toml").write_text(f'code_dir = "{tmp_path}"\n')
     monkeypatch.setattr(fleet, "latest_release", lambda **_: "v0.3.0")
 
     assert run_kiln(monkeypatch, "status") == 0

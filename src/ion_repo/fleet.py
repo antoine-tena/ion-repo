@@ -116,7 +116,7 @@ def require_code_dir(code_dir: Path) -> None:
     """The code folder exists: otherwise, say where to set it rather than crash."""
     if not code_dir.is_dir():
         raise KilnError(
-            f"code folder not found: {code_dir}. Set it in ~/.config/kiln/config.toml "
+            f"code folder not found: {code_dir}. Set it in ~/.config/ion-repo/config.toml "
             '(code_dir = "<folder that holds your repos>")'
         )
 

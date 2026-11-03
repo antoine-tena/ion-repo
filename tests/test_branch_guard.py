@@ -9,11 +9,13 @@ import pytest
 HOOK = Path(__file__).resolve().parent.parent / "plugins/repo/hooks/branch_guard.py"
 
 
-def run_hook(command: str, cwd: Path, trailers: str = "never") -> subprocess.CompletedProcess[str]:
-    """The machine's `ai_trailers` in a throwaway config folder."""
-    config = cwd.parent / f"config-{trailers}"
-    (config / "kiln").mkdir(parents=True, exist_ok=True)
-    (config / "kiln/config.toml").write_text(f'ai_trailers = "{trailers}"\n')
+def run_hook(
+    command: str, cwd: Path, trailers: str = "never", folder: str = "ion-repo"
+) -> subprocess.CompletedProcess[str]:
+    """The machine's `ai_trailers` in a throwaway config folder (`kiln`: its old place)."""
+    config = cwd.parent / f"config-{trailers}-{folder}"
+    (config / folder).mkdir(parents=True, exist_ok=True)
+    (config / folder / "config.toml").write_text(f'ai_trailers = "{trailers}"\n')
     payload = json.dumps({"tool_input": {"command": command}, "cwd": str(cwd)})
     return subprocess.run(
         [sys.executable, str(HOOK)],
@@ -45,6 +47,11 @@ def test_disclosure_passes_where_the_machine_chose_it(repo: Path) -> None:
     assert run_hook(disclosed, repo, trailers="disclose").returncode == 0
     session = 'git commit -m "feat: x" -m "Claude-Session: abc"'
     assert run_hook(session, repo, trailers="disclose").returncode == 2
+
+
+def test_the_machine_choice_is_still_read_at_its_old_place(repo: Path) -> None:
+    disclosed = 'git commit -m "feat: x" -m "Co-Authored-By: Claude <noreply@anthropic.com>"'
+    assert run_hook(disclosed, repo, trailers="disclose", folder="kiln").returncode == 0
 
 
 def test_claude_signature_in_message_file_is_refused(repo: Path) -> None:
