@@ -31,6 +31,15 @@ default, the user's language when the output is for people who read it, e.g. a F
    - Long material (a log, a document, data) goes in XML tags (`<log>…</log>`), before the
      question about it. No shouting (CAPITALS, "CRITICAL"), no padding, no role play unless it
      sets real expertise; as short as the task allows, as long as it needs.
-4. **Give it** in a single code block, ready to paste, then one or two lines: the choices made
-   (reader, language, what was left out) and how to use it (`claude` in which folder, the
-   `Agent` tool, a system prompt). Don't run it unless the user asks.
+4. **Give it** ready to use, then one or two lines: the choices made (reader, language, what was
+   left out). For a Claude Code session, the whole command in a single `bash` block, the prompt in
+   a quoted heredoc so nothing in it needs escaping; the user pastes it and the session opens in
+   the right folder:
+   ```bash
+   cd ~/code/<path>/<repo> && claude "$(cat <<'EOF'
+   <the prompt>
+   EOF
+   )"
+   ```
+   Otherwise the prompt alone in a single code block, and where it goes (the `Agent` tool, a
+   system prompt, another model). Don't run it unless the user asks.
