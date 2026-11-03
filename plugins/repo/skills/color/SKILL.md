@@ -1,6 +1,6 @@
 ---
 name: color
-description: Change the color of the bar beside the person's messages in the chat - a palette to pick from, more on request, any color they name - as a Claude Code custom theme. Use when the user wants another color for their messages, or says yes to the color question at session start.
+description: Change the color of the bar beside the person's messages in the chat - a palette to pick from, more on request, any color they name - as a Claude Code custom theme. Use when the user wants another color for their messages, or from `/repo:look`.
 argument-hint: "[a color, by name or #rrggbb]"
 ---
 
@@ -40,8 +40,7 @@ A theme is a JSON file in `~/.claude/themes/<slug>.json` (`name`, `base`, `overr
    `json`, indent 2). When `chezmoi source-path <file>` answers for one of the two files, update its
    source too (`chezmoi add ~/.claude/themes/<slug>.json`, `chezmoi re-add
    ~/.claude/settings.json`) and say chezmoi's repo has it to commit.
-4. `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/reminders.py" yes color`: the start question comes back
-   in 1000 sessions.
-5. Claude Code reloads `~/.claude/themes/` live: the bar changes at once. If the folder did not
+4. Claude Code reloads `~/.claude/themes/` live: the bar changes at once, and the status line
+   too when its palette is `chat` (`/repo:statusline`). If the folder did not
    exist when the session started, say a restart of Claude Code is needed once. Ask whether it
    suits; if not, back to 2.

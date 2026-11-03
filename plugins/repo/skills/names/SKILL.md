@@ -1,6 +1,6 @@
 ---
 name: names
-description: Choose the names above the chat's messages - the person's, their Claude's - by default their git name and Claude. Use when the user wants another name for themselves or for Claude in the chat, or says yes to the names question at session start.
+description: Choose the names above the chat's messages - the person's, their Claude's - by default their git name and Claude. Use when the user wants another name for themselves or for Claude in the chat, or from `/repo:look`.
 argument-hint: "[the person's name] [Claude's name]"
 ---
 
@@ -23,7 +23,5 @@ person, `Claude` for Claude.
    real name chosen is left out of the file, so a later change of `git config user.name` follows.
    No key left: remove the file. When `chezmoi source-path ~/.claude/chat-names.json` answers,
    `chezmoi re-add` it and say chezmoi's repo has it to commit.
-4. `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/reminders.py" yes names`: the start question comes back
-   in 1000 sessions.
-5. The mod reads the names again within ten seconds: the next message shows them. Ask whether
+4. The mod reads the names again within ten seconds: the next message shows them. Ask whether
    they suit; if not, back to 2.

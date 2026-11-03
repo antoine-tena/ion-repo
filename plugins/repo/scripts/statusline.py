@@ -13,7 +13,8 @@ The names of before kiln 0.4.0 (`sobre`, `bandeau`, `classique`, `classique-fond
 `perso`) are still read. `--style <name>` forces a style, for a preview.
 
 The palette, stone and fire by default, is chosen the same way (`ion repo set
-statusline_palette=…`, ten palettes, `rose` among them); `--palette <name>` forces one. Each
+statusline_palette=…`, eleven palettes, `rose` among them, and `chat`: the colors of the person and
+of Claude in the chat, after the theme); `--palette <name>` forces one. Each
 comes dark or light after Claude Code's theme (`/theme`), with color-blind safe levels under its
 `-daltonized` themes; `--theme dark|light|dark-daltonized|light-daltonized` forces it.
 
@@ -326,7 +327,7 @@ def chosen_palette(settings: dict) -> str:
         name = sys.argv[sys.argv.index("--palette") + 1]
     else:
         name = str(settings.get("statusline_palette", DEFAULT_PALETTE))
-    return name if name in PALETTES else DEFAULT_PALETTE
+    return name if name in PALETTES or name == CHAT_PALETTE else DEFAULT_PALETTE
 
 
 # Levels for color-blind eyes (Okabe-Ito, safe for every common color blindness): sky blue to
@@ -338,25 +339,90 @@ DALTONIZED = {
 }
 
 
+CHAT_PALETTE = "chat"
+# Claude Code's own colors for the person (`professionalBlue`) and for Claude (`claude`), by
+# theme; a custom theme's overrides (`/repo:color`) replace them.
+CHAT_DEFAULTS = {
+    "professionalBlue": (106, 155, 204),
+    "claude": (215, 119, 87),
+}
+CHAT_DEFAULTS_DALTONIZED = {"claude": (255, 153, 51)}
+
+
+def json_file(path: str) -> dict:
+    try:
+        with open(os.path.expanduser(path), "rb") as file:
+            loaded = json.load(file)
+    except OSError, ValueError:
+        return {}
+    return loaded if isinstance(loaded, dict) else {}
+
+
+def theme_setting() -> str:
+    """Claude Code's `/theme`: `theme` in `~/.claude/settings.json`, else in `~/.claude.json`."""
+    for path in ("~/.claude/settings.json", "~/.claude.json"):
+        theme = json_file(path).get("theme")
+        if isinstance(theme, str) and theme:
+            return theme
+    return ""
+
+
+def custom_theme(theme: str) -> dict:
+    """The file of a `custom:<slug>` theme (`~/.claude/themes/<slug>.json`), empty otherwise."""
+    if not theme.startswith("custom:"):
+        return {}
+    return json_file(f"~/.claude/themes/{theme.removeprefix('custom:')}.json")
+
+
 def claude_theme() -> str:
-    """`--theme <name>`, else Claude Code's theme (`/theme`, in `~/.claude.json`: `light`,
-    `light-daltonized`, `dark-ansi`…), else `COLORFGBG` set by some terminals; dark otherwise."""
+    """`--theme <name>`, else Claude Code's theme (`/theme`: `light`, `light-daltonized`,
+    `dark-ansi`…, a custom theme by its `base`), else `COLORFGBG` set by some terminals; dark
+    otherwise."""
     if "--theme" in sys.argv[1:-1]:
         return sys.argv[sys.argv.index("--theme") + 1]
-    try:
-        with open(os.path.expanduser("~/.claude.json"), "rb") as file:
-            theme = str(json.load(file).get("theme") or "")
-    except OSError, ValueError, AttributeError:
-        theme = ""
+    theme = theme_setting()
+    if theme.startswith("custom:"):
+        theme = str(custom_theme(theme).get("base") or "")
     if theme.startswith(("light", "dark")):
         return theme
     background = os.environ.get("COLORFGBG", "").rpartition(";")[2]
     return "light" if background in ("7", "15") else "dark"
 
 
+def rgb(value: object) -> tuple[int, int, int] | None:
+    """A theme color written `#rrggbb` or `rgb(r,g,b)`; None for any other form (`ansi:…`)."""
+    text = str(value).strip().lower()
+    if re.fullmatch(r"#[0-9a-f]{6}", text):
+        return (int(text[1:3], 16), int(text[3:5], 16), int(text[5:7], 16))
+    found = re.fullmatch(r"rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)", text)
+    if found:
+        red, green, blue = (min(int(part), 255) for part in found.groups())
+        return (red, green, blue)
+    return None
+
+
+def chat_palette(theme: str, overrides: dict) -> dict[str, Palette]:
+    """The `chat` palette: the chat's colors in the roles of stone and fire, the person's color
+    on the repo's pill and to watch, Claude's to handle; grays, red, text and band kept."""
+    colors = dict(CHAT_DEFAULTS)
+    if "daltonized" in theme:
+        colors.update(CHAT_DEFAULTS_DALTONIZED)
+    for key in colors:
+        chosen = rgb(overrides.get(key))
+        if chosen is not None:
+            colors[key] = chosen
+    person, claude = colors["professionalBlue"], colors["claude"]
+    palettes = {}
+    for shade, base in PALETTES[DEFAULT_PALETTE].items():
+        light, mid, faint, _, _, _, red, text, band = base
+        palettes[shade] = (light, mid, faint, person, person, claude, red, text, band)
+    return palettes
+
+
 SETTINGS = machine_settings()
 THEME = claude_theme()
 SHADE = "light" if THEME.startswith("light") else "dark"
+PALETTE = chosen_palette(SETTINGS)
 (
     STONE_LIGHT,
     STONE,
@@ -367,8 +433,12 @@ SHADE = "light" if THEME.startswith("light") else "dark"
     EMBER,
     TEXT,
     SOOT,
-) = PALETTES[chosen_palette(SETTINGS)][SHADE]
-if "daltonized" in THEME:
+) = (
+    chat_palette(THEME, custom_theme(theme_setting()).get("overrides") or {})
+    if PALETTE == CHAT_PALETTE
+    else PALETTES[PALETTE]
+)[SHADE]
+if "daltonized" in THEME and PALETTE != CHAT_PALETTE:
     BRICK, GLOW, FIRE, EMBER = DALTONIZED[SHADE]
 # on a pill: the lighter of the text and the band on dark colors, the darker on bright ones
 WHITE, INK = sorted((TEXT, SOOT), key=sum, reverse=True)

@@ -29,10 +29,12 @@ STATUSLINE_STYLES = ("plain", "band", "classic", "classic-band")
 NO_STATUSLINE, CUSTOM_STATUSLINE = "none", "custom"
 STATUSLINE_CHOICES = (*STATUSLINE_STYLES, NO_STATUSLINE, CUSTOM_STATUSLINE)
 DEFAULT_STATUSLINE = "plain"
-# Its colors: ion-repo's stone and fire, or a palette the terminal world knows; each in a dark and
-# a light version, after Claude Code's theme.
+# Its colors: ion-repo's stone and fire, the chat's (the person's and Claude's, after Claude Code's
+# theme), or a palette the terminal world knows; each in a dark and a light version, after
+# Claude Code's theme.
 STATUSLINE_PALETTES = (
     "stone-fire",
+    "chat",
     "rose",
     "solarized",
     "nord",
