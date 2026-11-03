@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Reminders: when to ask again whether to update ion-repo (the tool, or a repo), or whether the
-person wants to change the look of the chat and the status line (`look`).
+"""Reminders: when to ask again whether to update ion-repo (the tool, or a repo) or the other Ion
+tools (`ion-tools`), or whether the person wants to change the look of the chat and the status
+line (`look`).
 
-Each question has a key (`tool`, `look`, or the root of a repo). An update question is asked at
-the first session where it applies, then, after each "no", again after 5, 10, 30 and 50 sessions
-in the place where it is asked: staying behind costs something. A question of taste is no update:
-asked once, then again only when what it offers grows (its version in `NEWS`), whatever the
-answer; "never" closes either for good.
+Each question has a key (`tool`, `ion-tools`, `look`, or the root of a repo). An update question
+is asked at the first session where it applies, then, after each "no", again after 5, 10, 30 and
+50 sessions in the place where it is asked: staying behind costs something. A question of taste
+is no update: asked once, then again only when what it offers grows (its version in `NEWS`),
+whatever the answer; "never" closes either for good.
 
 State: `~/.local/state/kiln/reminders.json` (`rappels.json` before kiln 0.4, migrated). Answers,
 given by Claude after the question: `python3 reminders.py yes|no|never <key>`.
@@ -29,6 +30,7 @@ LEGACY_ANSWERS = {"oui": "yes", "non": "no", "jamais": "never"}
 DELAYS = (5, 10, 30, 50)
 TOOL_KEY = "tool"
 LOOK_KEY = "look"
+ION_TOOLS_KEY = "ion-tools"
 # Questions of taste, by version of what they offer: asked again only when it grows.
 NEWS = {LOOK_KEY: 1}
 
