@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: ion-repo#T-429.**
+**Next free: ion-repo#T-435.**
 
 ---
 
@@ -1626,6 +1626,99 @@ before a deployment; the release of hearth v0.1.0 went through on it, its tests 
 
 ## 🟡 Normal
 
+### ion-repo#T-429 · `/repo:release` readies its worktrees before pushing and deploying
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-03
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03, two releases of a Django + Nuxt
+  production repo (16:09, 21:34–21:43)
+
+Step 7 creates `.claude/worktrees/main` bare: no `node_modules`, no backend `.env`, no `.vercel/`
+link (all outside git). The pre-push hooks then fail (eslint not found, `SECRET_KEY` missing),
+and `vercel --prod` answers "Not authorized"; each time the session copied them by hand. The
+release worktree hit the same wall at its first push.
+- [ ] The release and `main` worktrees get what `/repo:worktree` gives a new worktree (frozen
+  offline installs, the git-excluded local files the project lists), before the first push.
+- [ ] Reproduced on a copy: a release of a generated Nuxt + Django repo pushes `main` and runs
+  its deploy script without a manual copy.
+
+### ion-repo#T-430 · `/repo:release`: a red CI on an older cut looks for its fixes in `develop` first
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-03
+- **Effort**: XS · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03, the same release run twice
+  (16:03–16:27, 21:05)
+
+A release cut on a planned commit weeks behind `develop` failed CI on tests `develop` had already
+fixed; both sessions found the fixes by hand, one after picking between two parallel series.
+- [ ] Step 5 of the skill: for each failing file, `git log <release>..origin/develop -- <file>`
+  first; a test-only or fix-only commit is cherry-picked (`-x`), never a feature.
+- [ ] A fix that bumps a major version (a dependency) is flagged at the go-ahead, not taken
+  silently.
+
+### ion-repo#T-431 · `/repo:release` merge-back: a lockfile conflict is regenerated, never sided
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-03
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03, a release merged back into
+  `develop` (21:45)
+
+The release had raised vulnerable packages; merging it back, the `uv.lock` and `pnpm-lock.yaml`
+conflicts were resolved on `develop`'s side, and `develop` kept 6 high vulnerabilities the
+release had fixed.
+- [ ] Step 9: on a lockfile conflict, keep the integration branch's manifest, relock (`uv lock`,
+  `pnpm install --lockfile-only`) with at least the release's versions of the packages it
+  raised, then the vulnerability audit before the merge commit.
+- [ ] The merge-back is refused while the audit finds a high or critical the release had fixed.
+
+### ion-repo#T-432 · `ion repo ci --status` tells an interrupted run from one never run
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-03
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03, a release whose first CI died
+  midway (20:39)
+
+The run's process was gone, its logs stopped at 7 % of pytest, its worktree stayed in
+`~/.cache/kiln/ci/` with its `.pid`, and `--status` said "never replayed": the session had to
+find the logs to understand, and nearly took the copy for a leftover.
+- [ ] `--status` reads the `.pid` and the logs: "interrupted at <job>, <time>" when the process
+  is dead without a verdict.
+- [ ] The next run of the same commit removes the dead run's worktree; `/repo:cleanup` lists
+  `~/.cache/kiln/ci` copies as the CI's, not as agents'.
+
+### ion-repo#T-433 · In a session isolated in a worktree, edit with Edit/Write, never a script
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-03
+- **Effort**: XS · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03, four refusals in two sessions on
+  Ion tools (16:25, 21:20, 21:24, 21:27)
+
+Claude Code refuses, in a session isolated in a worktree, a Bash call it cannot prove stays
+inside ("too complex to verify": heredoc to a file, inline Python rewriting a file, a computed
+`cd`). Each time the session retried with Edit, losing a turn. [AI-CONTEXT]: the generated rules
+say it where they speak of worktrees.
+- [ ] One line in the generated rules: in a worktree session, change files with Edit/Write
+  (`cat >> file <<EOF` and `python - <<EOF` are refused), commands from the worktree root.
+- [ ] `ion repo update` brings it to generated repos.
+
+### ion-repo#T-434 · `version cut` checks the rehearsal repo is public before the long checks
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-03
+- **Effort**: XS · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03, ion-repo release v0.4.13 (21:34)
+
+`ion-repo-rehearsal` went private with the other Ion repos that afternoon; the e2e job clones it
+anonymously, so the release candidate's CI went red after the whole run, no tag.
+- [ ] `ion repo version cut` checks first, without credentials, that the rehearsal repo can be
+  cloned, and stops with the fix (`gh repo edit … --visibility public`).
+- [ ] `CLAUDE.md` of ion-repo says the rehearsal repo stays public, beside the satellites.
+
 ### ion-repo#T-423 · `/nuxt:preview` needs `@playwright/test`, which a generated site lacks
 - **Type**: bug
 - **Status**: todo
@@ -2555,6 +2648,9 @@ hooks; only `repo` is concerned.
 - [ ] The old script paths stay as relays: open sessions call the hooks in the main tree, and
   `tests/test_plugins.py` checks them. Both references and the repo map in `CLAUDE.md`
   updated in the same branch.
+- [ ] What the boxes find about the mod API (each event's props, `$` and the shape of what
+  `$.process.run` returns, how `claude plugin test` calls a handler) kept in one reference page of
+  the repo: four sessions of 3 November 2026 rediscovered it from the binary (`/learn:distill`).
 
 ### ion-repo#T-77 · Tests in seconds after each edit: only those the change touches
 - **Type**: improvement
