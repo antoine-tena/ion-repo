@@ -2,7 +2,9 @@
 `ion-repo`."""
 
 import importlib.util
+import itertools
 import json
+import math
 import subprocess
 import sys
 from pathlib import Path
@@ -505,6 +507,43 @@ def test_the_terminal_world_palettes_are_set_with_their_levels(name: str) -> Non
     hexes = tuple("#{:02x}{:02x}{:02x}".format(*color) for color in (stone, glow, fire, ember))
     assert hexes == NEW_PALETTES[name]
     assert len(script.PALETTES[name]["light"]) == len(script.PALETTES[name]["dark"])
+
+
+ONE_HUE = ["red", "orange", "yellow", "green", "teal", "blue", "violet", "pink"]
+
+
+def oklch_of(color: tuple[int, int, int]) -> tuple[float, float, float]:
+    """sRGB to OKLCH (Björn Ottosson's OKLab), to measure what the eye sees."""
+    linear = [
+        part / 12.92 if part <= 0.04045 else ((part + 0.055) / 1.055) ** 2.4
+        for part in (channel / 255 for channel in color)
+    ]
+    red, green, blue = linear
+    long_ = (0.4122214708 * red + 0.5363325363 * green + 0.0514459929 * blue) ** (1 / 3)
+    medium = (0.2119034982 * red + 0.6806995451 * green + 0.1073969566 * blue) ** (1 / 3)
+    short = (0.0883024619 * red + 0.2817188376 * green + 0.6299787005 * blue) ** (1 / 3)
+    lightness = 0.2104542553 * long_ + 0.7936177850 * medium - 0.0040720468 * short
+    a = 1.9779984951 * long_ - 2.4285922050 * medium + 0.4505937099 * short
+    b = 0.0259040371 * long_ + 0.7827717662 * medium - 0.8086757660 * short
+    return lightness, math.hypot(a, b), math.degrees(math.atan2(b, a)) % 360
+
+
+@pytest.mark.parametrize("shade", ["dark", "light"])
+@pytest.mark.parametrize("name", ONE_HUE)
+def test_a_one_hue_palette_tells_its_levels_apart_by_lightness(name: str, shade: str) -> None:
+    """Une palette d'une seule teinte : un gris, puis la teinte de la plus pâle à la plus profonde,
+    chaque niveau assez loin du suivant pour se lire d'un coup d'œil."""
+    assert apply_machine(UserConfig(), [f"statusline_palette={name}"]).statusline_palette == name
+    script = load_script()
+    _, stone, _, _, glow, fire, ember, _, _ = script.PALETTES[name][shade]
+    hue = script.HUES[name]
+    assert oklch_of(stone)[1] < 0.03
+    levels = [oklch_of(color) for color in (glow, fire, ember)]
+    for (lighter, _, _), (deeper, _, _) in itertools.pairwise(levels):
+        assert lighter - deeper >= 0.1
+    for _, chroma, angle in levels:
+        assert chroma > 0.04
+        assert min(abs(angle - hue), 360 - abs(angle - hue)) < 12
 
 
 def test_statusline_palette_accepts_chat() -> None:
