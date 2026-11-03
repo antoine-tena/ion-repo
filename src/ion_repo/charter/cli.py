@@ -15,7 +15,7 @@ A section is named after its rule (see bans.py and ratchets.py); a `rule` key de
 of the same kind. `local_rules`: Python modules of the repo, each with a function
 `check(repo, params) -> list[str]`, for its own rules.
 
-Waivers: `kiln-waivers.toml` (see waivers.py) lifts a rule from the whole repo or from some
+Waivers: `waivers.toml` (see ion_score.waivers) lifts a rule from the whole repo or from some
 paths, for a limited time; they are listed at each check.
 
 Usage: charter [check]      the rules of the charter (default)
@@ -36,7 +36,7 @@ import sys
 from collections.abc import Callable, Iterator
 from pathlib import Path
 
-from ion_score.waivers import RULE_ID, WAIVERS_FILE, Waivers, check_targets
+from ion_score.waivers import RULE_ID, Waivers, check_targets, waivers_path
 from ion_score.waivers import load as load_waivers
 
 from ion_repo.charter.bans import BANS
@@ -87,7 +87,7 @@ def unverified_rules(repo: Repo) -> list[str]:
 
 
 def waivers_of(repo: Repo, today: datetime.date | None = None) -> Waivers:
-    """Waivers of `kiln-waivers.toml` as of `today`, checked against the rules and the files of
+    """Waivers of `waivers.toml` as of `today`, checked against the rules and the files of
     the repo; a rule of the grid counts (a false positive of `ion repo score` dismissed on its
     path)."""
     from ion_score.model import load_rules
@@ -131,10 +131,10 @@ def measures(
     return measured
 
 
-def _report_waivers(waivers: Waivers) -> None:
+def _report_waivers(waivers: Waivers, name: str) -> None:
     if not (waivers.actives or waivers.warnings):
         return
-    print(f"Waivers ({WAIVERS_FILE}): {len(waivers.actives)} active.")
+    print(f"Waivers ({name}): {len(waivers.actives)} active.")
     for waiver in waivers.actives:
         print(f"  {waiver.label}: {waiver.reason} ({waiver.by}, until {waiver.until or 'never'})")
     for warning in waivers.warnings:
@@ -172,10 +172,11 @@ def _ratchet_problems(repo: Repo, waivers: Waivers, to_tighten: list[str]) -> li
 
 def check(repo: Repo) -> int:
     waivers = waivers_of(repo)
-    _report_waivers(waivers)
+    name = waivers_path(repo.root).name
+    _report_waivers(waivers, name)
     problems: list[str] = []
     if waivers.errors:
-        problems.append(failure(RULE_ID, f"waivers to review ({WAIVERS_FILE})", waivers.errors))
+        problems.append(failure(RULE_ID, f"waivers to review ({name})", waivers.errors))
     for name, params in rules(repo, "bans", waivers):
         problems.extend(BANS[params.get("rule", name)](repo, params))
     for local_rule in _local_rules(repo):

@@ -157,7 +157,7 @@ def is_adopted(root: Path) -> bool:
 
 def apply_template(root: Path, answers: Mapping[str, object] | None = None) -> None:
     """Template applied again (latest revision, answers possibly changed), without overwriting
-    local changes: conflicts are marked in the files. Frozen files (`kiln-waivers.toml`) and
+    local changes: conflicts are marked in the files. Frozen files (`waivers.toml`) and
     what an adopted repo keeps as its own (`kept`) are left as they are."""
     previous_answers = migrations.raw_answers(root)
     try:
