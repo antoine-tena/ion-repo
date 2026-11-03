@@ -138,3 +138,23 @@ test('what came from elsewhere takes the name and color chosen for it', async ($
   expect(await barColor(peer)).toBe('#a78bfa')
   await peer.unmount()
 })
+
+test("the person's name stays when reading it again fails", async ($, on) => {
+  // Later than the names read by the tests above, so they are read again.
+  let now = NOON + 10_800_000
+  let gitFails = false
+  on('clock.now', () => ({ value: now }))
+  on('process.run', (_, e: { argv: string[] }) =>
+    ran(e.argv[0] === 'git' && !gitFails ? 'antoine-tena\n' : ''),
+  )
+  const first = await $.ui.mount(userMessage('m8', { kind: 'composer' }))
+  expect((await first.find({ type: 'Text', text: /^antoine-tena$/ }))?.text).toBe('antoine-tena')
+  await first.unmount()
+  // The names read again, git's run failing this time.
+  now += 60_000
+  gitFails = true
+  const second = await $.ui.mount(userMessage('m9', { kind: 'composer' }))
+  expect((await second.find({ type: 'Text', text: /^antoine-tena$/ }))?.text).toBe('antoine-tena')
+  expect(await barColor(second)).toBe('professionalBlue')
+  await second.unmount()
+})
