@@ -110,6 +110,15 @@ small structures' repos up to date; back once the grid holds.
 
 ## Dropped
 
+- **2026-11-03** · ion-repo#T-427 · The skill frame drawn by a mod, not copied by Claude —
+  dropped at its first box: a mod cannot tell a reply closes a skill's run (Claude Code
+  2.1.311). `AssistantMessage` carries only `text`, `isFirstOfReply` and `isSummary`: no skill,
+  no last-of-reply. Each text block is drawn as soon as it ends, before the model's next block,
+  and stays drawn: when the final answer is drawn, nothing yet says no tool call follows. The
+  running skill shows only in a `ToolUse` of `Skill` (not when the person types `/repo:merge`),
+  and an answer from a question or a stop, never framed, is Claude's judgment. `TurnDuration`
+  comes after the answer, too late for the first rule. [SKILL-FRAME] and `ion-repo frame` stay
+  · opened 2026-11-03
 - **2026-10-22** · Drop the names and conversions from before kiln 0.4.0 (never a ticket, a
   session's own initiative) — declined by antoine: `plugins/base/` still serves the machine's
   status line (`~/.claude/settings.json`), sweep is still at v0.3.4-rc.1 and calls `charte.yml`,

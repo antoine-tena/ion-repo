@@ -198,7 +198,6 @@ it.
 - ion-repo#T-192 · The score in Claude Code's session, context files under a budget (S)
 - ion-repo#T-385 · `kiln session move`: a session filed under its repo afterwards (S)
 - ion-repo#T-386 · Sessions named on their own: at the branch, then at the ticket (S)
-- ion-repo#T-427 · The skill frame drawn by a mod, not copied by Claude (S)
 
 ### v0.5.8 · kiln never makes you wait
 The same features, sooner: what was measured slow on 24 October (the suite every release waits for,
@@ -1931,24 +1930,6 @@ the ticket in progress and the last commit, with no call to the model (no token 
   kiln keeps its own name in `~/.local/state/kiln/sessions/<id>.json` (as `kiln pause` does) and
   shows it in its status line and the list at session start, Claude Code's title untouched.
 - [ ] grog's `/grog:distill` offers the sessions by these names.
-
-### ion-repo#T-427 · The skill frame drawn by a mod, not copied by Claude
-- **Type**: improvement
-- **Status**: todo
-- **Opened**: 2026-11-03
-- **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: session of 3 November 2026 on coloring the chat (`/learn:distill`): Claude Code's
-  mods (`modules` in a plugin's `hooks/hooks.json`, `on('ui.render', …)`) can redraw a reply
-
-[SKILL-FRAME] makes Claude run `ion-repo frame <plugin> <skill>` and copy its two lines around
-every Ion skill's final answer: a command and two lines of output per answer, and a frame lost
-whenever Claude forgets. The `repo` plugin's mod (`plugins/repo/hooks/chat.tsx`) already draws
-the bars beside each message; it could draw the frame too.
-- [ ] Found first: whether a mod's `AssistantMessage` event can tell a reply closes a skill's run
-  (its props hold `text`, `isFirstOfReply`, `isSummary` in Claude Code 2.1.311). If not, the
-  frame stays as it is and this ticket goes to `rejected.md` with why.
-- [ ] Otherwise the mod draws the frame, [SKILL-FRAME] and `frame.py` go, `ion repo update`
-  removes the rule from generated repos.
 
 ### ion-repo#T-371 · `/kiln:token`: a paste prompt in kiln's own style
 - **Type**: improvement
