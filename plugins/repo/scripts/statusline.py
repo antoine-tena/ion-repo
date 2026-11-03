@@ -17,6 +17,8 @@ statusline_palette=…`, eleven palettes, `rose` among them, and `chat`: the col
 of Claude in the chat, after the theme); `--palette <name>` forces one. Each
 comes dark or light after Claude Code's theme (`/theme`), with color-blind safe levels under its
 `-daltonized` themes; `--theme dark|light|dark-daltonized|light-daltonized` forces it.
+`--levels` prints each palette's four levels (all well, to watch, to handle, urgent) as JSON, to
+offer a palette by its colors rather than its name.
 
 Colors tell importance: gray when all is well, then glow (to watch), fire (to handle), ember
 (urgent). In a repo: branch, git state, CI, prod, tasks, containers, each shown only when the
@@ -455,6 +457,26 @@ STATES = (
 
 # all well, to watch, to handle, urgent
 LEVEL_COLORS = {0: STONE, 1: GLOW, 2: FIRE, 3: EMBER}
+LEVEL_NAMES = ("all well", "to watch", "to handle", "urgent")
+
+
+def palette_levels(name: str) -> dict[str, str]:
+    """A palette's four levels, `#rrggbb`, in Claude Code's theme: what a person choosing it
+    needs to see, rather than its name."""
+    palettes = (
+        chat_palette(THEME, custom_theme(theme_setting()).get("overrides") or {})
+        if name == CHAT_PALETTE
+        else PALETTES[name]
+    )
+    _, stone, _, _, glow, fire, ember, _, _ = palettes[SHADE]
+    if "daltonized" in THEME and name != CHAT_PALETTE:
+        _, glow, fire, ember = DALTONIZED[SHADE]
+    return {
+        level: "#{:02x}{:02x}{:02x}".format(*color)
+        for level, color in zip(LEVEL_NAMES, (stone, glow, fire, ember), strict=True)
+    }
+
+
 BOLD, ITALIC, RESET, NORMAL = "\033[1m", "\033[3m", "\033[0m", "\033[22;23m"
 
 
@@ -1341,6 +1363,9 @@ def chosen_style() -> str:
 def main() -> None:
     if sys.argv[1:2] == ["--scan"]:
         scan(sys.argv[2])
+        return
+    if sys.argv[1:2] == ["--levels"]:
+        print(json.dumps({name: palette_levels(name) for name in (*PALETTES, CHAT_PALETTE)}))
         return
     style = chosen_style()
     if style in SILENT_STYLES:
