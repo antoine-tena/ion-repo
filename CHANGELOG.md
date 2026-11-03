@@ -6,6 +6,56 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 `release/vX.Y.Z` branch, rewritten before its first candidate. Names are those of their release:
 entries before v0.4.0 quote kiln's former French names.
 
+## v0.4.13 — 2026-11-03
+<!-- draft: rewrite for users, breaking changes first, then delete this line -->
+- **Breaking**: The kiln alias and kiln_move.py removed
+- **Breaking**: Deploy=vps enables host@ion-host
+- **Breaking**: /nuxt:polish forwards to /design:polish
+- **Breaking**: Write tickets as <repo>#T-NN, from the repo's name
+- Palettes offered by their four colors, not their names
+- A task's or another session's message renamed and recolored in the chat
+- Run the script on ion-repo's Python, empty on macOS before
+- Chat shows the time beside Claude's name, the date another day
+- /repo:look, one question of taste asked once and at each novelty
+- /repo:statusline, the status line's look asked in the chat
+- Chat palette, the person's and Claude's colors of the chat
+- Debrief titled Done, Critical, To do, Blocked
+- /repo:names, the names above the chat's messages
+- Claude's name above its replies, names read from chat-names.json
+- Person's messages show their git user.name
+- /repo:color picks the bar's color
+- Ask now and then for a chat color
+- Typed message is the person's
+- [CLAUDE-CODE-REACH] checks mods first
+- Colored bar beside each chat message
+- Announcement through /words:announce
+- Another session told, work goes on in a worktree
+- Color-blind safe levels under Claude Code's -daltonized themes
+- Ten palettes, rose among them, each dark or light after Claude Code's theme
+- No more machine-wide token total; palette chosen per machine (statusline_palette)
+- Ion repo new and update lay and update the other Ion tools' pieces
+- One table of the other Ion tools' pieces, read by the settings
+- The converters run on every update, after a conflict too
+- Garder le mode d'emploi d'un README gardé
+- A typed callback, not a lambda
+- /vps:… skills become /host:…
+- The debrief output style as a plugin of its own
+- A file name kept through a rename, its dot escaped too
+- A renamed project keeps the file names other projects may hold
+- The merge into main skips the changelog entry's markers
+- A renamed project's files named after it follow
+- A renamed project takes its own code and text along
+- A rename leaves alone the lines the new render keeps
+- The formula keeps the kiln alias
+- The kiln alias says its new name once
+- [FETCH-FIRST], fetch before building (T-381)
+- Session start tells of other sessions (T-384)
+- /repo:release publishes from the machine when Actions is blocked (T-388)
+- /repo:merge leaves an isolated worktree before merging (T-378)
+- A generated tool's releases are numbered vX.Y.Z, never vN (T-405)
+- **After updating**: run `ion repo install --machine` so the status line runs on ion-repo's Python (it stayed empty on macOS).
+- **After updating**: run `ion repo tickets` if the update had nobody to ask.
+
 ## v0.4.12 — 2026-11-01
 <!-- readme: unchanged: two fixes of the move from kiln, nothing the READMEs describe -->
 - `kiln` says that it is now `ion-repo` once on a machine, no longer on every run.
