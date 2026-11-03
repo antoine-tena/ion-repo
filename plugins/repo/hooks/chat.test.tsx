@@ -1,7 +1,9 @@
 import { expect, test } from 'claude-code/testing'
 
 // The bar is the first child of the row the mod draws.
-const barColor = async (ui: { find: (q: object) => Promise<any> }) =>
+type Drawn = { children?: { props?: { backgroundColor?: string } }[] } | undefined
+
+const barColor = async (ui: { find: (q: object) => Promise<Drawn> }) =>
   (await ui.find({ type: 'Box' }))?.children?.[0]?.props?.backgroundColor
 
 const NOON = new Date(2026, 10, 3, 12, 5).getTime()

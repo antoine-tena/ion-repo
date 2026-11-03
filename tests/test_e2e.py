@@ -69,7 +69,7 @@ def kiln_env(tmp_path: Path) -> dict[str, str]:
 
 
 def run_kiln(*args: str, cwd: Path, env: dict[str, str]) -> subprocess.CompletedProcess[str]:
-    kiln = shutil.which("kiln")
+    kiln = shutil.which("ion-repo")
     assert kiln is not None, "ion-repo is not installed in this environment (uv sync)"
     return subprocess.run(
         [kiln, *args],
@@ -283,7 +283,7 @@ def test_every_release_updates_through_the_installed_tool(
     for variable in ("GIT_CONFIG_GLOBAL", "COPIER_CACHE_DIR"):
         monkeypatch.setenv(variable, released_kiln[variable])
     make_old_project(project, tag, *LIGHT_STACK, source=f"{GITHUB_TEMPLATE}.git")
-    kiln = str(Path(released_kiln["UV_TOOL_BIN_DIR"]) / "kiln")
+    kiln = str(Path(released_kiln["UV_TOOL_BIN_DIR"]) / "ion-repo")
 
     version = subprocess.run(
         [kiln, "--version"], env=released_kiln, capture_output=True, text=True, check=True
@@ -323,7 +323,7 @@ def test_the_rehearsal_repo_updates_on_a_clone_and_stays_untouched(
     subprocess.run(
         ["git", "switch", "-q", "-C", "develop", REHEARSAL_FROZEN], cwd=project, check=True
     )
-    kiln = str(Path(released_kiln["UV_TOOL_BIN_DIR"]) / "kiln")
+    kiln = str(Path(released_kiln["UV_TOOL_BIN_DIR"]) / "ion-repo")
 
     rehearsed = subprocess.run(
         [kiln, "update", "--rehearse"],

@@ -166,7 +166,8 @@ def _update_piece(
     piece's recorded answers alone: ion-repo's are added to them in the clone (committed there,
     never in the repo), or a line reading `title` would conflict at each release of the tool."""
     with tempfile.TemporaryDirectory() as scratch:
-        clone = Path(scratch) / "repo"
+        # Resolved: macOS's /var is a link to /private/var, and Copier compares the two.
+        clone = Path(scratch).resolve() / "repo"
         subprocess.run(
             ["git", "clone", "-q", "--no-hardlinks", str(root), str(clone)],
             check=True,
