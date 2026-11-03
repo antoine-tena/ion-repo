@@ -21,11 +21,18 @@ ion-repo did not generate refuses it), lists the choices and the current ones.
    - the style: the current one first, then the others of `plain`, `band`, `classic`,
      `classic-band` (`none`: no status line; `custom`: their own, left as it is, both through
      "Other").
-   - the colors: `chat (Recommended)` first, the person's color and Claude's from the chat, then
-     the current palette if it is another one, then two others that stand apart. "Other" takes
-     any palette `ion repo set` lists.
-   Previews cannot show colors: name them in the option's description (`chat`: their color for
-   the repo and what to watch, Claude's orange for what to handle).
+   - the colors: `chat` first, the person's color and Claude's from the chat, then the current
+     palette if it is another one, then two others that stand apart. "Other" takes any palette
+     `ion repo set` lists.
+   A palette's name says nothing to the person: offer each by its colors, from `python3 <script>
+   --levels` (each palette's four levels in the current theme, `#rrggbb`). Its label names its
+   four colors in plain words, in the user's language (`Gris, jaune, orange, rouge`), with
+   `(Recommended)` after the first; its description says what each color means, one level each:
+   all well (the neutral one, most of the line), to watch (not urgent), to handle (fairly
+   urgent), urgent (in French: `Normal`, `À surveiller`, `À traiter`, `Urgent`), then the
+   palette's name for `ion repo set`. Its preview lists the four levels, one a line, each with
+   its color's name and hex; `chat` adds that the person's color is theirs in the chat, the
+   orange Claude's.
 4. `ion repo set statusline=<style> statusline_palette=<palette>` (only what changed).
 5. Ask whether it suits, the status line being redrawn already; if not, back to 3. With `chat`,
    say it follows `/repo:color`: a new color for their messages is the status line's too.

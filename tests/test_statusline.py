@@ -11,7 +11,7 @@ from typing import Any
 
 import pytest
 
-from ion_repo.config import UserConfig, load_config, save_config
+from ion_repo.config import STATUSLINE_PALETTES, UserConfig, load_config, save_config
 from ion_repo.machine import apply_machine, only_machine_keys
 from ion_repo.shell import KilnError
 from ion_repo.statusline import (
@@ -484,3 +484,25 @@ def test_the_chat_palette_keeps_claude_codes_colors_without_a_custom_theme() -> 
 
 def test_statusline_palette_accepts_chat() -> None:
     assert apply_machine(UserConfig(), ["statusline_palette=chat"]).statusline_palette == "chat"
+
+
+def test_levels_give_each_palette_its_four_colors(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Une palette se choisit à ses couleurs : son nom ne dit rien de ce qu'on verra."""
+    monkeypatch.setenv("HOME", str(tmp_path))
+    done = subprocess.run(
+        [sys.executable, str(SCRIPT), "--levels", "--theme", "dark"],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    levels = json.loads(done.stdout)
+
+    assert set(levels) == set(STATUSLINE_PALETTES)
+    assert levels["stone-fire"] == {
+        "all well": "#8c8c87",
+        "to watch": "#ffe178",
+        "to handle": "#f79628",
+        "urgent": "#cd3223",
+    }
