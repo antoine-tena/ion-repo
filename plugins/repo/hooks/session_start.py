@@ -16,6 +16,9 @@ update, the question also offers to uninstall ion-repo (tool) or to unlink the r
 repo adopt`, skill `/repo:adopt`). Before kiln 0.4 it also linked the plugin at `.claude/kiln`
 in every repo: that link is removed.
 
+At startup, in any folder, when other Ion tools installed on the machine are behind their source
+(`ion outdated`), Claude offers `ion upgrade` (`ion_tools.py`).
+
 At startup, in any folder, Claude also asks once, and again when there is something new to
 offer, whether the person wants to change the look of the chat and the status line (`look.py`).
 
@@ -37,6 +40,7 @@ from pathlib import Path
 from typing import Any, NamedTuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import ion_tools
 import look
 import others
 import paused
@@ -809,6 +813,7 @@ def main() -> None:
             SKILL_FRAME,
             red,
             found.context if found else "",
+            ion_tools_offer(payload),
             launch_place(payload),
             other_sessions(payload),
             look_question(payload),
@@ -833,6 +838,16 @@ def paused_sessions(payload: dict[str, Any]) -> str:
         if source == "resume":
             paused.forget(session_id)
         return paused.listing(session_id) if source == STARTUP_SOURCE else ""
+    except Exception:
+        return ""
+
+
+def ion_tools_offer(payload: dict[str, Any]) -> str:
+    """At startup, in any folder: `ion upgrade` when other Ion tools are late (`ion_tools.py`)."""
+    try:
+        return (
+            ion_tools.context() if payload.get("source", STARTUP_SOURCE) == STARTUP_SOURCE else ""
+        )
     except Exception:
         return ""
 
