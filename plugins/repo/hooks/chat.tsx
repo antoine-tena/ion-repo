@@ -1,17 +1,24 @@
 // Draws a colored bar beside each message of the chat: blue for the person, Claude's color for
 // Claude, each under its name; gray for what came from elsewhere (another session, a task, a
 // schedule), with its name. Colors are theme keys, so a custom theme (`/theme`) changes them.
-// Names come from ~/.claude/chat-names.json (`/repo:names`), else git's user.name and "Claude".
+// Names come from ~/.claude/chat-names.json (`/repo:names`), else git's user.name and "Claude";
+// its `others` renames what came from elsewhere, each under its own name by default. The color
+// of what came from elsewhere is `others` in ~/.claude/chat-colors.json (`/repo:color`), a
+// #rrggbb outside the theme: the theme has no key of its own for it, and `inactive` grays all
+// of Claude Code.
 // The time beside the name is when the message was first drawn: neither the props nor
 // `$.session.messages` carry the message's own time, so a resumed session shows the resume's.
 import type { Register } from 'claude-code'
 
 type Origin = { kind: string; server?: string; plugin?: string }
-type Names = { person: string; claude: string }
+type Names = { person: string; claude: string; others: Record<string, string>; othersColor: string }
 type Run = { exitCode: number; stdout: string }
 
 const PERSON_KINDS = new Set(['unclassified', 'composer', 'bridge', 'sdk'])
 const NAMES_FILE = '"$HOME/.claude/chat-names.json"'
+const COLORS_FILE = '"$HOME/.claude/chat-colors.json"'
+const OTHERS_COLOR = 'inactive'
+const HEX = /^#[0-9a-fA-F]{6}$/
 // Names read again after this long, so a change by `/repo:names` shows without a restart.
 const NAMES_TTL_MS = 10_000
 
@@ -40,7 +47,7 @@ const seenAt = async (now: () => Promise<number>, id: string): Promise<string> =
 
 const output = (result: Run): string => (result.exitCode === 0 ? result.stdout.trim() : '')
 
-const chosen = (text: string): Partial<Names> => {
+const chosen = (text: string): Record<string, unknown> => {
   try {
     const parsed = JSON.parse(text)
     return typeof parsed === 'object' && parsed !== null ? parsed : {}
@@ -52,9 +59,24 @@ const chosen = (text: string): Partial<Names> => {
 const named = (value: unknown, fallback: string): string =>
   typeof value === 'string' && value.trim() !== '' ? value.trim() : fallback
 
-const toNames = (file: string, gitName: string): Names => {
+const renamed = (value: unknown): Record<string, string> =>
+  typeof value === 'object' && value !== null
+    ? Object.fromEntries(
+        Object.entries(value).flatMap(([from, to]) =>
+          typeof to === 'string' && to.trim() !== '' ? [[from, to.trim()]] : [],
+        ),
+      )
+    : {}
+
+const toNames = (file: string, colors: string, gitName: string): Names => {
   const choice = chosen(file)
-  return { person: named(choice.person, gitName), claude: named(choice.claude, 'Claude') }
+  const color = chosen(colors).others
+  return {
+    person: named(choice.person, gitName),
+    claude: named(choice.claude, 'Claude'),
+    others: renamed(choice.others),
+    othersColor: typeof color === 'string' && HEX.test(color.trim()) ? color.trim() : OTHERS_COLOR,
+  }
 }
 
 const sender = (origin: Origin, from?: { name?: string }): string | null => {
@@ -75,24 +97,27 @@ export const register: Register = on => {
   const readNames = (run: (argv: string[]) => Promise<Run>): Promise<Names> =>
     Promise.all([
       run(['sh', '-c', `cat ${NAMES_FILE} 2>/dev/null`]).then(output, () => ''),
+      run(['sh', '-c', `cat ${COLORS_FILE} 2>/dev/null`]).then(output, () => ''),
       run(['git', 'config', 'user.name']).then(output, () => ''),
-    ]).then(([file, gitName]) => toNames(file, gitName))
+    ]).then(([file, colors, gitName]) => toNames(file, colors, gitName))
 
   on('ui.render', { component: 'UserMessage' }, async ($, e) => {
     const { Box, Text } = $.ui.resolve(e)
     const name = sender(e.props.origin, e.props.from)
     const time = await seenAt(() => $.clock.now(), e.requestId)
-    const label =
-      name ??
-      (await currentNames(await $.clock.now(), () => readNames(argv => $.process.run(argv)))).person
+    const chosenNames = await currentNames(await $.clock.now(), () =>
+      readNames(argv => $.process.run(argv)),
+    )
+    const label = name === null ? chosenNames.person : (chosenNames.others[name] ?? name)
+    const color = name === null ? 'professionalBlue' : chosenNames.othersColor
 
     return (
       <Box flexDirection="row" marginTop={1}>
-        <Box width={1} backgroundColor={name === null ? 'professionalBlue' : 'inactive'} />
+        <Box width={1} backgroundColor={color} />
         <Box flexDirection="column" flexGrow={1} marginLeft={1}>
           <Box flexDirection="row">
             {label === '' ? null : (
-              <Text bold color={name === null ? 'professionalBlue' : 'inactive'}>{label}</Text>
+              <Text bold color={color}>{label}</Text>
             )}
             <Box flexGrow={1} />
             <Text dimColor>{time}</Text>
