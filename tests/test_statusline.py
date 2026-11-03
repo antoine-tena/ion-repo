@@ -13,7 +13,13 @@ from typing import Any
 
 import pytest
 
-from ion_repo.config import STATUSLINE_PALETTES, UserConfig, load_config, save_config
+from ion_repo.config import (
+    STATUSLINE_PALETTES,
+    UserConfig,
+    config_path,
+    load_config,
+    save_config,
+)
 from ion_repo.machine import apply_machine, only_machine_keys
 from ion_repo.shell import KilnError
 from ion_repo.statusline import (
@@ -75,6 +81,16 @@ def test_frozen_repos_are_kept_by_the_machine_and_can_be_cleared() -> None:
     assert apply_machine(config, ["frozen_repos="]).frozen_repos == ()
 
 
+def test_the_settings_of_before_ion_repo_0_4_14_move_to_their_new_place() -> None:
+    legacy = config_path().parent.parent / "kiln" / "config.toml"
+    legacy.parent.mkdir(parents=True)
+    legacy.write_text('statusline = "band"\n')
+
+    assert load_config().statusline == "band"
+    assert config_path().read_text() == 'statusline = "band"\n'
+    assert not legacy.parent.exists()
+
+
 def test_statusline_choice_is_checked() -> None:
     assert apply_machine(UserConfig(), ["statusline=band"]).statusline == "band"
     with pytest.raises(KilnError, match="statusline"):
@@ -115,7 +131,7 @@ def test_choose_for_me_means_disclose(home: Path, monkeypatch: pytest.MonkeyPatc
     monkeypatch.setattr("builtins.input", lambda prompt: "")
 
     assert ensure_trailers(UserConfig()).ai_trailers == "disclose"
-    assert 'ai_trailers = "disclose"' in (home / ".config/kiln/config.toml").read_text()
+    assert 'ai_trailers = "disclose"' in (home / ".config/ion-repo/config.toml").read_text()
     assert ensure_trailers(UserConfig(ai_trailers="never")).ai_trailers == "never"
 
 
@@ -531,19 +547,69 @@ def oklch_of(color: tuple[int, int, int]) -> tuple[float, float, float]:
 @pytest.mark.parametrize("shade", ["dark", "light"])
 @pytest.mark.parametrize("name", ONE_HUE)
 def test_a_one_hue_palette_tells_its_levels_apart_by_lightness(name: str, shade: str) -> None:
-    """Une palette d'une seule teinte : un gris, puis la teinte de la plus pâle à la plus profonde,
-    chaque niveau assez loin du suivant pour se lire d'un coup d'œil."""
+    """Une palette d'une seule teinte : un gris, puis la teinte de la moins à la plus frappante
+    (sur fond sombre de la plus terne à la plus claire, sur fond clair de la plus pâle à la plus
+    profonde), chaque niveau assez loin du suivant pour se lire d'un coup d'œil."""
     assert apply_machine(UserConfig(), [f"statusline_palette={name}"]).statusline_palette == name
     script = load_script()
     _, stone, _, _, glow, fire, ember, _, _ = script.PALETTES[name][shade]
     hue = script.HUES[name]
     assert oklch_of(stone)[1] < 0.03
     levels = [oklch_of(color) for color in (glow, fire, ember)]
-    for (lighter, _, _), (deeper, _, _) in itertools.pairwise(levels):
-        assert lighter - deeper >= 0.1
+    toward_urgent = 1 if shade == "dark" else -1  # brighter on a dark terminal, deeper on a light
+    for (calmer, _, _), (sharper, _, _) in itertools.pairwise(levels):
+        assert (sharper - calmer) * toward_urgent >= 0.1
     for _, chroma, angle in levels:
         assert chroma > 0.04
         assert min(abs(angle - hue), 360 - abs(angle - hue)) < 12
+
+
+def test_the_old_rose_palette_is_read_as_pink() -> None:
+    assert apply_machine(UserConfig(), ["statusline_palette=rose"]).statusline_palette == "pink"
+    assert load_script().chosen_palette({"statusline_palette": "rose"}) == "pink"
+
+
+def run_script(*arguments: str, home: Path) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [sys.executable, str(SCRIPT), *arguments],
+        capture_output=True,
+        text=True,
+        env={"HOME": str(home), "PATH": "/usr/bin:/bin", "XDG_CONFIG_HOME": str(home / "config")},
+        cwd=home,
+        stdin=subprocess.DEVNULL,
+    )
+
+
+@pytest.mark.parametrize("style", ["plain", "band", "classic", "classic-band"])
+def test_a_preview_draws_a_whole_session_in_the_box_of_a_choice(tmp_path: Path, style: str) -> None:
+    """L'aperçu d'un choix : une session d'exemple (pas `?`), sans couleurs, sans lire stdin, et
+    jamais plus large que la boîte."""
+    done = run_script("--preview", "--style", style, "--width", "40", home=tmp_path)
+
+    assert done.returncode == 0, done.stderr
+    assert "\033" not in done.stdout
+    assert "Opus 5.5" in done.stdout
+    assert all(len(line) <= 40 for line in done.stdout.splitlines())
+
+
+def test_an_unknown_option_value_is_refused_rather_than_replaced(tmp_path: Path) -> None:
+    """`--palette nope` montrait `stone-fire` sans rien dire : l'aperçu mentait."""
+    done = run_script("--preview", "--palette", "nope", home=tmp_path)
+
+    assert done.returncode == 2
+    assert "invalid choice: 'nope'" in done.stderr
+    assert "--preview" in run_script("--help", home=tmp_path).stdout
+
+
+def test_a_line_too_wide_is_cut_with_an_ellipsis_its_colors_kept() -> None:
+    script = load_script()
+    line = "\033[1mion-repo\033[22m develop\033[0m"
+
+    clipped = script.clip(line, 10)
+
+    assert script.visible_width(clipped) == 10
+    assert clipped == "\033[1mion-repo\033[22m …\033[0m"
+    assert script.clip(line, 40) == line
 
 
 def test_statusline_palette_accepts_chat() -> None:
