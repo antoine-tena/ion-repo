@@ -4,6 +4,7 @@
 import importlib.util
 import json
 import subprocess
+import sys
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -193,6 +194,33 @@ def test_a_set_up_machine_gets_the_timer_at_install(home: Path) -> None:
     ensure_statusline(UserConfig(statusline="plain"))
 
     assert settings(home)["statusLine"]["refreshInterval"] == REFRESH_SECONDS
+
+
+def test_the_script_runs_on_ion_repos_python_not_the_paths(home: Path) -> None:
+    # Sur macOS, `python3` est en 3.9 ou 3.13 : le script, en 3.14, s'y arrête sur une erreur de
+    # syntaxe et la ligne d'état reste vide.
+    apply_statusline_choice("plain")
+
+    assert settings(home)["statusLine"]["command"].startswith(f'"{sys.executable}" ')
+
+
+def test_a_bare_python3_is_replaced_at_install(home: Path) -> None:
+    (home / ".claude" / "settings.json").write_text(
+        json.dumps(
+            {
+                "statusLine": {
+                    "command": 'python3 "$HOME/ion-repo/plugins/repo/scripts/statusline.py"',
+                    "refreshInterval": REFRESH_SECONDS,
+                }
+            }
+        )
+    )
+
+    ensure_statusline(UserConfig(statusline="plain"))
+
+    assert settings(home)["statusLine"]["command"] == (
+        f'"{sys.executable}" "$HOME/ion-repo/plugins/repo/scripts/statusline.py"'
+    )
 
 
 def test_no_claude_code_leaves_the_status_line_alone(
