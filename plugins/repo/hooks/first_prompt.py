@@ -2,7 +2,7 @@
 """UserPromptSubmit: at the first prompt of a session where ion-repo offers an update, shows the
 logo of ion-repo in color with the update on offer, right before Claude asks the question.
 
-`session_start.py` leaves the notice in `~/.local/state/kiln/notices/<session id>`; it is shown
+`session_start.py` leaves the notice in `~/.local/state/ion-repo/notices/<session id>`; it is shown
 once, then removed. Silent in every other case.
 """
 
@@ -13,7 +13,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import reminders
 
-NOTICES_DIR = reminders.STATE_DIR / "kiln" / "notices"
+NOTICES_DIR = reminders.ION_REPO_STATE / "notices"
 
 
 def main() -> None:

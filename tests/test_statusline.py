@@ -19,6 +19,7 @@ from ion_repo.config import (
     config_path,
     load_config,
     save_config,
+    state_dir,
 )
 from ion_repo.machine import apply_machine, only_machine_keys
 from ion_repo.shell import KilnError
@@ -89,6 +90,18 @@ def test_the_settings_of_before_ion_repo_0_4_14_move_to_their_new_place() -> Non
     assert load_config().statusline == "band"
     assert config_path().read_text() == 'statusline = "band"\n'
     assert not legacy.parent.exists()
+
+
+def test_the_state_of_before_ion_repo_0_4_15_moves_to_its_new_place(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path))
+    (tmp_path / "kiln").mkdir()
+    (tmp_path / "kiln" / "tool-update.json").write_text("{}")
+
+    assert state_dir() == tmp_path / "ion-repo"
+    assert (tmp_path / "ion-repo" / "tool-update.json").read_text() == "{}"
+    assert not (tmp_path / "kiln").exists()
 
 
 def test_statusline_choice_is_checked() -> None:

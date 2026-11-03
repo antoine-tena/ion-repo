@@ -17,5 +17,7 @@ def git_identity(tmp_path_factory: pytest.TempPathFactory, monkeypatch: pytest.M
     # The machine's ion-repo settings (`~/.config/ion-repo/config.toml`): a machine on the beta
     # channel changed what the session hook offers.
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path_factory.mktemp("config")))
+    # Its state (`~/.local/state/ion-repo`), which kiln's moves into at the first read.
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path_factory.mktemp("state")))
     # Never the machine's GitHub through gh: a test that needs settings gives its own.
     monkeypatch.setattr("ion_score.forge.ENABLED", False)

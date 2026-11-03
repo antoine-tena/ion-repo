@@ -661,7 +661,7 @@ def notice(tag: str, changes: Changes) -> str:
     return "\n" + "\n".join(lines)
 
 
-NOTICES_DIR = reminders.STATE_DIR / "kiln" / "notices"
+NOTICES_DIR = reminders.ION_REPO_STATE / "notices"
 
 
 def save_notice(session_id: str, text: str) -> None:
@@ -806,6 +806,7 @@ def main() -> None:
         payload = json.load(sys.stdin)
     except ValueError:
         payload = {}
+    reminders.move_legacy_state()
     red, found = startup_context(payload)
     context = "\n\n".join(
         part

@@ -3,7 +3,7 @@ above the
 first prompt; a session leaves the list once resumed, or when its repo or branch is gone (merged and
 deleted).
 
-One file per session in `~/.local/state/kiln/sessions/<id>.json`, written by `ion repo pause`.
+One file per session in `~/.local/state/ion-repo/sessions/<id>.json`, written by `ion repo pause`.
 """
 
 import datetime
@@ -13,7 +13,7 @@ from pathlib import Path
 
 import reminders
 
-SESSIONS_DIR = reminders.STATE_DIR / "kiln" / "sessions"
+SESSIONS_DIR = reminders.ION_REPO_STATE / "sessions"
 
 
 def forget(session_id: str) -> None:
