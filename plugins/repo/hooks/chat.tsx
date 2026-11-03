@@ -5,7 +5,7 @@ import type { Register } from 'claude-code'
 
 type Origin = { kind: string; server?: string; plugin?: string }
 
-const PERSON_KINDS = new Set(['unclassified', 'bridge', 'sdk'])
+const PERSON_KINDS = new Set(['unclassified', 'composer', 'bridge', 'sdk'])
 
 const firstSeen = new Map<string, number>()
 
