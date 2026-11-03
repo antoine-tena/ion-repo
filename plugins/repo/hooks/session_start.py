@@ -565,17 +565,6 @@ def headlines(changes: Changes) -> list[tuple[bool, str]]:
     return [(breaking, headline(change)) for breaking, change in chosen[:HEADLINES]]
 
 
-def question_format(subject: str, current: str | None, tag: str) -> str:
-    """The question itself, the same in every session: the changes are in the notice above it."""
-    move = f"from {current} to {tag}" if current else f"to {tag}"
-    return (
-        f' The question, translated: header "ion-repo", text "Update {subject} {move}?", options '
-        f'"{YES}" (description "Now, on a branch merged right away") and "{NO}" (description '
-        '"Ask again in a few sessions"). Nothing else in the question: no list of changes, they '
-        "are already shown to the user above it."
-    )
-
-
 def tool_version(install: tuple[str, str] | None) -> str | None:
     """Release of the installed tool when it is known (installed from PyPI)."""
     return install[1] if install is not None and install[0] == "pypi" else None
@@ -678,58 +667,117 @@ def save_notice(session_id: str, text: str) -> None:
 # --- Instructions given to Claude ---
 
 
-YES, NO = "Update", "Not now"
+YES, YES_ALL, NO = "Update", "Update everything", "Not now"
 
 
 def answer_command(verdict: str, key: Path | str) -> str:
     return f'`{reminders.SCRIPT} {verdict} "{key}"`'
 
 
-def tool_question(state: reminders.State, current: str | None, tag: str) -> str:
-    choices = f'"{YES}", "{NO}"'
-    extra = question_format("ion-repo", current, tag)
+class Step(NamedTuple):
+    """One part of the update offered at startup: what is late, what updates it, its reminder."""
+
+    subject: str  # `the ion-repo tool (v0.4.12 → v0.4.13)`
+    action: str  # what Claude runs on a yes
+    key: str  # its reminder (`reminders.py`)
+    choice: str = ""  # after a long refusal, one more option…
+    choice_action: str = ""  # …and what it does
+
+
+def moved(current: str | None, tag: str) -> str:
+    return f"{current} → {tag}" if current else f"→ {tag}"
+
+
+def tool_step(state: reminders.State, current: str | None, tag: str) -> Step:
+    choice = action = ""
     if reminders.is_long_refusal(state, TOOL_KEY):
-        choices += ', "Uninstall ion-repo"'
-        extra += (
-            ' The question text starts with "You have been saying no for a while: do you want '
-            'to uninstall ion-repo?". If "Uninstall ion-repo": '
+        choice = "Uninstall ion-repo"
+        action = (
             f"`uv tool uninstall {installed_pypi_name()} && claude plugin uninstall "
-            f"repo@ion-repo`, "
-            f"then {answer_command('never', TOOL_KEY)}."
+            f"repo@ion-repo`, then {answer_command('never', TOOL_KEY)}"
         )
-    return (
-        "The ion-repo tool installed on this machine is behind the latest release. Before anything "
-        "else, at the start of your first answer, ask with the AskUserQuestion tool, in the "
-        f'user\'s language, whether to update ion-repo ({choices}).{extra} If "{YES}": skill '
-        f'`/repo:update` with the argument `tool`. If "{NO}": '
-        f"{answer_command('no', TOOL_KEY)}, without updating anything. Then resume their request."
+    return Step(
+        f"the ion-repo tool ({moved(current, tag)})",
+        "skill `/repo:update` with the argument `tool`",
+        TOOL_KEY,
+        choice,
+        action,
     )
 
 
-def repo_question(root: Path, commit: str, tag: str, state: reminders.State) -> str:
-    choices = f'"{YES}", "{NO}"'
-    extra = question_format(root.name, commit, tag)
+def repo_step(root: Path, commit: str, tag: str, state: reminders.State) -> Step:
+    choice = action = ""
     if reminders.is_long_refusal(state, str(root)):
-        choices += f', "Unlink {root.name} from ion-repo"'
-        extra += (
-            ' The question text starts with "You have been saying no for a while: do you want '
-            f'to unlink {root.name} from ion-repo?". If "Unlink": on a dedicated branch, delete '
-            f"`{ANSWERS_FILE}` (ion-repo will no longer update this repo), commit and merge with "
-            f"the "
-            f"skill `/repo:merge`, then {answer_command('never', root)}."
+        choice = f"Unlink {root.name} from ion-repo"
+        action = (
+            f"on a dedicated branch, delete `{ANSWERS_FILE}` (ion-repo will no longer update this "
+            "repo), commit and merge with the skill `/repo:merge`, then "
+            f"{answer_command('never', root)}"
         )
-    return (
-        f"ion-repo {tag} is out; {root.name} starts from {commit}. Before anything else, at the "
-        "start of your answer, ask with the AskUserQuestion tool, in the user's language, "
-        f'whether to update {root.name} ({choices}).{extra} If "{YES}": skill `/repo:update` '
-        f'with the argument `repo`. If "{NO}": {answer_command("no", root)}. Then resume their '
-        "request."
+    return Step(
+        f"the repo {root.name} ({moved(commit, tag)})",
+        "skill `/repo:update` with the argument `repo`",
+        str(root),
+        choice,
+        action,
     )
+
+
+def ion_tools_step(late: ion_tools.Late, state: reminders.State) -> Step:
+    """The other Ion tools, `ion upgrade` at once (`ion_tools.py`)."""
+    long_refusal = reminders.is_long_refusal(state, ion_tools.KEY)
+    return Step(
+        f"the Ion tools {ion_tools.described(late)}",
+        "`ion upgrade` (it can take a few minutes)",
+        ion_tools.KEY,
+        f"Never ask again for {', '.join(row['name'] for row in late)}" if long_refusal else "",
+        answer_command("never", ion_tools.KEY) if long_refusal else "",
+    )
+
+
+def step_order(step: Step) -> int:
+    return {TOOL_KEY: 0, ion_tools.KEY: 1}.get(step.key, 2)
+
+
+def update_question(steps: list[Step]) -> str:
+    """One question for everything late at startup: the tool, the other Ion tools, the repo."""
+    subjects = ", ".join(step.subject for step in steps)
+    label = YES_ALL if len(steps) > 1 else YES
+    extras = [step for step in steps if step.choice]
+    choices = ", ".join(f'"{choice}"' for choice in (label, NO, *(s.choice for s in extras)))
+    actions = "; ".join(
+        f"{number}. {step.action}, then {answer_command('yes', step.key)}"
+        for number, step in enumerate(steps, start=1)
+    )
+    refusals = ", ".join(answer_command("no", step.key) for step in steps)
+    text = (
+        f"Updates are waiting: {subjects}. Before anything else, at the start of your first "
+        "answer, ask one question with the AskUserQuestion tool, in the user's language, whether "
+        f"to update {'all of them' if len(steps) > 1 else 'it'} now ({choices}). The question, "
+        f'translated: header "Update", text "Update {subjects}?", options "{label}" (description '
+        f'"Now, one after the other, each on a branch merged right away") and "{NO}" (description '
+        '"Ask again in a few sessions"). Nothing else in the question: no list of changes, they '
+        "are already shown to the user above it."
+    )
+    if extras:
+        text += ' The question text starts with "You have been saying no for a while."'
+    text += (
+        f' If "{label}": in this order, each once the one before succeeded: {actions}; then tell '
+        "the user to restart Claude Code so the updated tools' skills and hooks load. If "
+        f'"{NO}": {refusals}, without updating anything.'
+    )
+    for step in extras:
+        text += f' If "{step.choice}": {step.choice_action}.'
+    return text + " Then resume their request."
 
 
 class Offer(NamedTuple):
-    context: str  # for Claude: the question to ask
+    steps: list[Step]  # for Claude: what to offer, in one question
     notice: str  # for the user: the logo and the update on offer
+
+    @property
+    def context(self) -> str:
+        return update_question(self.steps)
 
 
 def offer(
@@ -757,21 +805,13 @@ def offer(
     if not tool_due and not repo_due:
         return None
     notes = (changelog or fetch_changelog)(tag)
+    repo = [repo_step(root, commit, tag, state)] if repo_due else []
     if not tool_due:
         repo_version = commit if release_key(commit) else None
-        return Offer(
-            repo_question(root, commit, tag, state),
-            notice(tag, changes_between(repo_version, tag, notes)),
-        )
-    follow_up = ""
-    if repo_due:
-        follow_up = " Once the tool is updated successfully: " + repo_question(
-            root, commit, tag, state
-        )
+        return Offer(repo, notice(tag, changes_between(repo_version, tag, notes)))
     current = tool_version(install)
     return Offer(
-        tool_question(state, current, tag) + follow_up,
-        notice(tag, changes_between(current, tag, notes)),
+        [tool_step(state, current, tag), *repo], notice(tag, changes_between(current, tag, notes))
     )
 
 
@@ -810,14 +850,15 @@ def main() -> None:
         payload = {}
     reminders.move_legacy_state()
     red, found = startup_context(payload)
+    # The tools first, ion-repo then the others: the repo's update lays their pieces too.
+    steps = sorted([*(found.steps if found else []), *ion_tools_steps(payload)], key=step_order)
     context = "\n\n".join(
         part
         for part in (
             ERROR_ORIGIN,
             SKILL_FRAME,
             red,
-            found.context if found else "",
-            ion_tools_offer(payload),
+            update_question(steps) if steps else "",
             launch_place(payload),
             other_sessions(payload),
             look_question(payload),
@@ -846,14 +887,17 @@ def paused_sessions(payload: dict[str, Any]) -> str:
         return ""
 
 
-def ion_tools_offer(payload: dict[str, Any]) -> str:
-    """At startup, in any folder: `ion upgrade` when other Ion tools are late (`ion_tools.py`)."""
+def ion_tools_steps(payload: dict[str, Any]) -> list[Step]:
+    """At startup, in any folder: the other Ion tools when late (`ion_tools.py`), ion-repo among
+    them outside its repos, where it has no question of its own."""
     try:
-        return (
-            ion_tools.context() if payload.get("source", STARTUP_SOURCE) == STARTUP_SOURCE else ""
-        )
+        if payload.get("source", STARTUP_SOURCE) != STARTUP_SOURCE:
+            return []
+        own = kiln_repo(payload.get("cwd") or ".") is None
+        late = ion_tools.due(include_own=own)
+        return [ion_tools_step(late, reminders.load())] if late else []
     except Exception:
-        return ""
+        return []
 
 
 def look_question(payload: dict[str, Any]) -> str:
