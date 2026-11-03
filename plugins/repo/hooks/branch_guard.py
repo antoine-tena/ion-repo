@@ -35,9 +35,12 @@ def git_config(directory: str, key: str) -> str:
 
 def trailers_choice() -> str:
     """The machine's `ai_trailers` (ion-repo's `config.toml`), `disclose` by default."""
-    base = os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config"
+    base = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
+    path = base / "ion-repo/config.toml"
+    if not path.exists():
+        path = base / "kiln/config.toml"  # its place before ion-repo 0.4.14
     with contextlib.suppress(OSError, ValueError, KeyError):
-        return str(tomllib.loads((Path(base) / "kiln/config.toml").read_text())["ai_trailers"])
+        return str(tomllib.loads(path.read_text())["ai_trailers"])
     return "disclose"
 
 

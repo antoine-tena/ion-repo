@@ -1024,6 +1024,8 @@ its branch `kiln/bot`, `KILN_BOT_TOKEN`), kiln's own CI `kiln.yml`, the images
 fallback read of the old name, and `ion repo update` converts what a repo carries; the demos are
 re-recorded at the next candidate that shows them.
 Also `src/kiln/`, the `kiln` alias of `ion-repo` and `kiln_move.py`'s state in `~/.local/state/kiln/`.
+- [x] `~/.config/kiln/config.toml` → `~/.config/ion-repo/config.toml`, moved at the first read,
+  the old place read by the status line and the hooks until then (2026-11-03).
 
 ### ion-repo#T-387 · What belongs to another craft leaves kiln for its tool
 - **Type**: task

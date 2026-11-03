@@ -55,9 +55,9 @@ ION_REPO_GIT_URL = "https://github.com/antoine-tena/ion-repo"
 RELEASE_TAG = re.compile(r"^v(\d+)\.(\d+)\.(\d+)(?:-rc\.(\d+))?(?:-\d+-g[0-9a-f]+)?$")
 # A promoted release comes after all its candidates.
 FINAL = 10**9
-CONFIG_PATH = (
-    Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "kiln" / "config.toml"
-)
+CONFIG_DIR = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
+CONFIG_PATH = CONFIG_DIR / "ion-repo" / "config.toml"
+LEGACY_CONFIG_PATH = CONFIG_DIR / "kiln" / "config.toml"  # before ion-repo 0.4.14
 # Release channel that follows candidates (`interne` before kiln 0.4).
 INTERNAL_CHANNELS = ("internal", "interne")
 # The tool runs ion-repo's `develop`: the checkout of the code directory, installed editable.
@@ -117,7 +117,8 @@ def release_key(ref: str) -> tuple[int, int, int, int] | None:
 
 def machine_settings() -> dict[str, Any]:
     try:
-        return tomllib.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+        path = CONFIG_PATH if CONFIG_PATH.exists() else LEGACY_CONFIG_PATH
+        return tomllib.loads(path.read_text(encoding="utf-8"))
     except OSError, ValueError:
         return {}
 

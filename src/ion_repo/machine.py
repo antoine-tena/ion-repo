@@ -1,9 +1,10 @@
 """`ion repo set` outside a repo (or `ion repo set --machine`): the settings of this machine.
 
-They live in `~/.config/kiln/config.toml`: system, default GitHub owner and team of `ion repo new`,
-code directory of `ion repo status` and `ion repo update --all`, release channel, Claude Code's
-status line and its palette, whether Claude's commits say Claude helped, the repos `ion repo update
---all` leaves alone. Keys and values of before kiln 0.4.0 (`canal=interne`) are still accepted.
+They live in `~/.config/ion-repo/config.toml`: system, default GitHub owner and team of `ion repo
+new`, code directory of `ion repo status` and `ion repo update --all`, release channel, Claude
+Code's status line and its palette, whether Claude's commits say Claude helped, the repos `ion repo
+update --all` leaves alone. Keys and values of before kiln 0.4.0 (`canal=interne`) are still
+accepted.
 """
 
 from dataclasses import replace
