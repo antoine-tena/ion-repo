@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: ion-repo#T-428.**
+**Next free: ion-repo#T-429.**
 
 ---
 
@@ -207,6 +207,7 @@ benchmarked in CI.
 - ion-repo#T-181 · The session start does not wait for GitHub (S)
 - ion-repo#T-182 · `kiln status` in half a second (S)
 - ion-repo#T-183 · One hook per Bash call instead of two (S)
+- ion-repo#T-428 · The `repo` plugin's hooks run in its mod, no Python per tool call (M)
 - ion-repo#T-178 · A lighter install: copier's dependencies trimmed, not fetched later (S)
 - ion-repo#T-193 · `kiln score` benchmarked: a startup budget, a lean path, slow candidates stopped (M)
 - ion-repo#T-354 · Fast CI: the generated test suites in parallel (M)
@@ -2527,6 +2528,33 @@ hundreds of times a session.
 - [ ] Left as they are, measured that day: the status line (140 ms, 16 commands in sequence,
   never blocks Claude), `check_file.py` (70 ms), the CLI start (120 ms), `kiln score` (0.4 s),
   `kiln check` (0.8 s), `charter` (0.6 s).
+
+### ion-repo#T-428 · The `repo` plugin's hooks run in its mod, no Python per tool call
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-03
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: session of 3 November 2026, after ion-repo#T-427 was dropped: the events of Claude
+  Code 2.1.311's mods go well beyond `ui.render` (`tool.check`, `tool.call`, `prompt.submit`,
+  `prompt.context`, `session.start`, `skill.prompt`…)
+
+Every Bash call starts two Python processes (`branch_guard.py`, `rtk.py`), every Edit or Write
+one (`protect_files.py`). The `repo` plugin's mod (`plugins/repo/hooks/chat.tsx`) already runs
+inside Claude Code: a `tool.check` there costs no process at all. The other Ion tools have no
+hooks; only `repo` is concerned.
+- [ ] Found first, with a throwaway mod and `claude plugin test`: what a mod may do. Read files
+  and git state, start a process (`rtk`, `ruff`), rewrite a tool's input as `rtk.py` does, deny
+  with a reason Claude reads, add context at `session.start` / `prompt.submit`.
+- [ ] `branch_guard`, `rtk` and `protect_files` moved into the mod's `tool.check` if it can do
+  their job, measured before and after; ion-repo#T-183 is then done by this ticket. Otherwise
+  this box goes to `rejected.md` with why, and ion-repo#T-183 stays.
+- [ ] The context hooks (`session_start`, `reminders`, `others`, `paused`, `place`,
+  `first_prompt`) moved too only if the mod reads what they read and it is faster.
+- [ ] Left as they are: `check_file.py` unless a mod can start `ruff`, the status line (no mod
+  component draws it).
+- [ ] The old script paths stay as relays: open sessions call the hooks in the main tree, and
+  `tests/test_plugins.py` checks them. Both references and the repo map in `CLAUDE.md`
+  updated in the same branch.
 
 ### ion-repo#T-77 · Tests in seconds after each edit: only those the change touches
 - **Type**: improvement
