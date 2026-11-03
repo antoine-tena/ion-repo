@@ -13,7 +13,7 @@ The names of before kiln 0.4.0 (`sobre`, `bandeau`, `classique`, `classique-fond
 `perso`) are still read. `--style <name>` forces a style, for a preview.
 
 The palette, stone and fire by default, is chosen the same way (`ion repo set
-statusline_palette=…`, ten palettes, `rose` among them, and `chat`: the colors of the person and
+statusline_palette=…`, eleven palettes, `rose` among them, and `chat`: the colors of the person and
 of Claude in the chat, after the theme); `--palette <name>` forces one. Each
 comes dark or light after Claude Code's theme (`/theme`), with color-blind safe levels under its
 `-daltonized` themes; `--theme dark|light|dark-daltonized|light-daltonized` forces it.

@@ -42,6 +42,7 @@ A theme is a JSON file in `~/.claude/themes/<slug>.json` (`name`, `base`, `overr
    ~/.claude/settings.json`) and say chezmoi's repo has it to commit.
 4. `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/reminders.py" yes color`: the start question comes back
    in 1000 sessions.
-5. Claude Code reloads `~/.claude/themes/` live: the bar changes at once. If the folder did not
+5. Claude Code reloads `~/.claude/themes/` live: the bar changes at once, and the status line
+   too when its palette is `chat` (`/repo:statusline`). If the folder did not
    exist when the session started, say a restart of Claude Code is needed once. Ask whether it
    suits; if not, back to 2.

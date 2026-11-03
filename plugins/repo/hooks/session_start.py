@@ -17,8 +17,8 @@ repo adopt`, skill `/repo:adopt`). Before kiln 0.4 it also linked the plugin at 
 in every repo: that link is removed.
 
 Now and then at startup, in any folder, Claude also asks whether the person wants another color
-for their bar in the chat (`color.py`), and how the chat should name them and their Claude
-(`names.py`).
+for their bar in the chat (`color.py`), how the chat should name them and their Claude
+(`names.py`), and whether the status line should look otherwise (`look.py`).
 
 In a repo ion-repo looks after (ion-repo itself included), Claude is also told when the last CI of
 the integration branch is red, to say so before any new work.
@@ -39,6 +39,7 @@ from typing import Any, NamedTuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import color
+import look
 import names
 import others
 import paused
@@ -815,6 +816,7 @@ def main() -> None:
             other_sessions(payload),
             color_question(payload),
             names_question(payload),
+            look_question(payload),
         )
         if part
     )
@@ -852,6 +854,14 @@ def names_question(payload: dict[str, Any]) -> str:
     """Now and then at startup, in any folder: the names above the chat's messages (`names.py`)."""
     try:
         return names.context() if payload.get("source", STARTUP_SOURCE) == STARTUP_SOURCE else ""
+    except Exception:
+        return ""
+
+
+def look_question(payload: dict[str, Any]) -> str:
+    """Now and then at startup, in any folder: another look for the status line (`look.py`)."""
+    try:
+        return look.context() if payload.get("source", STARTUP_SOURCE) == STARTUP_SOURCE else ""
     except Exception:
         return ""
 
