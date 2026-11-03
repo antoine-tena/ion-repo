@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: ion-repo#T-436.**
+**Next free: ion-repo#T-437.**
 
 ---
 
@@ -6810,6 +6810,19 @@ nowhere else.
 - [ ] Both references and both READMEs updated in the same branch.
 
 ## ⚪ Background — long-running work, debt and ideas
+
+### ion-repo#T-436 · The status line and the commands in the Ion logo's colours
+- **Type**: idea
+- **Status**: todo
+- **Opened**: 2026-11-04
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: antoine, 4 November 2026, after the Ion logo in flight replaced the stone kiln
+
+The banner now shows a blue-violet ion with cyan text, but the rest still speaks stone and fire
+(`ion_score.ui`: STONE, FIRE, EMBER, GLOW): they clash beside the logo.
+- [ ] The status line's default palette (`plugins/repo/scripts/statusline.py`, `src/ion_repo/statusline.py`).
+- [ ] `ion repo doctor`, `fleet`, `release` (and the other `ui.FIRE` titles): the logo's cyan and violet, warnings and errors kept readable.
+- [ ] The palette lives in ion-score's `ui`: change it there, then here.
 
 ### ion-repo#T-435 · The Ion logo in flight, animated
 - **Type**: idea
