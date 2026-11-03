@@ -570,33 +570,43 @@ def tool_version(install: tuple[str, str] | None) -> str | None:
     return install[1] if install is not None and install[0] == "pypi" else None
 
 
-# --- Notice shown to the user above the question: the logo of ion-repo, in stone and fire ---
+# --- Notice shown to the user above the question: the Ion logo, an ion in flight ---
 
-# Copy of `LOGO` and `LOGO_COLORS` of `src/ion_repo/banner.py` (the hook runs without ion-repo
-# importable; `test_session_start.py` checks that they stay the same).
-LOGO = (
-    "..........dd..",
-    "...LLLBBB.bb..",
-    "..LWKBBWKBbb..",
-    ".LLWKBBWKBBbb.",
-    ".LBP.RR..PBbb.",
-    ".LBB.RFR..Bbb.",
-    ".BBB.FYYF.bbb.",
-    "dddddddddddddd",
+# Copy of `LOGO_PIXELS` of `src/ion_repo/banner.py` (the hook runs without ion-repo importable;
+# `test_session_start.py` checks that they stay the same): one pixel = six hex digits (red, green,
+# blue), `......` an empty one.
+LOGO_PIXELS = (
+    ".........................................................................................."
+    "..........................................................................................",
+    ".........................................................................................."
+    "................................................2c4f8c3366ac407fd53366ac..................",
+    ".........................................................................................."
+    "......382f7c3a37874548a64f5bc5546bda5d82fa558bfc53a2fe5eb8ff63c0ff5eb8ff509df428518d......",
+    "............................................................331d673f24804c2c99633ac76b47dd"
+    "7155f26d5cf36a64f5676bf66373f7607af85b82fa529ffe65c4ff79dfff86e6ff79dfff65c4ff4e9af4......",
+    "........................1e10412a1759311b6643258a4f2da35d35be6439ca6a3dd77141e37646ee744df1"
+    "7155f26d5cf36a64f5676bf66373f7607af85786fb5ab0ff74dbffa6eeffc7f4ffa6eeff74dbff5ab0ff28518d",
+    "............1c0e3d261452321b6a402386492898502da55631b15d35be6439ca6a3dd77141e37646ee744df1"
+    "7155f26d5cf36a64f5676bf66373f7607af85588fc5cb4ff79dfffb4f1ffe1f9ffb4f1ff79dfff5cb4ff2e5da1",
+    "..........................................291754331d6a3f24805330a96238c57141e37646ee744df1"
+    "7155f26d5cf36a64f5676bf66373f7607af85984fa56a9ff6dd2ff8fe9ffa6eeff8fe9ff6dd2ff56a9ff......",
+    "..............................................................................3c247a452e8f"
+    "4c39a35c4dcc5d58d7676bf66373f7607af85d82fa5193fd5cb4ff6acdff70d6ff6acdff5cb4ff3d7acb......",
+    ".........................................................................................."
+    "..............................3544893e57a8466dc84683df52a2ff56a9ff52a2ff376db6............",
+    ".........................................................................................."
+    "............................................................244882........................",
 )
-LOGO_COLORS = {
-    "L": "185;185;180",
-    "B": "140;140;135",
-    "b": "95;95;92",
-    "d": "180;75;35",
-    "W": "255;255;255",
-    "K": "25;25;25",
-    "P": "230;130;120",
-    "R": "205;50;35",
-    "F": "247;150;40",
-    "Y": "255;225;120",
-}
-STONE, FIRE, EMBER = LOGO_COLORS["B"], LOGO_COLORS["F"], LOGO_COLORS["R"]
+EMPTY, PIXEL = "......", 6
+LOGO = tuple(
+    tuple(
+        None if cell == EMPTY else tuple(bytes.fromhex(cell))
+        for cell in (row[start : start + PIXEL] for start in range(0, len(row), PIXEL))
+    )
+    for row in LOGO_PIXELS
+)
+# The text beside it: grey for the status, the cyan of the head for a change, red when breaking.
+MUTED, ACCENT, BREAKING = "140;140;135", "121;223;255", "240;90;90"
 RESET, BOLD = "\033[0m", "\033[1m"
 UPPER_HALF, LOWER_HALF, FULL_BLOCK = "▀", "▄", "█"
 LOGO_MARGIN, TEXT_GAP = "  ", "   "
@@ -607,19 +617,21 @@ def foreground(rgb: str) -> str:
 
 
 def render_logo() -> list[str]:
-    """The logo in half blocks: one character = two stacked pixels."""
+    """The logo in half blocks: one character = two stacked pixels, a 24-bit colour each."""
 
-    def cell(top: str, bottom: str) -> str:
-        if top == "." and bottom == ".":
+    def color(pixel: tuple[int, ...]) -> str:
+        return ";".join(map(str, pixel))
+
+    def cell(top: tuple[int, ...] | None, bottom: tuple[int, ...] | None) -> str:
+        if top is None and bottom is None:
             return " "
-        if bottom == ".":
-            return f"{foreground(LOGO_COLORS[top])}{UPPER_HALF}{RESET}"
-        if top == ".":
-            return f"{foreground(LOGO_COLORS[bottom])}{LOWER_HALF}{RESET}"
+        if bottom is None:
+            return f"{foreground(color(top))}{UPPER_HALF}{RESET}"
+        if top is None:
+            return f"{foreground(color(bottom))}{LOWER_HALF}{RESET}"
         if top == bottom:
-            return f"{foreground(LOGO_COLORS[top])}{FULL_BLOCK}{RESET}"
-        colors = foreground(LOGO_COLORS[top]) + f"\033[48;2;{LOGO_COLORS[bottom]}m"
-        return f"{colors}{UPPER_HALF}{RESET}"
+            return f"{foreground(color(top))}{FULL_BLOCK}{RESET}"
+        return f"{foreground(color(top))}\033[48;2;{color(bottom)}m{UPPER_HALF}{RESET}"
 
     return [
         "".join(cell(top, bottom) for top, bottom in zip(top_row, bottom_row, strict=True))
@@ -635,11 +647,11 @@ def notice(tag: str, changes: Changes) -> str:
     if "NO_COLOR" in os.environ:
         return " · ".join([f"ion-repo {tag}", status, *(text for _, text in shown)])
     text_lines = [
-        f"{BOLD}ion-repo {tag}{RESET}  {foreground(STONE)}{status}{RESET}",
+        f"{BOLD}ion-repo {tag}{RESET}  {foreground(MUTED)}{status}{RESET}",
         *(
-            f"{foreground(EMBER)}breaking{RESET} {text}"
+            f"{foreground(BREAKING)}breaking{RESET} {text}"
             if breaking
-            else f"{foreground(FIRE)}+{RESET} {text}"
+            else f"{foreground(ACCENT)}+{RESET} {text}"
             for breaking, text in shown
         ),
     ]

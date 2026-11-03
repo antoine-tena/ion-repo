@@ -278,13 +278,15 @@ def test_promoted_versions_come_from_pypi_and_candidates_from_github(
     )
 
 
-def test_the_logo_is_the_one_of_kiln() -> None:
+def test_the_logo_is_the_one_of_the_banner(monkeypatch: pytest.MonkeyPatch) -> None:
     from ion_repo import banner
 
+    monkeypatch.setenv("COLORTERM", "truecolor")
     hook = load_hook()
 
+    assert hook.LOGO_PIXELS == banner.LOGO_PIXELS
     assert hook.LOGO == banner.LOGO
-    assert {key: color.true_color for key, color in banner.LOGO_COLORS.items()} == hook.LOGO_COLORS
+    assert hook.render_logo() == banner.render_logo()
 
 
 def test_the_user_sees_the_logo_above_the_question(
@@ -300,6 +302,7 @@ def test_the_user_sees_the_logo_above_the_question(
     assert "ion-repo v0.4.0\x1b[0m  \x1b[38;2;140;140;135mupdate available" in found.notice
     assert "breaking\x1b[0m The charter is in English" in found.notice
     assert "ion repo new asks fewer questions" in found.notice
+    assert found.notice.count("\n") == 5
 
 
 def test_without_colors_the_notice_is_one_line(
