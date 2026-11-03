@@ -1032,9 +1032,9 @@ Also `src/kiln/`, the `kiln` alias of `ion-repo` and `kiln_move.py`'s state in `
   worktrees under the old place still removed (2026-11-03).
 - [x] git keys `ion-repo.update-check`, `ion-repo.branch-guard`, `ion-repo.rtk`, kiln's still read
   (2026-11-03).
-- [ ] ion-score first: `WAIVERS_FILE` (`kiln-waivers.toml`, read under both names), `kiln.report-gaps`,
-  `~/.cache/kiln/{worktrees,forge}`, `.git/kiln/fix`; then `ion repo update` renames the file
-  (breaking: the generated tree).
+- [x] ion-score first: `WAIVERS_FILE` (`kiln-waivers.toml`, read under both names), `kiln.report-gaps`,
+  `~/.cache/kiln/{worktrees,forge}`, `.git/kiln/fix` (ion-score 0.1.2); then `ion repo update`
+  renames the file (breaking: the generated tree) (2026-11-03).
 
 ### ion-repo#T-387 · What belongs to another craft leaves kiln for its tool
 - **Type**: task
