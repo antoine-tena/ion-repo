@@ -45,7 +45,11 @@ jobs:
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: {{ bp }}dist/*
+      # Without the secret, no `UV_PUBLISH_TOKEN` at all: uv takes an empty one for credentials
+      # and then refuses trusted publishing.
       - name: Publish
         env:
-          UV_PUBLISH_TOKEN: {{ '${{ secrets.PYPI_TOKEN }}' }}
-        run: uv publish --trusted-publishing automatic
+          PYPI_TOKEN: {{ '${{ secrets.PYPI_TOKEN }}' }}
+        run: |
+          if [ -n "$PYPI_TOKEN" ]; then export UV_PUBLISH_TOKEN="$PYPI_TOKEN"; fi
+          uv publish --trusted-publishing automatic

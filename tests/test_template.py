@@ -353,8 +353,13 @@ def test_tool_project_can_be_published_on_pypi(tmp_path: Path) -> None:
     # GitHub refuses an attestation on a user's private repo: it must not stop the publication.
     attest = next(step for step in steps if "attest-build-provenance" in step.get("uses", ""))
     assert attest["if"] == "${{ !github.event.repository.private }}"
-    assert steps[-1]["run"] == "uv publish --trusted-publishing automatic"
-    assert steps[-1]["env"] == {"UV_PUBLISH_TOKEN": "${{ secrets.PYPI_TOKEN }}"}
+    # An empty `UV_PUBLISH_TOKEN` counts as credentials for uv, which then refuses trusted
+    # publishing: it is only set when the secret exists.
+    assert steps[-1]["env"] == {"PYPI_TOKEN": "${{ secrets.PYPI_TOKEN }}"}
+    assert steps[-1]["run"] == (
+        'if [ -n "$PYPI_TOKEN" ]; then export UV_PUBLISH_TOKEN="$PYPI_TOKEN"; fi\n'
+        "uv publish --trusted-publishing automatic\n"
+    )
     assert "`uv tool install keramos-demo`" in (project_dir / "README.md").read_text()
 
 
