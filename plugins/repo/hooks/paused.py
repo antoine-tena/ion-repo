@@ -1,4 +1,5 @@
-"""The sessions `ion repo pause` kept (T-344): listed at the next start, in any repo, above the
+"""The sessions `ion repo pause` kept (ion-repo#T-344): listed at the next start, in any repo,
+above the
 first prompt; a session leaves the list once resumed, or when its repo or branch is gone (merged and
 deleted).
 

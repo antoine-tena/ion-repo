@@ -5,7 +5,7 @@ only up-to-date source.**
 
 | File | Content |
 |---|---|
-| [backlog.md](backlog.md) | **Everything open**: the single list ordered by priority, one `T-NN` ticket per thing to do with its type, status and details |
+| [backlog.md](backlog.md) | **Everything open**: the single list ordered by priority, one `{{ name }}#T-NN` ticket per thing to do with its type, status and details |
 | [done.md](done.md) | The closed tickets, one line each, most recent first |
 | [rejected.md](rejected.md) | What was turned down, dropped, or ruled out for good |
 | [urgent.md](urgent.md) | What only a human on the team can do (access, payment, decision), one checkbox per action |
@@ -17,9 +17,9 @@ is old and must be checked** against the current code; they are never edited.
 
 ## How to use (humans and agents)
 
-**A ticket** = a `### T-NN · Title` heading, then five fixed lines, then the details:
+**A ticket** = a `### {{ name }}#T-NN · Title` heading, then five fixed lines, then the details:
 
-    ### T-NN · Short title that says what to achieve
+    ### {{ name }}#T-NN · Short title that says what to achieve
     - **Type**: task
     - **Status**: todo
     - **Opened**: YYYY-MM-DD
@@ -28,10 +28,12 @@ is old and must be checked** against the current code; they are never edited.
 
     Why, what to do (as a `- [ ]` checklist when there are several steps), where to look.
 
-- **ID** `T-NN`: stable, never reused, quoted as is in commits and branches. The next free one
-  is written at the top of [backlog.md](backlog.md) (`Next free: T-NN`). A bare `T-NN` always
-  means a ticket of this repo; a ticket of another repo is cited with that repo's name
-  (`ion-repo#T-400`).
+- **ID** `{{ name }}#T-NN`: stable, never reused, always written whole, in this repo too, and quoted as is
+  in commits and pull requests (a branch keeps the number alone: `fix/t07`). The prefix is this
+  repo's name; a ticket of another repo carries that repo's name (`other-repo#T-07`). The next
+  free one is written at the top of [backlog.md](backlog.md) (`Next free: {{ name }}#T-NN`). If the repo is
+  renamed, `ion repo set name=…` moves its own prefix here, same numbers; citations in other
+  repos keep the old name, which the forge redirects, and git history is never rewritten.
 - **Type**, one of: `bug` (something is broken); `improvement` (it works, it could work
   better); `idea` (nothing exists yet, to be explored); `task` (work that is neither: a release,
   a decision, a check).
@@ -51,8 +53,8 @@ is old and must be checked** against the current code; they are never edited.
 - **Releases**: the `## 🚀 Releases` section at the top places every open ticket in a planned
   release (`/repo:backlog plan`); numbers are planned, not promised, until the candidate is cut.
 - **Closing a ticket**: remove it from its section and add a line at the top of
-  [done.md](done.md): `- **YYYY-MM-DD** · T-NN · Title — what was done (branch) · opened YYYY-MM-DD`.
+  [done.md](done.md): `- **YYYY-MM-DD** · {{ name }}#T-NN · Title — what was done (branch) · opened YYYY-MM-DD`.
 - **Details in archived audits**: when a ticket quotes lines of `docs/_archive/`, the original
   finding is there in full; it is old, check it against the current code.
 - **Locations quoted are hints, not addresses.**
-- Overview: `grep -E '^(## |### T-|- \*\*Status)' docs/backlog/backlog.md`.
+- Overview: `grep -E '^(## |### ([a-z0-9-]+#)?T-|- \*\*Status)' docs/backlog/backlog.md`.

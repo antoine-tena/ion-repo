@@ -23,8 +23,8 @@ from ion_repo.config import BETA_CHANNEL, INTERNAL_CHANNEL, load_config
 
 ION_REPO_GIT_URL = "https://github.com/antoine-tena/ion-repo"
 # Package name on PyPI, in the Ion family's `ion-<tool>`; `kiln-cli` (kiln's name until 31 October
-# 2026) and `keramos-kiln` (its planned name) had their last release at v0.4.11, which moves their
-# testers (`kiln_move.py`), `kiln` came before PyPI.
+# 2026) and `keramos-kiln` (its planned name) had their last release at v0.4.11, which moved their
+# testers at its first run, `kiln` came before PyPI.
 PYPI_NAME = "ion-repo"
 LEGACY_PYPI_NAMES = ("kiln-cli", "keramos-kiln")
 FAMILY_PYPI_NAME = "ion-sh"
@@ -130,7 +130,8 @@ def replacing_legacy(source: str) -> str:
 
 
 def install_source() -> str:
-    """Where the tool comes from: `pypi`, `homebrew` (the tap's formula, T-12), `git` (a GitHub
+    """Where the tool comes from: `pypi`, `homebrew` (the tap's formula, ion-repo#T-12), `git` (a
+    GitHub
     revision) or `folder` (a checkout)."""
     if HOMEBREW_CELLAR in Path(sys.prefix).resolve().parts:
         return "homebrew"
@@ -317,7 +318,7 @@ def read_changelog() -> str:
 
 
 def parse_changelog(text: str) -> list[ReleaseNotes]:
-    """`## vN — date` entries of the changelog, in file order (latest first)."""
+    """`## vX.Y.Z — date` entries of the changelog, in file order (latest first)."""
     notes: list[ReleaseNotes] = []
     for line in text.splitlines():
         heading = RELEASE_HEADING.match(line)

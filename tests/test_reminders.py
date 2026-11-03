@@ -86,3 +86,13 @@ def test_answers_are_recorded_from_the_command_line(reminders: ModuleType) -> No
     assert questions["tool"]["refusals"] == 1
     with pytest.raises(SystemExit):
         reminders.main(["maybe", "tool"])
+
+
+def test_the_version_of_a_question_of_taste_survives_a_reload(reminders: ModuleType) -> None:
+    state: dict[str, Any] = {}
+    reminders.count_session(state, "look")
+    reminders.record(state, "look", "no")
+    reminders.save(state)
+
+    assert reminders.load()["questions"]["look"]["version"] == reminders.NEWS["look"]
+    assert not reminders.is_due(reminders.load(), "look")

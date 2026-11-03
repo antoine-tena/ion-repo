@@ -3,23 +3,26 @@
 import datetime
 import re
 import subprocess
+import sys
 import tempfile
 from collections.abc import Mapping
 from pathlib import Path
 
 import copier
 from copier.errors import UserMessageError
+from ion_score import ui
+from ion_score.fix import convert_in_place
 from plumbum import ProcessExecutionError
 
-from ion_repo import migrations, ui
+from ion_repo import migrations
 from ion_repo.backlog import add_after_update_ticket, migrate_legacy_backlog, split_backlog
 from ion_repo.check import check_project
 from ion_repo.contract import generate_api_contract
 from ion_repo.deps import lock_dependencies, sync_dependencies, update_dependencies
 from ion_repo.frozen import frozen_files, report_frozen_drift
-from ion_repo.grid.fix import convert_in_place
 from ion_repo.ion_names import convert_ion_names
 from ion_repo.moved_dirs import Renaming, move_renamed_dirs, renaming_of
+from ion_repo.pieces import apply_pieces
 from ion_repo.rules import write_unverified_rules
 from ion_repo.shell import (
     KilnError,
@@ -32,6 +35,7 @@ from ion_repo.shell import (
 )
 from ion_repo.stack import ANSWERS_FILE, kept_of, load_stack, read_answers
 from ion_repo.template import DEFAULT_TEMPLATE_SOURCE, template_revision
+from ion_repo.tickets import migrate as migrate_tickets
 from ion_repo.versions import (
     follows_candidates,
     latest_release,
@@ -89,6 +93,8 @@ def update_project(
         target = template_revision(_template_source(root))
         step(f"Architecture: changes of the template ({previous or '?'} → {target})")
         apply_template(root)
+        # Then the other Ion tools' pieces, conflicts named with the template's below.
+        apply_pieces(root, _template_source(root), [*frozen_files(root), *kept_of(root)])
         show_release_notes(root, previous, template_commit(root))
         report_frozen_drift(root, _template_source(root), previous, template_commit(root))
         mention_newer_release()
@@ -97,7 +103,7 @@ def update_project(
             ui.note(
                 f"conflicts left by the template in {', '.join(conflicted)}: resolve them "
                 "(both sides often hold), commit, then ion repo update --no-template for the "
-                "dependencies (it needs a clean tree)"
+                "conversions and the dependencies (it needs a clean tree)"
             )
             report_changes(root)
             return
@@ -109,9 +115,9 @@ def update_project(
         sync_dependencies(root, stack)
     generate_api_contract(root, stack)
     write_unverified_rules(root, stack)
-    if should_update_template:
-        # What the template leaves to the repo (SHAs, digests, a lock): closed like ion repo fix.
-        convert_in_place(root, [*frozen_files(root), *kept_of(root)])
+    # What the template leaves to the repo (SHAs, digests, a lock): closed like ion repo fix, on
+    # every run, so the one that follows a conflict (`--no-template`) closes it too (T-400).
+    convert_in_place(root, [*frozen_files(root), *kept_of(root)])
     report_changes(root)
     if should_check:
         check_project(root)
@@ -190,10 +196,12 @@ def apply_template(root: Path, answers: Mapping[str, object] | None = None) -> N
     resolve_kiln_ref_conflicts(root)
     replace_legacy_source(root)
     if migrate_legacy_backlog(root):
-        ui.note("Tracking moved from docs/a-faire/ to docs/backlog/ (T-NN tickets, in English).")
+        ui.note("Tracking moved from docs/a-faire/ to docs/backlog/ (tickets in English).")
         split_backlog(root, from_disk=True)
     elif split_backlog(root):
         ui.note("Closed tickets moved from docs/backlog/backlog.md to docs/backlog/done.md.")
+    # Shown first, written on a yes; kiln-bot and CI have nobody to ask and write nothing.
+    migrate_tickets(root, ask=input if sys.stdin.isatty() and sys.stdout.isatty() else None)
 
 
 def resolve_kiln_ref_conflicts(root: Path) -> None:
@@ -226,7 +234,7 @@ def resolve_kiln_ref_conflicts(root: Path) -> None:
         if merged is not None:
             (root / name).write_text(merged)
             # No more conflict in the index: a change of the template like any other.
-            run(["git", "reset", "-q", "--", name], root)
+            run(["git", "reset", "-q", "--no-refresh", "--", name], root)
 
 
 def _kiln_refs(text: str) -> set[str]:
@@ -249,10 +257,12 @@ def settle_rename_conflicts(root: Path, renaming: Renaming) -> None:
         if None in stages:
             continue
         base, ours, theirs = (str(text) for text in stages)
-        merged = _merge_cleanly(renaming.words(base), renaming.words(ours), theirs)
+        merged = _merge_cleanly(
+            renaming.words_beside(base, theirs), renaming.words_beside(ours, theirs), theirs
+        )
         if merged is not None:
             (root / name).write_text(merged)
-            run(["git", "reset", "-q", "--", name], root)
+            run(["git", "reset", "-q", "--no-refresh", "--", name], root)
 
 
 def _index_stage(root: Path, stage: int, name: str) -> str | None:

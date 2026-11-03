@@ -1,4 +1,4 @@
-"""The Homebrew formula of a promoted release, printed on stdout (T-12).
+"""The Homebrew formula of a promoted release, printed on stdout (ion-repo#T-12).
 
     uv run python scripts/homebrew_formula.py 0.4.5 > Formula/ion-repo.rb
 
@@ -47,7 +47,7 @@ class IonRepo < Formula
     system "uv", "pip", "install", "--python", python, "--require-hashes", "--no-deps",
            "--only-binary", ":all:", "--find-links", buildpath, "--requirement",
            buildpath/"requirements.txt"
-    bin.install_symlink libexec/"bin/ion-repo", libexec/"bin/kiln", libexec/"bin/charter",
+    bin.install_symlink libexec/"bin/ion-repo", libexec/"bin/charter",
                         libexec/"bin/charte"
   end
 

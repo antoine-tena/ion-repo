@@ -19,6 +19,7 @@ START = "<!-- roadmap:start: drawn from docs/backlog/backlog.md by scripts/roadm
 END = "<!-- roadmap:end -->"
 # The milestones whose releases are shown open; the later ones fold, for a page that reads.
 OPEN = 2
+TICKET = re.compile(r"- (?:[a-z][a-z0-9-]*#)?T-\d+")
 RELEASE = re.compile(r"^### (v(\d+)\.(\d+)\.\d+) · (.+)$")
 
 
@@ -34,7 +35,7 @@ def releases() -> list[tuple[str, str, str, str, int]]:
             continue
         version, major, minor, title = release.groups()
         why = " ".join(line for line in lines if not line.startswith(("- ", "  ")))
-        tickets = sum(1 for line in lines if line.startswith("- T-"))
+        tickets = sum(1 for line in lines if TICKET.match(line))
         found.append((version, f"v{major}.{minor}", title, why, tickets))
     return found
 

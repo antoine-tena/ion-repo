@@ -4,7 +4,7 @@
 # - that of `ion repo ci <sha>`, the CI of ci.yml replayed on a workstation (git note refs/notes/ci,
 #   pushed to origin): the only verdict of a repo whose GitHub CI does not run;
 # - that of the GitHub CI (workflow CI_WORKFLOW).
-# The release commit of `main` (--no-ff merge of `release/vN`, skill /repo:release) holds exactly
+# The release commit of `main` (--no-ff merge of `release/vX.Y.Z`, skill /repo:release) holds exactly
 # the files of the release: the green verdict of the release counts for it.
 # SKIP_CI=1 overrides it, in an emergency.
 #

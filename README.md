@@ -54,7 +54,8 @@ ion-repo itself calls no AI and needs no API key.
   copy-paste.
 - Skills for worktrees, merges, releases and reviews; hooks that keep Claude off `main` and
   `develop`; a status line that shows CI, tickets and production; an end-of-work report, the
-  `debrief` output style, that gives the real git state, what is broken and what comes next.
+  `debrief` output style, that gives the real git state, what is broken and what comes next
+  (alone, without the rest: `claude plugin install debrief@ion-repo`).
 - A private repo's CI runs on your machine (`ion repo ci`, its verdict kept as a git note) and spends
   no GitHub minutes; a public repo's runs on GitHub, where it is free.
 
@@ -79,8 +80,8 @@ ion add repo                 # ion-repo
 ion repo install             # outside a repo: ion-repo's Claude Code plugin in every session
 ```
 
-Coming from kiln: the last `kiln-cli` moves you at its first run (`uv tool upgrade kiln-cli`, then run
-it once).
+Coming from kiln: the last `kiln-cli` moves you at its first run (`uv tool install kiln-cli@latest`, then
+run it once).
 
 With Homebrew: `brew install antoine-tena/ion/ion-repo`. Or try it without installing anything:
 `uvx ion-repo new my-app` for a new repo, `uvx ion-repo adopt` in one you already have. macOS,

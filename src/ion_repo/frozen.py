@@ -8,10 +8,11 @@ from pathlib import Path
 
 import copier
 from copier.errors import CopierError
+from ion_score import ui
+from ion_score.waivers import WAIVERS_FILE, load
 from packaging.version import Version
 
-from ion_repo import renames, ui
-from ion_repo.charter.waivers import WAIVERS_FILE, load
+from ion_repo import renames
 from ion_repo.stack import read_answers
 from ion_repo.versions import release_version
 

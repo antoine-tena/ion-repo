@@ -29,6 +29,42 @@ STATUSLINE_STYLES = ("plain", "band", "classic", "classic-band")
 NO_STATUSLINE, CUSTOM_STATUSLINE = "none", "custom"
 STATUSLINE_CHOICES = (*STATUSLINE_STYLES, NO_STATUSLINE, CUSTOM_STATUSLINE)
 DEFAULT_STATUSLINE = "plain"
+# Its colors: ion-repo's stone and fire, the chat's (the person's and Claude's, after Claude Code's
+# theme), one hue, or a palette the terminal world knows; each in a dark and a light version,
+# after Claude Code's theme.
+STATUSLINE_PALETTES = (
+    "stone-fire",
+    "chat",
+    # One hue each, all well to urgent from its palest to its deepest.
+    "red",
+    "orange",
+    "yellow",
+    "green",
+    "teal",
+    "blue",
+    "violet",
+    "pink",
+    "rose",
+    "solarized",
+    "nord",
+    "dracula",
+    "gruvbox",
+    "catppuccin",
+    "tokyo-night",
+    "forest",
+    "mono",
+    "one-dark",
+    "monokai",
+    "everforest",
+    "kanagawa",
+    "rose-pine",
+    "github-dark",
+    "ayu",
+    "material",
+    "slate",
+    "zenburn",
+)
+DEFAULT_PALETTE = "stone-fire"
 # Whether Claude's commits and pull requests say Claude helped (`Co-Authored-By: Claude`):
 # disclosed by default, as the AI policies of several large open-source projects ask.
 DISCLOSE_TRAILERS, NO_TRAILERS = "disclose", "never"
@@ -44,6 +80,7 @@ class UserConfig:
     code_dir: Path = DEFAULT_CODE_DIR
     channel: str = PUBLIC_CHANNEL
     statusline: str | None = None  # None: not chosen yet (ion repo install sets it)
+    statusline_palette: str | None = None  # None: not chosen yet (ion repo install asks)
     ai_trailers: str | None = None  # None: not chosen yet (ion repo install asks)
     # Repos of the code folder `ion repo update --all` leaves as they are (a witness repo kept at an
     # old release on purpose), by their path in it.
@@ -70,6 +107,7 @@ def load_config() -> UserConfig:
         code_dir=Path(values.get("code_dir", str(DEFAULT_CODE_DIR))).expanduser(),
         channel=renames.machine_value("channel", str(values.get("channel", PUBLIC_CHANNEL))),
         statusline=renames.machine_value("statusline", str(statusline)) if statusline else None,
+        statusline_palette=values.get("statusline_palette"),
         ai_trailers=values.get("ai_trailers"),
         frozen_repos=tuple(str(repo) for repo in frozen) if isinstance(frozen, list) else (),
     )
@@ -95,6 +133,8 @@ def save_config(config: UserConfig) -> None:
         lines.append(f'channel = "{config.channel}"')
     if config.statusline:
         lines.append(f'statusline = "{config.statusline}"')
+    if config.statusline_palette:
+        lines.append(f'statusline_palette = "{config.statusline_palette}"')
     if config.ai_trailers:
         lines.append(f'ai_trailers = "{config.ai_trailers}"')
     if config.frozen_repos:

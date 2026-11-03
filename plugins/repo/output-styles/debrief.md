@@ -1,6 +1,6 @@
 ---
 name: debrief
-description: End-of-work report read in five seconds - the real git state first, then what matters, what doesn't work, what Claude does next, what only the user can do
+description: End-of-work report read in five seconds - the real git state first, then what was done, what is broken, what Claude does next, what waits on the user
 keep-coding-instructions: true
 force-for-plugin: true
 ---
@@ -25,26 +25,30 @@ Exactly these parts, in this order, and nothing else:
 1. **One result sentence, in bold, no symbol before it**, saying the real git state as it is
    now, checked, not hoped: merged into `<branch>`, pushed, worktree removed; or committed on
    `<branch>`, not merged; or not committed. A task without git work says its outcome instead.
-2. **◆ Summary**, then the three points that matter most, numbered, one line each. A departure
+2. **◆ Done**, then the three points that matter most, numbered, one line each. A departure
    from the user's instructions, or a part of the request not done, always is one of them.
    Fewer than three when there are fewer.
-3. **◆ Not working**: at most three bullets, each opening with `Broken:` (a defect seen) or
-   `Not verified:` (not really run: a test skipped, a path not exercised, a check that could not
-   reach its service). If there is none: "nothing known", then in a few words what was verified.
-4. **◆ Next**: at most three actions Claude can do next, numbered from the most to the least
-   logical, each with its why on the same line; the first ends with `← recommended`. One `ok`
-   from the user starts it. The work just done comes first when it leaves a step (merge, fix,
-   a box still open); otherwise, or after it, the next open tickets of `docs/backlog/backlog.md`
-   the user may take (as `/repo:backlog` picks them), each with its ID: `T-20 · Try
-   Easy!Appointments, the demo the meeting waits for`. Never a point made up to reach three;
-   none at all when nothing follows and the backlog has nothing open for the user.
-5. **◆ Your turn:** only what Claude cannot do for the user (a login, an interactive command, a
-   restart, a decision), in one line, then the command in a single `bash` block when there is
-   one. Leave the whole part out when there is nothing.
+3. **◆ Critical**: at most three bullets, each a defect seen, opening with what is broken. Leave
+   the whole part out when nothing is.
+4. **◆ To do**: at most three actions Claude can do next, numbered from the most to the least
+   urgent, each with its why on the same line; the first ends with `← recommended`. One `ok`
+   from the user starts it. What was not really run (a test skipped, a path not exercised, a
+   check that could not reach its service) is one of them, as the action that would check it:
+   `Check X in a real session`. The work just done comes first when it leaves a step (merge,
+   fix, a box still open); otherwise, or after it, the next open tickets of
+   `docs/backlog/backlog.md` the user may take (as `/repo:backlog` picks them), each with its full
+   ID: `<repo>#T-20 · Try Easy!Appointments, the demo the meeting waits for`. Never a point made
+   up to reach three; leave the whole part out when nothing follows and the backlog has nothing
+   open for the user.
+5. **◆ Blocked:** only what nothing moves without, because Claude cannot do it for the user (a
+   login, an interactive command, a restart, a decision), in one line, then the command in a
+   single `bash` block when there is one. Leave the whole part out when there is nothing.
+
+A part with nothing in it is not shown: often only **◆ Done** and **◆ To do** remain.
 
 The titles are written in the user's language, each in bold after the same `◆` (the mark of
-the Ion skill frame). In French: **◆ Résumé**, **◆ Ne fonctionne pas** (`Cassé :`,
-`Pas vérifié :`, « rien de connu »), **◆ Suite proposée** (`← recommandée`), **◆ À toi :**.
+the Ion skill frame). In French: **◆ Fait**, **◆ Critique**, **◆ À faire** (`← recommandé`),
+**◆ Bloqué :**.
 
 ## Lines
 
@@ -68,17 +72,14 @@ are the only thing outside the format.
 ```
 **Merged into develop and pushed, worktree removed.**
 
-**◆ Summary**
+**◆ Done**
 1. Status line shows the CI of the open branch, no longer develop's.
 2. Cache of a day dropped: a fresh run shows within 5 seconds.
 3. Windows not handled, against the request: no machine to try it on.
 
-**◆ Not working**
-- Not verified: a branch never pushed, its CI state stays empty.
-
-**◆ Next**
+**◆ To do**
 1. Handle Windows in the status line, the part of the request still open ← recommended
-2. Add a test for the never-pushed branch, the one path not run
+2. Check a branch never pushed, its CI state may stay empty: the one path not run
 
-**◆ Your turn:** restart Claude Code, the status line loads at launch.
+**◆ Blocked:** restart Claude Code, the status line loads at launch.
 ```

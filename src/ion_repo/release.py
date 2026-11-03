@@ -19,9 +19,10 @@ import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
+from ion_score import ui
 from packaging.version import Version
 
-from ion_repo import github_ci, ui
+from ion_repo import github_ci
 from ion_repo.config import load_config
 from ion_repo.fleet import find_repos
 from ion_repo.shell import KilnError, capture
@@ -34,6 +35,7 @@ INTEGRATION_REF = "origin/develop"
 SOAK = datetime.timedelta(hours=24)
 FIX_SOAK = datetime.timedelta(hours=2)
 BACKLOG = Path("docs") / "backlog" / "backlog.md"
+PLANNED_TICKET = re.compile(r"- (?:[a-z][a-z0-9-]*#)?T-\d+")
 PLANNED_RELEASE = re.compile(r"^### v(\d+\.\d+\.\d+) · (.+)$")
 VERSION_MODULE = Path("src") / "ion_repo" / "versions.py"
 
@@ -119,7 +121,7 @@ def planned_release(root: Path, cut: set[Version]) -> tuple[str, str, list[str]]
                 return current
             if Version(match.group(1)) not in cut:
                 current = (match.group(1), match.group(2), [])
-        elif current and line.startswith("- T-"):
+        elif current and PLANNED_TICKET.match(line):
             current[2].append(line.removeprefix("- "))
     return current
 

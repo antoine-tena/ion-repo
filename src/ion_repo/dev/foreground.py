@@ -17,7 +17,8 @@ from pathlib import Path
 from types import FrameType
 from typing import IO
 
-from ion_repo import ui
+from ion_score import ui
+
 from ion_repo.dev.processes import runs_beyond_front, signal_group, spawn
 from ion_repo.stack import Command, load_stack
 

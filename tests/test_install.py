@@ -105,7 +105,7 @@ def test_the_last_line_names_what_the_repo_has(stack: Stack, hint: str) -> None:
 def test_kiln_s_catalogue_leaves_once_github_s_is_installed(machine: list[list[str]]) -> None:
     catalogue = {"source": {"source": "github", "repo": "antoine-tena/kiln"}}
     install.KNOWN_MARKETPLACES.write_text(json.dumps({"kiln": catalogue}))
-    plugins = {"repo@kiln": True, "pile-nuxt@kiln": True, "stripe@kiln": False}
+    plugins = {"repo@kiln": True, "pile-nuxt@kiln": True, "stripe@kiln": False, "vps@kiln": True}
     install.CLAUDE_SETTINGS.write_text(json.dumps({"enabledPlugins": plugins}))
 
     install.install_machine()

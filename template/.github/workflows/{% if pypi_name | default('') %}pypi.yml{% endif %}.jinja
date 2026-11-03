@@ -1,7 +1,7 @@
 {%- set bd = backend_dir | default('backend') %}{%- set bp = '' if bd == '.' else bd ~ '/' -%}
 name: PyPI
 
-# Publishes {{ pypi_name }} on PyPI at each release tag `vN` (`/repo:release`), its version taken
+# Publishes {{ pypi_name }} on PyPI at each release tag `vX.Y.Z` (`/repo:release`), its version taken
 # from the tag; the command stays `{{ name }}`. Either a PyPI token in the secret `PYPI_TOKEN` of
 # the `pypi` environment (`/repo:token`; "Entire account" to create the project at the first tag,
 # scoped to it afterwards), or, without it, trusted publishing: PyPI trusts this workflow and the
@@ -45,7 +45,11 @@ jobs:
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: {{ bp }}dist/*
+      # Without the secret, no `UV_PUBLISH_TOKEN` at all: uv takes an empty one for credentials
+      # and then refuses trusted publishing.
       - name: Publish
         env:
-          UV_PUBLISH_TOKEN: {{ '${{ secrets.PYPI_TOKEN }}' }}
-        run: uv publish --trusted-publishing automatic
+          PYPI_TOKEN: {{ '${{ secrets.PYPI_TOKEN }}' }}
+        run: |
+          if [ -n "$PYPI_TOKEN" ]; then export UV_PUBLISH_TOKEN="$PYPI_TOKEN"; fi
+          uv publish --trusted-publishing automatic

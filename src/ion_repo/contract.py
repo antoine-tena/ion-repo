@@ -5,7 +5,8 @@ import json
 import os
 from pathlib import Path
 
-from ion_repo import ui
+from ion_score import ui
+
 from ion_repo.shell import KilnError, run, step
 from ion_repo.stack import Stack
 

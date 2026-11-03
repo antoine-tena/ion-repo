@@ -1,6 +1,6 @@
 name: Scorecard
 
-# OpenSSF Scorecard on ion-repo itself (T-90): its findings in the repo's code scanning, its score
+# OpenSSF Scorecard on ion-repo itself (ion-repo#T-90): its findings in the repo's code scanning, its score
 # published for the README's badge. Every Monday and on demand, on the default branch; not at each
 # merge (choice of antoine: CI only on the way to `main`).
 on:

@@ -117,6 +117,91 @@ def test_a_real_conflict_stays_marked(project: Path) -> None:
     assert not (project / "plugins/old-tool").exists()
 
 
+def test_a_rename_takes_along_a_project_comment_beside_the_pypi_name_that_stays(
+    project: Path,
+) -> None:
+    commit(project, "mine")
+    update.apply_template(project, {"pypi_name": "old-tool"})
+    pyproject = project / "backend/pyproject.toml"
+    comment = "the command stays `old-tool`"
+    assert comment in pyproject.read_text()
+    pyproject.write_text(pyproject.read_text().replace(comment, "`old-tool` is the command"))
+    code = project / "backend/old_tool/cli/common.py"
+    code.write_text('PROGRAM = "old-tool"\nDISTRIBUTION = "old-tool"\n')
+    commit(project, "own comment, own constants")
+
+    update.apply_template(project, {"name": "new-tool", "plugin_name": "new-tool"})
+
+    assert update.conflicted_files(project) == []
+    text = pyproject.read_text()
+    assert "`new-tool` is the command" in text
+    assert 'name = "old-tool"' in text
+    assert 'new-tool = "new_tool.cli:main"' in text
+    assert (project / "backend/new_tool/cli/common.py").read_text() == (
+        'PROGRAM = "new-tool"\nDISTRIBUTION = "old-tool"\n'
+    )
+
+
+def test_a_file_named_after_the_project_keeps_its_name_and_the_update_says_so(
+    project: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    (project / "old-tool.toml").write_text("key = 1\n")
+    code = project / "backend/old_tool/settings.py"
+    code.write_text('FILE = "old-tool.toml"  # read by old-tool\n')
+    commit(project, "own settings file")
+
+    update.apply_template(project, {"name": "new-tool", "plugin_name": "new-tool"})
+
+    assert (project / "old-tool.toml").is_file()
+    assert (project / "backend/new_tool/settings.py").read_text() == (
+        'FILE = "old-tool.toml"  # read by new-tool\n'
+    )
+    assert "old-tool.toml kept" in capsys.readouterr().out
+    assert update.conflicted_files(project) == []
+
+
+@pytest.mark.parametrize(
+    ("before", "after"),
+    [
+        ("run `ion host dns`, see ion-host.toml", "run `foyer dns`, see ion-host.toml"),
+        ('SETTINGS = "ion-host.toml"', 'SETTINGS = "ion-host.toml"'),
+        ('match=r"ion-host\\.toml"', 'match=r"ion-host\\.toml"'),
+        ("ion_host.cli.main, ion-host.", "foyer.cli.main, foyer."),
+        ("ion-host holds it", "foyer holds it"),
+        ("USER_AGENT = 'ion-host'", "USER_AGENT = 'foyer'"),
+        ("~/code/Ion/host/ion-host/backend", "~/code/Ion/host/ion-host/backend"),
+        ("github.com/me/ion-host", "github.com/me/ion-host"),
+        ("uv tool install ion-host", "uv tool install ion-host"),
+        ('DISTRIBUTION = "ion-host"', 'DISTRIBUTION = "ion-host"'),
+    ],
+)
+def test_what_follows_a_new_name_and_what_stays(before: str, after: str) -> None:
+    renaming = Renaming("ion-host", "foyer", None, None, True, "ion-host")
+    assert renaming.mentions(before) == after
+
+
+def test_a_moved_pypi_name_follows_and_ion_form_keeps_the_family() -> None:
+    renaming = Renaming("ion-host", "ion-foyer", None, None, True)
+    assert renaming.mentions("uv tool install ion-host, `ion host`") == (
+        "uv tool install ion-foyer, `ion foyer`"
+    )
+
+
+def test_a_plain_word_name_follows_only_when_quoted_or_in_a_code_span() -> None:
+    renaming = Renaming("sweep", "broom", None, None, True)
+    assert renaming.mentions('def sweep(): a sweep, `sweep run`, "sweep"') == (
+        'def sweep(): a sweep, `broom run`, "broom"'
+    )
+
+
+def test_a_line_the_new_render_still_holds_keeps_the_old_name() -> None:
+    renaming = Renaming("old-tool", "new-tool", None, None, True)
+    render = 'name = "old-tool"\n'
+    assert renaming.words_beside('name = "old-tool"\nrun old-tool\n', render) == (
+        'name = "old-tool"\nrun new-tool\n'
+    )
+
+
 def test_nothing_moves_without_a_new_name(project: Path) -> None:
     assert (
         renaming_of(

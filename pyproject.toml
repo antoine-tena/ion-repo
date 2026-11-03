@@ -1,8 +1,8 @@
 [project]
 # ion-repo, l'outil de la famille Ion qui tient les repos (kiln jusqu'au 31 octobre 2026). `pypi.yml`
-# publie une dernière fois le même code sous `kiln-cli`, à v0.4.11 : il y fait passer ses testeurs.
+# a publié une dernière fois le même code sous `kiln-cli`, à v0.4.11 : il y a fait passer ses testeurs.
 name = "ion-repo"
-version = "0.4.13"
+version = "0.4.14"
 description = "Claude Code's workshop: start every new project, and rescue every old one, like a senior engineer would — even if you're not one."
 # README.md, its relative images and links made absolute for PyPI (fancy-pypi-readme, below).
 dynamic = ["readme"]
@@ -24,7 +24,11 @@ classifiers = [
     "Topic :: Software Development :: Build Tools",
 ]
 requires-python = ">=3.14"
-dependencies = ["copier>=9.4,<10", "packaging>=24"]
+dependencies = [
+    "copier>=9.4,<10",
+    "ion-score>=0.1.1",
+    "packaging>=24",
+]
 
 [project.urls]
 Homepage = "https://github.com/antoine-tena/ion-repo"
@@ -33,20 +37,18 @@ Issues = "https://github.com/antoine-tena/ion-repo/issues"
 
 [project.scripts]
 ion-repo = "ion_repo.cli:main"
-# Its name before the Ion family, an alias that says the new one (`src/kiln/`), for its testers;
-# `kiln-cli` too, so that `uvx kiln-cli new` works without `--from`.
-kiln = "kiln.cli:main"
-kiln-cli = "kiln.cli:main"
 charter = "ion_repo.charter.cli:run"
 # Its name before kiln 0.4.0, still called by adopted repos and older generated ones.
 charte = "ion_repo.charter.cli:run"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/ion_repo", "src/kiln"]
+packages = ["src/ion_repo"]
 
 # Le journal des versions voyage avec l'outil : `kiln update` en montre les nouveautés.
 [tool.hatch.build.targets.wheel.force-include]
 "CHANGELOG.md" = "ion_repo/CHANGELOG.md"
+# The pieces table of `copier.yml` (`pieces.py`), at the tool's own release.
+"copier.yml" = "ion_repo/copier.yml"
 
 # The commit the tool is built from (`kiln/_build.json`): a folder install says what it is.
 [tool.hatch.build.targets.wheel.hooks.custom]
@@ -114,3 +116,4 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = ["yaml"]
 ignore_missing_imports = true
+

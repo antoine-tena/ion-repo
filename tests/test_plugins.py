@@ -54,7 +54,7 @@ def test_rule_paths_match_files() -> None:
     assert dead == {}
 
 
-# Une description de skill est relue à chaque message de chaque session (T-162) : courte,
+# Une description de skill est relue à chaque message de chaque session (ion-repo#T-162) : courte,
 # déclencheurs gardés. Les skills repris d'un autre auteur (`author:`) gardent la leur.
 DESCRIPTION_MAX = 300
 
@@ -95,6 +95,13 @@ def test_former_plugin_paths_still_exist() -> None:
     assert [path for path in LEGACY_PATHS if not (ROOT / path).is_file()] == []
 
 
+def test_the_debrief_plugin_carries_the_repo_plugins_style() -> None:
+    style = "output-styles/debrief.md"
+    assert (ROOT / "plugins/debrief" / style).read_text() == (
+        ROOT / "plugins/repo" / style
+    ).read_text()
+
+
 def test_hooks_point_at_existing_files() -> None:
     for hooks in (ROOT / "plugins").glob("*/hooks/hooks.json"):
         for path in re.findall(r"\$\{CLAUDE_PLUGIN_ROOT\}/([^\"\\]+)", hooks.read_text()):
@@ -102,7 +109,8 @@ def test_hooks_point_at_existing_files() -> None:
 
 
 # The hook of kiln 0.4.10 runs `claude plugin install kiln@kiln` once the catalogue has moved under
-# it, and a rename would unplug the tester's plugin: the old name stays until T-373 removes it.
+# it, and a rename would unplug the tester's plugin: the old name stays until ion-repo#T-373
+# removes it.
 def test_kiln_at_kiln_stays_installable() -> None:
     entry = next(plugin for plugin in MARKETPLACE["plugins"] if plugin["name"] == "kiln")
     assert entry["source"] == "./plugins/repo"

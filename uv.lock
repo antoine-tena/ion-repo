@@ -153,10 +153,11 @@ wheels = [
 
 [[package]]
 name = "ion-repo"
-version = "0.4.13"
+version = "0.4.14"
 source = { editable = "." }
 dependencies = [
     { name = "copier" },
+    { name = "ion-score" },
     { name = "packaging" },
 ]
 
@@ -171,6 +172,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "copier", specifier = ">=9.4,<10" },
+    { name = "ion-score", specifier = ">=0.1.1" },
     { name = "packaging", specifier = ">=24" },
 ]
 
@@ -180,6 +182,18 @@ dev = [
     { name = "pytest" },
     { name = "pytest-xdist", specifier = ">=3.8.0" },
     { name = "ruff" },
+]
+
+[[package]]
+name = "ion-score"
+version = "0.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyyaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f0/42/5ca28b5921c300efbbc0aad421376b87711e156542ebbd6fdf083fcff615/ion_score-0.1.1.tar.gz", hash = "sha256:b3f6826971310c35fa0627c1694f2054f2c5756a5ea4e8abfda99229c23bd85a", size = 151885, upload-time = "2026-11-03T21:43:26.142Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a2/02/7c3a20c4b756275ad35f24f9bdf3bc4ef1d5c35f3171bf15920df5bc069b/ion_score-0.1.1-py3-none-any.whl", hash = "sha256:296c198bf4b301f1cc28cfdeb7f8b5117d4d14c3c6ab99fb285a61e0befad9fd", size = 178652, upload-time = "2026-11-03T21:43:24.922Z" },
 ]
 
 [[package]]

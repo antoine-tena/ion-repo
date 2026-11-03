@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
-"""Reminders: when to ask again whether to update ion-repo (the tool, or a repo).
+"""Reminders: when to ask again whether to update ion-repo (the tool, or a repo) or the other Ion
+tools (`ion-tools`), or whether the person wants to change the look of the chat and the status
+line (`look`).
 
-Each question has a key (`tool`, or the root of a repo). It is asked at the first session where
-it applies, then, after each "no", again after 5, 10, 30 and 50 sessions in the place where it is
-asked; "never" closes it for good.
+Each question has a key (`tool`, `ion-tools`, `look`, or the root of a repo). An update question
+is asked at the first session where it applies, then, after each "no", again after 5, 10, 30 and
+50 sessions in the place where it is asked: staying behind costs something. A question of taste
+is no update: asked once, then again only when what it offers grows (its version in `NEWS`),
+whatever the answer; "never" closes either for good.
 
 State: `~/.local/state/kiln/reminders.json` (`rappels.json` before kiln 0.4, migrated). Answers,
 given by Claude after the question: `python3 reminders.py yes|no|never <key>`.
@@ -25,6 +29,10 @@ ANSWERS = ("yes", "no", "never")
 LEGACY_ANSWERS = {"oui": "yes", "non": "no", "jamais": "never"}
 DELAYS = (5, 10, 30, 50)
 TOOL_KEY = "tool"
+LOOK_KEY = "look"
+ION_TOOLS_KEY = "ion-tools"
+# Questions of taste, by version of what they offer: asked again only when it grows.
+NEWS = {LOOK_KEY: 1}
 
 State = dict[str, Any]
 Question = dict[str, Any]
@@ -68,6 +76,8 @@ def migrate(state: State) -> State:
         }
         if entry.get("never") or entry.get("jamais"):
             questions[key]["never"] = True
+        if "version" in entry:
+            questions[key]["version"] = int(entry["version"])
     return {"questions": questions}
 
 
@@ -91,15 +101,25 @@ def count_session(state: State, key: str) -> Question:
 
 def is_due(state: State, key: str) -> bool:
     entry = question(state, key)
-    return not entry.get("never") and entry["sessions"] >= entry["next"]
+    if entry.get("never"):
+        return False
+    if key in NEWS:
+        return int(entry.get("version", 0)) < NEWS[key]
+    return entry["sessions"] >= entry["next"]
+
+
+def delays(key: str) -> tuple[int, ...]:
+    return DELAYS
 
 
 def is_long_refusal(state: State, key: str) -> bool:
-    return int(question(state, key)["refusals"]) >= len(DELAYS)
+    return int(question(state, key)["refusals"]) >= len(delays(key))
 
 
 def record(state: State, key: str, verdict: str) -> None:
     entry = question(state, key)
+    if key in NEWS:
+        entry["version"] = NEWS[key]
     if verdict == "yes":
         entry["refusals"] = 0
         entry["next"] = 0
@@ -108,7 +128,8 @@ def record(state: State, key: str, verdict: str) -> None:
     if verdict == "never":
         entry["never"] = True
         return
-    entry["next"] = entry["sessions"] + DELAYS[min(entry["refusals"], len(DELAYS)) - 1]
+    pace = delays(key)
+    entry["next"] = entry["sessions"] + pace[min(entry["refusals"], len(pace)) - 1]
 
 
 def main(arguments: list[str]) -> None:

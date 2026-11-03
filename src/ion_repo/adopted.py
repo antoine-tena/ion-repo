@@ -3,7 +3,8 @@
 A repo adopted by `ion repo adopt` has no Copier answers: `ion repo update` cannot replay a template
 there. What it does take from ion-repo is its reusable workflows, quoted at a tag
 (`antoine-tena/ion-repo/.github/workflows/charter.yml@v0.4.0`) so that what lands on `develop`
-never reaches it before a release (antoine, 19 October 2026, T-04). `ion repo update` moves those
+never reaches it before a release (antoine, 19 October 2026, ion-repo#T-04). `ion repo update`
+moves those
 references, and nothing else, to the latest public release, once each input the repo passes
 (`with:`) is checked against the workflow it will call; a removed input stops it, untouched.
 On the `beta` channel, they move to ion-repo's `develop` instead, as a generated repo's do.
@@ -15,11 +16,11 @@ from collections.abc import Callable
 from pathlib import Path
 
 import yaml  # brought by copier
+from ion_score import ui
+from ion_score.fixers import resolve
 
-from ion_repo import ui
 from ion_repo.adopted_names import convert_legacy_names, remaining_mentions, ticket_mentions
 from ion_repo.backlog import BACKLOG_DIR, LEGACY_DIR, migrate_legacy_backlog
-from ion_repo.grid.fixers import resolve
 from ion_repo.ion_names import convert_ion_names
 from ion_repo.shell import KilnError, step
 from ion_repo.versions import is_beta, latest_release
@@ -130,7 +131,7 @@ def _move_legacy_backlog(root: Path) -> None:
     if not (root / BACKLOG_DIR).exists():
         copy_backlog(root, None)
     migrate_legacy_backlog(root)
-    ui.success("tickets AF-NN are T-NN now, same numbers")
+    ui.success("tickets AF-NN are T-NN now, same numbers (`ion repo tickets` writes them whole)")
     cited = ticket_mentions(root)
     if cited:
         ui.note(f"still cited as AF-NN in {len(cited)} files, to rename: {', '.join(cited[:5])}…")

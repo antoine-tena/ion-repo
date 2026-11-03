@@ -8,7 +8,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from ion_repo import ui
+from ion_score import ui
+
 from ion_repo.adopted_names import HOOKS_FILE
 from ion_repo.config import UserConfig, ensure_system, load_config
 from ion_repo.dev.backing import start_backing_services
@@ -22,7 +23,7 @@ from ion_repo.stack import (
     answers_if_any,
     load_stack,
 )
-from ion_repo.statusline import apply_statusline_settings, ensure_statusline
+from ion_repo.statusline import apply_statusline_settings, ensure_palette, ensure_statusline
 from ion_repo.trailers import ensure_trailers
 from ion_repo.versions import PYPI_NAME
 
@@ -40,8 +41,10 @@ LEGACY_BASE_PLUGINS = ("kiln@kiln", "repo@kiln", "base@kiln")
 LEGACY_PLUGIN_NAMES = {
     "pile-django@kiln": "django",
     "pile-nuxt@kiln": "nuxt",
-    "vps-podman@kiln": "vps",
 }
+# Left ion-repo's catalogue for ion-host's (`host@ion-host`), enabled by the repos that deploy to
+# a server of their own: nothing to install for the whole machine.
+LEGACY_PLUGINS_MOVED_OUT = ("vps@kiln", "vps-podman@kiln")
 
 SECRET_KEY_VARIABLE = "DJANGO_SECRET_KEY"
 SECRET_KEY_BYTES = 50
@@ -104,7 +107,7 @@ def install_project(root: Path) -> None:
     step("git guards (pre-commit) and status line")
     install_git_hooks(root)
     apply_statusline_settings(root)
-    ensure_trailers(ensure_statusline(config))
+    ensure_trailers(ensure_palette(ensure_statusline(config)))
     command_name = answers_if_any(root).get("name", "<command>")
     ui.success(f"Ready. {launch_hint(stack, command_name)}")
 
@@ -123,7 +126,7 @@ def install_machine() -> None:
     ion-repo plugin at user scope, the machine settings. Only what is missing is done."""
     config = ensure_system(load_config())
     require_tools("uv")
-    # A tool still installed as kiln-cli brings `ion-repo` too; `kiln_move.py` replaces it.
+    # A late tester's `kiln-cli` tool, its last release (v0.4.11), moves itself to `ion-repo`.
     if shutil.which("ion-repo") is None and shutil.which("kiln") is None:
         step("ion-repo command (uv tool)")
         run(["uv", "tool", "install", PYPI_NAME], Path.cwd())
@@ -151,7 +154,7 @@ def install_machine() -> None:
         if LEGACY_MARKETPLACE in known:
             step("kiln's catalogue of Claude Code plugins removed")
             run(["claude", "plugin", "marketplace", "remove", LEGACY_MARKETPLACE], Path.cwd())
-    ensure_trailers(ensure_statusline(config))
+    ensure_trailers(ensure_palette(ensure_statusline(config)))
     ui.success("ion-repo is set up on this machine. Check it: ion repo doctor")
 
 
@@ -165,7 +168,9 @@ def plugins_of_legacy_catalogue() -> list[str]:
     return [
         f"{(LEGACY_PLUGIN_NAMES.get(name) or name).removesuffix(suffix)}@{MARKETPLACE}"
         for name, enabled in plugins.items()
-        if enabled and name.endswith(suffix) and name not in LEGACY_BASE_PLUGINS
+        if enabled
+        and name.endswith(suffix)
+        and name not in (*LEGACY_BASE_PLUGINS, *LEGACY_PLUGINS_MOVED_OUT)
     ]
 
 

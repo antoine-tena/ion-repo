@@ -75,7 +75,7 @@ def test_a_stack_in_its_folders_gets_its_rules_but_its_code_stays_its_own(repo: 
 
 
 def test_a_vite_app_at_the_root_gets_its_stack_there(tmp_path: Path, repo: Path) -> None:
-    # Issue #59: a course's Vite app at the root got the common part only (T-166).
+    # Issue #59: a course's Vite app at the root got the common part only (ion-repo#T-166).
     (repo / "vite.config.ts").write_text("export default {}\n")
     (repo / "package.json").write_text('{"dependencies": {"react": "19"}}')
     commit(repo, "vite")

@@ -1,5 +1,5 @@
 """`ion repo version cut` and `ion repo version promote` on a throwaway repo with its own origin
-(T-29)."""
+(ion-repo#T-29)."""
 
 import datetime
 import subprocess
@@ -89,6 +89,14 @@ def test_changelog_entry_is_the_body_of_its_version() -> None:
     assert shipping.changelog_entry(changelog, "0.1.0") == "- First release."
     with pytest.raises(KilnError):
         shipping.changelog_entry(changelog, "9.9.9")
+
+
+def test_merge_message_skips_the_entry_markers() -> None:
+    entry = "<!-- readme: unchanged: two fixes -->\n- `kiln` says it once.\n- Formula."
+
+    assert shipping.merge_message("v0.4.12", entry) == "Version v0.4.12: `kiln` says it once."
+    assert shipping.merge_message("v0.4.12", "<!-- readme: unchanged: why -->") == "Version v0.4.12"
+    assert shipping.merge_message("v0.4.12", "") == "Version v0.4.12"
 
 
 def test_cut_drafts_then_tags_a_candidate_once_the_entry_is_rewritten(repo: Path) -> None:

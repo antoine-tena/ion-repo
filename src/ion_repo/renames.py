@@ -9,126 +9,10 @@ that cites a rule. `ion repo update` rewrites them in the projects it generated.
 
 from collections.abc import Mapping
 
-# Rule identifiers of the charter (`[FILE-SIZE]`), cited by the instructions, `charter.toml`,
-# waivers, code comments and commit messages.
-RULE_IDS: Mapping[str, str] = {
-    "ACCESSIBILITE": "ACCESSIBILITY",
-    "ACCESSIBILITE-AUTO": "AUTOMATED-ACCESSIBILITY",
-    "ALERTE-SUR-SYMPTOME": "ALERT-ON-SYMPTOMS",
-    "APPELS-API": "API-CALLS",
-    "ARGENT": "MONEY",
-    "ASTRO-MODERNE": "MODERN-ASTRO",
-    "ASYNC": "ASYNC-AWAIT",
-    "AUDIT-VULNERABILITES": "VULNERABILITY-AUDIT",
-    "BOOLEENS": "BOOLEANS",
-    "BUDGET-JS": "JS-BUDGET",
-    "CALCULS-HORS-UI": "COMPUTE-OUTSIDE-UI",
-    "CASSE": "CASE",
-    "CHAMPS-COMMUNS": "COMMON-FIELDS",
-    "CHIFFREMENT": "ENCRYPTION",
-    "CI-RAPIDE": "FAST-CI",
-    "CLI-MINCE": "THIN-CLI",
-    "CLIQUET": "RATCHET",
-    "CODES-RETOUR": "EXIT-CODES",
-    "COEUR-PUR": "PURE-CORE",
-    "CONTENEUR-DURCI": "HARDENED-CONTAINERS",
-    "CONTENU": "CONTENT-COLLECTIONS",
-    "CONTRAT-FIGE": "FROZEN-CONTRACT",
-    "COUCHES": "LAYERS",
-    "DENSITE-TESTS": "TEST-DENSITY",
-    "DEPENDANCES": "DEPENDENCY-INJECTION",
-    "DEPENDANCES-FIGEES": "LOCKED-DEPENDENCIES",
-    "DEPENDANCES-MINIMALES": "MINIMAL-DEPENDENCIES",
-    "DEPLOIEMENT-REVERSIBLE": "REVERSIBLE-DEPLOYMENT",
-    "DERIVE": "CONTRACT-DRIFT",
-    "DEROGATIONS": "WAIVERS",
-    "DESTRUCTIF": "DESTRUCTIVE-ACTIONS",
-    "DOMAINE-HERMETIQUE": "SEALED-DOMAIN",
-    "DONNEES-LOURDES": "LARGE-DATA",
-    "DONNEES-PERSO": "PERSONAL-DATA",
-    "E2E-PARCOURS": "E2E-JOURNEYS",
-    "EN-TETES": "SECURITY-HEADERS",
-    "ENTREES": "VALIDATED-INPUTS",
-    "ERREURS": "ERRORS",
-    "ERREURS-METIER": "DOMAIN-ERRORS",
-    "ETAT": "SESSION-STATE",
-    "ETATS-UI": "UI-STATES",
-    "FICHIERS": "UPLOADS",
-    "FIGURES-ACCESSIBLES": "ACCESSIBLE-FIGURES",
-    "FONCTIONS-PURES": "PURE-FUNCTIONS",
-    "FUSEAU": "TIME-ZONE",
-    "FUSION": "MERGE",
-    "FUZZING-API": "API-FUZZING",
-    "HANDLER-IDEMPOTENT": "IDEMPOTENT-HANDLER",
-    "HORLOGE": "CLOCK",
-    "HORS-REQUETE": "OUT-OF-REQUEST",
-    "IA-CONFIDENTIALITE": "AI-CONFIDENTIALITY",
-    "IA-CONTEXTE": "AI-CONTEXT",
-    "IA-FONCTIONNALITE": "AI-FEATURES",
-    "IA-RESPONSABLE": "AI-ACCOUNTABILITY",
-    "IDEMPOTENCE": "IDEMPOTENCY",
-    "IDS": "COMPONENT-IDS",
-    "IMAGES-MODERNES": "MODERN-IMAGES",
-    "IMAGES-PAR-EMPREINTE": "IMAGES-BY-DIGEST",
-    "IMPORTS-EXPLICITES": "EXPLICIT-IMPORTS",
-    "INDEX": "INDEXES",
-    "INJECTION": "CONSTRUCTOR-INJECTION",
-    "INTEGRITE": "SUBRESOURCE-INTEGRITY",
-    "JAVA-MODERNE": "MODERN-JAVA",
-    "JOURNALISATION": "LOGGING",
-    "LATENCE-API": "API-LATENCY",
-    "MODELE-NU": "THIN-MODEL",
-    "MULTI-PLATEFORME": "MULTI-PLATFORM",
-    "NOMS-INTERDITS": "GENERIC-NAMES",
-    "NON-REGRESSION": "REGRESSION-TEST",
-    "NOUVELLE-DEPENDANCE": "NEW-DEPENDENCY",
-    "NULL": "NO-NULL",
-    "PAS-SUR-MAIN": "NO-COMMIT-ON-MAIN",
-    "PLANCHER": "FLOOR",
-    "PYTHON-MODERNE": "MODERN-PYTHON",
-    "REACT-MODERNE": "MODERN-REACT",
-    "REMONTER-A-KILN": "REPORT-TO-ION-REPO",
-    # kiln became ion-repo (31 October 2026).
-    "REPORT-TO-KILN": "REPORT-TO-ION-REPO",
-    "RENVOIS-AUDIT": "AUDIT-REFERENCES",
-    "REPRISE": "RETRIES",
-    "REPRODUCTIBLE": "REPRODUCIBLE",
-    "RESEAU": "NO-NETWORK",
-    "RETOURS": "RETURN-VALUES",
-    "ROUTE-PUBLIQUE": "PUBLIC-ROUTES",
-    "ROUTEURS": "ROUTERS",
-    "SANTE": "HEALTH-PROBES",
-    "SANTE-ASYNC": "ASYNC-HEALTH",
-    "SAUVEGARDE-TESTEE": "TESTED-BACKUPS",
-    "SCHEMA-DONNEES": "DATA-SCHEMA",
-    "SERVEUR-D-ABORD": "SERVER-FIRST",
-    "SIGNAUX": "NO-SIGNALS",
-    "SORTIE": "OUTPUT-STREAM",
-    "SORTIE-MACHINE": "MACHINE-OUTPUT",
-    "SOURCES": "DATA-SOURCES",
-    "STATIQUE-D-ABORD": "STATIC-FIRST",
-    "SYSTEME-A-LA-FRONTIERE": "SYSTEM-AT-THE-EDGE",
-    "TAILLE-FICHIER": "FILE-SIZE",
-    "TAILLE-FONCTION": "FUNCTION-SIZE",
-    "TEMPS-CONSTANT": "CONSTANT-TIME",
-    "TESTS-MUTATION": "MUTATION-TESTS",
-    "TESTS-PERMISSIONS": "PERMISSION-TESTS",
-    "TESTS-PROPRIETES": "PROPERTY-TESTS",
-    "TESTS-UI": "UI-TESTS",
-    "TS-STRICT": "STRICT-TS",
-    "TYPAGE": "TYPING",
-    "TYPAGE-STRICT": "STRICT-TYPING",
-    "TYPES-BRUTS": "NO-RAW-TYPES",
-    "UNE-CLASSE": "ONE-CLASS",
-    "UNE-CLASSE-PUBLIQUE": "ONE-PUBLIC-CLASS",
-    "VALIDATION-AUX-FRONTIERES": "VALIDATE-AT-BOUNDARIES",
-    "VERROUS": "LOCKS",
-    "VOCABULAIRE": "VOCABULARY",
-    "VUE-15": "VIEW-15",
-    "VUE-MODERNE": "MODERN-VUE",
-    "ZERO-ANY": "NO-ANY",
-    "ZERO-MAGIE": "NO-MAGIC-VALUES",
-}
+# Rule identifiers of the charter under their current names: ion-score holds them, for its grid
+# and for the charter.
+from ion_score.rule_ids import RULE_IDS as RULE_IDS
+from ion_score.rule_ids import rule_id as rule_id
 
 # `charte.toml` → `charter.toml`: sections, keys (at the top or in a rule) and rule names.
 CHARTER_SECTIONS: Mapping[str, str] = {
@@ -176,11 +60,6 @@ CHARTER_RULES: Mapping[str, str] = {
     "temps-constant": "constant-time",
     "verrous-django": "django-locks",
 }
-
-
-def rule_id(name: str) -> str:
-    """A rule identifier under its current name, whatever the name it is cited by."""
-    return RULE_IDS.get(name, name)
 
 
 # Answers of `.copier-answers.yml` (and keys of `kiln set`): key → new key, value → new value.
@@ -276,13 +155,20 @@ def machine_value(key: str, value: str) -> str:
 # kiln became ion-repo (31 October 2026): its plugin `kiln@kiln` is `repo@ion-repo`, the stack
 # plugins move to the `ion-repo` catalogue, its skills are `/repo:…`, its variables `ION_REPO_…`,
 # its rules in a project `.claude/rules/ion-repo/`.
-STACK_PLUGINS = ("django", "nuxt", "vps", "stripe", "serena")
+STACK_PLUGINS = ("django", "nuxt", "stripe", "serena")
+# The `vps` plugin left for ion-host, the family's hosting tool (2 November 2026): its skills are
+# `/host:deploy`, `/host:prod-logs`, `/host:prod-dump`.
+HOST_PLUGIN = "host@ion-host"
+HOST_SKILLS = ("deploy", "prod-logs", "prod-dump")
 ION_PLUGINS: Mapping[str, str] = {
     "kiln@kiln": "repo@ion-repo",
     "base@kiln": "repo@ion-repo",
     "repo@kiln": "repo@ion-repo",
     "ion-repo@ion-repo": "repo@ion-repo",  # the family's repos, renamed by hand first
     **{f"{name}@kiln": f"{name}@ion-repo" for name in STACK_PLUGINS},
+    "vps@kiln": HOST_PLUGIN,
+    "vps-podman@kiln": HOST_PLUGIN,
+    "vps@ion-repo": HOST_PLUGIN,
 }
 ION_SKILLS = (
     "adopt", "backlog", "cleanup", "contribution", "good-first-issues", "merge", "modernize",
@@ -293,5 +179,21 @@ ION_VARIABLES = (
     "API_HEALTH", "PROD_DOC", "CHARTER_SCRIPT", "TEMPLATE", "VERBOSE", "NO_UPDATE_CHECK",
     "PG_CONTAINER", "PG_PORT", "PG_USER", "PG_DATABASE", "PG_READ_ROLE", "PG_IMAGE",
 )  # fmt: skip
+# The Ion family's former repo names (each redirects on GitHub), cited in its backlogs as
+# `hearth's T-07`; `ion repo tickets` reads them in the family's repos only.
+FAMILY_TOOLS: Mapping[str, str] = {
+    "kiln": "ion-repo",
+    "keramos": "ion",
+    "grog": "ion-learn",
+    "hearth": "ion-host",
+    "cone": "ion-score",
+    "slake": "ion-render",
+    "seal": "ion-deal",
+    "saggar": "ion-secure",
+    "glaze": "ion-design",
+    "wedge": "ion-media",
+    "stylus": "ion-words",
+    "raku": "ion-launch",
+}
 LEGACY_RULES_DIR = ".claude/rules/kiln"
 RULES_DIR = ".claude/rules/ion-repo"

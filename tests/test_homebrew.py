@@ -1,4 +1,4 @@
-"""The Homebrew formula (T-12): written from `uv.lock` and PyPI, upgraded by brew."""
+"""The Homebrew formula (ion-repo#T-12): written from `uv.lock` and PyPI, upgraded by brew."""
 
 import importlib.util
 import sys
@@ -33,7 +33,7 @@ def test_formula_pins_the_lock_and_kiln_by_hash() -> None:
     assert f"      ion-repo==0.4.5 --hash=sha256:{SHA}\n" in text
     assert "\\" not in text.split("<<~EOS")[1].split("EOS")[0]
     assert '"#{bin}/ion-repo --version"' in text
-    assert 'libexec/"bin/kiln"' in text
+    assert 'libexec/"bin/kiln"' not in text
 
 
 def test_the_lock_gives_every_runtime_dependency() -> None:

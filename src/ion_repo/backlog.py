@@ -12,6 +12,7 @@ import shutil
 from pathlib import Path
 
 from ion_repo.shell import KilnError, capture
+from ion_repo.tickets import NEXT_FREE, ticket_id
 from ion_repo.versions import ReleaseNotes
 
 LEGACY_DIR = Path("docs/a-faire")
@@ -111,7 +112,7 @@ def convert_backlog(text: str, template_text: str, dates: dict[str, str]) -> str
     body = convert_tickets(body, dates)
     header = template_text[: template_text.index("## 🔴")] if "## 🔴" in template_text else ""
     if taken:
-        header = re.sub(r"Next free: T-\d+", f"Next free: T-{next_free:02d}", header)
+        header = re.sub(r"(Next free: (?:.*?#)?)T-\d+", rf"\g<1>T-{next_free:02d}", header)
     if compass:
         header = re.sub(r"North star: \*\*.*?\*\*", f"North star: **{compass[1]}**", header)
     if started:
@@ -205,7 +206,8 @@ LOG_PREAMBLE = ("### Log", "One line per closed ticket", "`- **YYYY-MM-DD** · T
 
 def split_backlog(root: Path, *, from_disk: bool = False) -> bool:
     """The former single `backlog.md` (how-to at the top, "✅ Done" log at the bottom) split:
-    the open tickets stay, the log goes to `done.md`, the how-to to the template's `README.md`.
+    the open tickets stay, the log goes to `done.md`, the how-to to `README.md` (the template's
+    has one; an adopted repo's own, kept, gets the repo's how-to at its end).
     Read from the last commit, as the repo kept it: Copier's merge of the template's new layout
     into it leaves the log loose at the bottom (`from_disk` after the move from `docs/a-faire/`,
     written this same run). Says whether it split."""
@@ -221,6 +223,7 @@ def split_backlog(root: Path, *, from_disk: bool = False) -> bool:
         return False
     open_part, log = text.split(f"\n{DONE_HEADING}", 1)
     path.write_text(_open_backlog(open_part))
+    _keep_how_to(root / BACKLOG_DIR / "README.md", _how_to(open_part))
     entries = "\n".join(
         line for line in log.splitlines()[1:] if not line.startswith(LOG_PREAMBLE)
     ).strip()
@@ -228,6 +231,22 @@ def split_backlog(root: Path, *, from_disk: bool = False) -> bool:
     intro = done.read_text() if done.exists() else "# Done\n"
     done.write_text(intro.rstrip("\n") + "\n" + (f"\n{entries}\n" if entries else ""))
     return True
+
+
+def _how_to(text: str) -> str:
+    """The how-to section of a former `backlog.md`, or an empty string."""
+    if HOW_TO_HEADING not in text:
+        return ""
+    start = text.index(HOW_TO_HEADING)
+    end = text.find("\n## ", start)
+    return text[start : end if end != -1 else len(text)].rstrip().removesuffix("---").rstrip()
+
+
+def _keep_how_to(readme: Path, how_to: str) -> None:
+    """The how-to appended to a `README.md` that has none: never lost with the split."""
+    if not how_to or not readme.exists() or HOW_TO_HEADING in readme.read_text():
+        return
+    readme.write_text(readme.read_text().rstrip("\n") + f"\n\n{how_to}\n")
 
 
 def _open_backlog(text: str) -> str:
@@ -253,7 +272,6 @@ def _open_backlog(text: str) -> str:
 # A line of a changelog entry: what each repo crossing that release must do after updating.
 AFTER_UPDATING = "- **After updating**: "
 CRITICAL_HEADING = "## 🔴 Critical\n"
-NEXT_FREE = re.compile(r"Next free: T-(\d+)")
 
 
 def add_after_update_ticket(root: Path, notes: list[ReleaseNotes], *, today: str) -> str | None:
@@ -273,9 +291,9 @@ def add_after_update_ticket(root: Path, notes: list[ReleaseNotes], *, today: str
     if not actions or next_free is None or CRITICAL_HEADING not in text or title in text:
         return None
     number = int(next_free[1])
-    ticket_id = f"T-{number:02d}"
+    written_id = ticket_id(root, number)
     ticket = "\n".join([
-        f"### {ticket_id} · {title}",
+        f"### {written_id} · {title}",
         "- **Type**: task",
         "- **Status**: todo",
         f"- **Opened**: {today}",
@@ -285,7 +303,7 @@ def add_after_update_ticket(root: Path, notes: list[ReleaseNotes], *, today: str
         "What ion-repo cannot guess, to fill in right after the update (`/repo:update`):",
         *actions,
     ])  # fmt: skip
-    text = NEXT_FREE.sub(f"Next free: T-{number + 1:02d}", text, count=1)
+    text = NEXT_FREE.sub(f"Next free: {ticket_id(root, number + 1)}", text, count=1)
     text = text.replace(CRITICAL_HEADING, f"{CRITICAL_HEADING}\n{ticket}\n", 1)
     path.write_text(text)
-    return ticket_id
+    return written_id

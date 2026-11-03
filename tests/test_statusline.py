@@ -2,7 +2,9 @@
 `ion-repo`."""
 
 import importlib.util
+import itertools
 import json
+import math
 import subprocess
 import sys
 from pathlib import Path
@@ -11,7 +13,7 @@ from typing import Any
 
 import pytest
 
-from ion_repo.config import UserConfig, load_config, save_config
+from ion_repo.config import STATUSLINE_PALETTES, UserConfig, load_config, save_config
 from ion_repo.machine import apply_machine, only_machine_keys
 from ion_repo.shell import KilnError
 from ion_repo.statusline import (
@@ -428,3 +430,143 @@ def test_backlog_still_reads_the_old_french_tracker(tmp_path: Path) -> None:
     items = load_script().backlog_items(str(tmp_path))
 
     assert labels(items) == ["1 tasks", f"crit{X}1", f"review{X}1"]
+
+
+def test_tickets_are_counted_in_both_forms(tmp_path: Path) -> None:
+    """A repo not yet through `ion repo tickets` keeps its count, one that is too."""
+    backlog = tmp_path / "docs/backlog/backlog.md"
+    backlog.parent.mkdir(parents=True)
+    backlog.write_text(
+        "## 🔴 Critical\n\n### acme-shop#T-01 · New form\n- **Status**: todo\n\n"
+        "## 🟡 Normal\n\n### T-02 · Old form\n- **Status**: todo\n"
+    )
+
+    items = load_script().backlog_items(str(tmp_path))
+
+    assert labels(items) == ["2 tasks", f"crit{X}1"]
+
+
+def test_statusline_palette_is_a_machine_key() -> None:
+    assert only_machine_keys(["statusline_palette=nord"])
+    assert apply_machine(UserConfig(), ["statusline_palette=nord"]).statusline_palette == "nord"
+    with pytest.raises(KilnError, match="statusline_palette"):
+        apply_machine(UserConfig(), ["statusline_palette=arc-en-ciel"])
+
+
+def test_the_chat_palette_takes_the_chat_colors_of_a_custom_theme(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`/repo:color` writes the person's color in a custom theme: the status line follows."""
+    monkeypatch.setenv("HOME", str(tmp_path))
+    (tmp_path / ".claude/themes").mkdir(parents=True)
+    (tmp_path / ".claude/settings.json").write_text('{"theme": "custom:mine"}')
+    (tmp_path / ".claude/themes/mine.json").write_text(
+        '{"name": "Mine", "base": "light", "overrides": {"professionalBlue": "#4ade80"}}'
+    )
+    script = load_script()
+
+    assert script.claude_theme() == "light"
+    overrides = script.custom_theme(script.theme_setting())["overrides"]
+    light = script.chat_palette("light", overrides)["light"]
+    assert light[3] == light[4] == (74, 222, 128)
+    assert light[5] == (215, 119, 87)
+
+
+def test_the_chat_palette_keeps_claude_codes_colors_without_a_custom_theme() -> None:
+    script = load_script()
+
+    dark = script.chat_palette("dark", {})["dark"]
+    assert dark[3] == (106, 155, 204)
+    assert script.chat_palette("dark-daltonized", {"claude": "ansi:red"})["dark"][5] == (
+        255,
+        153,
+        51,
+    )
+
+
+NEW_PALETTES = {
+    "one-dark": ("#abb2bf", "#e5c07b", "#d19a66", "#e06c75"),
+    "monokai": ("#a6a28c", "#e6db74", "#fd971f", "#f92672"),
+    "everforest": ("#9da9a0", "#dbbc7f", "#e69875", "#e67e80"),
+    "kanagawa": ("#a6a69c", "#e6c384", "#ffa066", "#e82424"),
+    "rose-pine": ("#908caa", "#f6c177", "#ea9a97", "#eb6f92"),
+    "github-dark": ("#8b949e", "#d29922", "#db6d28", "#f85149"),
+    "ayu": ("#acb6bf", "#e6b450", "#ff8f40", "#f07178"),
+    "material": ("#b0bec5", "#ffcb6b", "#f78c6c", "#ff5370"),
+    "slate": ("#94a3b8", "#fbbf24", "#fb923c", "#f87171"),
+    "zenburn": ("#9fafaf", "#f0dfaf", "#dfaf8f", "#cc9393"),
+}
+
+
+@pytest.mark.parametrize("name", NEW_PALETTES)
+def test_the_terminal_world_palettes_are_set_with_their_levels(name: str) -> None:
+    """Les palettes connues du terminal se choisissent et gardent leurs niveaux, en sombre."""
+    assert apply_machine(UserConfig(), [f"statusline_palette={name}"]).statusline_palette == name
+    script = load_script()
+    _, stone, _, _, glow, fire, ember, _, _ = script.PALETTES[name]["dark"]
+    hexes = tuple("#{:02x}{:02x}{:02x}".format(*color) for color in (stone, glow, fire, ember))
+    assert hexes == NEW_PALETTES[name]
+    assert len(script.PALETTES[name]["light"]) == len(script.PALETTES[name]["dark"])
+
+
+ONE_HUE = ["red", "orange", "yellow", "green", "teal", "blue", "violet", "pink"]
+
+
+def oklch_of(color: tuple[int, int, int]) -> tuple[float, float, float]:
+    """sRGB to OKLCH (Björn Ottosson's OKLab), to measure what the eye sees."""
+    linear = [
+        part / 12.92 if part <= 0.04045 else ((part + 0.055) / 1.055) ** 2.4
+        for part in (channel / 255 for channel in color)
+    ]
+    red, green, blue = linear
+    long_ = (0.4122214708 * red + 0.5363325363 * green + 0.0514459929 * blue) ** (1 / 3)
+    medium = (0.2119034982 * red + 0.6806995451 * green + 0.1073969566 * blue) ** (1 / 3)
+    short = (0.0883024619 * red + 0.2817188376 * green + 0.6299787005 * blue) ** (1 / 3)
+    lightness = 0.2104542553 * long_ + 0.7936177850 * medium - 0.0040720468 * short
+    a = 1.9779984951 * long_ - 2.4285922050 * medium + 0.4505937099 * short
+    b = 0.0259040371 * long_ + 0.7827717662 * medium - 0.8086757660 * short
+    return lightness, math.hypot(a, b), math.degrees(math.atan2(b, a)) % 360
+
+
+@pytest.mark.parametrize("shade", ["dark", "light"])
+@pytest.mark.parametrize("name", ONE_HUE)
+def test_a_one_hue_palette_tells_its_levels_apart_by_lightness(name: str, shade: str) -> None:
+    """Une palette d'une seule teinte : un gris, puis la teinte de la plus pâle à la plus profonde,
+    chaque niveau assez loin du suivant pour se lire d'un coup d'œil."""
+    assert apply_machine(UserConfig(), [f"statusline_palette={name}"]).statusline_palette == name
+    script = load_script()
+    _, stone, _, _, glow, fire, ember, _, _ = script.PALETTES[name][shade]
+    hue = script.HUES[name]
+    assert oklch_of(stone)[1] < 0.03
+    levels = [oklch_of(color) for color in (glow, fire, ember)]
+    for (lighter, _, _), (deeper, _, _) in itertools.pairwise(levels):
+        assert lighter - deeper >= 0.1
+    for _, chroma, angle in levels:
+        assert chroma > 0.04
+        assert min(abs(angle - hue), 360 - abs(angle - hue)) < 12
+
+
+def test_statusline_palette_accepts_chat() -> None:
+    assert apply_machine(UserConfig(), ["statusline_palette=chat"]).statusline_palette == "chat"
+
+
+def test_levels_give_each_palette_its_four_colors(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Une palette se choisit à ses couleurs : son nom ne dit rien de ce qu'on verra."""
+    monkeypatch.setenv("HOME", str(tmp_path))
+    done = subprocess.run(
+        [sys.executable, str(SCRIPT), "--levels", "--theme", "dark"],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    levels = json.loads(done.stdout)
+
+    assert set(levels) == set(STATUSLINE_PALETTES)
+    assert levels["stone-fire"] == {
+        "all well": "#8c8c87",
+        "to watch": "#ffe178",
+        "to handle": "#f79628",
+        "urgent": "#cd3223",
+    }

@@ -12,11 +12,12 @@ import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
-from ion_repo import ui
+from ion_score import ui
+from ion_score.waivers import NEVER, TIERS_DAYS, WAIVERS_FILE, is_waivable, max_days
+
 from ion_repo.charter.cli import waivers_of
 from ion_repo.charter.config import load
 from ion_repo.charter.repo import Repo
-from ion_repo.charter.waivers import NEVER, TIERS_DAYS, WAIVERS_FILE, is_waivable, max_days
 from ion_repo.renames import rule_id
 from ion_repo.shell import KilnError
 

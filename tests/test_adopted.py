@@ -1,5 +1,5 @@
 """An adopted repo's references to ion-repo's workflows, moved to the last public release
-(T-146)."""
+(ion-repo#T-146)."""
 
 import subprocess
 from pathlib import Path

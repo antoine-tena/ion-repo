@@ -2,20 +2,24 @@
 
 They live in `~/.config/kiln/config.toml`: system, default GitHub owner and team of `ion repo new`,
 code directory of `ion repo status` and `ion repo update --all`, release channel, Claude Code's
-status line, whether Claude's commits say Claude helped, the repos `ion repo update --all` leaves
-alone. Keys and values of before kiln 0.4.0 (`canal=interne`) are still accepted.
+status line and its palette, whether Claude's commits say Claude helped, the repos `ion repo update
+--all` leaves alone. Keys and values of before kiln 0.4.0 (`canal=interne`) are still accepted.
 """
 
 from dataclasses import replace
 from pathlib import Path
 
-from ion_repo import renames, ui
+from ion_score import ui
+
+from ion_repo import renames
 from ion_repo.config import (
     BETA_CHANNEL,
     CHANNELS,
+    DEFAULT_PALETTE,
     DEFAULT_STATUSLINE,
     DISCLOSE_TRAILERS,
     STATUSLINE_CHOICES,
+    STATUSLINE_PALETTES,
     SYSTEMS,
     TRAILER_CHOICES,
     UserConfig,
@@ -35,6 +39,7 @@ MACHINE_KEYS = (
     "code_dir",
     "channel",
     "statusline",
+    "statusline_palette",
     "ai_trailers",
     "frozen_repos",
 )
@@ -52,6 +57,9 @@ def show_machine(config: UserConfig) -> None:
             "beta: ion-repo's develop, live)"
         ),
         "statusline": f"{statusline} ({' / '.join(STATUSLINE_CHOICES)})",
+        "statusline_palette": (
+            f"{config.statusline_palette or DEFAULT_PALETTE} ({' / '.join(STATUSLINE_PALETTES)})"
+        ),
         "ai_trailers": (
             f"{config.ai_trailers or DISCLOSE_TRAILERS} (disclose: Claude's commits and pull "
             "requests say Claude helped; never: they don't)"
@@ -107,6 +115,10 @@ def apply_machine(config: UserConfig, assignments: list[str]) -> UserConfig:
             if value not in STATUSLINE_CHOICES:
                 raise KilnError(f"statusline: {', '.join(STATUSLINE_CHOICES)}")
             updated = replace(updated, statusline=value)
+        elif key == "statusline_palette":
+            if value not in STATUSLINE_PALETTES:
+                raise KilnError(f"statusline_palette: {', '.join(STATUSLINE_PALETTES)}")
+            updated = replace(updated, statusline_palette=value)
         elif key == "ai_trailers":
             if value not in TRAILER_CHOICES:
                 raise KilnError(f"ai_trailers: {', '.join(TRAILER_CHOICES)}")

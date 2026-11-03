@@ -11,6 +11,11 @@
       "description": "For every project: worktrees, merge, release, cleanup, backlog, branch guard, protected files, per-file check, context7"
     },
     {
+      "name": "debrief",
+      "source": "./plugins/debrief",
+      "description": "The debrief output style alone, for a machine without the repo plugin: end-of-work report read in five seconds"
+    },
+    {
       "name": "kiln",
       "source": "./plugins/repo",
       "description": "The repo plugin under its old name, for machines moving from kiln: install repo@ion-repo instead"
@@ -26,11 +31,6 @@
       "description": "Django: migrations, OpenAPI contract, read-only postgres MCP server"
     },
     {
-      "name": "vps",
-      "source": "./plugins/vps",
-      "description": "VPS with podman-compose: deployment, diagnosis, copy of the production database"
-    },
-    {
       "name": "stripe",
       "source": "./plugins/stripe",
       "description": "Stripe MCP server, test mode only"
@@ -44,7 +44,6 @@
   "renames": {
     "base": "repo",
     "pile-django": "django",
-    "pile-nuxt": "nuxt",
-    "vps-podman": "vps"
+    "pile-nuxt": "nuxt"
   }
 }

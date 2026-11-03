@@ -37,13 +37,13 @@ jobs:
         run: uv run mypy
       - name: Tests
         run: uv run pytest -q
-      # A tool that grades other repos scores 100 on its own grid, or the release waits (T-90).
+      # A tool that grades other repos scores 100 on its own grid, or the release waits (ion-repo#T-90).
       - name: ion repo score
         run: |
           uv run ion-repo score
           uv run ion-repo score --json | uv run python -c 'import json, sys; sys.exit(json.load(sys.stdin)["score"] != 100)'
       # ion-repo's workflows and actions run in other people's repos: zizmor finds nothing in them,
-      # its online audits included (T-90); false positives explained in .github/zizmor.yml.
+      # its online audits included (ion-repo#T-90); false positives explained in .github/zizmor.yml.
       - name: zizmor
         if: runner.os == 'Linux'
         env:

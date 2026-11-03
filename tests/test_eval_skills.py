@@ -24,7 +24,10 @@ def test_every_case_is_tagged_with_a_skill_or_none() -> None:
     skills = {path.name for path in (ROOT / eval_skills.SKILLS).iterdir() if path.is_dir()}
     cases = eval_skills.case_tags(ROOT / eval_skills.EVALS)
 
-    assert len(cases) == 13
+    # Every case folder has its prompt read: a count written by hand broke at each new skill.
+    assert set(cases) == {
+        path.name for path in (ROOT / eval_skills.EVALS).iterdir() if path.is_dir()
+    }
     for name, tags in cases.items():
         assert "trigger" in tags
         own = set(tags) - {"trigger"}

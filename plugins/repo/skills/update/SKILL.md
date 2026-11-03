@@ -43,11 +43,11 @@ Talk to the user in their language.
    `docs/backlog/backlog.md` (it says its ID), one box per action. Do it now with the user: ask
    for what only they know (their own GitHub login, a choice; never another member's: each one
    does theirs in their own session), make the changes on a branch,
-   then close the ticket (`/repo:backlog done T-NN`); a box they put off stays open
+   then close the ticket (`/repo:backlog done <repo>#T-NN`); a box they put off stays open
    in the ticket.
 
 ## Sum up
 
 In the `repo` plugin's `debrief` format (`output-styles/debrief.md`): the tool's version and
 the template's release, before → after, among its points; what is left of the `Finish the
-ion-repo update` ticket under **◆ Next**.
+ion-repo update` ticket under **◆ To do**.
