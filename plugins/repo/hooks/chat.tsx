@@ -24,6 +24,9 @@ const NAMES_TTL_MS = 10_000
 
 const firstSeen = new Map<string, number>()
 let names: { at: number; value: Promise<Names> } | undefined
+// The last git user.name read: a run that fails now and then (empty output, non-zero code)
+// would otherwise leave the person's messages without a name until the next reading.
+let lastGitName = ''
 
 const MONTHS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.']
 
@@ -99,7 +102,10 @@ export const register: Register = on => {
       run(['sh', '-c', `cat ${NAMES_FILE} 2>/dev/null`]).then(output, () => ''),
       run(['sh', '-c', `cat ${COLORS_FILE} 2>/dev/null`]).then(output, () => ''),
       run(['git', 'config', 'user.name']).then(output, () => ''),
-    ]).then(([file, colors, gitName]) => toNames(file, colors, gitName))
+    ]).then(([file, colors, gitName]) => {
+      lastGitName = gitName === '' ? lastGitName : gitName
+      return toNames(file, colors, lastGitName)
+    })
 
   on('ui.render', { component: 'UserMessage' }, async ($, e) => {
     const { Box, Text } = $.ui.resolve(e)
