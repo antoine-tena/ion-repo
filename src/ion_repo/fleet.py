@@ -45,7 +45,7 @@ MAX_FILES_PER_COMMIT = 10
 FIRST_COMMITTED = ".pre-commit-config.yaml"
 COMMIT_ATTEMPTS = 2
 # What each repo's update wrote, one log per repo and per run: the terminal gets one line each.
-LOGS_DIR = Path.home() / ".cache" / "kiln" / "update-all"
+LOGS_DIR = Path.home() / ".cache" / "ion-repo" / "update-all"
 # Outcomes with nothing left to do by hand.
 DONE_OUTCOMES = ("merged into ", "already up to date", "rehearsal: ", "frozen")
 FROZEN_OUTCOME = "frozen (ion repo set frozen_repos): left as it is"

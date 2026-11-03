@@ -4,8 +4,8 @@ git, builds) before it enters the context.
 
 Without rtk in the PATH, the hook does nothing. The rewrite comes from `rtk hook claude`, minus
 its permission decision (`allow`): the rewritten command goes through the usual permissions,
-like the original. A repo opts out with `git config kiln.rtk false` (`rtk.desactive true`
-before kiln 0.4).
+like the original. A repo opts out with `git config ion-repo.rtk false` (`kiln.rtk false` before
+ion-repo 0.4.15, `rtk.desactive true` before kiln 0.4).
 
 In a worktree of `.claude/worktrees/`, git commands stay as typed: Claude Code's worktree
 isolation refuses any git it cannot read as targeting the worktree, and `rtk git …` is one.
@@ -33,7 +33,11 @@ def git_flag(key: str) -> str:
     ).stdout.strip()
 
 
-if git_flag("kiln.rtk") == "false" or git_flag("rtk.desactive") == "true":
+# `kiln.rtk` before ion-repo 0.4.15, `rtk.desactive` before kiln 0.4.
+if (
+    "false" in (git_flag("ion-repo.rtk"), git_flag("kiln.rtk"))
+    or git_flag("rtk.desactive") == "true"
+):
     sys.exit(0)
 
 rewrite = subprocess.run(["rtk", "hook", "claude"], input=raw, capture_output=True, text=True)

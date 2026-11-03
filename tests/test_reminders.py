@@ -96,3 +96,27 @@ def test_the_version_of_a_question_of_taste_survives_a_reload(reminders: ModuleT
 
     assert reminders.load()["questions"]["look"]["version"] == reminders.NEWS["look"]
     assert not reminders.is_due(reminders.load(), "look")
+
+
+def test_the_state_of_before_ion_repo_0_4_15_moves_into_its_new_folder(
+    reminders: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """kiln's folder moves into ion-repo's; what ion-repo's already holds is kept."""
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
+    legacy, current = tmp_path / "state" / "kiln", tmp_path / "state" / "ion-repo"
+    (legacy / "sessions").mkdir(parents=True)
+    (legacy / "sessions" / "aaa.json").write_text("{}")
+    (legacy / "reminders.json").write_text("old")
+    (current / "sessions").mkdir(parents=True)
+    (current / "sessions" / "bbb.json").write_text("{}")
+    (current / "reminders.json").write_text("new")
+
+    reminders.move_legacy_state()
+
+    assert sorted(path.name for path in (current / "sessions").iterdir()) == [
+        "aaa.json",
+        "bbb.json",
+    ]
+    assert (current / "reminders.json").read_text() == "new"
+    assert (legacy / "reminders.json").read_text() == "old"
+    assert not (legacy / "sessions").exists()

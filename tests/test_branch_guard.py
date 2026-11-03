@@ -78,6 +78,15 @@ def test_commit_on_develop_is_refused(tmp_path: Path) -> None:
     assert run_hook('git commit -m "feat: x"', tmp_path).returncode == 2
 
 
+@pytest.mark.parametrize("key", ["ion-repo.branch-guard", "kiln.branch-guard"])
+def test_a_repo_that_opted_out_commits_on_develop(tmp_path: Path, key: str) -> None:
+    """Today's key, and kiln's of before ion-repo 0.4.15."""
+    subprocess.run(["git", "init", "-q", "-b", "develop", str(tmp_path)], check=True)
+    first_commit(tmp_path)
+    subprocess.run(["git", "-C", str(tmp_path), "config", key, "false"], check=True)
+    assert run_hook('git commit -m "feat: x"', tmp_path).returncode == 0
+
+
 def test_commit_that_creates_the_repo_passes_on_main(tmp_path: Path) -> None:
     """The first commit, as `ion repo new` makes it; the next one on main is refused."""
     subprocess.run(["git", "init", "-q", "-b", "main", str(tmp_path)], check=True)

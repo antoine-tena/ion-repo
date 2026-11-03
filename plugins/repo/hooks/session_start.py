@@ -25,7 +25,8 @@ offer, whether the person wants to change the look of the chat and the status li
 In a repo ion-repo looks after (ion-repo itself included), Claude is also told when the last CI of
 the integration branch is red, to say so before any new work.
 Never blocking: three seconds at most per network call, silent without network. A repo opts out
-with `git config kiln.update-check false` (`kiln-a-jour.desactive true` before kiln 0.4).
+with `git config ion-repo.update-check false` (`kiln.update-check false` before ion-repo 0.4.15,
+`kiln-a-jour.desactive true` before kiln 0.4).
 """
 
 import json
@@ -443,8 +444,9 @@ def git_root(cwd: str) -> Path | None:
     root = run("git", "-C", cwd, "rev-parse", "--show-toplevel").stdout.strip()
     if not root:
         return None
-    if run("git", "-C", root, "config", "--get", "kiln.update-check").stdout.strip() == "false":
-        return None
+    for key in ("ion-repo.update-check", "kiln.update-check"):  # kiln's before ion-repo 0.4.15
+        if run("git", "-C", root, "config", "--get", key).stdout.strip() == "false":
+            return None
     if run("git", "-C", root, "config", "--get", "kiln-a-jour.desactive").stdout.strip() == "true":
         return None
     return Path(root)
@@ -661,7 +663,7 @@ def notice(tag: str, changes: Changes) -> str:
     return "\n" + "\n".join(lines)
 
 
-NOTICES_DIR = reminders.STATE_DIR / "kiln" / "notices"
+NOTICES_DIR = reminders.ION_REPO_STATE / "notices"
 
 
 def save_notice(session_id: str, text: str) -> None:
@@ -806,6 +808,7 @@ def main() -> None:
         payload = json.load(sys.stdin)
     except ValueError:
         payload = {}
+    reminders.move_legacy_state()
     red, found = startup_context(payload)
     context = "\n\n".join(
         part

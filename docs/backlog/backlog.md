@@ -1026,6 +1026,15 @@ re-recorded at the next candidate that shows them.
 Also `src/kiln/`, the `kiln` alias of `ion-repo` and `kiln_move.py`'s state in `~/.local/state/kiln/`.
 - [x] `~/.config/kiln/config.toml` → `~/.config/ion-repo/config.toml`, moved at the first read,
   the old place read by the status line and the hooks until then (2026-11-03).
+- [x] `~/.local/state/kiln/` → `~/.local/state/ion-repo/`, merged in at the first session start or
+  command, what both hold kept in the new place (2026-11-03).
+- [x] `~/.cache/kiln/{ci,update-all,chrome-wsl}` → `~/.cache/ion-repo/`, the local CI's orphan
+  worktrees under the old place still removed (2026-11-03).
+- [x] git keys `ion-repo.update-check`, `ion-repo.branch-guard`, `ion-repo.rtk`, kiln's still read
+  (2026-11-03).
+- [ ] ion-score first: `WAIVERS_FILE` (`kiln-waivers.toml`, read under both names), `kiln.report-gaps`,
+  `~/.cache/kiln/{worktrees,forge}`, `.git/kiln/fix`; then `ion repo update` renames the file
+  (breaking: the generated tree).
 
 ### ion-repo#T-387 · What belongs to another craft leaves kiln for its tool
 - **Type**: task

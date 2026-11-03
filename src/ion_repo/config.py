@@ -109,6 +109,30 @@ def move_legacy_config() -> None:
             legacy.parent.rmdir()  # only when empty: the cache and state of kiln may still be there
 
 
+def state_dir() -> Path:
+    """ion-repo's state on this machine (`~/.local/state/ion-repo`), kiln's folder of before
+    ion-repo 0.4.15 moved in at the first read, but for what is there already."""
+    base = Path(os.environ.get("XDG_STATE_HOME") or Path.home() / ".local" / "state")
+    current = base / "ion-repo"
+    merge_dir(base / "kiln", current)
+    return current
+
+
+def merge_dir(legacy: Path, current: Path) -> None:
+    if not legacy.is_dir() or legacy.is_symlink():
+        return
+    current.mkdir(parents=True, exist_ok=True)
+    for entry in legacy.iterdir():
+        target = current / entry.name
+        if target.is_dir() and entry.is_dir():
+            merge_dir(entry, target)
+        elif not target.exists():
+            with contextlib.suppress(OSError):
+                entry.replace(target)
+    with contextlib.suppress(OSError):
+        legacy.rmdir()  # only when empty: a file of both places stays in the old one
+
+
 def load_config() -> UserConfig:
     move_legacy_config()
     path = config_path()
