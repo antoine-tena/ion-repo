@@ -6,6 +6,11 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 `release/vX.Y.Z` branch, rewritten before its first candidate. Names are those of their release:
 entries before v0.4.0 quote kiln's former French names.
 
+## v0.4.13 — 2026-11-03
+<!-- readme: unchanged: one fix of the status line on macOS, nothing the READMEs describe -->
+- The status line shows on macOS again: Claude Code ran it with the machine's `python3` (3.9 or 3.13 on macOS), too old for the script, which stopped at once and left the line empty. It now runs on ion-repo's own Python.
+- **After updating**: run `ion repo install --machine` so the status line runs on ion-repo's Python (it stayed empty on macOS).
+
 ## v0.4.12 — 2026-11-01
 <!-- readme: unchanged: two fixes of the move from kiln, nothing the READMEs describe -->
 - `kiln` says that it is now `ion-repo` once on a machine, no longer on every run.
