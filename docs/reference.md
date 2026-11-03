@@ -56,7 +56,7 @@ option, setting, plugin, skill, hook or workflow is missing here.
 
 When a newer ion-repo release is out on the machine's channel, a command typed in a terminal ends by offering to install it (GitHub asked at most once a day; after a no, the same release comes back a week later). Not in Claude Code, whose session start asks instead, not in `ion repo doctor`, not for a tool installed from a checkout; `ION_REPO_NO_UPDATE_CHECK=1` turns it off.
 
-Release channel of the machine (`ion repo set channel=…`): `public` (promoted releases, the default), `internal` (candidates too) or `beta`, for ion-repo's own development: the tool runs ion-repo's `develop`, ion-repo's checkout, in the code directory, one of its folders or one level further, installed editable (`uv tool install --force --editable ~/code/kiln`), so a merge into `develop` is live at once, without a release; `ion repo update` takes the template at the tool's pushed commit.
+Release channel of the machine (`ion repo set channel=…`): `public` (promoted releases, the default), `internal` (candidates too) or `beta`, for ion-repo's own development: the tool runs ion-repo's `develop`, ion-repo's checkout, in the code directory, one of its folders or one level further, installed editable (`uv tool install --force --editable ~/code/kiln`), so a merge into `develop` is live at once, without a release (its dependencies too: when the checkout's `pyproject.toml` asks for a version the tool lacks, the next command installs the tool again from the checkout, then runs); `ion repo update` takes the template at the tool's pushed commit.
 
 
 <p align="center">

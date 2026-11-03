@@ -357,7 +357,10 @@ Le travail s'intègre dans `develop` ; `main` ne reçoit que des versions.
 
 - **Candidate** (`v0.4.2-rc.1`) : tirée de `develop` sur une branche `release/v0.4.2`, avec son
   entrée en tête de [`CHANGELOG.md`](../CHANGELOG.md). Seuls les postes au canal `internal` la
-  suivent (`ion repo set channel=internal`).
+  suivent (`ion repo set channel=internal`). Le canal `beta`, pour le développement d'ion-repo, lit le
+  checkout en direct (`uv tool install --editable`) : une fusion dans `develop` y est aussitôt,
+  ses dépendances aussi (quand le `pyproject.toml` du checkout en demande une version absente,
+  la commande suivante réinstalle l'outil depuis le checkout, puis s'exécute).
 - **Promotion** (`v0.4.2`) : une fois la candidate rodée, sur des faits : CI verte, 24 heures
   depuis son tag et au moins un repo du poste mis à jour vers elle ; 2 heures sans repo exigé
   pour une candidate de correctifs seuls. Le même commit est tagué et fusionné
