@@ -1251,7 +1251,7 @@ def collect_repo(status: Status, cwd: str, top: str) -> str:
             sh("git", "-C", main, "notes", "--ref=ci", "show", sha).split("\n", 1)[0] if sha else ""
         )
         running = sha and os.path.isdir(
-            os.path.expanduser(f"~/.cache/kiln/ci/{os.path.basename(main)}-{sha[:12]}")
+            os.path.expanduser(f"~/.cache/ion-repo/ci/{os.path.basename(main)}-{sha[:12]}")
         )
         if running:
             status.env.append([Item("CI ⏳")])

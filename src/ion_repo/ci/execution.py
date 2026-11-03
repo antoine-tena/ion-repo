@@ -32,7 +32,7 @@ PLAYWRIGHT_BROWSERS = Path.home() / ".cache" / "ms-playwright"
 # Under WSL, chrome-launcher (Lighthouse) thinks it runs Windows' Chrome and passes it a
 # Windows-style `--user-data-dir`: a Linux Chromium turns it into a folder
 # "C:\Users\…\lighthouse.N" in the current folder. This launcher translates the path back.
-WSL_CHROME = Path.home() / ".cache" / "kiln" / "chrome-wsl"
+WSL_CHROME = Path.home() / ".cache" / "ion-repo" / "chrome-wsl"
 WSL_CHROME_SCRIPT = """#!/usr/bin/env bash
 # Written by ion repo ci: Linux Chromium launched by chrome-launcher under WSL (see execution.py).
 args=()
