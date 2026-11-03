@@ -482,6 +482,31 @@ def test_the_chat_palette_keeps_claude_codes_colors_without_a_custom_theme() -> 
     )
 
 
+NEW_PALETTES = {
+    "one-dark": ("#abb2bf", "#e5c07b", "#d19a66", "#e06c75"),
+    "monokai": ("#a6a28c", "#e6db74", "#fd971f", "#f92672"),
+    "everforest": ("#9da9a0", "#dbbc7f", "#e69875", "#e67e80"),
+    "kanagawa": ("#a6a69c", "#e6c384", "#ffa066", "#e82424"),
+    "rose-pine": ("#908caa", "#f6c177", "#ea9a97", "#eb6f92"),
+    "github-dark": ("#8b949e", "#d29922", "#db6d28", "#f85149"),
+    "ayu": ("#acb6bf", "#e6b450", "#ff8f40", "#f07178"),
+    "material": ("#b0bec5", "#ffcb6b", "#f78c6c", "#ff5370"),
+    "slate": ("#94a3b8", "#fbbf24", "#fb923c", "#f87171"),
+    "zenburn": ("#9fafaf", "#f0dfaf", "#dfaf8f", "#cc9393"),
+}
+
+
+@pytest.mark.parametrize("name", NEW_PALETTES)
+def test_the_terminal_world_palettes_are_set_with_their_levels(name: str) -> None:
+    """Les palettes connues du terminal se choisissent et gardent leurs niveaux, en sombre."""
+    assert apply_machine(UserConfig(), [f"statusline_palette={name}"]).statusline_palette == name
+    script = load_script()
+    _, stone, _, _, glow, fire, ember, _, _ = script.PALETTES[name]["dark"]
+    hexes = tuple("#{:02x}{:02x}{:02x}".format(*color) for color in (stone, glow, fire, ember))
+    assert hexes == NEW_PALETTES[name]
+    assert len(script.PALETTES[name]["light"]) == len(script.PALETTES[name]["dark"])
+
+
 def test_statusline_palette_accepts_chat() -> None:
     assert apply_machine(UserConfig(), ["statusline_palette=chat"]).statusline_palette == "chat"
 
