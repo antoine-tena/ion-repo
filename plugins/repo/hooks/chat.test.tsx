@@ -14,16 +14,21 @@ const userMessage = (requestId: string, origin: object, from?: object) => ({
   props: { text: 'hello', origin, isExpanded: false, ...(from === undefined ? {} : { from }) },
 } as const)
 
-test("the person's message gets a blue bar and the time", async ($, on) => {
+const GIT_NAME = { value: { exitCode: 0, stdout: 'antoine-tena\n', stderr: '' } }
+
+test("the person's message gets a blue bar, their git name and the time", async ($, on) => {
   on('clock.now', () => ({ value: NOON }))
+  on('process.run', () => GIT_NAME)
   const ui = await $.ui.mount(userMessage('m1', { kind: 'unclassified' }))
   expect((await ui.find({ type: 'Text', text: /12:05/ }))?.text).toBe('12:05')
+  expect((await ui.find({ type: 'Text', text: /antoine-tena/ }))?.text).toBe('antoine-tena')
   expect(await barColor(ui)).toBe('professionalBlue')
   await ui.unmount()
 })
 
-test("the person's message typed in the prompt box gets a blue bar, no name", async ($, on) => {
+test("the person's message typed in the prompt box gets a blue bar, not 'composer'", async ($, on) => {
   on('clock.now', () => ({ value: NOON }))
+  on('process.run', () => GIT_NAME)
   const ui = await $.ui.mount(userMessage('m3', { kind: 'composer' }))
   expect(await ui.find({ type: 'Text', text: /composer/ })).toBeUndefined()
   expect(await barColor(ui)).toBe('professionalBlue')

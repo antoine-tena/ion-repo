@@ -1,5 +1,6 @@
-// Draws a colored bar beside each message of the chat: blue for the person, Claude's color for
-// Claude, gray for what came from elsewhere (another session, a task, a schedule), with its name.
+// Draws a colored bar beside each message of the chat: blue for the person, with their git
+// user.name, Claude's color for Claude, gray for what came from elsewhere (another session, a
+// task, a schedule), with its name.
 // Colors are theme keys, so a custom theme (`/theme`) changes them.
 import type { Register } from 'claude-code'
 
@@ -21,6 +22,11 @@ const seenAt = async (now: () => Promise<number>, id: string): Promise<string> =
   return clockTime(firstSeen.get(id) as number)
 }
 
+let personName: Promise<string> | undefined
+
+const nameOf = (result: { exitCode: number; stdout: string }): string =>
+  result.exitCode === 0 ? result.stdout.trim() : ''
+
 const sender = (origin: Origin, from?: { name?: string }): string | null => {
   if (PERSON_KINDS.has(origin.kind)) {
     return null
@@ -33,13 +39,19 @@ export const register: Register = on => {
     const { Box, Text } = $.ui.resolve(e)
     const name = sender(e.props.origin, e.props.from)
     const time = await seenAt(() => $.clock.now(), e.requestId)
+    if (name === null && personName === undefined) {
+      personName = $.process.run(['git', 'config', 'user.name']).then(nameOf, () => '')
+    }
+    const label = name ?? (await personName) ?? ''
 
     return (
       <Box flexDirection="row" marginTop={1}>
         <Box width={1} backgroundColor={name === null ? 'professionalBlue' : 'inactive'} />
         <Box flexDirection="column" flexGrow={1} marginLeft={1}>
           <Box flexDirection="row">
-            {name === null ? null : <Text bold color="inactive">{name}</Text>}
+            {label === '' ? null : (
+              <Text bold color={name === null ? 'professionalBlue' : 'inactive'}>{label}</Text>
+            )}
             <Box flexGrow={1} />
             <Text dimColor>{time}</Text>
           </Box>
