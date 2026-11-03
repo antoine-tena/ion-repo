@@ -86,3 +86,23 @@ def test_answers_are_recorded_from_the_command_line(reminders: ModuleType) -> No
     assert questions["tool"]["refusals"] == 1
     with pytest.raises(SystemExit):
         reminders.main(["maybe", "tool"])
+
+
+def test_the_color_question_has_its_own_pace(reminders: ModuleType) -> None:
+    state: dict[str, Any] = {}
+    asked_at = []
+    for session in range(1, 2500):
+        reminders.count_session(state, "color")
+        if reminders.is_due(state, "color"):
+            asked_at.append(session)
+            reminders.record(state, "color", "no")
+
+    assert asked_at == [1, 51, 251, 1251, 2251]
+
+
+def test_a_yes_to_the_color_asks_again_in_1000_sessions(reminders: ModuleType) -> None:
+    state: dict[str, Any] = {}
+    reminders.count_session(state, "color")
+    reminders.record(state, "color", "yes")
+
+    assert state["questions"]["color"]["next"] == 1001

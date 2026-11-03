@@ -16,6 +16,9 @@ update, the question also offers to uninstall ion-repo (tool) or to unlink the r
 repo adopt`, skill `/repo:adopt`). Before kiln 0.4 it also linked the plugin at `.claude/kiln`
 in every repo: that link is removed.
 
+Now and then at startup, in any folder, Claude also asks whether the person wants another color
+for their bar in the chat (`color.py`).
+
 In a repo ion-repo looks after (ion-repo itself included), Claude is also told when the last CI of
 the integration branch is red, to say so before any new work.
 Never blocking: three seconds at most per network call, silent without network. A repo opts out
@@ -34,6 +37,7 @@ from pathlib import Path
 from typing import Any, NamedTuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import color
 import others
 import paused
 import place
@@ -807,6 +811,7 @@ def main() -> None:
             found.context if found else "",
             launch_place(payload),
             other_sessions(payload),
+            color_question(payload),
         )
         if part
     )
@@ -828,6 +833,14 @@ def paused_sessions(payload: dict[str, Any]) -> str:
         if source == "resume":
             paused.forget(session_id)
         return paused.listing(session_id) if source == STARTUP_SOURCE else ""
+    except Exception:
+        return ""
+
+
+def color_question(payload: dict[str, Any]) -> str:
+    """Now and then at startup, in any folder: another color for the person's bar (`color.py`)."""
+    try:
+        return color.context() if payload.get("source", STARTUP_SOURCE) == STARTUP_SOURCE else ""
     except Exception:
         return ""
 
