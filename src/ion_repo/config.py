@@ -44,6 +44,16 @@ STATUSLINE_PALETTES = (
     "tokyo-night",
     "forest",
     "mono",
+    "one-dark",
+    "monokai",
+    "everforest",
+    "kanagawa",
+    "rose-pine",
+    "github-dark",
+    "ayu",
+    "material",
+    "slate",
+    "zenburn",
 )
 DEFAULT_PALETTE = "stone-fire"
 # Whether Claude's commits and pull requests say Claude helped (`Co-Authored-By: Claude`):
