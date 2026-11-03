@@ -151,6 +151,7 @@ def test_every_repo_reproduces_first_and_links_directly(tmp_path: Path) -> None:
 
     assert "**[REPRODUCE-FIRST]**" in project_rules
     assert "**[DIRECT-LINKS]**" in project_rules
+    assert "**[CLAUDE-CODE-REACH]**" in project_rules
     assert "ion repo set ai_trailers=disclose|never" in project_rules
 
 
