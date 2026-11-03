@@ -146,7 +146,7 @@ def show_status(code_dir: Path) -> None:
     if waived:
         # A rule waived in several repos probably needs another look in ion-repo.
         counts = ", ".join(f"{target} ({n})" for target, n in waived.most_common())
-        print(f"\n  Waivers (kiln-waivers.toml), by number of repos: {counts}")
+        print(f"\n  Waivers (waivers.toml), by number of repos: {counts}")
 
 
 def adopted_state(root: Path, public: str | None) -> str:

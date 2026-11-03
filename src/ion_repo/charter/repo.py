@@ -24,7 +24,7 @@ class Repo:
         self.excluded: list[str] = list(config.get("exclude", []))
         # Generated files: their list lives in `.gitattributes` (attribute linguist-generated).
         self.generated = self.generated_files()
-        # Patterns waived for the rule being checked (`kiln-waivers.toml`).
+        # Patterns waived for the rule being checked (`waivers.toml`).
         self.waived: list[str] = []
         # The one file checked after an edit (`charter file`), None for the whole repo.
         self.only: str | None = None

@@ -1,4 +1,4 @@
-"""`ion repo waive` : ajout et renouvellement d'une dérogation dans `kiln-waivers.toml`."""
+"""`ion repo waive` : ajout et renouvellement d'une dérogation dans `waivers.toml`."""
 
 import datetime
 import subprocess
@@ -23,9 +23,7 @@ def repo(tmp_path: Path) -> Path:
 
 
 def entries(repo: Path) -> list[dict[str, Any]]:
-    waivers: list[dict[str, Any]] = tomllib.loads((repo / "kiln-waivers.toml").read_text())[
-        "waiver"
-    ]
+    waivers: list[dict[str, Any]] = tomllib.loads((repo / "waivers.toml").read_text())["waiver"]
     return waivers
 
 
@@ -49,14 +47,14 @@ def test_author_is_unknown_without_git_user(repo: Path, monkeypatch: pytest.Monk
 
 def test_renewal_moves_to_the_next_tier_and_keeps_comments(repo: Path) -> None:
     waive(repo, WaiveRequest("TAILLE-FICHIER", "repris"), TODAY)
-    (repo / "kiln-waivers.toml").write_text("# à moi\n" + (repo / "kiln-waivers.toml").read_text())
+    (repo / "waivers.toml").write_text("# à moi\n" + (repo / "waivers.toml").read_text())
     later = TODAY + datetime.timedelta(days=7)
 
     waive(repo, WaiveRequest("TAILLE-FICHIER", "toujours repris", renew=True), later)
 
     [entry] = entries(repo)
     assert entry["renewals"] == 1 and entry["until"] == later + datetime.timedelta(days=30)
-    assert (repo / "kiln-waivers.toml").read_text().startswith("# à moi\n")
+    assert (repo / "waivers.toml").read_text().startswith("# à moi\n")
 
 
 def test_file_is_frozen(repo: Path) -> None:
@@ -88,7 +86,7 @@ def test_refused_waiver_leaves_no_file(repo: Path, request_: WaiveRequest, messa
     with pytest.raises(KilnError, match=message):
         waive(repo, request_, TODAY)
 
-    assert not (repo / "kiln-waivers.toml").exists()
+    assert not (repo / "waivers.toml").exists()
 
 
 def test_same_waiver_twice_is_refused(repo: Path) -> None:
@@ -96,3 +94,15 @@ def test_same_waiver_twice_is_refused(repo: Path) -> None:
 
     with pytest.raises(KilnError, match="--renew"):
         waive(repo, WaiveRequest("TAILLE-FICHIER", "x"), TODAY)
+
+
+def test_a_repo_with_only_kiln_waivers_toml_renews_there(repo: Path) -> None:
+    waive(repo, WaiveRequest("TAILLE-FICHIER", "repris"), TODAY)
+    (repo / "waivers.toml").rename(repo / "kiln-waivers.toml")
+    later = TODAY + datetime.timedelta(days=7)
+
+    waive(repo, WaiveRequest("TAILLE-FICHIER", "toujours repris", renew=True), later)
+
+    assert not (repo / "waivers.toml").exists()
+    [entry] = tomllib.loads((repo / "kiln-waivers.toml").read_text())["waiver"]
+    assert entry["renewals"] == 1

@@ -1,4 +1,4 @@
-"""Waivers of `kiln-waivers.toml`: tiers, expiry, targets, effect on the charter, frozen files
+"""Waivers of `waivers.toml`: tiers, expiry, targets, effect on the charter, frozen files
 left alone by `ion repo update`; and the charter of an adopted repo of before kiln 0.4.0, still read
 under its French names."""
 
@@ -56,7 +56,7 @@ def _toml(value: object) -> str:
 
 
 def write(root: Path, *waivers: str) -> None:
-    (root / "kiln-waivers.toml").write_text("\n".join(waivers))
+    (root / "waivers.toml").write_text("\n".join(waivers))
 
 
 @pytest.fixture

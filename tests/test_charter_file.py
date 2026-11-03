@@ -85,7 +85,7 @@ def test_the_commit_hook_passes_several_files(repo: Path, monkeypatch: pytest.Mo
 
 def test_a_waived_or_ignored_file_is_not_checked(repo: Path) -> None:
     today = datetime.date.today().isoformat()
-    (repo / "kiln-waivers.toml").write_text(
+    (repo / "waivers.toml").write_text(
         '[[waiver]]\nrule = "LOGGING"\nreason = "bootstrap"\nby = "antoine"\n'
         f'paths = ["backend/printer.py"]\nsince = {today}\nuntil = {today}\n'
     )
