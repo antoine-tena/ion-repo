@@ -39,6 +39,19 @@ MARKETPLACES = ("ion-repo", "kiln")
 # values refreshed in the background (git, CI, tasks) wait for the next one. A render costs
 # about 0.15 s.
 REFRESH_SECONDS = 5
+# The script needs ion-repo's Python (3.14): a bare `python3` is 3.9 or 3.13 on macOS, where it
+# stops on a syntax error and the status line stays empty.
+INTERPRETER = f'"{sys.executable}"'
+BARE_PYTHON = "python3 "
+
+
+def with_interpreter(command: str) -> str:
+    """The command run by ion-repo's Python, not by whatever `python3` the PATH holds."""
+    return (
+        f"{INTERPRETER} {command.removeprefix(BARE_PYTHON)}"
+        if command.startswith(BARE_PYTHON)
+        else command
+    )
 
 
 def apply_statusline_settings(root: Path) -> None:
@@ -83,6 +96,14 @@ def is_kiln_statusline(entry: object) -> TypeGuard[dict[str, Any]]:
     return any(script.as_posix() in command for script in (SCRIPT, *LEGACY_SCRIPTS))
 
 
+def moved_command(command: str) -> str:
+    """Its path before ion-repo (plugins/kiln/, plugins/base/) made today's, its interpreter
+    ion-repo's; the rest kept."""
+    for legacy in LEGACY_SCRIPTS:
+        command = command.replace(legacy.as_posix(), SCRIPT.as_posix())
+    return with_interpreter(command)
+
+
 def apply_statusline_choice(choice: str, settings_path: Path | None = None) -> str:
     """Aligns Claude Code's `statusLine` with the choice; returns what was done."""
     path = settings_path or claude_settings_path()
@@ -97,14 +118,12 @@ def apply_statusline_choice(choice: str, settings_path: Path | None = None) -> s
         del settings["statusLine"]
         message = f"statusLine removed from {path}{previous}."
     elif choice in STATUSLINE_STYLES:
-        if is_kiln_statusline(current) and SCRIPT.as_posix() not in str(current.get("command")):
-            # Its path before ion-repo (plugins/kiln/, plugins/base/): today's, the rest kept.
-            command = str(current["command"])
-            for legacy in LEGACY_SCRIPTS:
-                command = command.replace(legacy.as_posix(), SCRIPT.as_posix())
+        if is_kiln_statusline(current) and current.get("command") != (
+            command := moved_command(str(current.get("command")))
+        ):
             current["command"] = command
             current.setdefault("refreshInterval", REFRESH_SECONDS)
-            message = f"ion-repo status line, {choice} style, moved to {current['command']}."
+            message = f"ion-repo status line, {choice} style, moved to {command}."
         elif is_kiln_statusline(current):
             if current.get("refreshInterval"):
                 return f"ion-repo status line, {choice} style."
@@ -113,7 +132,7 @@ def apply_statusline_choice(choice: str, settings_path: Path | None = None) -> s
         else:
             settings["statusLine"] = {
                 "type": "command",
-                "command": f'python3 "{kiln_script()}"',
+                "command": f'{INTERPRETER} "{kiln_script()}"',
                 "refreshInterval": REFRESH_SECONDS,
             }
             message = f"ion-repo status line, {choice} style, set in {path}{previous}."
@@ -135,7 +154,9 @@ def ensure_statusline(config: UserConfig) -> UserConfig:
     current = settings.get("statusLine")
     if config.statusline is not None:
         # an ion-repo status line set before its timer gets it
-        stale = isinstance(current, dict) and SCRIPT.as_posix() not in str(current.get("command"))
+        stale = isinstance(current, dict) and current.get("command") != moved_command(
+            str(current.get("command"))
+        )
         if is_kiln_statusline(current) and (stale or not current.get("refreshInterval")):
             print(apply_statusline_choice(str(config.statusline)))
         return config
