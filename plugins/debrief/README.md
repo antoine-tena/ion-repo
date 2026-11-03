@@ -1,8 +1,9 @@
 # debrief
 
 The `debrief` output style of ion-repo's `repo` plugin, alone: no skills, hooks or status line.
-The message that closes a piece of work opens with the real git state in bold, then **◆ Summary**,
-**◆ Not working**, **◆ Next** and **◆ Your turn:**, titled in your language.
+The message that closes a piece of work opens with the real git state in bold, then **◆ Done**,
+**◆ Critical**, **◆ To do** and **◆ Blocked:**, titled in your language, a part with nothing in it
+left out.
 
 ```
 /plugin install debrief --marketplace antoine-tena/ion-repo

@@ -50,4 +50,4 @@ Talk to the user in their language.
 
 In the `repo` plugin's `debrief` format (`output-styles/debrief.md`): the tool's version and
 the template's release, before → after, among its points; what is left of the `Finish the
-ion-repo update` ticket under **◆ Next**.
+ion-repo update` ticket under **◆ To do**.
