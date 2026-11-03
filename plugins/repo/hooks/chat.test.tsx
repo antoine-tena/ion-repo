@@ -22,6 +22,14 @@ test("the person's message gets a blue bar and the time", async ($, on) => {
   await ui.unmount()
 })
 
+test("the person's message typed in the prompt box gets a blue bar, no name", async ($, on) => {
+  on('clock.now', () => ({ value: NOON }))
+  const ui = await $.ui.mount(userMessage('m3', { kind: 'composer' }))
+  expect(await ui.find({ type: 'Text', text: /composer/ })).toBeUndefined()
+  expect(await barColor(ui)).toBe('professionalBlue')
+  await ui.unmount()
+})
+
 test('a message from another session gets a gray bar and its name', async ($, on) => {
   on('clock.now', () => ({ value: NOON }))
   const ui = await $.ui.mount(userMessage('m2', { kind: 'peer' }, { name: 'ion-host' }))
