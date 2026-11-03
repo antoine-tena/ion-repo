@@ -9,7 +9,8 @@ makes on main; the commit that concludes a merge in progress (MERGE_HEAD present
 after resolving a conflict of `git merge --no-ff`.
 
 A repo where commits go straight to the main branch opts out with
-`git config kiln.branch-guard false` (`garde-branche.desactive true` before kiln 0.4).
+`git config ion-repo.branch-guard false` (`kiln.branch-guard false` before ion-repo 0.4.15,
+`garde-branche.desactive true` before kiln 0.4).
 """
 
 import contextlib
@@ -91,9 +92,10 @@ for target in targets:
         ).stdout.strip()
     except Exception:
         continue
-    is_disabled = git_config(target, "kiln.branch-guard") == "false" or (
-        git_config(target, "garde-branche.desactive") == "true"
-    )
+    is_disabled = "false" in (
+        git_config(target, "ion-repo.branch-guard"),
+        git_config(target, "kiln.branch-guard"),  # before ion-repo 0.4.15
+    ) or (git_config(target, "garde-branche.desactive") == "true")
     is_merging = (
         subprocess.run(
             ["git", "-C", target, "rev-parse", "-q", "--verify", "MERGE_HEAD"],

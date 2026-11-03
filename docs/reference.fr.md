@@ -65,7 +65,7 @@ Les plugins Claude Code vivent dans [`plugins/`](../plugins/), catalogue `ion-re
   repo »), dès la 3e session, au plus une fois toutes les 10 sessions du poste. Toutes passent
   par `reminders.py` : une note de bienveillance du poste monte à chaque « oui » et baisse à
   chaque « non », et étire ou raccourcit tous les délais (doublés au plus méfiant, de moitié au
-  plus enthousiaste) ; `git config kiln.update-check false` pour s'en passer, sorties de commandes condensées par [rtk](https://github.com/rtk-ai/rtk) (`rtk.py`) quand il
+  plus enthousiaste) ; `git config ion-repo.update-check false` pour s'en passer, sorties de commandes condensées par [rtk](https://github.com/rtk-ai/rtk) (`rtk.py`) quand il
   est installé (`mise use -g github:rtk-ai/rtk`, sans `rtk init` : le hook est fourni ici) ; MCP context7 ; status line commune (`plugins/repo/scripts/statusline.py`,
   en anglais, aux couleurs d'ion-repo), qui montre le contexte en jetons, d'autant plus coloré qu'un message
   coûte cher, et en rouge une fois le cache expiré (le message suivant réécrit tout), posée par `ion repo install` dans `~/.claude/settings.json`, relancée toutes les 5 secondes (`refreshInterval`) ; son
