@@ -1,4 +1,7 @@
 {
+  "modules": [
+    "./chat.tsx"
+  ],
   "hooks": {
     "PreToolUse": [
       {
