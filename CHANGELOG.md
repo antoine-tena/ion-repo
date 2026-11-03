@@ -7,60 +7,18 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 entries before v0.4.0 quote kiln's former French names.
 
 ## v0.4.14 — 2026-11-03
-<!-- draft: rewrite for users, breaking changes first, then delete this line -->
-- **Breaking**: The kiln alias and kiln_move.py removed
-- **Breaking**: Deploy=vps enables host@ion-host
-- **Breaking**: /nuxt:polish forwards to /design:polish
-- **Breaking**: Write tickets as <repo>#T-NN, from the repo's name
-- Palettes of one hue each, offered first by /repo:statusline
-- Eval cases checked against their folders, no hand-written count
-- Session start offers ion upgrade when other Ion tools are late
-- Ion-score from PyPI, no longer from its git develop
-- Pypi.yml publishes by trusted publishing when no PyPI token is set
-- Ten palettes of the terminal world, one-dark to zenburn
-- The person's name kept in the chat when reading git's again fails
-- Palettes offered by their four colors, not their names
-- A task's or another session's message renamed and recolored in the chat
-- Run the script on ion-repo's Python, empty on macOS before
-- Chat shows the time beside Claude's name, the date another day
-- /repo:look, one question of taste asked once and at each novelty
-- /repo:statusline, the status line's look asked in the chat
-- Chat palette, the person's and Claude's colors of the chat
-- Debrief titled Done, Critical, To do, Blocked
-- /repo:names, the names above the chat's messages
-- Claude's name above its replies, names read from chat-names.json
-- Person's messages show their git user.name
-- /repo:color picks the bar's color
-- Ask now and then for a chat color
-- Typed message is the person's
-- [CLAUDE-CODE-REACH] checks mods first
-- Colored bar beside each chat message
-- Announcement through /words:announce
-- Another session told, work goes on in a worktree
-- Color-blind safe levels under Claude Code's -daltonized themes
-- Ten palettes, rose among them, each dark or light after Claude Code's theme
-- No more machine-wide token total; palette chosen per machine (statusline_palette)
-- Ion repo new and update lay and update the other Ion tools' pieces
-- One table of the other Ion tools' pieces, read by the settings
-- The converters run on every update, after a conflict too
-- Garder le mode d'emploi d'un README gardé
-- A typed callback, not a lambda
-- /vps:… skills become /host:…
-- The debrief output style as a plugin of its own
-- A file name kept through a rename, its dot escaped too
-- A renamed project keeps the file names other projects may hold
-- The merge into main skips the changelog entry's markers
-- A renamed project's files named after it follow
-- A renamed project takes its own code and text along
-- A rename leaves alone the lines the new render keeps
-- The formula keeps the kiln alias
-- The kiln alias says its new name once
-- [FETCH-FIRST], fetch before building (T-381)
-- Session start tells of other sessions (T-384)
-- /repo:release publishes from the machine when Actions is blocked (T-388)
-- /repo:merge leaves an isolated worktree before merging (T-378)
-- A generated tool's releases are numbered vX.Y.Z, never vN (T-405)
-- **After updating**: run `ion repo install --machine` so the status line runs on ion-repo's Python (it stayed empty on macOS).
+- **Breaking**: the `kiln` and `kiln-cli` commands are gone: type `ion repo` (or `ion-repo`). The last `kiln-cli` already moved its testers; a late tester's `kiln-cli` tool is still replaced at session start.
+- **Breaking**: the `vps` plugin leaves ion-repo for ion-host's `host` plugin: `/vps:deploy`, `/vps:prod-logs` and `/vps:prod-dump` become `/host:deploy`, `/host:prod-logs` and `/host:prod-dump`. `ion repo update` gives a repo with `deploy=vps` ion-host's catalogue and `host@ion-host` in place of `vps@ion-repo`.
+- **Breaking**: `/nuxt:polish` moves to `/design:polish` of ion-design, for any frontend; `/nuxt:polish` forwards to it, or gives the commands that install it. `/nuxt:preview` stays.
+- **Breaking**: backlog tickets are written `<repo>#T-NN`, prefixed with the repo's name. `ion repo tickets` converts a repo's tracking (shown first, written on a yes), `ion repo update` offers it, and `ion repo set name=…` moves the prefix; readers take both forms. `backlog.md` and `done.md` are now the project's own: a template change no longer conflicts with them.
+- Session start offers `ion upgrade` when other Ion tools installed on the machine are behind their source (`ion outdated`: a tool from GitHub behind its `develop`, one from PyPI behind its release), then a restart of Claude Code; at the same pace as an ion-repo update.
+- The chat gets a colored bar beside each message, under each one's name with the time: blue for you, Claude's color for Claude, gray for a task or another session. `/repo:color` and `/repo:names` change them, `/repo:statusline` the status line's style and palette, and `/repo:look` all three in one form, asked once at session start and again at each novelty.
+- Status line: twenty-nine palettes, among them one-dark to zenburn and palettes of a single hue, `chat` in the chat's colors, color-blind safe levels under the `-daltonized` themes, chosen per machine (`ion repo set statusline_palette=…`) and offered by their four colors; the machine-wide token total is gone.
+- Session start tells Claude of another session at work on the same repo, which then goes on in its own worktree.
+- The `debrief` output style closes each piece of work with Done, Critical, To do and Blocked; it is also a plugin of its own.
+- `ion repo new` and `ion repo update` lay and update the other Ion tools' pieces (ion-host's, ion-secure's…), from one table; the converters run on every update, after a conflict too, and a renamed project takes its file names, code and text along.
+- `/repo:release` announces through `/words:announce` and publishes from the machine when GitHub Actions is blocked; `pypi.yml` publishes by trusted publishing when no PyPI token is set; a generated tool's releases are numbered `vX.Y.Z`.
+- Fixes: `/repo:merge` leaves an isolated worktree before merging; fetch before building ([FETCH-FIRST]); the merge into `main` skips the changelog entry's markers; ion-score comes from PyPI.
 - **After updating**: run `ion repo tickets` if the update had nobody to ask.
 
 ## v0.4.13 — 2026-11-03
