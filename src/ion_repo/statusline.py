@@ -8,6 +8,7 @@ statusline.*` at each `ion repo install`, `ion repo new` and `ion repo set`.
 """
 
 import json
+import sys
 from dataclasses import replace
 from pathlib import Path
 from typing import Any, TypeGuard
