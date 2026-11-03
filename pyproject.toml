@@ -26,7 +26,7 @@ classifiers = [
 requires-python = ">=3.14"
 dependencies = [
     "copier>=9.4,<10",
-    "ion-score",
+    "ion-score>=0.1.1",
     "packaging>=24",
 ]
 
@@ -117,7 +117,3 @@ ignore_missing_imports = true
 module = ["yaml"]
 ignore_missing_imports = true
 
-# ion-score (the grid, the shared ui and shell) from its develop branch until it is on PyPI: a
-# private repo, which this repo's CI and a wheel built for PyPI cannot install (ion-repo#T-393).
-[tool.uv.sources]
-ion-score = { git = "https://github.com/antoine-tena/ion-score", subdirectory = "backend", rev = "develop" }
