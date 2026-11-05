@@ -219,6 +219,16 @@ pypi_name:
   validator: >-
     {% if pypi_name and not (pypi_name | regex_search('^[a-z0-9]+([-_.][a-z0-9]+)*$')) %}A PyPI name: lowercase letters and digits, separated by dashes.{% endif %}
 
+# The license a repo going public ships under (SPDX ID): `LICENSE` at the root, `license` in each
+# pyproject.toml and a License section in the README. Empty, the default: no license, the repo
+# stays all rights reserved. Later with `ion repo set license=MIT`.
+license:
+  type: str
+  help: License of the repo, as an SPDX ID (empty if none). Later with `ion repo set license=MIT`.
+  default: ""
+  validator: >-
+    {% if license not in ['', 'MIT'] %}A license ion-repo writes: MIT (empty for none).{% endif %}
+
 # Java: the root package of the sources (and their directories under src/main/java).
 java_package:
   type: str

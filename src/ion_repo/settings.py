@@ -51,6 +51,7 @@ SETTABLE_KEYS = (
     "claude_plugin",
     "plugin_name",
     "pypi_name",
+    "license",
     "java_package",
     "timezone",
     "serena",
