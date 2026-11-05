@@ -6,7 +6,8 @@ never edited runs in podman: the databases of the compose file (`backing`), star
 process outside the front needs them. Everything runs in the background, then the logs are
 offered (`background`); `ion repo dev status`, `ion repo dev logs [service] [-f]` and `ion repo dev
 stop` read and stop it. `--foreground` keeps it in the terminal, Ctrl+C stopping the processes and
-keeping the databases (`foreground`). `--containers` runs the whole stack in podman instead
+keeping the databases (`foreground`). A server whose port is taken runs on the next free one,
+the others told where it is (`ports`). `--containers` runs the whole stack in podman instead
 (`containers`), which a repo whose compose file runs its own services is offered at once.
 """
 
@@ -74,7 +75,7 @@ def _start(root: Path, *, foreground: bool, only: list[str] | None, ask: menu.As
         )
     front_dir = load_stack(root).frontend_dir
     commands = menu.select(every, background.state_dir(root), only, ask, front_dir)
-    background.check_ports_free(root, commands)
+    ports = background.choose_ports(root, commands)
     for install in node_installs(root, commands):
         step(f"{install.directory}/: dependencies missing or older than the lock")
         run(list(install.argv), root / install.directory)
@@ -82,9 +83,9 @@ def _start(root: Path, *, foreground: bool, only: list[str] | None, ask: menu.As
         start_backing_services(root)
     step(" · ".join(f"{command.label} ({command.directory}/)" for command in commands))
     if foreground:
-        run_foreground(root, commands)
+        run_foreground(root, commands, ports)
         return
-    background.start(root, commands)
+    background.start(root, commands, ports)
     background.show_status(root)
     _offer_logs(root, ask)
 
