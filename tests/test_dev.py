@@ -3,6 +3,7 @@
 import os
 import socket
 import subprocess
+import sys
 import time
 from collections.abc import Callable, Iterator
 from pathlib import Path
@@ -10,7 +11,7 @@ from pathlib import Path
 import pytest
 
 from ion_repo import cli
-from ion_repo.dev import background, run_dev
+from ion_repo.dev import background, ports, run_dev
 from ion_repo.dev.menu import select
 from ion_repo.dev.processes import (
     dev_processes,
@@ -230,7 +231,7 @@ def test_a_worktree_keeps_the_databases_another_one_still_uses(project: Path) ->
     assert not background.others_running(other)
 
 
-@pytest.mark.parametrize(("family", "host"), background.LOOPBACKS)
+@pytest.mark.parametrize(("family", "host"), ports.LOOPBACKS)
 def test_a_server_is_seen_on_either_loopback(family: socket.AddressFamily, host: str) -> None:
     try:
         server = socket.socket(family)
@@ -239,10 +240,10 @@ def test_a_server_is_seen_on_either_loopback(family: socket.AddressFamily, host:
         pytest.skip(f"no {host} on this machine")
     with server:
         server.listen()
-        assert background._listens(server.getsockname()[1])
+        assert ports.listens(server.getsockname()[1])
 
 
-def test_a_taken_port_stops_the_start_and_names_who_holds_it(
+def test_a_taken_port_stops_a_server_that_cannot_be_moved_and_names_who_holds_it(
     project: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     # Another process on the server's port would answer its readiness check (#60).
@@ -250,7 +251,7 @@ def test_a_taken_port_stops_the_start_and_names_who_holds_it(
         holder.bind(("127.0.0.1", 0))
         holder.listen()
         port = holder.getsockname()[1]
-        monkeypatch.setitem(background.DEV_PORTS, "nuxt", port)
+        monkeypatch.setitem(ports.DEV_PORTS, "nuxt", port)
         (project / "backend/Procfile.dev").write_text("nuxt: sleep 60\n", encoding="utf-8")
 
         with pytest.raises(KilnError, match=rf"port {port} \(nuxt\) is taken by "):
@@ -271,7 +272,7 @@ def test_a_port_held_by_another_worktree_points_to_its_kiln_dev_stop(
         port = holder.getsockname()[1]
         record = f'{{"pid": {os.getpid()}, "port": {port}}}'
         (other / background.STATE_DIR / "nuxt.json").write_text(record, encoding="utf-8")
-        monkeypatch.setitem(background.DEV_PORTS, "nuxt", port)
+        monkeypatch.setitem(ports.DEV_PORTS, "nuxt", port)
         (project / "backend/Procfile.dev").write_text("nuxt: sleep 60\n", encoding="utf-8")
 
         with pytest.raises(
@@ -371,3 +372,105 @@ def test_a_stack_kiln_serves_keeps_its_servers_beside_its_compose_file(adopted: 
     (adopted / "backend/manage.py").touch()
 
     assert not _compose_instead(adopted, dev_processes(adopted), lambda prompt: "c")
+
+
+@pytest.fixture
+def held_port() -> Iterator[int]:
+    """A port another process listens on, as annski's 8000 while SteamLens starts."""
+    with socket.socket() as holder:
+        holder.bind(("127.0.0.1", 0))
+        holder.listen()
+        yield holder.getsockname()[1]
+
+
+def _listening_server(label: str, port: int) -> Command:
+    script = (
+        "import socket, sys, time\n"
+        "s = socket.socket(); s.bind(('127.0.0.1', int(sys.argv[2]))); s.listen()\n"
+        "print('on', sys.argv[2], flush=True); time.sleep(60)"
+    )
+    return Command(label, "backend", (sys.executable, "-c", script, "--port", str(port)))
+
+
+def test_a_taken_port_moves_the_server_to_the_next_free_one(
+    project: Path,
+    held_port: int,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    monkeypatch.setitem(ports.DEV_PORTS, "fastapi", held_port)
+    commands = [_listening_server("fastapi", held_port)]
+
+    chosen = background.choose_ports(project, commands)
+    background.start(project, commands, chosen)
+    background.show_status(project)
+
+    port = chosen.of("fastapi")
+    assert port is not None and port > held_port
+    assert background.records(project)["fastapi"]["port"] == port
+    assert f"on {port}" in (background.state_dir(project) / "fastapi.log").read_text()
+    output = capsys.readouterr()
+    assert f"port {held_port} is taken by " in output.err + output.out
+    assert f"running  http://localhost:{port}" in output.out
+
+
+def test_a_server_is_ready_only_when_its_own_process_listens(held_port: int) -> None:
+    # Another process answering on the port is not taken for the server (#60).
+    if not Path("/proc/net/tcp").is_file():
+        pytest.skip("no /proc: anyone answering counts")
+    assert ports.serves(held_port, os.getpgid(0))
+    with subprocess.Popen(["sleep", "60"], start_new_session=True) as other:
+        assert not ports.serves(held_port, other.pid)
+        other.kill()
+
+
+@pytest.mark.parametrize(
+    ("command", "argv"),
+    [
+        (
+            Command("django", "backend", ("uv", "run", "python", "manage.py", "runserver")),
+            ("uv", "run", "python", "manage.py", "runserver", "8001"),
+        ),
+        (
+            Command("fastapi", "backend", ("uvicorn", "app:app", "--port", "8000", "--reload")),
+            ("uvicorn", "app:app", "--port", "8001", "--reload"),
+        ),
+        (Command("nuxt", "frontend", ("pnpm", "dev")), ("pnpm", "dev")),
+        (
+            Command("vite-react", "frontend", ("npm", "run", "dev")),
+            ("npm", "run", "dev", "--", "--port", "8001", "--strictPort"),
+        ),
+        (
+            Command("streamlit", "frontend", ("uv", "run", "streamlit", "run", "app.py")),
+            ("uv", "run", "streamlit", "run", "app.py", "--server.port", "8001"),
+        ),
+        (Command("django", "backend", ("sh", "-c", "python manage.py runserver")), None),
+    ],
+)
+def test_each_server_is_told_its_new_port(command: Command, argv: tuple[str, ...] | None) -> None:
+    assert ports.with_port(command, 8001) == argv
+
+
+def test_the_front_follows_the_backend_and_the_backend_the_front(tmp_path: Path) -> None:
+    # SteamLens: `process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000/api'`.
+    (tmp_path / "nuxt.config.ts").write_text(
+        "apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000/api'", encoding="utf-8"
+    )
+    moved = ports.Ports({"django": 8001, "nuxt": 3001})
+    nuxt = Command("nuxt", "frontend", ("pnpm", "dev"))
+    django = Command("django", "backend", ("uv", "run", "python", "manage.py", "runserver"))
+
+    front = moved.env(nuxt, {"SITE": "http://127.0.0.1:8000/", "HOME": "/home"}, tmp_path)
+    back = moved.env(django, {"CORS_ORIGINS": "http://localhost:3000"}, tmp_path)
+
+    assert front == {
+        "SITE": "http://127.0.0.1:8001/",
+        "NUXT_PORT": "3001",
+        "PORT": "3001",
+        "NUXT_BACKEND_URL": "http://localhost:8001",
+        "BACKEND_URL": "http://localhost:8001",
+        "API_URL": "http://localhost:8001",
+        "NUXT_PUBLIC_API_BASE": "http://localhost:8001/api",
+    }
+    assert back == {"CORS_ORIGINS": "http://localhost:3001"}
+    assert ports.Ports({"django": 8000}).env(nuxt, {}, tmp_path) == {}

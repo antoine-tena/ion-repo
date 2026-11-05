@@ -28,6 +28,7 @@ import subprocess
 from pathlib import Path
 from typing import IO
 
+from ion_repo.dev.ports import Ports
 from ion_repo.stack import (
     BACKEND_DIR,
     FRONTEND_DIR,
@@ -177,14 +178,23 @@ def read_env_file(path: Path) -> dict[str, str]:
 
 
 def spawn(
-    root: Path, command: Command, env: dict[str, str], output: IO[str] | int, *, full_stack: bool
+    root: Path,
+    command: Command,
+    env: dict[str, str],
+    output: IO[str] | int,
+    *,
+    full_stack: bool,
+    ports: Ports | None = None,
 ) -> subprocess.Popen[str]:
+    """Starts a process in its folder; on the port chosen for it, when it was moved (`ports`)."""
+    ports = ports or Ports()
     directory = root / command.directory
     dev_env = read_env_file(directory / DEV_ENV_FILE) if full_stack else {}
+    merged = {**read_env_file(directory / ENV_FILE), **dev_env, **env}
     return subprocess.Popen(
-        list(command.argv),
+        list(ports.argv(command)),
         cwd=directory,
-        env={**read_env_file(directory / ENV_FILE), **dev_env, **env},
+        env={**merged, **ports.env(command, merged, directory)},
         stdin=subprocess.DEVNULL,
         stdout=output,
         stderr=subprocess.STDOUT,
