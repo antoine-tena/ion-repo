@@ -1,6 +1,9 @@
 [project]
 name = "{{ name }}-frontend"
 version = "0.1.0"
+{%- if license | default('') %}
+license = "{{ license }}"
+{%- endif %}
 requires-python = ">=3.14"
 dependencies = [
 {%- if backend == 'data' %}
