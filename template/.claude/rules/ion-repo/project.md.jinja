@@ -75,4 +75,9 @@ No ion-repo stack: common part only (CI, hooks, rules, charter).
 ## Work
 - **[REPRODUCE-FIRST]** Reproduce a bug (failing test or command) before fixing. Check any diagnosis, yours or another session's, on a copy first.
 - **[DIRECT-LINKS]** Online step asked of a human: give its direct link, never a menu path.
+- **[STOP-BY-PID]** Stop a process by its port or PID (`ion repo dev stop`), never `pkill -f`: the pattern also matches the shell running it.
+- **[CHAINED-COMMANDS]** Chain steps that depend on each other with `&&`, `set -o pipefail` before a pipe: a failure hidden by `|` or `;` lets the commit or merge go.
+- **[RELEASE-ASKED]** A change that needs production: say a release is needed; start one only on the user's order.
+- **[VERIFY-BEFORE-CLAIM]** A figure, a price, a capability that can be checked is checked before it is stated; said from memory, it is marked as such.
+- **[CANONICAL-NAME]** Before archiving, deleting or transferring a repo: `gh repo view` its real name; an old name redirects to a repo still in use.
 - **[CLAUDE-CODE-REACH]** Before saying Claude Code cannot do something (display, behavior), check settings, themes, hooks and plugin mods (`modules` in a plugin's `hooks/hooks.json`, `on('ui.render', …)` redraws a message): a mod often can.
