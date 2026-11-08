@@ -384,9 +384,11 @@ def held_port() -> Iterator[int]:
 
 
 def _listening_server(label: str, port: int) -> Command:
+    # SO_REUSEADDR as real servers set it: the port probes leave theirs in TIME_WAIT (macOS).
     script = (
         "import socket, sys, time\n"
-        "s = socket.socket(); s.bind(('127.0.0.1', int(sys.argv[2]))); s.listen()\n"
+        "s = socket.socket(); s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)\n"
+        "s.bind(('127.0.0.1', int(sys.argv[2]))); s.listen()\n"
         "print('on', sys.argv[2], flush=True); time.sleep(60)"
     )
     return Command(label, "backend", (sys.executable, "-c", script, "--port", str(port)))

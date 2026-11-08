@@ -1,4 +1,5 @@
 import json
+from collections.abc import Mapping
 from pathlib import Path
 
 import pytest
@@ -10,7 +11,7 @@ WEBSITE = {"name": "shop", "frontend": "nuxt", "owner": "antoine-tena", "deploy"
 SETTINGS = ".claude/settings.json"
 
 
-def _project(tmp_path: Path, answers: dict[str, object], *kept: str) -> Path:
+def _project(tmp_path: Path, answers: Mapping[str, object], *kept: str) -> Path:
     project = tmp_path / "shop"
     (project / ".claude").mkdir(parents=True)
     (project / SETTINGS).write_text(
