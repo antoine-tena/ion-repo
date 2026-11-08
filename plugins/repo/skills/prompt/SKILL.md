@@ -32,14 +32,17 @@ default, the user's language when the output is for people who read it, e.g. a F
      question about it. No shouting (CAPITALS, "CRITICAL"), no padding, no role play unless it
      sets real expertise; as short as the task allows, as long as it needs.
 4. **Give it** ready to use, then one or two lines: the choices made (reader, language, what was
-   left out). For a Claude Code session, the whole command in a single `bash` block, the prompt in
-   a quoted heredoc so nothing in it needs escaping; the user pastes it and the session opens in
-   the right folder:
-   ```bash
-   cd ~/code/<path>/<repo> && claude "$(cat <<'EOF'
-   <the prompt>
-   EOF
-   )"
-   ```
+   left out). For a Claude Code session:
+   - Write the prompt with the Write tool to `/tmp/<repo>-<subject>-prompt.md`, overwritten at each
+     new version: a multi-line command pasted from the terminal comes back indented, and a heredoc
+     then never closes.
+   - Show the prompt in a code block, so the user can read it, then the one line to paste in a
+     single `bash` block, which opens the session in the right folder:
+     ```bash
+     cd ~/code/<path>/<repo> && claude --model <model> --effort <effort> "$(cat /tmp/<repo>-<subject>-prompt.md)"
+     ```
+   - `<model>` is `claude-opus-5-5` and `<effort>` is `medium` (others: `low`, `high`, `xhigh`,
+     `max`), unless the user asks for something else.
+
    Otherwise the prompt alone in a single code block, and where it goes (the `Agent` tool, a
    system prompt, another model). Don't run it unless the user asks.
