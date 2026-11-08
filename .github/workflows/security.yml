@@ -1,8 +1,9 @@
 name: Dependency security
 
 # Fails as long as a dependency known to be vulnerable stays in place: `uv audit` for each uv
-# project, `pnpm audit` for each pnpm front, OSV-Scanner for a Maven project. Upgrades go through
-# Dependabot and `ion repo update`; GitHub's security alerts stay on.
+# project, `pnpm audit` for each pnpm front, OSV-Scanner for a Maven project and every committed
+# `Cargo.lock`. Upgrades go through Dependabot and `ion repo update`; GitHub's security alerts stay
+# on.
 on:
   workflow_call:
     inputs:
@@ -77,3 +78,19 @@ jobs:
           scan-args: |-
             --recursive
             ./${{ inputs.maven }}
+
+      - name: Find the Cargo.lock files
+        id: cargo
+        if: always()
+        run: |
+          {
+            echo 'scan-args<<LOCKFILES'
+            git ls-files ':(glob)**/Cargo.lock' | sed 's/^/--lockfile=/'
+            echo LOCKFILES
+          } >> "$GITHUB_OUTPUT"
+
+      - name: OSV-Scanner (Cargo)
+        if: always() && steps.cargo.outputs.scan-args != ''
+        uses: google/osv-scanner-action/osv-scanner-action@b1d267aea5211fa648d9d442fa64b90dbdcbdd36 # v2.7.0
+        with:
+          scan-args: ${{ steps.cargo.outputs.scan-args }}

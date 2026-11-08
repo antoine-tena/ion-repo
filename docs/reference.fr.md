@@ -466,7 +466,7 @@ Python, podman pour les conteneurs (bases de test comprises), podman-compose ins
 | `maven.yml` | Backend Java : `./mvnw verify` (compilation stricte, JUnit, plancher de couverture JaCoCo) sur un JDK Temurin. |
 | `pnpm.yml` | Front pnpm (Nuxt, Next.js, Astro, Vite + React) : scripts de `package.json` dans l'ordre ; pnpm pris dans `packageManager`. |
 | `charter.yml` | Règles de `charter.toml`. |
-| `security.yml` | `uv audit`, `pnpm audit` et OSV-Scanner pour un projet Maven. |
+| `security.yml` | `uv audit`, `pnpm audit` et OSV-Scanner pour un projet Maven et chaque `Cargo.lock`. |
 | `secrets.yml` | Secrets commités (gitleaks, version figée et vérifiée). |
 | `api-contract.yml` | `openapi.json` et types du front à jour du code. |
 | `infra.yml` | Images (`podman build`), actionlint, shellcheck, Caddyfile, compose (podman-compose). |

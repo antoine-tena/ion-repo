@@ -101,6 +101,18 @@ if ! command -v osv-scanner >/dev/null; then
   exit 1
 fi
 osv-scanner --recursive ."""
+# The same audit of every committed `Cargo.lock`; a repo without one needs no scanner.
+CARGO_SCAN = """\
+lockfiles=$(git ls-files ':(glob)**/Cargo.lock')
+if [ -z "$lockfiles" ]; then
+  echo "no Cargo.lock"
+  exit 0
+fi
+if ! command -v osv-scanner >/dev/null; then
+  echo "osv-scanner is missing: mise use -g osv-scanner (or brew install osv-scanner)" >&2
+  exit 1
+fi
+osv-scanner $(printf -- '--lockfile=%s ' $lockfiles)"""
 BACK_LANE = "back"
 FRONT_LANE = "front"
 
@@ -243,6 +255,7 @@ def _security(job: Job, inputs: Mapping[str, str]) -> Plan:
         steps.append(Step("pnpm audit", audit, inputs["pnpm"], should_always_run=True))
     if inputs["maven"]:
         steps.append(Step("OSV-Scanner (Maven)", OSV_SCAN, inputs["maven"], should_always_run=True))
+    steps.append(Step("OSV-Scanner (Cargo)", CARGO_SCAN, should_always_run=True))
     return Plan(job, tuple(steps))
 
 
