@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: ion-repo#T-437.**
+**Next free: ion-repo#T-446.**
 
 ---
 
@@ -858,6 +858,39 @@ packs (ion-repo#T-69). From here, strict semver: breaking → major, `feat` → 
 
 ## 🟠 Important
 
+### ion-repo#T-441 · A worktree already used by another session is refused or redirected
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-09
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03 to 2026-11-09, three collisions (`6c14839b` 23:02, `d0318e7e` 21:44, `d92265f7` 21:45), two sessions building the same sync (`4d0974cc` 11:21)
+
+- [ ] Entering a worktree where a live session works says so and proposes a new worktree from that branch.
+- [ ] `/repo:prompt` checks that no open session or prompt already covers the same work.
+
+### ion-repo#T-440 · A tag publishes on PyPI only on an explicit setting
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-09
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03 to 2026-11-09, two releases of private tools (`904aab3d` 23:18, `e1d07955` 23:28)
+
+- [ ] A `v*` tag fires `pypi.yml` whenever the workflow exists; on private tools the session had to disable or cancel it by hand, racing a real `PYPI_TOKEN` in the environment.
+- [ ] The generated workflow publishes only when the repo's settings say so (`pypi_name` set and a published flag), and the release says which it will do before the tag.
+- [ ] PyPI checks read the JSON API: the project page answers 200 from an anti-bot page.
+
+### ion-repo#T-437 · `/repo:release`: a documented path to ship without CI, on the owner's explicit order
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-09
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03 to 2026-11-09, three releases of a production repo (10:36, 14:21, 15:58 on 2026-11-04)
+
+- [ ] `--urgent` still requires a green CI, and the rule says a red is fixed first; the owner ordered a deploy without CI three times and each session found the project's bypass by reading its deploy scripts.
+- [ ] A flag or step in the skill, only on an explicit order in the conversation, never proposed by Claude.
+- [ ] The tag message and the release note record that CI was skipped, and why.
+- [ ] The next `/repo:release` runs the skipped CI on that commit.
+
 ### ion-repo#T-421 · `/repo:release` proves the deployment started, not only the merge into `main`
 - **Type**: bug
 - **Status**: todo
@@ -1616,6 +1649,67 @@ breaks the rule silently or builds a whole Celery stack for three mails.
 
 ## 🟡 Normal
 
+### ion-repo#T-445 · Say which repos of the family have something to release
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-09
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03 to 2026-11-09, the same inventory scripted three times (`e3aae8b1` 11:45, `c8fff68e` 22:58, `af7ae299` 23:12)
+
+- [ ] One command across the repos: commits ahead of `main`, last tag, license, `pypi_name`, deployment, what blocks a release.
+
+### ion-repo#T-444 · Optional files make worktree and merge steps look failed
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-09
+- **Effort**: XS · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03 to 2026-11-09, every worktree created or merged on 2026-11-08 (`93e47f94` 10:59, 11:00, `589b4e45` 11:21)
+
+- [ ] `ls .claude/worktree-setup.sh` and `ls .claude-plugin` exit 2 when absent, so a good step reads as an error: the skills test with `[ -e ]`.
+
+### ion-repo#T-443 · `ion repo update` reports conflicts that do not exist
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-09
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03 to 2026-11-09, `12f0c83b` 23:16; the issue written then was refused by the permission check (23:29), never posted
+
+- [ ] `git grep -l --untracked "<<<<<<< before updating"` also matches a committed, unmodified file holding that text (a merge tool's constants, its tests), then conversions and dependency upgrades are skipped until `--no-template`.
+- [ ] Search only the files the template step changed; a test with such a file.
+
+### ion-repo#T-442 · Checkpoints during long visual work
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-09
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03 to 2026-11-09, about 200 files uncommitted for days (`d0318e7e`), copied by hand to a new worktree (`fadf77cd` 14:10), 37 commits then 120 conflict zones to merge (`8db3200d`)
+
+- [ ] A checkpoint commit on the branch at each validated step, squashable by `/repo:review`, so a new worktree can start from it.
+- [ ] A cross-cutting refactor is warned against while a large branch stays unmerged.
+
+### ion-repo#T-439 · See and merge several worktrees at once
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-09
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03 to 2026-11-09, six requests with a table rebuilt by hand (`23395c39` 19:40, `b1e53646` 13:04, `2d6ab461` 08:10, `d0318e7e` 18:55)
+
+- [ ] A command (not `git -C`, which an isolated session refuses; one session exported each tree to `/tmp` to compare): per worktree, commits ahead, uncommitted files, server, last activity, verdict.
+- [ ] `/repo:merge` or `/repo:cleanup` takes the chosen batch: merge these, delete those, leave the rest.
+- [ ] Nothing is ever said clean without a real `git status`: file dates gave a wrong table.
+
+### ion-repo#T-438 · `ion repo dev` sees the servers of every worktree
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-09
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03 to 2026-11-09, about twenty requests in one week (`c2c71dc7` 23:09, `782aab61` 22:18, `84c464f5` 22:35, `c32f0fa0` 17:03)
+
+- [ ] `ion repo dev status --all`: port, worktree, RAM, age, for this repo's worktrees.
+- [ ] `ion repo dev stop --others`, and `--port` to choose a port.
+- [ ] The preview and `.playwright/config` take the port of this worktree's server: a capture was taken on another worktree's server.
+- [ ] A server that stopped by itself is said so, instead of `ERR_CONNECTION_REFUSED` in the middle of a capture.
+
 ### ion-repo#T-429 · `/repo:release` readies its worktrees before pushing and deploying
 - **Type**: bug
 - **Status**: todo
@@ -1632,6 +1726,7 @@ release worktree hit the same wall at its first push.
   offline installs, the git-excluded local files the project lists), before the first push.
 - [ ] Reproduced on a copy: a release of a generated Nuxt + Django repo pushes `main` and runs
   its deploy script without a manual copy.
+- [ ] Seen again 2026-11-04 to 2026-11-08: seven commits or pushes failed for lack of `node_modules` in a release or hotfix worktree (`b9d8b288` 14:57), and after a merge adding a dependency the main tree's pre-push failed too (`three`, 19:42): reinstall there when the lockfile changed. The OpenAPI hook also needs `SECRET_KEY` (`d92265f7` 22:46).
 
 ### ion-repo#T-430 · `/repo:release`: a red CI on an older cut looks for its fixes in `develop` first
 - **Type**: improvement
@@ -1695,6 +1790,7 @@ say it where they speak of worktrees.
 - [ ] One line in the generated rules: in a worktree session, change files with Edit/Write
   (`cat >> file <<EOF` and `python - <<EOF` are refused), commands from the worktree root.
 - [ ] `ion repo update` brings it to generated repos.
+- [ ] `rtk` causes many of the refusals too (72 in a week on one repo): a glob or a variable in a command it rewrites reads as too complex to verify. The rule says so: plain paths, no glob, in an isolated session.
 
 ### ion-repo#T-434 · `version cut` checks the rehearsal repo is public before the long checks
 - **Type**: bug
@@ -1723,6 +1819,7 @@ the plugin's own install (`npx -y`), without touching the project.
 - [ ] `/nuxt:preview` works on a fresh `ion repo new` Nuxt site.
 - [ ] The skill says where the Playwright MCP may write: `.playwright/captures/` of the project; it
   refuses `/tmp` ("outside allowed roots"), which sessions tried each time.
+- [ ] Seen again: twelve `Read` calls failed on `.playwright/captures/` because the MCP writes under the main tree while the session sits in a worktree (`a23abff9` 22:06, `8b76df77` 13:23); the skill says which absolute path to read.
 
 ### ion-repo#T-424 · `/repo:merge` stops the worktree's servers and leaves it before removing it
 - **Type**: bug
