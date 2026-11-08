@@ -140,12 +140,12 @@ def render_logo() -> list[str]:
 
 
 def _cell(top: RGB | None, bottom: RGB | None) -> str:
-    if top is None and bottom is None:
-        return " "
+    if top is None:
+        if bottom is None:
+            return " "
+        return f"{ui.foreground(_color(bottom))}{LOWER_HALF}{ui.RESET}"
     if bottom is None:
         return f"{ui.foreground(_color(top))}{UPPER_HALF}{ui.RESET}"
-    if top is None:
-        return f"{ui.foreground(_color(bottom))}{LOWER_HALF}{ui.RESET}"
     if top == bottom:
         return f"{ui.foreground(_color(top))}{FULL_BLOCK}{ui.RESET}"
     return f"{ui.foreground(_color(top))}{ui.background(_color(bottom))}{UPPER_HALF}{ui.RESET}"
