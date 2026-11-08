@@ -6,6 +6,28 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 `release/vX.Y.Z` branch, rewritten before its first candidate. Names are those of their release:
 entries before v0.4.0 quote kiln's former French names.
 
+## v0.4.15 — 2026-11-08
+<!-- draft: rewrite for users, breaking changes first, then delete this line -->
+- **Breaking**: Ion repo update renames kiln-waivers.toml to waivers.toml
+- A website gets its crafts' plugins
+- Write prompts to a temp file
+- The license in each pyproject.toml
+- A license setting for public repos
+- A taken port moves the server to the next free one
+- The Ion logo in flight replaces the stone kiln
+- One question at session start for every update waiting
+- An ion-repo installed from its checkout installs itself again when its dependencies lag
+- Read waivers.toml through ion-score 0.1.2, kiln-waivers.toml while alone
+- /repo:prompt gives a Claude Code session's prompt as the command that opens it
+- Sharp pour les images d'Astro
+- /repo:skill takes the light path by default, the eval loop on request
+- Git keys ion-repo.update-check, ion-repo.branch-guard, ion-repo.rtk
+- Ion-repo's cache in ~/.cache/ion-repo
+- The machine's state in ~/.local/state/ion-repo
+- /repo:skill writes, tests and improves an Ion tool's skill
+- Previews of a whole sample session, one-hue palettes brightest when urgent
+- Machine settings in ~/.config/ion-repo, moved from kiln/ at the first read
+
 ## v0.4.14 — 2026-11-03
 - **Breaking**: the `kiln` and `kiln-cli` commands are gone: type `ion repo` (or `ion-repo`). The last `kiln-cli` already moved its testers; a late tester's `kiln-cli` tool is still replaced at session start.
 - **Breaking**: the `vps` plugin leaves ion-repo for ion-host's `host` plugin: `/vps:deploy`, `/vps:prod-logs` and `/vps:prod-dump` become `/host:deploy`, `/host:prod-logs` and `/host:prod-dump`. `ion repo update` gives a repo with `deploy=vps` ion-host's catalogue and `host@ion-host` in place of `vps@ion-repo`.
