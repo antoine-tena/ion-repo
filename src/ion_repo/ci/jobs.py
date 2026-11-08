@@ -24,6 +24,14 @@ DEFAULTS: Mapping[str, Mapping[str, str]] = {
         "mypy": "true",
         "coverage": "true",
     },
+    "python": {
+        "directory": "backend",
+        "database": "app",
+        "postgres": "",
+        "env": "",
+        "mypy": "true",
+        "coverage-floor": "80",
+    },
     "api-contract": {
         "backend": "backend",
         "frontend": "frontend",
@@ -172,6 +180,29 @@ def _django(job: Job, inputs: Mapping[str, str]) -> Plan:
     )
 
 
+def _python(job: Job, inputs: Mapping[str, str]) -> Plan:
+    directory = inputs["directory"]
+    coverage = "--cov --cov-branch --cov-report=xml --cov-report=term:skip-covered"
+    steps = [
+        Step("ruff", "uv run ruff check .\nuv run ruff format --check .", directory),
+        Step("mypy", "uv run mypy .", directory) if inputs["mypy"] == "true" else None,
+        Step(
+            "pytest",
+            f"uv run pytest {coverage} --cov-fail-under={inputs['coverage-floor']}",
+            directory,
+        ),
+    ]
+    services = Services(inputs["database"], inputs["postgres"], "") if inputs["postgres"] else None
+    return Plan(
+        job,
+        tuple(step for step in steps if step is not None),
+        lane=BACK_LANE,
+        env=parse_env(inputs["env"]),
+        services=services,
+        python_dirs=(directory,),
+    )
+
+
 def _contract(job: Job, inputs: Mapping[str, str]) -> Plan:
     steps = (
         Step("openapi.json matches the code", inputs["export"], inputs["backend"]),
@@ -221,6 +252,7 @@ def _secrets(job: Job, inputs: Mapping[str, str]) -> Plan:
 
 PLANNERS: Mapping[str, Callable[[Job, Mapping[str, str]], Plan]] = {
     "django": _django,
+    "python": _python,
     "api-contract": _contract,
     "charter": _charter,
     "pnpm": _pnpm,
