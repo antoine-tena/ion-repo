@@ -71,6 +71,24 @@ def test_reduced_motion_stops_infinite_animations(tmp_path: Path) -> None:
     assert "scroll-behavior: auto !important" in stylesheet
 
 
+@pytest.mark.parametrize("backend", ["none", "django"])
+def test_a_nuxt_front_ships_its_security_headers(tmp_path: Path, backend: str) -> None:
+    project_dir = generate(tmp_path / "demo", backend=backend, frontend="nuxt")
+
+    config = (project_dir / "frontend/nuxt.config.ts").read_text()
+    for header in (
+        "Strict-Transport-Security",
+        "X-Content-Type-Options",
+        "Referrer-Policy",
+        "Permissions-Policy",
+        "Cross-Origin-Opener-Policy",
+    ):
+        assert header in config
+    plugin = (project_dir / "frontend/server/plugins/csp-nonce.ts").read_text()
+    assert "Content-Security-Policy" in plugin
+    assert "'nonce-${nonce}'" in plugin
+
+
 def test_default_stack_is_django_and_nuxt(tmp_path: Path) -> None:
     project_dir = generate(tmp_path / "demo")
 
