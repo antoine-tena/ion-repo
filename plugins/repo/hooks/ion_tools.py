@@ -24,14 +24,23 @@ import reminders
 KEY = reminders.ION_TOOLS_KEY
 ION = "ion"
 OWN_PACKAGE = "ion-repo"
+SELF_PACKAGE = "ion-sh"
 TIMEOUT_SECONDS = 10
+USAGE_ERROR = 2
+# An `ion` older than `ion outdated` cannot say what is late; `ion upgrade` brings it up to date.
+TOO_OLD = {
+    "name": ION,
+    "package": SELF_PACKAGE,
+    "installed": "without `ion outdated`",
+    "latest": "latest release",
+}
 
 Late = list[dict[str, Any]]
 
 
 def outdated(include_own: bool = False) -> Late:
-    """The Ion tools `ion outdated` finds late, ion-repo aside unless `include_own`; empty on any
-    failure."""
+    """The Ion tools `ion outdated` finds late, ion-repo aside unless `include_own`; `ion` itself
+    when too old to have that command; empty on any other failure."""
     ion = shutil.which(ION)
     if ion is None:
         return []
@@ -43,6 +52,8 @@ def outdated(include_own: bool = False) -> Late:
             capture_output=True,
             text=True,
         )
+        if done.returncode == USAGE_ERROR and "invalid choice" in done.stderr:
+            return [TOO_OLD]
         rows = json.loads(done.stdout) if done.returncode == 0 else []
     except OSError, subprocess.TimeoutExpired, ValueError:
         return []
