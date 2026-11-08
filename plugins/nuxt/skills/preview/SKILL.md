@@ -5,8 +5,8 @@ argument-hint: "<path or URL> [account]"
 ---
 
 The `preview.mjs` script is in the plugin's `scripts/` directory, two levels above this skill
-(`${CLAUDE_SKILL_DIR}/../../scripts/preview.mjs`). It uses the project's Playwright Chromium:
-nothing to install.
+(`${CLAUDE_SKILL_DIR}/../../scripts/preview.mjs`). It uses the project's Playwright Chromium; a
+project without `@playwright/test` gets the command that adds it, to run with the user's yes.
 
 1. **The site must answer**: the base is `url=` of `.playwright/config` (otherwise
    `http://localhost:3000`). If it does not answer (`curl -s -o /dev/null -w '%{http_code}'`),

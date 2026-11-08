@@ -1,6 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from '@tailwindcss/vite'
 
+// [SECURITY-HEADERS]: on every response. The Content-Security-Policy, with its nonce per request,
+// is in server/plugins/csp-nonce.ts.
+const SECURITY_HEADERS = {
+  'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+  'Cross-Origin-Opener-Policy': 'same-origin'
+}
+
 {%- if backend in ['django', 'fastapi'] %}
 
 // Origin of the backend in development, target of the '/api/**' proxy below.
@@ -25,9 +35,10 @@ export default defineNuxtConfig({
     public: { apiBase: '/api' }
   },
 {%- endif %}
-{%- if backend in ['django', 'fastapi'] %}
   routeRules: {
-    '/api/**': { proxy: `${backendOrigin}/api/**` }
-  }
+{%- if backend in ['django', 'fastapi'] %}
+    '/api/**': { proxy: `${backendOrigin}/api/**` },
 {%- endif %}
+    '/**': { headers: SECURITY_HEADERS }
+  }
 })

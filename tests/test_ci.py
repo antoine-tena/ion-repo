@@ -19,9 +19,10 @@ from ion_repo.ci.verdict import (
     read_verdict,
     record_verdict,
 )
-from ion_repo.ci.workflow import INLINE_KIND, Job, load_jobs
+from ion_repo.ci.workflow import INLINE_KIND, Job, load_jobs, parse_job
 
 WORKFLOWS = Path(__file__).parent.parent / ".github" / "workflows"
+PYTHON_WORKFLOW = ".github/workflows/python.yml@9c8373b"
 PROJECT_CI = """
 on: push
 jobs:
@@ -105,6 +106,37 @@ def test_django_plan_keeps_the_project_inputs(tmp_path: Path) -> None:
     assert plan.services.redis == DEFAULTS["django"]["redis"]
     # `base`, its name before kiln 0.4.0, still names the database.
     assert plan.services.database == "demo"
+
+
+def test_a_python_job_is_replayed_step_for_step() -> None:
+    job = parse_job("backend", {"uses": f"antoine-tena/ion-repo/{PYTHON_WORKFLOW}"})
+    assert job.is_replayable
+    plan = plan_job(job)
+    assert [(step.label, step.directory) for step in plan.steps] == [
+        ("ruff", "backend"),
+        ("mypy", "backend"),
+        ("pytest", "backend"),
+    ]
+    assert "--cov-fail-under=80" in plan.steps[-1].command
+    assert plan.python_dirs == ("backend",)
+    assert plan.services is None
+
+
+def test_a_python_job_keeps_the_project_inputs() -> None:
+    inputs = {
+        "directory": "api",
+        "postgres": "docker.io/library/postgres:18-alpine",
+        "mypy": "false",
+        "coverage-floor": "0",
+        "env": "MODE=test",
+    }
+    plan = plan_job(Job("api", "python", inputs))
+    assert [step.label for step in plan.steps] == ["ruff", "pytest"]
+    assert "--cov-fail-under=0" in plan.steps[-1].command
+    assert plan.env == {"MODE": "test"}
+    assert plan.services is not None
+    assert plan.services.postgres == inputs["postgres"]
+    assert plan.services.database == "app"
 
 
 def test_a_maven_project_is_audited_by_osv_scanner() -> None:

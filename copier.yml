@@ -15,6 +15,7 @@ _skip_if_exists:
   - frontend/public/favicon.ico
   - frontend/public/favicon.svg
   - frontend/app/favicon.ico
+  - frontend/server/plugins/csp-nonce.ts
 
 # First question: the size of the project, four notches from tiny to large. It chooses how much
 # ceremony the project gets (rules, CI, containers), and changes later with `ion repo set size=…`.

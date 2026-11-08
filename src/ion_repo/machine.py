@@ -140,7 +140,8 @@ def run_machine(assignments: list[str]) -> None:
         previous = config
         config = apply_machine(config, assignments)
         save_config(config)
-        if config.statusline and config.statusline != previous.statusline:
+        # Named even at the same value: the command in Claude Code's settings may have gone stale.
+        if config.statusline and any(item.split("=")[0] == "statusline" for item in assignments):
             ui.note(apply_statusline_choice(config.statusline))
         if config.ai_trailers and config.ai_trailers != previous.ai_trailers:
             ui.note(apply_trailers_choice(config.ai_trailers))

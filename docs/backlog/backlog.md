@@ -1626,7 +1626,7 @@ A CLI tool's `ci.yml` calls `python.yml` (the `backend` job: pytest, mypy, ruff)
 planner in `src/kiln/ci/jobs.py`: `workflow.py` lists it as "not replayed locally yet". The
 verdict then reads `kiln ci: success` on the three other jobs, the line `green-ci.sh` trusts
 before a deployment; the release of hearth v0.1.0 went through on it, its tests replayed by hand.
-- [ ] A `python` planner in `jobs.py`, step for step with `python.yml` (its `DEFAULTS` compared
+- [x] A `python` planner in `jobs.py`, step for step with `python.yml` (its `DEFAULTS` compared
   with the file by `tests/test_ci.py`), so every kiln-generated CLI is replayed in full.
 - [ ] A job of kiln's own workflows that is not replayed makes the verdict a failure, not a
   footnote: only a third-party workflow may stay "not replayed".

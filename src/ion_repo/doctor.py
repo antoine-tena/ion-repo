@@ -6,6 +6,7 @@ changed: each fix is offered, never applied.
 """
 
 import functools
+import json
 import shutil
 import subprocess
 from dataclasses import dataclass
@@ -15,7 +16,13 @@ from pathlib import Path
 from ion_score import ui
 
 from ion_repo.charter.config import charter_path
-from ion_repo.config import UserConfig, config_path, detect_system, load_config
+from ion_repo.config import (
+    DEFAULT_STATUSLINE,
+    UserConfig,
+    config_path,
+    detect_system,
+    load_config,
+)
 from ion_repo.install import (
     BASE_PLUGIN,
     SYSTEM_HINTS,
@@ -25,6 +32,7 @@ from ion_repo.install import (
 )
 from ion_repo.shell import INSTALL_HINTS, KilnError
 from ion_repo.stack import ANSWERS_FILE, Stack, load_stack, read_answers
+from ion_repo.statusline import claude_settings_path, is_stale_statusline
 from ion_repo.versions import installed_version, latest_release, release_version, upgrade_command
 
 PROBE_TIMEOUT = 5
@@ -111,6 +119,7 @@ def workstation_findings(config: UserConfig, stack: Stack | None) -> list[Findin
         _kiln_tool(),
         _claude_plugin(),
         _config(config),
+        _statusline(config),
     ]
     return findings
 
@@ -192,6 +201,18 @@ def _config(config: UserConfig) -> Finding:
             f'code_dir = "…" in {config_path()}',
         )
     return Finding(Level.OK, "configuration", f"{config.system}, repos in {config.code_dir}")
+
+
+def _statusline(config: UserConfig) -> Finding:
+    path = claude_settings_path()
+    try:
+        settings = json.loads(path.read_text()) if path.exists() else {}
+    except ValueError:
+        return Finding(Level.WARN, "status line", f"unreadable: {path}", f"fix the JSON in {path}")
+    if is_stale_statusline(settings.get("statusLine")):
+        fix = f"ion repo set statusline={config.statusline or DEFAULT_STATUSLINE}"
+        return Finding(Level.WARN, "status line", "stale command in Claude Code's settings", fix)
+    return Finding(Level.OK, "status line", "up to date")
 
 
 # --- Current repo ---

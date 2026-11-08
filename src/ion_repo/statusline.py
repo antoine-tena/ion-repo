@@ -105,6 +105,13 @@ def moved_command(command: str) -> str:
     return with_interpreter(command)
 
 
+def is_stale_statusline(entry: object) -> bool:
+    """An ion-repo status line whose command is no longer the one `moved_command` would write."""
+    return is_kiln_statusline(entry) and entry.get("command") != moved_command(
+        str(entry.get("command"))
+    )
+
+
 def apply_statusline_choice(choice: str, settings_path: Path | None = None) -> str:
     """Aligns Claude Code's `statusLine` with the choice; returns what was done."""
     path = settings_path or claude_settings_path()
@@ -155,10 +162,9 @@ def ensure_statusline(config: UserConfig) -> UserConfig:
     current = settings.get("statusLine")
     if config.statusline is not None:
         # an ion-repo status line set before its timer gets it
-        stale = isinstance(current, dict) and current.get("command") != moved_command(
-            str(current.get("command"))
-        )
-        if is_kiln_statusline(current) and (stale or not current.get("refreshInterval")):
+        if is_kiln_statusline(current) and (
+            is_stale_statusline(current) or not current.get("refreshInterval")
+        ):
             print(apply_statusline_choice(str(config.statusline)))
         return config
     own = current is not None and not is_kiln_statusline(current)

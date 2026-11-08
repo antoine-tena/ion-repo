@@ -40,6 +40,55 @@ def generate(destination: Path, **extra_answers: object) -> Path:
     return destination
 
 
+@pytest.mark.parametrize("language", ["en", "fr"])
+def test_a_readme_without_a_stack_describes_no_app(tmp_path: Path, language: str) -> None:
+    project_dir = generate(
+        tmp_path / "demo", backend="none", frontend="none", kept=["src"], language_docs=language
+    )
+
+    readme = (project_dir / "README.md").read_text()
+    for absent in ("8000", "Ruff", "()", "ion repo dev"):
+        assert absent not in readme
+    assert "(`charter`)." in readme
+
+
+@pytest.mark.parametrize("language", ["en", "fr"])
+def test_a_readme_with_a_front_alone_names_no_python_check(tmp_path: Path, language: str) -> None:
+    project_dir = generate(
+        tmp_path / "demo", backend="none", frontend="nuxt", language_docs=language
+    )
+
+    readme = (project_dir / "README.md").read_text()
+    assert "Ruff" not in readme
+    assert "ESLint" in readme
+
+
+def test_reduced_motion_stops_infinite_animations(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", backend="none", frontend="nuxt")
+
+    stylesheet = (project_dir / "frontend/app/assets/css/main.css").read_text()
+    assert "animation-iteration-count: 1 !important" in stylesheet
+    assert "scroll-behavior: auto !important" in stylesheet
+
+
+@pytest.mark.parametrize("backend", ["none", "django"])
+def test_a_nuxt_front_ships_its_security_headers(tmp_path: Path, backend: str) -> None:
+    project_dir = generate(tmp_path / "demo", backend=backend, frontend="nuxt")
+
+    config = (project_dir / "frontend/nuxt.config.ts").read_text()
+    for header in (
+        "Strict-Transport-Security",
+        "X-Content-Type-Options",
+        "Referrer-Policy",
+        "Permissions-Policy",
+        "Cross-Origin-Opener-Policy",
+    ):
+        assert header in config
+    plugin = (project_dir / "frontend/server/plugins/csp-nonce.ts").read_text()
+    assert "Content-Security-Policy" in plugin
+    assert "'nonce-${nonce}'" in plugin
+
+
 def test_default_stack_is_django_and_nuxt(tmp_path: Path) -> None:
     project_dir = generate(tmp_path / "demo")
 

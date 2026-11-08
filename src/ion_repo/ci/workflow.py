@@ -20,7 +20,7 @@ ION_REPO_WORKFLOW = re.compile(
 CHECKOUT_ACTION = "actions/checkout@"
 # Reusable workflows of ion-repo that `ion repo ci` can replay (see jobs.py).
 REPLAYABLE_WORKFLOWS = frozenset(
-    {"django", "api-contract", "charter", "pnpm", "security", "secrets"}
+    {"django", "python", "api-contract", "charter", "pnpm", "security", "secrets"}
     | {"contrat-api", "charte", "securite"}  # names before kiln 0.4.0
 )
 INLINE_KIND = "inline"

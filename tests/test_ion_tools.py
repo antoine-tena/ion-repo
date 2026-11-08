@@ -96,6 +96,17 @@ def test_nothing_late_or_a_failing_ion_says_nothing(
     assert tools.due() == []
 
 
+def test_an_ion_without_the_outdated_command_is_offered_the_upgrade(
+    tools: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    ion = tmp_path / "bin" / "ion"
+    ion.write_text("#!/bin/sh\necho \"ion: error: invalid choice: 'outdated'\" >&2\nexit 2\n")
+    ion.chmod(ion.stat().st_mode | stat.S_IXUSR)
+    monkeypatch.setenv("PATH", f"{ion.parent}{os.pathsep}{os.environ['PATH']}")
+
+    assert [row["package"] for row in tools.outdated()] == ["ion-sh"]
+
+
 def test_without_ion_nothing_is_counted_nor_said(
     tools: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
