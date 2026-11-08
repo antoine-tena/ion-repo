@@ -21,7 +21,8 @@ from ion_repo.config import (
     save_config,
     state_dir,
 )
-from ion_repo.machine import apply_machine, only_machine_keys
+from ion_repo.doctor import Level, workstation_findings
+from ion_repo.machine import apply_machine, only_machine_keys, run_machine
 from ion_repo.shell import KilnError
 from ion_repo.statusline import (
     REFRESH_SECONDS,
@@ -233,6 +234,34 @@ def test_the_script_runs_on_ion_repos_python_not_the_paths(home: Path) -> None:
     apply_statusline_choice("plain")
 
     assert settings(home)["statusLine"]["command"].startswith(f'"{sys.executable}" ')
+
+
+STALE_COMMAND = 'python3 "$HOME/marketplaces/kiln/plugins/kiln/scripts/statusline.py"'
+
+
+def test_setting_the_same_style_repairs_a_stale_command(home: Path) -> None:
+    (home / ".claude" / "settings.json").write_text(
+        json.dumps({"statusLine": {"command": STALE_COMMAND}})
+    )
+    save_config(UserConfig(statusline="plain"))
+
+    run_machine(["statusline=plain"])
+
+    command = settings(home)["statusLine"]["command"]
+    assert command.startswith(f'"{sys.executable}" ')
+    assert "plugins/repo/" in command
+
+
+def test_the_doctor_flags_a_stale_command(home: Path) -> None:
+    (home / ".claude" / "settings.json").write_text(
+        json.dumps({"statusLine": {"command": STALE_COMMAND}})
+    )
+
+    found = workstation_findings(UserConfig(statusline="plain", system="linux"), None)
+
+    line = next(finding for finding in found if finding.label == "status line")
+    assert line.level is Level.WARN
+    assert line.fix == "ion repo set statusline=plain"
 
 
 def test_a_bare_python3_is_replaced_at_install(home: Path) -> None:
