@@ -88,7 +88,6 @@ def test_vps_enables_ion_host_s_plugin(tmp_path: Path) -> None:
     assert settings["extraKnownMarketplaces"]["ion-host"]["source"] == {
         "source": "github",
         "repo": "antoine-tena/ion-host",
-        "ref": "main",
     }
     assert settings["enabledPlugins"]["host@ion-host"] is True
     assert not any(plugin.startswith("vps@") for plugin in settings["enabledPlugins"])

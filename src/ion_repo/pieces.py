@@ -37,7 +37,7 @@ class Piece:
     tool: str  # `ion-host`: its catalogue's name too
     repo: str  # `antoine-tena/ion-host`: the catalogue on GitHub
     plugin: str  # `host`: enabled as `host@ion-host`
-    when: Mapping[str, object]  # the answers that bring it
+    when: Mapping[str, object]  # the answers that bring it; a list is any of its values
     template: str  # the tool's repo holding `copier.yml` and `piece/`; empty: skills only
 
     @property
@@ -73,7 +73,8 @@ def table(source: str) -> list[Piece]:
 def brought(piece: Piece, answers: Mapping[str, object]) -> bool:
     """The answers bring the piece; a tool's own repo never takes its piece."""
     return answers.get("name") != piece.tool and all(
-        answers.get(key) == value for key, value in piece.when.items()
+        answers.get(key) in value if isinstance(value, list) else answers.get(key) == value
+        for key, value in piece.when.items()
     )
 
 

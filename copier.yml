@@ -409,3 +409,20 @@ pieces:
       plugin: host
       when: {deploy: vps}
       template: ""
+    # A website has a look, words and images: its crafts come with it. A list is any of its values.
+    # ion-design's repo is public; the two others are private, so only the studio's repos get them.
+    - tool: ion-design
+      repo: antoine-tena/ion-design
+      plugin: design
+      when: {frontend: [nuxt, next, astro, vite-react]}
+      template: ""
+    - tool: ion-words
+      repo: antoine-tena/ion-words
+      plugin: words
+      when: {frontend: [nuxt, next, astro, vite-react], owner: [antoine-tena, emberstudio-fr]}
+      template: ""
+    - tool: ion-media
+      repo: antoine-tena/ion-media
+      plugin: media
+      when: {frontend: [nuxt, next, astro, vite-react], owner: [antoine-tena, emberstudio-fr]}
+      template: ""
