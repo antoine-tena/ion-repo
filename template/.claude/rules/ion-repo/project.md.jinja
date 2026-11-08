@@ -36,7 +36,7 @@ No ion-repo stack: common part only (CI, hooks, rules, charter).
 - `cd {{ bd }} && ./mvnw verify`: compile (warnings are errors), JUnit, coverage.
 {%- endif %}
 {%- set checks = (['ruff', 'mypy', 'pytest'] if python_dirs else []) + (['Maven'] if backend == 'java' else []) + (['ESLint', 'type checks'] if frontend in ['nuxt', 'next', 'vite-react'] else ['ESLint', '`astro check`'] if frontend == 'astro' else []) %}
-- `ion repo check`: {% if checks %}every check of the stack ({{ checks | join(', ') }}), then `charter`{% else %}`charter`, the rules of `charter.toml`{% endif %}. Run before saying a change is done.
+- `ion repo check`: {% if checks %}the stack's checks ({{ checks | join(', ') }}), then `charter`{% else %}`charter`, the rules of `charter.toml`{% endif %}, on what the branch changed, tests only with `--tests`; `--all` the whole repo, as on a `release/` branch. Run before saying a change is done.
 {%- if backend == 'django' and frontend == 'nuxt' %}
 - `ion repo contract`: after any route or schema change, exports `openapi.json`, regenerates `{{ fp }}app/types/api.d.ts`; commit both.
 {%- endif %}

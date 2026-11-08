@@ -11,6 +11,7 @@ import yaml
 from ion_repo.ci import execution
 from ion_repo.ci.execution import Workspace, run_job
 from ion_repo.ci.jobs import BACK_LANE, DEFAULTS, plan_job
+from ion_repo.ci.runner import _own_gaps
 from ion_repo.ci.verdict import (
     FAILURE_LINE,
     SUCCESS_LINE,
@@ -165,6 +166,20 @@ def test_a_job_stops_at_its_first_failed_step(tmp_path: Path) -> None:
     assert outcome == JobOutcome("demo", is_success=False, failed_step="step 1")
     assert not (tmp_path / "reached").exists()
     assert "$ false" in (tmp_path / "demo.log").read_text()
+
+
+def test_a_gap_in_an_own_workflow_fails_the_verdict() -> None:
+    outcomes = (JobOutcome("a", is_success=True),)
+    skipped = (("new", "workflow new not replayed locally yet"),)
+    started_at = datetime.now().astimezone()
+    assert not Verdict("0" * 40, outcomes, skipped, started_at, 1, ("new",)).is_success
+    assert Verdict("0" * 40, outcomes, skipped, started_at, 1).is_success
+
+
+def test_only_own_workflows_count_as_gaps() -> None:
+    jobs = [Job("own", "new", reason="not yet"), Job("other", "", reason="third party")]
+    jobs += [Job("left", "new", reason="not yet"), Job("fine", "python")]
+    assert _own_gaps(jobs, frozenset({"left"})) == ("own",)
 
 
 def test_verdict_goes_to_origin_and_comes_back(tmp_path: Path) -> None:

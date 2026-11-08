@@ -25,7 +25,7 @@ from ion_repo.ci.verdict import (
     read_verdict,
     record_verdict,
 )
-from ion_repo.ci.workflow import load_jobs
+from ion_repo.ci.workflow import Job, load_jobs
 from ion_repo.shell import KilnError, capture, require_tools
 from ion_repo.stack import PNPM_LENIENT_BUILDS
 
@@ -51,6 +51,7 @@ def run_local_ci(
         replayed = [job for job in jobs if job.is_replayable and job.name not in skipped_jobs]
         plans = [plan_job(job) for job in replayed]
         skipped = [(job.name, job.reason) for job in jobs if not job.is_replayable]
+        gaps = _own_gaps(jobs, skipped_jobs)
         skipped += [(name, "left out by --skip") for name in sorted(skipped_jobs)]
         say(
             f"ion repo ci {sha[:SHORT_SHA]}: {len(plans)} jobs replayed, {len(skipped)} not "
@@ -61,9 +62,19 @@ def run_local_ci(
         _owner_file(workspace.root).unlink(missing_ok=True)
         if not should_keep:
             _remove_workspace(root, workspace.root)
-    verdict = Verdict(sha, tuple(outcomes), tuple(skipped), started_at, time.monotonic() - started)
+    elapsed = time.monotonic() - started
+    verdict = Verdict(sha, tuple(outcomes), tuple(skipped), started_at, elapsed, gaps)
     record_verdict(root, verdict, should_push)
     return verdict
+
+
+def _own_gaps(jobs: list[Job], skipped_jobs: frozenset[str]) -> tuple[str, ...]:
+    """Jobs of ion-repo's own workflows left unplayed: only a third-party one may stay so."""
+    return tuple(
+        job.name
+        for job in jobs
+        if job.kind and not job.is_replayable and job.name not in skipped_jobs
+    )
 
 
 def show_verdict(root: Path, revision: str) -> bool:
