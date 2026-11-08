@@ -18,6 +18,7 @@ from ion_repo import migrations
 from ion_repo.backlog import add_after_update_ticket, migrate_legacy_backlog, split_backlog
 from ion_repo.check import check_project
 from ion_repo.contract import generate_api_contract
+from ion_repo.craft_plugins import add_craft_plugins
 from ion_repo.deps import lock_dependencies, sync_dependencies, update_dependencies
 from ion_repo.frozen import frozen_files, report_frozen_drift
 from ion_repo.ion_names import convert_ion_names
@@ -107,6 +108,7 @@ def update_project(
             )
             report_changes(root)
             return
+    add_craft_plugins(root, _template_source(root), frozen_files(root))
     stack = load_stack(root)
     if should_update_deps:
         update_dependencies(root, stack, allow_major=allow_major)
@@ -157,7 +159,7 @@ def is_adopted(root: Path) -> bool:
 
 def apply_template(root: Path, answers: Mapping[str, object] | None = None) -> None:
     """Template applied again (latest revision, answers possibly changed), without overwriting
-    local changes: conflicts are marked in the files. Frozen files (`kiln-waivers.toml`) and
+    local changes: conflicts are marked in the files. Frozen files (`waivers.toml`) and
     what an adopted repo keeps as its own (`kept`) are left as they are."""
     previous_answers = migrations.raw_answers(root)
     try:

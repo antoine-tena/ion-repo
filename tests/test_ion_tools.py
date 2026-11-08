@@ -53,8 +53,22 @@ def answer(tools: ModuleType, verdict: str) -> None:
     tools.reminders.save(state)
 
 
-def test_late_tools_are_offered_ion_upgrade_and_a_restart(tools: ModuleType) -> None:
-    offer = tools.context()
+def session_start(tools: ModuleType, monkeypatch: pytest.MonkeyPatch) -> ModuleType:
+    """The hook that asks the question, with the same `ion_tools`."""
+    spec = importlib.util.spec_from_file_location("session_start", HOOKS / "session_start.py")
+    assert spec is not None and spec.loader is not None
+    hook = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(hook)
+    monkeypatch.setattr(hook, "ion_tools", tools)
+    return hook
+
+
+def test_late_tools_are_offered_ion_upgrade_and_a_restart(
+    tools: ModuleType, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    hook = session_start(tools, monkeypatch)
+
+    offer = hook.update_question([hook.ion_tools_step(tools.due(), tools.reminders.load())])
 
     assert "host (7cdf9f4 → b67d486)" in offer
     assert "`ion upgrade`" in offer
@@ -62,23 +76,24 @@ def test_late_tools_are_offered_ion_upgrade_and_a_restart(tools: ModuleType) -> 
     assert "AskUserQuestion" in offer
 
 
-def test_ion_repo_keeps_its_own_question(
+def test_ion_repo_is_left_out_in_its_own_repos_only(
     tools: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     fake_ion(tmp_path, monkeypatch, json.dumps([REPO_LATE]))
 
-    assert tools.context() == ""
+    assert tools.due() == []
+    assert tools.due(include_own=True) == [REPO_LATE]
 
 
 def test_nothing_late_or_a_failing_ion_says_nothing(
     tools: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     fake_ion(tmp_path, monkeypatch, "[]")
-    assert tools.context() == ""
+    assert tools.due() == []
     fake_ion(tmp_path, monkeypatch, "not json")
-    assert tools.context() == ""
+    assert tools.due() == []
     fake_ion(tmp_path, monkeypatch, json.dumps([HOST_LATE]), code=1)
-    assert tools.context() == ""
+    assert tools.due() == []
 
 
 def test_without_ion_nothing_is_counted_nor_said(
@@ -86,34 +101,36 @@ def test_without_ion_nothing_is_counted_nor_said(
 ) -> None:
     monkeypatch.setenv("PATH", str(tmp_path / "empty"))
 
-    assert tools.context() == ""
+    assert tools.due() == []
     assert not (tmp_path / "reminders.json").exists()
 
 
-def test_a_no_waits_like_an_ion_repo_update_then_never_closes_it(tools: ModuleType) -> None:
-    assert tools.context()
+def test_a_no_waits_like_an_ion_repo_update_then_never_closes_it(
+    tools: ModuleType, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    hook = session_start(tools, monkeypatch)
+    assert tools.due()
     answer(tools, "no")
     for _ in range(4):
-        assert tools.context() == ""
-    assert tools.context()
+        assert tools.due() == []
+    assert tools.due()
     for _ in range(3):
         answer(tools, "no")
     state = tools.reminders.load()
     assert tools.reminders.is_long_refusal(state, tools.KEY)
-    assert tools.NEVER in tools.question([HOST_LATE], state)
+    assert "Never ask again for host" in hook.update_question(
+        [hook.ion_tools_step([HOST_LATE], state)]
+    )
     answer(tools, "never")
     for _ in range(60):
-        assert tools.context() == ""
+        assert tools.due() == []
 
 
 def test_the_offer_is_made_at_startup_only(
-    tools: ModuleType, monkeypatch: pytest.MonkeyPatch
+    tools: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    spec = importlib.util.spec_from_file_location("session_start", HOOKS / "session_start.py")
-    assert spec is not None and spec.loader is not None
-    hook = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(hook)
-    monkeypatch.setattr(hook, "ion_tools", tools)
+    hook = session_start(tools, monkeypatch)
 
-    assert "`ion upgrade`" in hook.ion_tools_offer({"source": "startup"})
-    assert hook.ion_tools_offer({"source": "clear"}) == ""
+    [step] = hook.ion_tools_steps({"source": "startup", "cwd": str(tmp_path)})
+    assert "repo (" in step.subject and "host (" in step.subject  # outside its repos, ion-repo too
+    assert hook.ion_tools_steps({"source": "clear", "cwd": str(tmp_path)}) == []

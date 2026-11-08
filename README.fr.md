@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/assets/kiln-logo.svg" alt="Le logo d'ion-repo : un four qui rit, en pixel art" width="168">
+<img src="docs/assets/kiln-logo.svg" alt="Le logo d'Ion : un ion en vol, en pixel art" width="270">
 
 # ion-repo
 

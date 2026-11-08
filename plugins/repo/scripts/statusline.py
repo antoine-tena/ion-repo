@@ -10,16 +10,17 @@ The style is chosen per machine (`ion repo set statusline=…`, read in `~/.conf
 - `classic-band`: the same on a band;
 - `none` and `custom`: nothing here (`ion repo set` removes or leaves Claude Code's `statusLine`).
 The names of before kiln 0.4.0 (`sobre`, `bandeau`, `classique`, `classique-fond`, `aucune`,
-`perso`) are still read. `--style <name>` forces a style, for a preview.
+`perso`) are still read. `--style <name>` forces a style; `--preview` draws it for a sample
+session, without colors, `--width` columns wide (64 by default): what a choice shows.
 
 The palette, stone and fire by default, is chosen the same way (`ion repo set
-statusline_palette=…`, twenty-nine palettes: one of a single hue each, `red`, `blue`…, the
-terminal themes, `rose`, and `chat`: the colors of the person and of Claude in the chat, after
-the theme); `--palette <name>` forces one. Each
+statusline_palette=…`, twenty-eight palettes: one of a single hue each, `red`, `blue`…, the
+terminal themes, and `chat`: the colors of the person and of Claude in the chat, after the theme;
+`rose` of before ion-repo 0.4.14 is read as `pink`); `--palette <name>` forces one. Each
 comes dark or light after Claude Code's theme (`/theme`), with color-blind safe levels under its
 `-daltonized` themes; `--theme dark|light|dark-daltonized|light-daltonized` forces it.
 `--levels` prints each palette's four levels (all well, to watch, to handle, urgent) as JSON, to
-offer a palette by its colors rather than its name.
+offer a palette by its colors rather than its name. `--help` lists the options.
 
 Colors tell importance: gray when all is well, then glow (to watch), fire (to handle), ember
 (urgent). In a repo: branch, git state, CI, prod, tasks, containers, each shown only when the
@@ -27,6 +28,7 @@ repo uses it; outside a repo (~/code): an overview of the repos below. Slow sour
 from a cache and refreshed in the background.
 """
 
+import argparse
 import contextlib
 import datetime
 import fcntl
@@ -93,30 +95,6 @@ PALETTES: dict[str, dict[str, Palette]] = {
             (190, 35, 25),
             (20, 20, 20),
             (238, 236, 230),
-        ),
-    },
-    "rose": {
-        "dark": (
-            (250, 205, 230),
-            (225, 150, 195),
-            (160, 95, 135),
-            (235, 60, 150),
-            (255, 200, 230),
-            (255, 120, 190),
-            (255, 40, 120),
-            (255, 240, 250),
-            (45, 15, 35),
-        ),
-        "light": (
-            (120, 40, 85),
-            (175, 80, 135),
-            (220, 150, 190),
-            (225, 50, 140),
-            (230, 120, 180),
-            (215, 50, 145),
-            (200, 0, 90),
-            (85, 15, 55),
-            (255, 228, 242),
         ),
     },
     "solarized": {
@@ -553,6 +531,7 @@ PALETTES: dict[str, dict[str, Palette]] = {
     },
 }
 DEFAULT_PALETTE = "stone-fire"
+LEGACY_PALETTES = {"rose": "pink"}  # before ion-repo 0.4.14
 
 
 def oklch(lightness: float, chroma: float, hue: float) -> tuple[int, int, int]:
@@ -579,9 +558,11 @@ def oklch(lightness: float, chroma: float, hue: float) -> tuple[int, int, int]:
 
 
 # Palettes of one hue (`red`, `blue`…): a gray barely tinted with it for all well, then the hue
-# paler to watch, plain to handle, deepest urgent; the levels apart by their lightness in OKLCH,
-# so they stay told apart though they share a hue. Per shade, (lightness, chroma) of strong, mid
-# and faint grays, pill, glow, fire, ember, text, band, as in PALETTES.
+# from the least to the most striking: on a dark terminal, dim and muted to watch, then lighter
+# and fuller up to urgent, the brightest (as GitHub's dark contribution graph); on a light one,
+# deeper up to urgent. The levels apart by their lightness in OKLCH, so they stay told apart though
+# they share a hue. Per shade, (lightness, chroma) of strong, mid and faint grays, pill, glow,
+# fire, ember, text, band, as in PALETTES.
 HUES = {
     "red": 25,
     "orange": 55,
@@ -598,9 +579,9 @@ HUE_RAMP = {
         (0.72, 0.012),
         (0.48, 0.012),
         (0.55, 0.14),
-        (0.90, 0.09),
-        (0.76, 0.16),
-        (0.62, 0.22),
+        (0.62, 0.09),
+        (0.73, 0.16),
+        (0.84, 0.30),
         (0.98, 0.005),
         (0.20, 0.02),
     ),
@@ -628,10 +609,14 @@ PALETTES.update(
 
 
 def machine_settings() -> dict:
-    """ion-repo's machine settings (`~/.config/kiln/config.toml`), empty when unreadable."""
+    """ion-repo's machine settings (`~/.config/ion-repo/config.toml`, `kiln/` before ion-repo
+    0.4.14), empty when unreadable."""
     base = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
+    path = os.path.join(base, "ion-repo", "config.toml")
+    if not os.path.exists(path):
+        path = os.path.join(base, "kiln", "config.toml")
     try:
-        with open(os.path.join(base, "kiln", "config.toml"), "rb") as file:
+        with open(path, "rb") as file:
             return tomllib.load(file)
     except OSError, tomllib.TOMLDecodeError:
         return {}
@@ -639,10 +624,8 @@ def machine_settings() -> dict:
 
 def chosen_palette(settings: dict) -> str:
     """`--palette <name>`, else the `statusline_palette` key of the machine settings."""
-    if "--palette" in sys.argv[1:-1]:
-        name = sys.argv[sys.argv.index("--palette") + 1]
-    else:
-        name = str(settings.get("statusline_palette", DEFAULT_PALETTE))
+    name = ARGS.palette or str(settings.get("statusline_palette", DEFAULT_PALETTE))
+    name = LEGACY_PALETTES.get(name, name)
     return name if name in PALETTES or name == CHAT_PALETTE else DEFAULT_PALETTE
 
 
@@ -694,8 +677,8 @@ def claude_theme() -> str:
     """`--theme <name>`, else Claude Code's theme (`/theme`: `light`, `light-daltonized`,
     `dark-ansi`…, a custom theme by its `base`), else `COLORFGBG` set by some terminals; dark
     otherwise."""
-    if "--theme" in sys.argv[1:-1]:
-        return sys.argv[sys.argv.index("--theme") + 1]
+    if ARGS.theme:
+        return ARGS.theme
     theme = theme_setting()
     if theme.startswith("custom:"):
         theme = str(custom_theme(theme).get("base") or "")
@@ -735,6 +718,51 @@ def chat_palette(theme: str, overrides: dict) -> dict[str, Palette]:
     return palettes
 
 
+PREVIEW_COLUMNS = 64  # width of a `--preview`: a choice's box, beside the list of options
+
+
+def options_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="ion-repo's status line: reads Claude Code's session on stdin, prints the "
+        "line. Without an option, the style and palette of `ion repo set`.",
+        allow_abbrev=False,
+    )
+    parser.add_argument(
+        "--style",
+        choices=(*STYLES, *SILENT_STYLES, *LEGACY_STYLES),
+        help="this style rather than the machine's",
+    )
+    parser.add_argument(
+        "--palette",
+        choices=(*PALETTES, CHAT_PALETTE),
+        metavar="PALETTE",
+        help="this palette rather than the machine's (one of `--levels`)",
+    )
+    parser.add_argument(
+        "--theme",
+        metavar="THEME",
+        help="this Claude Code theme rather than `/theme`'s (dark, light, dark-daltonized…)",
+    )
+    parser.add_argument(
+        "--levels",
+        action="store_true",
+        help="print each palette's four levels (all well, to watch, to handle, urgent) as JSON",
+    )
+    parser.add_argument(
+        "--preview",
+        action="store_true",
+        help="the line of a sample session, without colors nor stdin, "
+        f"{PREVIEW_COLUMNS} columns wide: what a choice shows",
+    )
+    parser.add_argument(
+        "--width", type=int, metavar="COLUMNS", help="this width rather than the terminal's"
+    )
+    parser.add_argument("--scan", metavar="ROOT", help=argparse.SUPPRESS)  # background refresh
+    return parser
+
+
+# Read here, as the theme and the palette are; an import (the tests) takes no option.
+ARGS = options_parser().parse_args(None if __name__ == "__main__" else [])
 SETTINGS = machine_settings()
 THEME = claude_theme()
 SHADE = "light" if THEME.startswith("light") else "dark"
@@ -1223,7 +1251,7 @@ def collect_repo(status: Status, cwd: str, top: str) -> str:
             sh("git", "-C", main, "notes", "--ref=ci", "show", sha).split("\n", 1)[0] if sha else ""
         )
         running = sha and os.path.isdir(
-            os.path.expanduser(f"~/.cache/kiln/ci/{os.path.basename(main)}-{sha[:12]}")
+            os.path.expanduser(f"~/.cache/ion-repo/ci/{os.path.basename(main)}-{sha[:12]}")
         )
         if running:
             status.env.append([Item("CI ⏳")])
@@ -1602,7 +1630,29 @@ def fit(groups: list[Group], painter: Painter, room: int) -> str:
             continue
         if not compact(True):
             break
-    return painter.line(groups)
+    return clip(painter.line(groups), room)
+
+
+def clip(text: str, room: int) -> str:
+    """`text` cut to `room` columns, an ellipsis in place of the rest; its color codes all kept,
+    so the colors after the cut still end where they did."""
+    if visible_width(text) <= room:
+        return text
+    kept, width, cut = [], 0, False
+    for part in re.split(r"(\033\[[0-9;]*m)", text):
+        if part.startswith("\033"):
+            kept.append(part)
+            continue
+        for ch in part:
+            if cut:
+                break
+            if width + visible_width(ch) > room - 1:
+                kept.append("…")
+                cut = True
+                break
+            kept.append(ch)
+            width += visible_width(ch)
+    return "".join(kept)
 
 
 def by_importance(groups: list[Group]) -> list[Group]:
@@ -1667,18 +1717,34 @@ def render(status: Status, style: str, columns: int) -> list[str]:
 
 def chosen_style() -> str:
     """`--style <name>`, else the `statusline` key of ion-repo's machine settings."""
-    if "--style" in sys.argv[1:-1]:
-        style = sys.argv[sys.argv.index("--style") + 1]
-    else:
-        style = str(SETTINGS.get("statusline", DEFAULT_STYLE))
+    style = ARGS.style or str(SETTINGS.get("statusline", DEFAULT_STYLE))
     return LEGACY_STYLES.get(style, style)
 
 
+def sample_session() -> dict:
+    """A session midway, for `--preview`: each part of the session's line has something to show."""
+    now = time.time()
+    return {
+        "model": {"id": "claude-opus-5-5", "display_name": "Opus 5.5"},
+        "effort": {"level": "high"},
+        "cost": {"total_cost_usd": 1.84, "total_duration_ms": 47 * 60 * 1000},
+        "context_window": {
+            "context_window_size": 1_000_000,
+            "used_percentage": 23,
+            "remaining_percentage": 77,
+        },
+        "rate_limits": {
+            "five_hour": {"used_percentage": 41, "resets_at": now + 2 * 3600},
+            "seven_day": {"used_percentage": 18, "resets_at": now + 4 * 86400},
+        },
+    }
+
+
 def main() -> None:
-    if sys.argv[1:2] == ["--scan"]:
-        scan(sys.argv[2])
+    if ARGS.scan:
+        scan(ARGS.scan)
         return
-    if sys.argv[1:2] == ["--levels"]:
+    if ARGS.levels:
         print(json.dumps({name: palette_levels(name) for name in (*PALETTES, CHAT_PALETTE)}))
         return
     style = chosen_style()
@@ -1686,6 +1752,10 @@ def main() -> None:
         return
     if style not in STYLES:
         style = DEFAULT_STYLE
+    if ARGS.preview:
+        lines = render_session(sample_session(), style, ARGS.width or PREVIEW_COLUMNS)
+        print("\n".join(re.sub(r"\x1b\[[0-9;]*m", "", line).rstrip() for line in lines))
+        return
     d = json.load(sys.stdin)
     # Antigravity CLI (agy) sends the same format, except its quotas: remaining fraction per
     # window (gemini-5h, gemini-weekly), mapped here to Claude Code's rate_limits.
@@ -1704,6 +1774,12 @@ def main() -> None:
         open(os.path.join(CACHE, "input.json"), "w", encoding="utf-8") as last_input,
     ):
         json.dump(d, last_input, indent=1)
+    columns = ARGS.width or (terminal_columns() or FALLBACK_COLUMNS) - CLAUDE_MARGIN
+    print("\n".join(render_session(d, style, columns)), end="")
+
+
+def render_session(d: dict, style: str, columns: int) -> list[str]:
+    """The lines of a session: its folder's repo (or the repos below it), then the session."""
     cwd = d.get("workspace", {}).get("current_dir") or d.get("cwd") or os.getcwd()
     if re.match(r"[A-Za-z]:[\\/]", cwd):  # called from Claude Code on Windows through wsl.exe
         cwd = sh("wslpath", "-u", cwd) or cwd
@@ -1714,8 +1790,7 @@ def main() -> None:
     if not top:
         collect_overview(status, cwd)
     collect_session(status, d, main_tree)
-    columns = (terminal_columns() or FALLBACK_COLUMNS) - CLAUDE_MARGIN
-    print("\n".join(render(status, style, columns)), end="")
+    return render(status, style, columns)
 
 
 if __name__ == "__main__":

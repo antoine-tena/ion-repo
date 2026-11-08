@@ -1,10 +1,13 @@
-"""kiln's settings for this machine: `~/.config/kiln/config.toml`.
+"""ion-repo's settings for this machine: `~/.config/ion-repo/config.toml`.
 
 The system (Linux, WSL, macOS) is asked once, at the first install; the GitHub owner, the team
 and the code directory give their defaults to `ion repo new` and `ion repo update --all`. Keys and
-values written before kiln 0.4.0 (`canal = "interne"`, `statusline = "sobre"`) are still read.
+values written before kiln 0.4.0 (`canal = "interne"`, `statusline = "sobre"`) are still read, and
+the file of before ion-repo 0.4.14 (`~/.config/kiln/config.toml`) moves to its new place at the
+first read.
 """
 
+import contextlib
 import os
 import platform
 import sys
@@ -16,7 +19,8 @@ from typing import Any
 from ion_repo import renames
 
 CONFIG_DIR_VARIABLE = "XDG_CONFIG_HOME"
-CONFIG_RELATIVE_PATH = Path("kiln") / "config.toml"
+CONFIG_RELATIVE_PATH = Path("ion-repo") / "config.toml"
+LEGACY_CONFIG_RELATIVE_PATH = Path("kiln") / "config.toml"  # before ion-repo 0.4.14
 DEFAULT_CODE_DIR = Path.home() / "code"
 
 SYSTEMS = ("linux", "wsl", "macos")
@@ -35,7 +39,7 @@ DEFAULT_STATUSLINE = "plain"
 STATUSLINE_PALETTES = (
     "stone-fire",
     "chat",
-    # One hue each, all well to urgent from its palest to its deepest.
+    # One hue each, all well to urgent from the least to the most striking.
     "red",
     "orange",
     "yellow",
@@ -44,7 +48,6 @@ STATUSLINE_PALETTES = (
     "blue",
     "violet",
     "pink",
-    "rose",
     "solarized",
     "nord",
     "dracula",
@@ -87,18 +90,58 @@ class UserConfig:
     frozen_repos: tuple[str, ...] = ()
 
 
-def config_path() -> Path:
+def config_dir() -> Path:
     base_dir = os.environ.get(CONFIG_DIR_VARIABLE)
-    return (Path(base_dir) if base_dir else Path.home() / ".config") / CONFIG_RELATIVE_PATH
+    return Path(base_dir) if base_dir else Path.home() / ".config"
+
+
+def config_path() -> Path:
+    return config_dir() / CONFIG_RELATIVE_PATH
+
+
+def move_legacy_config() -> None:
+    """The file of before ion-repo 0.4.14 moved to today's place, unless one is there already."""
+    legacy, path = config_dir() / LEGACY_CONFIG_RELATIVE_PATH, config_path()
+    if legacy.is_file() and not path.exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        legacy.replace(path)
+        with contextlib.suppress(OSError):
+            legacy.parent.rmdir()  # only when empty: the cache and state of kiln may still be there
+
+
+def state_dir() -> Path:
+    """ion-repo's state on this machine (`~/.local/state/ion-repo`), kiln's folder of before
+    ion-repo 0.4.15 moved in at the first read, but for what is there already."""
+    base = Path(os.environ.get("XDG_STATE_HOME") or Path.home() / ".local" / "state")
+    current = base / "ion-repo"
+    merge_dir(base / "kiln", current)
+    return current
+
+
+def merge_dir(legacy: Path, current: Path) -> None:
+    if not legacy.is_dir() or legacy.is_symlink():
+        return
+    current.mkdir(parents=True, exist_ok=True)
+    for entry in legacy.iterdir():
+        target = current / entry.name
+        if target.is_dir() and entry.is_dir():
+            merge_dir(entry, target)
+        elif not target.exists():
+            with contextlib.suppress(OSError):
+                entry.replace(target)
+    with contextlib.suppress(OSError):
+        legacy.rmdir()  # only when empty: a file of both places stays in the old one
 
 
 def load_config() -> UserConfig:
+    move_legacy_config()
     path = config_path()
     if not path.exists():
         return UserConfig()
     values = machine_settings(tomllib.loads(path.read_text()))
     team = values.get("team", [])
     statusline = values.get("statusline")
+    palette = values.get("statusline_palette")
     frozen = values.get("frozen_repos", [])
     return UserConfig(
         system=values.get("system"),
@@ -107,7 +150,9 @@ def load_config() -> UserConfig:
         code_dir=Path(values.get("code_dir", str(DEFAULT_CODE_DIR))).expanduser(),
         channel=renames.machine_value("channel", str(values.get("channel", PUBLIC_CHANNEL))),
         statusline=renames.machine_value("statusline", str(statusline)) if statusline else None,
-        statusline_palette=values.get("statusline_palette"),
+        statusline_palette=renames.machine_value("statusline_palette", str(palette))
+        if palette
+        else None,
         ai_trailers=values.get("ai_trailers"),
         frozen_repos=tuple(str(repo) for repo in frozen) if isinstance(frozen, list) else (),
     )

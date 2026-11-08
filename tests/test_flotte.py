@@ -161,7 +161,7 @@ def test_status_counts_waivers_across_the_fleet(
     )
     for name in ("un", "deux"):
         repo = make_repo(tmp_path / name, "https://github.com/antoine-tena/ion-repo.git")
-        (repo / "kiln-waivers.toml").write_text(waiver)
+        (repo / "waivers.toml").write_text(waiver)
 
     fleet.show_status(tmp_path)
 

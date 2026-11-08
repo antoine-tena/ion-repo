@@ -45,7 +45,7 @@ MAX_FILES_PER_COMMIT = 10
 FIRST_COMMITTED = ".pre-commit-config.yaml"
 COMMIT_ATTEMPTS = 2
 # What each repo's update wrote, one log per repo and per run: the terminal gets one line each.
-LOGS_DIR = Path.home() / ".cache" / "kiln" / "update-all"
+LOGS_DIR = Path.home() / ".cache" / "ion-repo" / "update-all"
 # Outcomes with nothing left to do by hand.
 DONE_OUTCOMES = ("merged into ", "already up to date", "rehearsal: ", "frozen")
 FROZEN_OUTCOME = "frozen (ion repo set frozen_repos): left as it is"
@@ -116,7 +116,7 @@ def require_code_dir(code_dir: Path) -> None:
     """The code folder exists: otherwise, say where to set it rather than crash."""
     if not code_dir.is_dir():
         raise KilnError(
-            f"code folder not found: {code_dir}. Set it in ~/.config/kiln/config.toml "
+            f"code folder not found: {code_dir}. Set it in ~/.config/ion-repo/config.toml "
             '(code_dir = "<folder that holds your repos>")'
         )
 
@@ -146,7 +146,7 @@ def show_status(code_dir: Path) -> None:
     if waived:
         # A rule waived in several repos probably needs another look in ion-repo.
         counts = ", ".join(f"{target} ({n})" for target, n in waived.most_common())
-        print(f"\n  Waivers (kiln-waivers.toml), by number of repos: {counts}")
+        print(f"\n  Waivers (waivers.toml), by number of repos: {counts}")
 
 
 def adopted_state(root: Path, public: str | None) -> str:

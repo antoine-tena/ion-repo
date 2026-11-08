@@ -25,7 +25,8 @@ offer, whether the person wants to change the look of the chat and the status li
 In a repo ion-repo looks after (ion-repo itself included), Claude is also told when the last CI of
 the integration branch is red, to say so before any new work.
 Never blocking: three seconds at most per network call, silent without network. A repo opts out
-with `git config kiln.update-check false` (`kiln-a-jour.desactive true` before kiln 0.4).
+with `git config ion-repo.update-check false` (`kiln.update-check false` before ion-repo 0.4.15,
+`kiln-a-jour.desactive true` before kiln 0.4).
 """
 
 import json
@@ -55,9 +56,9 @@ ION_REPO_GIT_URL = "https://github.com/antoine-tena/ion-repo"
 RELEASE_TAG = re.compile(r"^v(\d+)\.(\d+)\.(\d+)(?:-rc\.(\d+))?(?:-\d+-g[0-9a-f]+)?$")
 # A promoted release comes after all its candidates.
 FINAL = 10**9
-CONFIG_PATH = (
-    Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "kiln" / "config.toml"
-)
+CONFIG_DIR = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
+CONFIG_PATH = CONFIG_DIR / "ion-repo" / "config.toml"
+LEGACY_CONFIG_PATH = CONFIG_DIR / "kiln" / "config.toml"  # before ion-repo 0.4.14
 # Release channel that follows candidates (`interne` before kiln 0.4).
 INTERNAL_CHANNELS = ("internal", "interne")
 # The tool runs ion-repo's `develop`: the checkout of the code directory, installed editable.
@@ -117,7 +118,8 @@ def release_key(ref: str) -> tuple[int, int, int, int] | None:
 
 def machine_settings() -> dict[str, Any]:
     try:
-        return tomllib.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+        path = CONFIG_PATH if CONFIG_PATH.exists() else LEGACY_CONFIG_PATH
+        return tomllib.loads(path.read_text(encoding="utf-8"))
     except OSError, ValueError:
         return {}
 
@@ -442,8 +444,9 @@ def git_root(cwd: str) -> Path | None:
     root = run("git", "-C", cwd, "rev-parse", "--show-toplevel").stdout.strip()
     if not root:
         return None
-    if run("git", "-C", root, "config", "--get", "kiln.update-check").stdout.strip() == "false":
-        return None
+    for key in ("ion-repo.update-check", "kiln.update-check"):  # kiln's before ion-repo 0.4.15
+        if run("git", "-C", root, "config", "--get", key).stdout.strip() == "false":
+            return None
     if run("git", "-C", root, "config", "--get", "kiln-a-jour.desactive").stdout.strip() == "true":
         return None
     return Path(root)
@@ -562,49 +565,48 @@ def headlines(changes: Changes) -> list[tuple[bool, str]]:
     return [(breaking, headline(change)) for breaking, change in chosen[:HEADLINES]]
 
 
-def question_format(subject: str, current: str | None, tag: str) -> str:
-    """The question itself, the same in every session: the changes are in the notice above it."""
-    move = f"from {current} to {tag}" if current else f"to {tag}"
-    return (
-        f' The question, translated: header "ion-repo", text "Update {subject} {move}?", options '
-        f'"{YES}" (description "Now, on a branch merged right away") and "{NO}" (description '
-        '"Ask again in a few sessions"). Nothing else in the question: no list of changes, they '
-        "are already shown to the user above it."
-    )
-
-
 def tool_version(install: tuple[str, str] | None) -> str | None:
     """Release of the installed tool when it is known (installed from PyPI)."""
     return install[1] if install is not None and install[0] == "pypi" else None
 
 
-# --- Notice shown to the user above the question: the logo of ion-repo, in stone and fire ---
+# --- Notice shown to the user above the question: the Ion logo, an ion in flight ---
 
-# Copy of `LOGO` and `LOGO_COLORS` of `src/ion_repo/banner.py` (the hook runs without ion-repo
-# importable; `test_session_start.py` checks that they stay the same).
-LOGO = (
-    "..........dd..",
-    "...LLLBBB.bb..",
-    "..LWKBBWKBbb..",
-    ".LLWKBBWKBBbb.",
-    ".LBP.RR..PBbb.",
-    ".LBB.RFR..Bbb.",
-    ".BBB.FYYF.bbb.",
-    "dddddddddddddd",
+# Copy of `LOGO_PIXELS` of `src/ion_repo/banner.py` (the hook runs without ion-repo importable;
+# `test_session_start.py` checks that they stay the same): one pixel = six hex digits (red, green,
+# blue), `......` an empty one.
+LOGO_PIXELS = (
+    ".........................................................................................."
+    "..........................................................................................",
+    ".........................................................................................."
+    "................................................2c4f8c3366ac407fd53366ac..................",
+    ".........................................................................................."
+    "......382f7c3a37874548a64f5bc5546bda5d82fa558bfc53a2fe5eb8ff63c0ff5eb8ff509df428518d......",
+    "............................................................331d673f24804c2c99633ac76b47dd"
+    "7155f26d5cf36a64f5676bf66373f7607af85b82fa529ffe65c4ff79dfff86e6ff79dfff65c4ff4e9af4......",
+    "........................1e10412a1759311b6643258a4f2da35d35be6439ca6a3dd77141e37646ee744df1"
+    "7155f26d5cf36a64f5676bf66373f7607af85786fb5ab0ff74dbffa6eeffc7f4ffa6eeff74dbff5ab0ff28518d",
+    "............1c0e3d261452321b6a402386492898502da55631b15d35be6439ca6a3dd77141e37646ee744df1"
+    "7155f26d5cf36a64f5676bf66373f7607af85588fc5cb4ff79dfffb4f1ffe1f9ffb4f1ff79dfff5cb4ff2e5da1",
+    "..........................................291754331d6a3f24805330a96238c57141e37646ee744df1"
+    "7155f26d5cf36a64f5676bf66373f7607af85984fa56a9ff6dd2ff8fe9ffa6eeff8fe9ff6dd2ff56a9ff......",
+    "..............................................................................3c247a452e8f"
+    "4c39a35c4dcc5d58d7676bf66373f7607af85d82fa5193fd5cb4ff6acdff70d6ff6acdff5cb4ff3d7acb......",
+    ".........................................................................................."
+    "..............................3544893e57a8466dc84683df52a2ff56a9ff52a2ff376db6............",
+    ".........................................................................................."
+    "............................................................244882........................",
 )
-LOGO_COLORS = {
-    "L": "185;185;180",
-    "B": "140;140;135",
-    "b": "95;95;92",
-    "d": "180;75;35",
-    "W": "255;255;255",
-    "K": "25;25;25",
-    "P": "230;130;120",
-    "R": "205;50;35",
-    "F": "247;150;40",
-    "Y": "255;225;120",
-}
-STONE, FIRE, EMBER = LOGO_COLORS["B"], LOGO_COLORS["F"], LOGO_COLORS["R"]
+EMPTY, PIXEL = "......", 6
+LOGO = tuple(
+    tuple(
+        None if cell == EMPTY else tuple(bytes.fromhex(cell))
+        for cell in (row[start : start + PIXEL] for start in range(0, len(row), PIXEL))
+    )
+    for row in LOGO_PIXELS
+)
+# The text beside it: grey for the status, the cyan of the head for a change, red when breaking.
+MUTED, ACCENT, BREAKING = "140;140;135", "121;223;255", "240;90;90"
 RESET, BOLD = "\033[0m", "\033[1m"
 UPPER_HALF, LOWER_HALF, FULL_BLOCK = "▀", "▄", "█"
 LOGO_MARGIN, TEXT_GAP = "  ", "   "
@@ -615,19 +617,21 @@ def foreground(rgb: str) -> str:
 
 
 def render_logo() -> list[str]:
-    """The logo in half blocks: one character = two stacked pixels."""
+    """The logo in half blocks: one character = two stacked pixels, a 24-bit colour each."""
 
-    def cell(top: str, bottom: str) -> str:
-        if top == "." and bottom == ".":
+    def color(pixel: tuple[int, ...]) -> str:
+        return ";".join(map(str, pixel))
+
+    def cell(top: tuple[int, ...] | None, bottom: tuple[int, ...] | None) -> str:
+        if top is None and bottom is None:
             return " "
-        if bottom == ".":
-            return f"{foreground(LOGO_COLORS[top])}{UPPER_HALF}{RESET}"
-        if top == ".":
-            return f"{foreground(LOGO_COLORS[bottom])}{LOWER_HALF}{RESET}"
+        if bottom is None:
+            return f"{foreground(color(top))}{UPPER_HALF}{RESET}"
+        if top is None:
+            return f"{foreground(color(bottom))}{LOWER_HALF}{RESET}"
         if top == bottom:
-            return f"{foreground(LOGO_COLORS[top])}{FULL_BLOCK}{RESET}"
-        colors = foreground(LOGO_COLORS[top]) + f"\033[48;2;{LOGO_COLORS[bottom]}m"
-        return f"{colors}{UPPER_HALF}{RESET}"
+            return f"{foreground(color(top))}{FULL_BLOCK}{RESET}"
+        return f"{foreground(color(top))}\033[48;2;{color(bottom)}m{UPPER_HALF}{RESET}"
 
     return [
         "".join(cell(top, bottom) for top, bottom in zip(top_row, bottom_row, strict=True))
@@ -643,11 +647,11 @@ def notice(tag: str, changes: Changes) -> str:
     if "NO_COLOR" in os.environ:
         return " · ".join([f"ion-repo {tag}", status, *(text for _, text in shown)])
     text_lines = [
-        f"{BOLD}ion-repo {tag}{RESET}  {foreground(STONE)}{status}{RESET}",
+        f"{BOLD}ion-repo {tag}{RESET}  {foreground(MUTED)}{status}{RESET}",
         *(
-            f"{foreground(EMBER)}breaking{RESET} {text}"
+            f"{foreground(BREAKING)}breaking{RESET} {text}"
             if breaking
-            else f"{foreground(FIRE)}+{RESET} {text}"
+            else f"{foreground(ACCENT)}+{RESET} {text}"
             for breaking, text in shown
         ),
     ]
@@ -660,7 +664,7 @@ def notice(tag: str, changes: Changes) -> str:
     return "\n" + "\n".join(lines)
 
 
-NOTICES_DIR = reminders.STATE_DIR / "kiln" / "notices"
+NOTICES_DIR = reminders.ION_REPO_STATE / "notices"
 
 
 def save_notice(session_id: str, text: str) -> None:
@@ -675,58 +679,117 @@ def save_notice(session_id: str, text: str) -> None:
 # --- Instructions given to Claude ---
 
 
-YES, NO = "Update", "Not now"
+YES, YES_ALL, NO = "Update", "Update everything", "Not now"
 
 
 def answer_command(verdict: str, key: Path | str) -> str:
     return f'`{reminders.SCRIPT} {verdict} "{key}"`'
 
 
-def tool_question(state: reminders.State, current: str | None, tag: str) -> str:
-    choices = f'"{YES}", "{NO}"'
-    extra = question_format("ion-repo", current, tag)
+class Step(NamedTuple):
+    """One part of the update offered at startup: what is late, what updates it, its reminder."""
+
+    subject: str  # `the ion-repo tool (v0.4.12 → v0.4.13)`
+    action: str  # what Claude runs on a yes
+    key: str  # its reminder (`reminders.py`)
+    choice: str = ""  # after a long refusal, one more option…
+    choice_action: str = ""  # …and what it does
+
+
+def moved(current: str | None, tag: str) -> str:
+    return f"{current} → {tag}" if current else f"→ {tag}"
+
+
+def tool_step(state: reminders.State, current: str | None, tag: str) -> Step:
+    choice = action = ""
     if reminders.is_long_refusal(state, TOOL_KEY):
-        choices += ', "Uninstall ion-repo"'
-        extra += (
-            ' The question text starts with "You have been saying no for a while: do you want '
-            'to uninstall ion-repo?". If "Uninstall ion-repo": '
+        choice = "Uninstall ion-repo"
+        action = (
             f"`uv tool uninstall {installed_pypi_name()} && claude plugin uninstall "
-            f"repo@ion-repo`, "
-            f"then {answer_command('never', TOOL_KEY)}."
+            f"repo@ion-repo`, then {answer_command('never', TOOL_KEY)}"
         )
-    return (
-        "The ion-repo tool installed on this machine is behind the latest release. Before anything "
-        "else, at the start of your first answer, ask with the AskUserQuestion tool, in the "
-        f'user\'s language, whether to update ion-repo ({choices}).{extra} If "{YES}": skill '
-        f'`/repo:update` with the argument `tool`. If "{NO}": '
-        f"{answer_command('no', TOOL_KEY)}, without updating anything. Then resume their request."
+    return Step(
+        f"the ion-repo tool ({moved(current, tag)})",
+        "skill `/repo:update` with the argument `tool`",
+        TOOL_KEY,
+        choice,
+        action,
     )
 
 
-def repo_question(root: Path, commit: str, tag: str, state: reminders.State) -> str:
-    choices = f'"{YES}", "{NO}"'
-    extra = question_format(root.name, commit, tag)
+def repo_step(root: Path, commit: str, tag: str, state: reminders.State) -> Step:
+    choice = action = ""
     if reminders.is_long_refusal(state, str(root)):
-        choices += f', "Unlink {root.name} from ion-repo"'
-        extra += (
-            ' The question text starts with "You have been saying no for a while: do you want '
-            f'to unlink {root.name} from ion-repo?". If "Unlink": on a dedicated branch, delete '
-            f"`{ANSWERS_FILE}` (ion-repo will no longer update this repo), commit and merge with "
-            f"the "
-            f"skill `/repo:merge`, then {answer_command('never', root)}."
+        choice = f"Unlink {root.name} from ion-repo"
+        action = (
+            f"on a dedicated branch, delete `{ANSWERS_FILE}` (ion-repo will no longer update this "
+            "repo), commit and merge with the skill `/repo:merge`, then "
+            f"{answer_command('never', root)}"
         )
-    return (
-        f"ion-repo {tag} is out; {root.name} starts from {commit}. Before anything else, at the "
-        "start of your answer, ask with the AskUserQuestion tool, in the user's language, "
-        f'whether to update {root.name} ({choices}).{extra} If "{YES}": skill `/repo:update` '
-        f'with the argument `repo`. If "{NO}": {answer_command("no", root)}. Then resume their '
-        "request."
+    return Step(
+        f"the repo {root.name} ({moved(commit, tag)})",
+        "skill `/repo:update` with the argument `repo`",
+        str(root),
+        choice,
+        action,
     )
+
+
+def ion_tools_step(late: ion_tools.Late, state: reminders.State) -> Step:
+    """The other Ion tools, `ion upgrade` at once (`ion_tools.py`)."""
+    long_refusal = reminders.is_long_refusal(state, ion_tools.KEY)
+    return Step(
+        f"the Ion tools {ion_tools.described(late)}",
+        "`ion upgrade` (it can take a few minutes)",
+        ion_tools.KEY,
+        f"Never ask again for {', '.join(row['name'] for row in late)}" if long_refusal else "",
+        answer_command("never", ion_tools.KEY) if long_refusal else "",
+    )
+
+
+def step_order(step: Step) -> int:
+    return {TOOL_KEY: 0, ion_tools.KEY: 1}.get(step.key, 2)
+
+
+def update_question(steps: list[Step]) -> str:
+    """One question for everything late at startup: the tool, the other Ion tools, the repo."""
+    subjects = ", ".join(step.subject for step in steps)
+    label = YES_ALL if len(steps) > 1 else YES
+    extras = [step for step in steps if step.choice]
+    choices = ", ".join(f'"{choice}"' for choice in (label, NO, *(s.choice for s in extras)))
+    actions = "; ".join(
+        f"{number}. {step.action}, then {answer_command('yes', step.key)}"
+        for number, step in enumerate(steps, start=1)
+    )
+    refusals = ", ".join(answer_command("no", step.key) for step in steps)
+    text = (
+        f"Updates are waiting: {subjects}. Before anything else, at the start of your first "
+        "answer, ask one question with the AskUserQuestion tool, in the user's language, whether "
+        f"to update {'all of them' if len(steps) > 1 else 'it'} now ({choices}). The question, "
+        f'translated: header "Update", text "Update {subjects}?", options "{label}" (description '
+        f'"Now, one after the other, each on a branch merged right away") and "{NO}" (description '
+        '"Ask again in a few sessions"). Nothing else in the question: no list of changes, they '
+        "are already shown to the user above it."
+    )
+    if extras:
+        text += ' The question text starts with "You have been saying no for a while."'
+    text += (
+        f' If "{label}": in this order, each once the one before succeeded: {actions}; then tell '
+        "the user to restart Claude Code so the updated tools' skills and hooks load. If "
+        f'"{NO}": {refusals}, without updating anything.'
+    )
+    for step in extras:
+        text += f' If "{step.choice}": {step.choice_action}.'
+    return text + " Then resume their request."
 
 
 class Offer(NamedTuple):
-    context: str  # for Claude: the question to ask
+    steps: list[Step]  # for Claude: what to offer, in one question
     notice: str  # for the user: the logo and the update on offer
+
+    @property
+    def context(self) -> str:
+        return update_question(self.steps)
 
 
 def offer(
@@ -754,21 +817,13 @@ def offer(
     if not tool_due and not repo_due:
         return None
     notes = (changelog or fetch_changelog)(tag)
+    repo = [repo_step(root, commit, tag, state)] if repo_due else []
     if not tool_due:
         repo_version = commit if release_key(commit) else None
-        return Offer(
-            repo_question(root, commit, tag, state),
-            notice(tag, changes_between(repo_version, tag, notes)),
-        )
-    follow_up = ""
-    if repo_due:
-        follow_up = " Once the tool is updated successfully: " + repo_question(
-            root, commit, tag, state
-        )
+        return Offer(repo, notice(tag, changes_between(repo_version, tag, notes)))
     current = tool_version(install)
     return Offer(
-        tool_question(state, current, tag) + follow_up,
-        notice(tag, changes_between(current, tag, notes)),
+        [tool_step(state, current, tag), *repo], notice(tag, changes_between(current, tag, notes))
     )
 
 
@@ -805,15 +860,17 @@ def main() -> None:
         payload = json.load(sys.stdin)
     except ValueError:
         payload = {}
+    reminders.move_legacy_state()
     red, found = startup_context(payload)
+    # The tools first, ion-repo then the others: the repo's update lays their pieces too.
+    steps = sorted([*(found.steps if found else []), *ion_tools_steps(payload)], key=step_order)
     context = "\n\n".join(
         part
         for part in (
             ERROR_ORIGIN,
             SKILL_FRAME,
             red,
-            found.context if found else "",
-            ion_tools_offer(payload),
+            update_question(steps) if steps else "",
             launch_place(payload),
             other_sessions(payload),
             look_question(payload),
@@ -842,14 +899,17 @@ def paused_sessions(payload: dict[str, Any]) -> str:
         return ""
 
 
-def ion_tools_offer(payload: dict[str, Any]) -> str:
-    """At startup, in any folder: `ion upgrade` when other Ion tools are late (`ion_tools.py`)."""
+def ion_tools_steps(payload: dict[str, Any]) -> list[Step]:
+    """At startup, in any folder: the other Ion tools when late (`ion_tools.py`), ion-repo among
+    them outside its repos, where it has no question of its own."""
     try:
-        return (
-            ion_tools.context() if payload.get("source", STARTUP_SOURCE) == STARTUP_SOURCE else ""
-        )
+        if payload.get("source", STARTUP_SOURCE) != STARTUP_SOURCE:
+            return []
+        own = kiln_repo(payload.get("cwd") or ".") is None
+        late = ion_tools.due(include_own=own)
+        return [ion_tools_step(late, reminders.load())] if late else []
     except Exception:
-        return ""
+        return []
 
 
 def look_question(payload: dict[str, Any]) -> str:

@@ -5,16 +5,17 @@
 Each terminal image is the screen ion-repo prints, rendered in colour (true-colour escape codes
 turned into SVG), for a demo project and without a version number that would date it. The
 diagram is drawn in ion-repo's palette, in a light and a dark variant; the logo and the social
-preview draw the banner's ion-repo pixel by pixel. `tests/test_docs.py` fails when a committed image
+preview draw the banner's Ion logo pixel by pixel. `tests/test_docs.py` fails when a committed image
 no longer matches what this script draws: the README never shows an old screen. The animated
 demo is recorded apart (`docs/assets/kiln-new.tape`).
 """
 
 import io
+import itertools
 import os
 import re
 import tempfile
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from contextlib import redirect_stdout, suppress
 from dataclasses import dataclass
 from html import escape
@@ -94,7 +95,7 @@ def prompt(command: str) -> str:
 # --- Terminal SVG ----------------------------------------------------------------------------
 
 
-def hex_color(codes: list[str]) -> str:
+def hex_color(codes: Sequence[str] | Sequence[int]) -> str:
     return "#" + "".join(f"{int(code):02x}" for code in codes)
 
 
@@ -294,20 +295,21 @@ def flow_svg(theme: Theme) -> str:
 # --- Logo and social preview: the banner's ion-repo, one square per pixel -----------------------
 
 
-def rgb(color: ui.Color) -> str:
-    return hex_color(color.true_color.split(";"))
-
-
 def pixels(size: int, left: int = 0, top: int = 0) -> list[str]:
-    """The ion-repo of the banner (`banner.LOGO`), each run of same-coloured pixels one
+    """The Ion logo of the banner (`banner.LOGO`), each run of same-coloured pixels one
     rectangle."""
-    return [
-        f'<rect x="{left + size * found.start()}" y="{top + size * row}" '
-        f'width="{size * len(found.group())}" height="{size}" '
-        f'fill="{rgb(banner.LOGO_COLORS[found.group(1)])}"/>'
-        for row, line in enumerate(banner.LOGO)
-        for found in re.finditer(rf"([^{re.escape(banner.EMPTY)}])\1*", line)
-    ]
+    shapes = []
+    for row, line in enumerate(banner.LOGO):
+        column = 0
+        for pixel, run in itertools.groupby(line):
+            width = len(list(run))
+            if pixel is not None:
+                shapes.append(
+                    f'<rect x="{left + size * column}" y="{top + size * row}" '
+                    f'width="{size * width}" height="{size}" fill="{hex_color(pixel)}"/>'
+                )
+            column += width
+    return shapes
 
 
 def logo_svg(size: int = 12) -> str:
@@ -316,7 +318,7 @@ def logo_svg(size: int = 12) -> str:
     header = (
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
         f'viewBox="0 0 {width} {height}" shape-rendering="crispEdges" role="img" '
-        'aria-label="ion-repo: a laughing kiln in pixel art">'
+        'aria-label="ion-repo: the Ion logo, an ion in flight in pixel art">'
     )
     return "\n".join([header, *pixels(size), "</svg>", ""])
 
@@ -339,17 +341,18 @@ def social_preview_svg() -> str:
     shapes = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
         f'viewBox="0 0 {width} {height}" role="img" aria-label="{label}">',
-        '<defs><radialGradient id="glow" cx="0.25" cy="0.55" r="0.45">'
-        '<stop offset="0" stop-color="#f79628" stop-opacity="0.22"/>'
-        '<stop offset="1" stop-color="#f79628" stop-opacity="0"/></radialGradient></defs>',
+        '<defs><radialGradient id="glow" cx="0.35" cy="0.5" r="0.4">'
+        '<stop offset="0" stop-color="#79dfff" stop-opacity="0.20"/>'
+        '<stop offset="0.5" stop-color="#7646ee" stop-opacity="0.10"/>'
+        '<stop offset="1" stop-color="#7646ee" stop-opacity="0"/></radialGradient></defs>',
         f'<rect width="{width}" height="{height}" fill="{BACKGROUND}"/>',
         f'<rect width="{width}" height="{height}" fill="url(#glow)"/>',
         '<g shape-rendering="crispEdges">',
-        *pixels(26, left=96, top=232),
+        *pixels(16, left=40, top=240),
         "</g>",
         f'<text x="{left}" y="196" {text} font-size="112" font-weight="bold" '
         'fill="#f2efe8">ion-repo</text>',
-        f'<text x="{left}" y="258" {text} font-size="40" fill="#f79628">{escape(BRAND)}</text>',
+        f'<text x="{left}" y="258" {text} font-size="40" fill="#79dfff">{escape(BRAND)}</text>',
     ]
     shapes += [
         f'<text x="{left}" y="{338 + 46 * row}" {text} font-size="34" fill="#f2efe8">'

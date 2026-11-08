@@ -6,7 +6,7 @@ GitHub is asked at most once a day; after a "no", the same release is offered ag
 later. Never outside a terminal, inside Claude Code, for a tool installed from a checkout (its
 developer), or with `ION_REPO_NO_UPDATE_CHECK=1`.
 
-State: `~/.local/state/kiln/tool-update.json`.
+State: `~/.local/state/ion-repo/tool-update.json`.
 """
 
 import json
@@ -19,6 +19,7 @@ from typing import Any
 
 from ion_score import ui
 
+from ion_repo import config
 from ion_repo.shell import environment
 from ion_repo.versions import (
     install_source,
@@ -28,8 +29,7 @@ from ion_repo.versions import (
     upgrade_command,
 )
 
-STATE_DIR = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state"))
-STATE_PATH = STATE_DIR / "kiln" / "tool-update.json"
+STATE_PATH = Path("tool-update.json")  # in `config.state_dir()`
 CHECK_INTERVAL = 24 * 3600
 REFUSAL_DELAY = 7 * 24 * 3600
 OPT_OUT_VARIABLE = "ION_REPO_NO_UPDATE_CHECK"
@@ -43,7 +43,7 @@ State = dict[str, Any]
 
 def load() -> State:
     try:
-        loaded = json.loads(STATE_PATH.read_text())
+        loaded = json.loads((config.state_dir() / STATE_PATH).read_text())
     except OSError, ValueError:
         return {}
     return loaded if isinstance(loaded, dict) else {}
@@ -51,8 +51,9 @@ def load() -> State:
 
 def save(state: State) -> None:
     try:
-        STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
-        STATE_PATH.write_text(json.dumps(state, indent=2))
+        path = config.state_dir() / STATE_PATH
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(state, indent=2))
     except OSError:
         pass
 

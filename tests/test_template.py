@@ -331,6 +331,30 @@ def test_plugin_name_can_be_set(tmp_path: Path) -> None:
     assert settings["enabledPlugins"]["other@demo"] is True
 
 
+def test_a_public_repo_ships_its_license(tmp_path: Path) -> None:
+    project_dir = generate(
+        tmp_path / "demo", project_type="cli", license="MIT", created="2026-11-05"
+    )
+
+    license_text = (project_dir / "LICENSE").read_text()
+    assert license_text.startswith("MIT License\n\nCopyright (c) 2026 antoine-tena\n")
+    pyproject = tomllib.loads((project_dir / "backend/pyproject.toml").read_text())
+    assert pyproject["project"]["license"] == "MIT"
+    readme = (project_dir / "README.md").read_text()
+    assert readme.rstrip().endswith("## License\n\n[MIT](LICENSE).")
+    french = generate(tmp_path / "fr", project_type="cli", license="MIT", language="fr")
+    assert (french / "README.md").read_text().rstrip().endswith("## Licence\n\n[MIT](LICENSE).")
+
+
+def test_a_repo_without_license_ships_none(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", project_type="cli")
+
+    assert not (project_dir / "LICENSE").exists()
+    pyproject = tomllib.loads((project_dir / "backend/pyproject.toml").read_text())
+    assert "license" not in pyproject["project"]
+    assert "Licen" not in (project_dir / "README.md").read_text()
+
+
 def test_tool_project_can_be_published_on_pypi(tmp_path: Path) -> None:
     project_dir = generate(tmp_path / "demo", project_type="cli", pypi_name="keramos-demo")
 
@@ -422,6 +446,25 @@ def test_team_gets_kiln_marketplace_and_plugin(tmp_path: Path) -> None:
     }
     assert settings["extraKnownMarketplaces"]["ion-repo"]["autoUpdate"] is True
     assert settings["enabledPlugins"] == {"repo@ion-repo": True}
+
+
+def test_a_website_enables_the_plugins_of_its_crafts(tmp_path: Path) -> None:
+    settings = json.loads(
+        (generate(tmp_path / "demo", frontend="nuxt") / ".claude/settings.json").read_text()
+    )
+
+    assert settings["enabledPlugins"]["design@ion-design"] is True
+    assert settings["extraKnownMarketplaces"]["ion-design"]["source"] == {
+        "source": "github",
+        "repo": "antoine-tena/ion-design",
+    }
+
+
+def test_a_project_without_a_website_gets_no_craft_of_it(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", backend="java", frontend="none")
+
+    settings = json.loads((project_dir / ".claude/settings.json").read_text())
+    assert "design@ion-design" not in settings["enabledPlugins"]
 
 
 def test_sessions_compact_at_400k(tmp_path: Path) -> None:

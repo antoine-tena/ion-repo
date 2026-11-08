@@ -56,3 +56,34 @@ def test_a_project_without_kiln_s_names_is_left_alone(tmp_path: Path) -> None:
     (tmp_path / "README.md").write_text("Run /repo:merge.\n")
 
     assert convert_ion_names(tmp_path) == []
+
+
+def test_kiln_waivers_toml_becomes_waivers_toml_in_git(tmp_path: Path) -> None:
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    waivers = '[[waiver]]\nrule = "FILE-SIZE"\nreason = "taken as is"\n'
+    (tmp_path / "kiln-waivers.toml").write_text(waivers)
+    (tmp_path / "README.md").write_text("Waivers: `kiln-waivers.toml`.\n")
+    subprocess.run(["git", "add", "."], cwd=tmp_path, check=True)
+    subprocess.run(["git", "commit", "-qm", "waivers"], cwd=tmp_path, check=True)
+
+    done = convert_ion_names(tmp_path)
+
+    assert not (tmp_path / "kiln-waivers.toml").exists()
+    assert (tmp_path / "waivers.toml").read_text() == waivers
+    assert (tmp_path / "README.md").read_text() == "Waivers: `waivers.toml`.\n"
+    status = subprocess.run(
+        ["git", "status", "--porcelain"], cwd=tmp_path, capture_output=True, text=True, check=True
+    ).stdout
+    assert "R  kiln-waivers.toml -> waivers.toml" in status
+    assert "kiln-waivers.toml → waivers.toml" in done
+
+
+def test_kiln_waivers_toml_next_to_waivers_toml_is_left_for_charter(tmp_path: Path) -> None:
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    (tmp_path / "kiln-waivers.toml").write_text("# old\n")
+    (tmp_path / "waivers.toml").write_text("# new\n")
+
+    convert_ion_names(tmp_path)
+
+    assert (tmp_path / "kiln-waivers.toml").read_text() == "# old\n"
+    assert (tmp_path / "waivers.toml").read_text() == "# new\n"

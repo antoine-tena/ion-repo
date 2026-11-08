@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: ion-repo#T-435.**
+**Next free: ion-repo#T-437.**
 
 ---
 
@@ -1024,6 +1024,17 @@ its branch `kiln/bot`, `KILN_BOT_TOKEN`), kiln's own CI `kiln.yml`, the images
 fallback read of the old name, and `ion repo update` converts what a repo carries; the demos are
 re-recorded at the next candidate that shows them.
 Also `src/kiln/`, the `kiln` alias of `ion-repo` and `kiln_move.py`'s state in `~/.local/state/kiln/`.
+- [x] `~/.config/kiln/config.toml` → `~/.config/ion-repo/config.toml`, moved at the first read,
+  the old place read by the status line and the hooks until then (2026-11-03).
+- [x] `~/.local/state/kiln/` → `~/.local/state/ion-repo/`, merged in at the first session start or
+  command, what both hold kept in the new place (2026-11-03).
+- [x] `~/.cache/kiln/{ci,update-all,chrome-wsl}` → `~/.cache/ion-repo/`, the local CI's orphan
+  worktrees under the old place still removed (2026-11-03).
+- [x] git keys `ion-repo.update-check`, `ion-repo.branch-guard`, `ion-repo.rtk`, kiln's still read
+  (2026-11-03).
+- [x] ion-score first: `WAIVERS_FILE` (`kiln-waivers.toml`, read under both names), `kiln.report-gaps`,
+  `~/.cache/kiln/{worktrees,forge}`, `.git/kiln/fix` (ion-score 0.1.2); then `ion repo update`
+  renames the file (breaking: the generated tree) (2026-11-03).
 
 ### ion-repo#T-387 · What belongs to another craft leaves kiln for its tool
 - **Type**: task
@@ -6799,6 +6810,38 @@ nowhere else.
 - [ ] Both references and both READMEs updated in the same branch.
 
 ## ⚪ Background — long-running work, debt and ideas
+
+### ion-repo#T-436 · The Ion logo and its colours for the whole family
+- **Type**: idea
+- **Status**: todo
+- **Opened**: 2026-11-04
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: antoine, 4 November 2026, after the Ion logo in flight replaced the stone kiln
+
+The banner now shows a blue-violet ion with cyan text, but the rest still speaks stone and fire
+(`ion_score.ui`: STONE, FIRE, EMBER, GLOW): they clash beside the logo.
+- [ ] The status line's default palette (`plugins/repo/scripts/statusline.py`, `src/ion_repo/statusline.py`).
+- [ ] `ion repo doctor`, `fleet`, `release` (and the other `ui.FIRE` titles): the logo's cyan and violet, warnings and errors kept readable.
+- [ ] The palette lives in ion-score's `ui`: change it there, then here.
+- [ ] The logo for every Ion tool (antoine, 4 November 2026: today only ion-repo shows it; `ion host …`, `ion deal …` show nothing): move `LOGO_PIXELS` and `render_logo()` out of `src/ion_repo/banner.py` into ion-score's `ui`, beside the palette, so each tool draws it from one place; ion-repo's banner keeps only its text.
+- [ ] Each tool's banner (`ion`, `ion-host`, `ion-deal`, `ion-words`…) calls it: one ticket per tool in its own backlog, opened once the piece ships in ion-score.
+
+### ion-repo#T-435 · The Ion logo in flight, animated
+- **Type**: idea
+- **Status**: todo
+- **Opened**: 2026-11-04
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: antoine, 4 November 2026: the new logo (an ion in flight) kept static for now, its
+  animation set aside "to see later"
+
+A preview exists on antoine's machine (`~/.local/share/ion-logo/ion-en-vol-anime.py`): a
+particle simulation, not a filter. The ion flies in from the left and brakes to its place, a
+flash flows back along its trail, the head bobs and sheds particles that cool from white to
+violet, then the frame melts pixel for pixel into the static logo; 7 ms a frame, synchronized
+output. Only a terminal typed in by a person shows it (not Claude's Bash, not the session-start
+notice, not logs or CI), and it delays the command.
+- [ ] Decide where: the home screen alone (`ion-repo`, `--help`), about 1.2 s, any key skips it;
+  the README's logo as an animated SVG, where most people would see it.
 
 ### ion-repo#T-353 · A leaderboard of the best-scored public repos
 - **Type**: idea

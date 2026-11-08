@@ -126,7 +126,7 @@ def legacy_answers(values: Mapping[str, object]) -> dict[str, object]:
     return legacy
 
 
-# Machine settings of `~/.config/kiln/config.toml` (and keys of `kiln set` outside a repo).
+# Machine settings of `~/.config/ion-repo/config.toml` (and keys of `kiln set` outside a repo).
 MACHINE_KEYS: Mapping[str, str] = {
     "canal": "channel",
     "dossier_code": "code_dir",
@@ -144,6 +144,8 @@ MACHINE_VALUES: Mapping[str, Mapping[str, str]] = {
         "aucune": "none",
         "perso": "custom",
     },
+    # `rose`, a pink palette, gave way to the one-hue `pink` (ion-repo 0.4.14).
+    "statusline_palette": {"rose": "pink"},
 }
 
 

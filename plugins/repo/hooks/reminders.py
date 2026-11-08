@@ -9,10 +9,12 @@ is asked at the first session where it applies, then, after each "no", again aft
 is no update: asked once, then again only when what it offers grows (its version in `NEWS`),
 whatever the answer; "never" closes either for good.
 
-State: `~/.local/state/kiln/reminders.json` (`rappels.json` before kiln 0.4, migrated). Answers,
+State: `~/.local/state/ion-repo/reminders.json` (`rappels.json` before kiln 0.4, migrated; kiln's
+folder of before ion-repo 0.4.15 moved in at the first session start). Answers,
 given by Claude after the question: `python3 reminders.py yes|no|never <key>`.
 """
 
+import contextlib
 import json
 import os
 import sys
@@ -20,8 +22,10 @@ from pathlib import Path
 from typing import Any
 
 STATE_DIR = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state"))
-STATE_PATH = STATE_DIR / "kiln" / "reminders.json"
-LEGACY_STATE_PATH = STATE_DIR / "kiln" / "rappels.json"
+ION_REPO_STATE = STATE_DIR / "ion-repo"
+LEGACY_STATE_NAME = "kiln"  # before ion-repo 0.4.15
+STATE_PATH = ION_REPO_STATE / "reminders.json"
+LEGACY_STATE_PATH = ION_REPO_STATE / "rappels.json"
 SCRIPT = f'python3 "{Path(__file__).resolve()}"'
 
 ANSWERS = ("yes", "no", "never")
@@ -38,7 +42,31 @@ State = dict[str, Any]
 Question = dict[str, Any]
 
 
+def move_legacy_state() -> None:
+    """kiln's state (before ion-repo 0.4.15) moved into ion-repo's, but for what is there already.
+
+    Read at the call, not at import: a test's `XDG_STATE_HOME` is set after."""
+    base = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state"))
+    merge_dir(base / LEGACY_STATE_NAME, base / "ion-repo")
+
+
+def merge_dir(legacy: Path, current: Path) -> None:
+    if not legacy.is_dir() or legacy.is_symlink():
+        return
+    current.mkdir(parents=True, exist_ok=True)
+    for entry in legacy.iterdir():
+        target = current / entry.name
+        if target.is_dir() and entry.is_dir():
+            merge_dir(entry, target)
+        elif not target.exists():
+            with contextlib.suppress(OSError):
+                entry.replace(target)
+    with contextlib.suppress(OSError):
+        legacy.rmdir()  # only when empty: a file of both places stays in the old one
+
+
 def load() -> State:
+    move_legacy_state()
     for path in (STATE_PATH, LEGACY_STATE_PATH):
         try:
             loaded = json.loads(path.read_text())

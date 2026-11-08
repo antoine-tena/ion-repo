@@ -20,7 +20,7 @@ from pathlib import Path
 
 import copier
 import yaml  # brought by copier
-from ion_score.waivers import WAIVERS_FILE
+from ion_score.waivers import waivers_path
 
 from ion_repo import renames
 from ion_repo.shell import KilnError, capture
@@ -276,7 +276,7 @@ def carry_over_instructions(root: Path, old: Path, source: str, ref: str | None)
 
 
 def convert_waivers(root: Path) -> list[str]:
-    path = root / WAIVERS_FILE
+    path = waivers_path(root)
     if not path.exists():
         return []
     text = path.read_text()
@@ -289,7 +289,7 @@ def convert_waivers(root: Path) -> list[str]:
     if converted == text:
         return []
     path.write_text(converted)
-    return [f"{WAIVERS_FILE}: rules under their new identifiers"]
+    return [f"{path.name}: rules under their new identifiers"]
 
 
 def convert_rule_references(root: Path) -> list[str]:

@@ -4,15 +4,13 @@ Each process writes its output to `<label>.log` and its record (pid, port) to `<
 `ion-repo-dev/` of the git folder of the worktree: never committed, one set per worktree. `ion repo
 dev` returns once each server answers on its port (a process without a known port: once it has
 lasted a moment), and stops everything if one of them dies on the way, showing the end of its
-log.
+log. A server whose port is taken runs on the next free one (`ports`), kept in its record.
 """
 
 import contextlib
 import json
 import os
-import re
 import signal
-import socket
 import subprocess
 import sys
 import time
@@ -22,34 +20,18 @@ from typing import Any
 from ion_score import ui
 
 from ion_repo.dev.foreground import PREFIX_COLORS, service_prefix, stop_all
+from ion_repo.dev.ports import DEV_PORTS, PORT_TRIES, Ports, listener, listens, serves, with_port
 from ion_repo.dev.processes import runs_beyond_front, signal_group, spawn
 from ion_repo.shell import KilnError, capture, spinner_line
 from ion_repo.stack import Command, load_stack
 
 STATE_DIR = "ion-repo-dev"
-# Port each stack's server listens on, to know when it is ready and where to open it.
-DEV_PORTS = {
-    "django": 8000,
-    "fastapi": 8000,
-    "data": 2718,
-    "nuxt": 3000,
-    "next": 3000,
-    "astro": 4321,
-    "vite-react": 5173,
-    "streamlit": 8501,
-    "dash": 8050,
-}
 READY_SECONDS = 120
 # A process without a known port is taken as started once it has lasted this long.
 SETTLE_SECONDS = 3
 POLL_SECONDS = 0.25
 STOP_SECONDS = 10
 TAIL_LINES = 40
-# Both loopbacks: a server bound to `localhost` may listen on IPv6 only (Nuxt on macOS).
-LOOPBACKS = (
-    (socket.AF_INET, "127.0.0.1"),
-    (socket.AF_INET6, "::1"),
-)
 
 
 def state_dir(root: Path) -> Path:
@@ -78,27 +60,60 @@ def _others_records(root: Path) -> list[tuple[Path, dict[str, Any]]]:
     ]
 
 
-def check_ports_free(root: Path, commands: list[Command]) -> None:
-    """Refuses to start a server whose port another process holds: its readiness would be
-    answered by that process, and the URL shown would serve someone else's code (#60)."""
-    taken = [
-        (command.label, port)
-        for command in commands
-        if (port := DEV_PORTS.get(command.label)) is not None and _listens(port)
-    ]
-    if not taken:
-        return
-    lines = [f"port {port} ({label}) is taken by {_holder(root, port)}" for label, port in taken]
-    raise KilnError("\n".join(lines))
+def choose_ports(root: Path, commands: list[Command]) -> Ports:
+    """The port of each server: its stack's own, else the next free one. A server that cannot be
+    told another port is refused while its own is taken: its readiness would be answered by the
+    process holding it, and the URL shown would serve someone else's code (#60)."""
+    reserved = {
+        record["port"]
+        for _, record in _others_records(root)
+        if record.get("port") and is_alive(record["pid"])
+    }
+    chosen: dict[str, int] = {}
+    refused = []
+    for command in commands:
+        own = DEV_PORTS.get(command.label)
+        if own is None:
+            continue
+        if not _is_taken(own, reserved | set(chosen.values())):
+            chosen[command.label] = own
+            continue
+        holder = _holder(root, own)
+        if with_port(command, own) is None:
+            refused.append(f"port {own} ({command.label}) is taken by {holder}{_hint(holder)}")
+            continue
+        port = next(
+            (
+                port
+                for port in range(own + 1, own + 1 + PORT_TRIES)
+                if not _is_taken(port, reserved | set(chosen.values()))
+            ),
+            None,
+        )
+        if port is None:
+            raise KilnError(f"no free port from {own} to {own + PORT_TRIES} for {command.label}")
+        chosen[command.label] = port
+        ui.note(f"port {own} is taken by {holder}: {command.label} on http://localhost:{port}")
+    if refused:
+        raise KilnError("\n".join(refused))
+    return Ports(chosen)
+
+
+def _is_taken(port: int, reserved: set[int]) -> bool:
+    return port in reserved or listens(port)
 
 
 def _holder(root: Path, port: int) -> str:
     for git_dir, record in _others_records(root):
         if record.get("port") == port and is_alive(record["pid"]):
-            tree = _worktree_of(git_dir)
-            return f"ion repo dev of {tree}: `ion repo dev stop` there"
-    process = _listener(port)
-    return f"{process}: stop it, then ion repo dev" if process else "another process"
+            return f"ion repo dev of {_worktree_of(git_dir)}"
+    return listener(port) or "another process"
+
+
+def _hint(holder: str) -> str:
+    if holder.startswith("ion repo dev of "):
+        return ": `ion repo dev stop` there"
+    return ": stop it, then ion repo dev" if holder != "another process" else ""
 
 
 def _worktree_of(git_dir: Path) -> str:
@@ -106,18 +121,6 @@ def _worktree_of(git_dir: Path) -> str:
     if gitdir_file.is_file():
         return str(Path(gitdir_file.read_text(encoding="utf-8").strip()).parent)
     return str(git_dir.parent)
-
-
-def _listener(port: int) -> str | None:
-    """`name (pid N)` of the process listening on the port, when `ss` can tell."""
-    try:
-        listing = subprocess.run(
-            ["ss", "-Hltnp", f"sport = :{port}"], capture_output=True, text=True, check=False
-        ).stdout
-    except OSError:  # no `ss` (macOS)
-        return None
-    found = re.search(r'users:\(\("([^"]+)",pid=(\d+)', listing)
-    return f"{found[1]} (pid {found[2]})" if found else None
 
 
 def _records_in(folder: Path) -> dict[str, dict[str, Any]]:
@@ -151,7 +154,8 @@ def running(root: Path) -> list[str]:
     return [label for label, record in records(root).items() if is_alive(record["pid"])]
 
 
-def start(root: Path, commands: list[Command]) -> None:
+def start(root: Path, commands: list[Command], ports: Ports | None = None) -> None:
+    ports = ports or Ports()
     folder = state_dir(root)
     folder.mkdir(parents=True, exist_ok=True)
     for stale in folder.glob("*.json"):
@@ -161,18 +165,19 @@ def start(root: Path, commands: list[Command]) -> None:
     processes = []
     for command in commands:
         with (folder / f"{command.label}.log").open("w", encoding="utf-8") as output:
-            processes.append(spawn(root, command, env, output, full_stack=full_stack))
-        record = {"pid": processes[-1].pid, "port": DEV_PORTS.get(command.label)}
+            process = spawn(root, command, env, output, full_stack=full_stack, ports=ports)
+        processes.append(process)
+        record = {"pid": process.pid, "port": ports.of(command.label)}
         (folder / f"{command.label}.json").write_text(json.dumps(record), encoding="utf-8")
     try:
-        _wait_ready(root, commands, processes)
+        _wait_ready(root, commands, processes, ports)
     except KilnError, KeyboardInterrupt:
         stop_all(processes)
         raise
 
 
 def _wait_ready(
-    root: Path, commands: list[Command], processes: list[subprocess.Popen[str]]
+    root: Path, commands: list[Command], processes: list[subprocess.Popen[str]], ports: Ports
 ) -> None:
     started = time.monotonic()
     waiting = dict(zip([command.label for command in commands], processes, strict=True))
@@ -181,30 +186,18 @@ def _wait_ready(
             for label, process in list(waiting.items()):
                 if process.poll() is not None:
                     raise KilnError(f"{label} stopped at start:\n{_tail(root, label, 15)}")
-                if _is_ready(DEV_PORTS.get(label), time.monotonic() - started):
+                if _is_ready(ports.of(label), process.pid, time.monotonic() - started):
                     del waiting[label]
             if time.monotonic() - started > READY_SECONDS:
                 raise KilnError(f"{', '.join(waiting)} not ready after {READY_SECONDS} s")
             time.sleep(POLL_SECONDS)
 
 
-def _is_ready(port: int | None, elapsed: float) -> bool:
+def _is_ready(port: int | None, pid: int, elapsed: float) -> bool:
+    """Its own process listens on its port: not another one answering there (#60)."""
     if port is None:
         return elapsed >= SETTLE_SECONDS
-    return _listens(port)
-
-
-def _listens(port: int) -> bool:
-    return any(_answers(family, host, port) for family, host in LOOPBACKS)
-
-
-def _answers(family: socket.AddressFamily, host: str, port: int) -> bool:
-    try:
-        with socket.socket(family) as probe:
-            probe.settimeout(POLL_SECONDS)
-            return probe.connect_ex((host, port)) == 0
-    except OSError:  # no IPv6 on this machine
-        return False
+    return serves(port, pid)
 
 
 def show_status(root: Path) -> None:
@@ -217,7 +210,7 @@ def show_status(root: Path) -> None:
         port = record.get("port")
         if not is_alive(record["pid"]):
             state = ui.paint("stopped", ui.EMBER, bold=True) + f"  ion repo dev logs {label}"
-        elif port and not _listens(port):
+        elif port and not serves(port, record["pid"]):
             state = ui.paint("starting", ui.GLOW, bold=True)
         else:
             url = f"  http://localhost:{port}" if port else ""

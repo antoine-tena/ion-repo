@@ -168,6 +168,12 @@ priorité), `done.md` (ceux qui sont faits), `rejected.md` (ce qui a été refus
 3. Fusionner la branche dans `develop` (`git merge --no-ff`, puis push), sans attendre
    d'approbation : skill `/repo:merge` avec Claude Code. Une pull request reste possible pour
    demander un avis. On ne commite jamais directement sur `main` ou `develop`.
+{%- if license | default('') %}
+
+## Licence
+
+[{{ license }}](LICENSE).
+{%- endif %}
 {%- else -%}
 {%- set back_text = {'django': 'the API, in Django + Django Ninja', 'fastapi': 'the API, in FastAPI', 'data': 'the data chain (polars or NumPy, Plotly) and the marimo notebooks', 'cli': 'the command-line tool `' ~ name ~ '`', 'java': 'the Java 25 backend (Maven, no framework)'}.get(backend) -%}
 {%- set front_text = {'nuxt': 'the interface, in Nuxt 4 + Vue 3', 'next': 'the interface, in Next.js 16 + React 19', 'astro': 'the site, in Astro 7', 'vite-react': 'the interface, in Vite + React 19', 'streamlit': 'the dashboard, in Streamlit', 'dash': 'the dashboard, in Dash'}.get(frontend) -%}
@@ -331,4 +337,10 @@ priority), `done.md` (closed ones), `rejected.md` (what was turned down) and `ur
 3. Merge the branch into `develop` (`git merge --no-ff`, then push), without waiting for an
    approval: the `/repo:merge` skill with Claude Code. A pull request stays possible to ask for
    an opinion. Never commit directly on `main` or `develop`.
+{%- if license | default('') %}
+
+## License
+
+[{{ license }}](LICENSE).
+{%- endif %}
 {%- endif %}

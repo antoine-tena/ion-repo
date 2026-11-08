@@ -219,6 +219,16 @@ pypi_name:
   validator: >-
     {% if pypi_name and not (pypi_name | regex_search('^[a-z0-9]+([-_.][a-z0-9]+)*$')) %}A PyPI name: lowercase letters and digits, separated by dashes.{% endif %}
 
+# The license a repo going public ships under (SPDX ID): `LICENSE` at the root, `license` in each
+# pyproject.toml and a License section in the README. Empty, the default: no license, the repo
+# stays all rights reserved. Later with `ion repo set license=MIT`.
+license:
+  type: str
+  help: License of the repo, as an SPDX ID (empty if none). Later with `ion repo set license=MIT`.
+  default: ""
+  validator: >-
+    {% if license not in ['', 'MIT'] %}A license ion-repo writes: MIT (empty for none).{% endif %}
+
 # Java: the root package of the sources (and their directories under src/main/java).
 java_package:
   type: str
@@ -398,4 +408,21 @@ pieces:
       repo: antoine-tena/ion-host
       plugin: host
       when: {deploy: vps}
+      template: ""
+    # A website has a look, words and images: its crafts come with it. A list is any of its values.
+    # ion-design's repo is public; the two others are private, so only the studio's repos get them.
+    - tool: ion-design
+      repo: antoine-tena/ion-design
+      plugin: design
+      when: {frontend: [nuxt, next, astro, vite-react]}
+      template: ""
+    - tool: ion-words
+      repo: antoine-tena/ion-words
+      plugin: words
+      when: {frontend: [nuxt, next, astro, vite-react], owner: [antoine-tena, emberstudio-fr]}
+      template: ""
+    - tool: ion-media
+      repo: antoine-tena/ion-media
+      plugin: media
+      when: {frontend: [nuxt, next, astro, vite-react], owner: [antoine-tena, emberstudio-fr]}
       template: ""

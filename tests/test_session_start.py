@@ -113,13 +113,27 @@ def test_after_four_refusals_uninstalling_is_offered(hook: ModuleType) -> None:
     assert "Uninstall ion-repo" in hook.instructions(".", state, release=released())
 
 
-def test_repo_question_follows_a_tool_update(hook: ModuleType) -> None:
+def test_the_tool_and_the_repo_are_one_question_tool_first(hook: ModuleType) -> None:
     message = hook.instructions(".", {}, release=released())
 
-    assert "The ion-repo tool installed" in message
-    assert "Once the tool is updated successfully" in message
-    assert "`/repo:update` with the argument `tool`" in message
-    assert "`/repo:update` with the argument `repo`" in message
+    assert message.count("AskUserQuestion") == 1
+    assert '"Update everything"' in message
+    tool = message.index("`/repo:update` with the argument `tool`")
+    assert tool < message.index("`/repo:update` with the argument `repo`")
+
+
+def test_late_ion_tools_join_the_same_question(hook: ModuleType) -> None:
+    host = {"name": "host", "installed": "7cdf9f4", "latest": "b67d486"}
+    found = hook.offer(".", {}, release=released())
+    assert found is not None
+
+    steps = [*found.steps, hook.ion_tools_step([host], {})]
+    message = hook.update_question(sorted(steps, key=hook.step_order))
+
+    assert message.count("AskUserQuestion") == 1
+    tool, others = message.index("argument `tool`"), message.index("`ion upgrade`")
+    assert tool < others < message.index("argument `repo`")
+    assert "host (7cdf9f4 → b67d486)" in message
 
 
 def test_refused_tool_update_also_silences_the_repo(hook: ModuleType) -> None:
@@ -137,7 +151,8 @@ def test_up_to_date_tool_asks_only_for_the_repo(
 
     message = hook.instructions(".", {}, release=released())
 
-    assert message.startswith("ion-repo v0.4.0 is out; myapp starts from 8e6427b")
+    assert "Updates are waiting: the repo myapp (8e6427b → v0.4.0)." in message
+    assert "argument `tool`" not in message
     monkeypatch.setattr(hook, "kiln_repo", lambda cwd: (Path("myapp"), "v0.4.0"))
     assert hook.instructions(".", {}, release=released()) == ""
 
@@ -263,13 +278,15 @@ def test_promoted_versions_come_from_pypi_and_candidates_from_github(
     )
 
 
-def test_the_logo_is_the_one_of_kiln() -> None:
+def test_the_logo_is_the_one_of_the_banner(monkeypatch: pytest.MonkeyPatch) -> None:
     from ion_repo import banner
 
+    monkeypatch.setenv("COLORTERM", "truecolor")
     hook = load_hook()
 
+    assert hook.LOGO_PIXELS == banner.LOGO_PIXELS
     assert hook.LOGO == banner.LOGO
-    assert {key: color.true_color for key, color in banner.LOGO_COLORS.items()} == hook.LOGO_COLORS
+    assert hook.render_logo() == banner.render_logo()
 
 
 def test_the_user_sees_the_logo_above_the_question(
@@ -285,6 +302,7 @@ def test_the_user_sees_the_logo_above_the_question(
     assert "ion-repo v0.4.0\x1b[0m  \x1b[38;2;140;140;135mupdate available" in found.notice
     assert "breaking\x1b[0m The charter is in English" in found.notice
     assert "ion repo new asks fewer questions" in found.notice
+    assert found.notice.count("\n") == 5
 
 
 def test_without_colors_the_notice_is_one_line(
@@ -357,10 +375,9 @@ def test_fixes_come_after_the_other_changes() -> None:
 def test_the_question_only_says_the_move(hook: ModuleType) -> None:
     message = hook.instructions(".", {}, release=released())
 
-    assert '"Update ion-repo to v0.4.0?"' in message
-    assert '"Update myapp from 8e6427b to v0.4.0?"' in message
+    assert '"Update the ion-repo tool (→ v0.4.0), the repo myapp (8e6427b → v0.4.0)?"' in message
     assert "the charter is in English" not in message
-    assert 'If "Update": skill `/repo:update` with the argument `tool`' in message
+    assert 'If "Update everything": in this order' in message
 
 
 def test_breaking_changes_of_skipped_releases_only() -> None:

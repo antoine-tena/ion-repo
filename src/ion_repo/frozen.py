@@ -1,4 +1,4 @@
-"""Frozen files: the `file = "…"` waivers of `kiln-waivers.toml`. `ion repo update` and `ion repo
+"""Frozen files: the `file = "…"` waivers of `waivers.toml`. `ion repo update` and `ion repo
 set` no longer touch them; but a frozen file must not drift silently, hence the report of what
 ion-repo changed in them between two versions."""
 
@@ -9,7 +9,7 @@ from pathlib import Path
 import copier
 from copier.errors import CopierError
 from ion_score import ui
-from ion_score.waivers import WAIVERS_FILE, load
+from ion_score.waivers import load, waivers_path
 from packaging.version import Version
 
 from ion_repo import renames
@@ -46,7 +46,7 @@ def report_frozen_drift(root: Path, source: str, previous: str, current: str) ->
     if not changed:
         return
     ui.panel(
-        f"ion-repo changed frozen files ({WAIVERS_FILE}): {previous} → {current}",
+        f"ion-repo changed frozen files ({waivers_path(root).name}): {previous} → {current}",
         [f"- {f}" for f in changed]
         + ["Carry over what fits, or lift the waiver to take the template again."],
     )

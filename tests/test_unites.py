@@ -423,8 +423,20 @@ def test_logo_draws_two_pixel_rows_per_line(monkeypatch: pytest.MonkeyPatch) -> 
     monkeypatch.delenv("COLORTERM", raising=False)
     lines = render_logo()
 
-    assert len(lines) == len(LOGO) // 2
-    assert all("\033[38;5;" in line for line in lines)
+    assert len(lines) == len(LOGO) // 2 == 5
+    assert all("\033[38;5;" in line for line in lines if line.strip())
+    assert "\033[38;2;" not in "".join(lines)
+
+
+def test_logo_gives_each_pixel_its_own_colour(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("COLORTERM", "truecolor")
+
+    drawn = "".join(render_logo())
+
+    assert len(LOGO) == 10
+    assert all(len(row) == 30 for row in LOGO)
+    assert "\033[38;2;225;249;255m" in drawn or "\033[48;2;225;249;255m" in drawn
+    assert len({pixel for row in LOGO for pixel in row if pixel is not None}) > 50
 
 
 def test_project_summary_names_size_and_frameworks(tmp_path: Path) -> None:

@@ -9,11 +9,13 @@ import pytest
 HOOK = Path(__file__).resolve().parent.parent / "plugins/repo/hooks/branch_guard.py"
 
 
-def run_hook(command: str, cwd: Path, trailers: str = "never") -> subprocess.CompletedProcess[str]:
-    """The machine's `ai_trailers` in a throwaway config folder."""
-    config = cwd.parent / f"config-{trailers}"
-    (config / "kiln").mkdir(parents=True, exist_ok=True)
-    (config / "kiln/config.toml").write_text(f'ai_trailers = "{trailers}"\n')
+def run_hook(
+    command: str, cwd: Path, trailers: str = "never", folder: str = "ion-repo"
+) -> subprocess.CompletedProcess[str]:
+    """The machine's `ai_trailers` in a throwaway config folder (`kiln`: its old place)."""
+    config = cwd.parent / f"config-{trailers}-{folder}"
+    (config / folder).mkdir(parents=True, exist_ok=True)
+    (config / folder / "config.toml").write_text(f'ai_trailers = "{trailers}"\n')
     payload = json.dumps({"tool_input": {"command": command}, "cwd": str(cwd)})
     return subprocess.run(
         [sys.executable, str(HOOK)],
@@ -47,6 +49,11 @@ def test_disclosure_passes_where_the_machine_chose_it(repo: Path) -> None:
     assert run_hook(session, repo, trailers="disclose").returncode == 2
 
 
+def test_the_machine_choice_is_still_read_at_its_old_place(repo: Path) -> None:
+    disclosed = 'git commit -m "feat: x" -m "Co-Authored-By: Claude <noreply@anthropic.com>"'
+    assert run_hook(disclosed, repo, trailers="disclose", folder="kiln").returncode == 0
+
+
 def test_claude_signature_in_message_file_is_refused(repo: Path) -> None:
     (repo / "msg.txt").write_text("feat: x\n\nCo-Authored-By: Claude <noreply@anthropic.com>\n")
     assert run_hook("git commit -F msg.txt", repo).returncode == 2
@@ -69,6 +76,15 @@ def test_commit_on_develop_is_refused(tmp_path: Path) -> None:
     subprocess.run(["git", "init", "-q", "-b", "develop", str(tmp_path)], check=True)
     first_commit(tmp_path)
     assert run_hook('git commit -m "feat: x"', tmp_path).returncode == 2
+
+
+@pytest.mark.parametrize("key", ["ion-repo.branch-guard", "kiln.branch-guard"])
+def test_a_repo_that_opted_out_commits_on_develop(tmp_path: Path, key: str) -> None:
+    """Today's key, and kiln's of before ion-repo 0.4.15."""
+    subprocess.run(["git", "init", "-q", "-b", "develop", str(tmp_path)], check=True)
+    first_commit(tmp_path)
+    subprocess.run(["git", "-C", str(tmp_path), "config", key, "false"], check=True)
+    assert run_hook('git commit -m "feat: x"', tmp_path).returncode == 0
 
 
 def test_commit_that_creates_the_repo_passes_on_main(tmp_path: Path) -> None:

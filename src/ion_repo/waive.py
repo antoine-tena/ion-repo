@@ -1,4 +1,5 @@
-"""`ion repo waive`: lists, adds or renews a waiver of `kiln-waivers.toml`.
+"""`ion repo waive`: lists, adds or renews a waiver of `waivers.toml` (`kiln-waivers.toml`
+while a repo still has only that one).
 
 The command fills in what one forgets by hand (author, dates, tier) and refuses what `charter`
 would refuse. It only touches the entry concerned: the rest of the file, comments included,
@@ -13,7 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ion_score import ui
-from ion_score.waivers import NEVER, TIERS_DAYS, WAIVERS_FILE, is_waivable, max_days
+from ion_score.waivers import NEVER, TIERS_DAYS, is_waivable, max_days, waivers_path
 
 from ion_repo.charter.cli import waivers_of
 from ion_repo.charter.config import load
@@ -42,15 +43,16 @@ class WaiveRequest:
 
 def show_waivers(root: Path) -> None:
     waivers = waivers_of(_repo(root))
+    name = waivers_path(root).name
     if not (waivers.actives or waivers.errors):
-        ui.note(f"No waiver ({WAIVERS_FILE}). To add one: ion repo waive <RULE> --reason …")
+        ui.note(f"No waiver ({name}). To add one: ion repo waive <RULE> --reason …")
         return
     lines = [
         f"- {w.label}: {w.reason} ({w.by}, until {w.until or 'never'}, {w.renewals} renewal(s))"
         for w in waivers.actives
     ]
     lines += [f"! {message}" for message in waivers.warnings + waivers.errors]
-    ui.panel(f"Waivers ({WAIVERS_FILE})", lines)
+    ui.panel(f"Waivers ({name})", lines)
 
 
 def waive(root: Path, request: WaiveRequest, today: datetime.date | None = None) -> None:
@@ -62,7 +64,7 @@ def waive(root: Path, request: WaiveRequest, today: datetime.date | None = None)
         raise KilnError(f"[{request.target}] cannot be waived")
     if not is_rule and request.paths:
         raise KilnError("--paths only goes with a rule; a file is frozen whole")
-    path = root / WAIVERS_FILE
+    path = waivers_path(root)
     text = path.read_text("utf-8") if path.exists() else HEADER
     blocks = _split(text)
     key = "rule" if is_rule else "file"
@@ -105,7 +107,7 @@ def waive(root: Path, request: WaiveRequest, today: datetime.date | None = None)
         _restore(path, previous)
         raise KilnError("waiver refused: " + "; ".join(problems))
     ui.note(
-        f"{request.target} waived until {until} ({WAIVERS_FILE}, to commit). If the rule is "
+        f"{request.target} waived until {until} ({path.name}, to commit). If the rule is "
         "wrong for everyone: skill /repo:report, then --upstream <link>."
     )
 

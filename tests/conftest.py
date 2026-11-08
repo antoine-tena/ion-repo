@@ -14,8 +14,10 @@ def git_identity(tmp_path_factory: pytest.TempPathFactory, monkeypatch: pytest.M
     # Copier mirrors each remote template in a cache keyed by URL: a test never fills the
     # machine's (a fake release tag there once followed the real GitHub address).
     monkeypatch.setenv("COPIER_CACHE_DIR", str(tmp_path_factory.mktemp("copier")))
-    # The machine's ion-repo settings (`~/.config/kiln/config.toml`): a machine on the beta channel
-    # changed what the session hook offers.
+    # The machine's ion-repo settings (`~/.config/ion-repo/config.toml`): a machine on the beta
+    # channel changed what the session hook offers.
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path_factory.mktemp("config")))
+    # Its state (`~/.local/state/ion-repo`), which kiln's moves into at the first read.
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path_factory.mktemp("state")))
     # Never the machine's GitHub through gh: a test that needs settings gives its own.
     monkeypatch.setattr("ion_score.forge.ENABLED", False)

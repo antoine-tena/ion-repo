@@ -29,7 +29,8 @@ from ion_repo.ci.workflow import load_jobs
 from ion_repo.shell import KilnError, capture, require_tools
 from ion_repo.stack import PNPM_LENIENT_BUILDS
 
-CACHE_DIR = Path.home() / ".cache" / "kiln" / "ci"
+CACHE_DIR = Path.home() / ".cache" / "ion-repo" / "ci"
+LEGACY_CACHE_DIR = Path.home() / ".cache" / "kiln" / "ci"  # before ion-repo 0.4.15
 SHORT_SHA = 12
 PREPARATION = "setup"
 
@@ -105,7 +106,8 @@ def _remove_orphan_workspaces(root: Path) -> int:
     """
     orphans = [
         owner.with_suffix("")
-        for owner in CACHE_DIR.glob(f"{_repo_name(root)}-*.pid")
+        for cache in (CACHE_DIR, LEGACY_CACHE_DIR)
+        for owner in cache.glob(f"{_repo_name(root)}-*.pid")
         if not owner.read_text().strip().isdigit() or not is_alive(int(owner.read_text()))
     ]
     for worktree in orphans:

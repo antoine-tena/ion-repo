@@ -19,6 +19,7 @@ from typing import IO
 
 from ion_score import ui
 
+from ion_repo.dev.ports import Ports
 from ion_repo.dev.processes import runs_beyond_front, signal_group, spawn
 from ion_repo.stack import Command, load_stack
 
@@ -28,7 +29,7 @@ STOP_SECONDS = 10
 _print_lock = threading.Lock()
 
 
-def run_foreground(root: Path, commands: list[Command]) -> None:
+def run_foreground(root: Path, commands: list[Command], ports: Ports | None = None) -> None:
     width = max(len(command.label) for command in commands)
     env = {**os.environ, "PYTHONUNBUFFERED": "1"}
     full_stack = runs_beyond_front(commands, load_stack(root).frontend_dir)
@@ -39,7 +40,9 @@ def run_foreground(root: Path, commands: list[Command]) -> None:
     with _stopped_by_signals():
         try:
             for index, command in enumerate(commands):
-                process = spawn(root, command, env, subprocess.PIPE, full_stack=full_stack)
+                process = spawn(
+                    root, command, env, subprocess.PIPE, full_stack=full_stack, ports=ports
+                )
                 color = PREFIX_COLORS[index % len(PREFIX_COLORS)]
                 prefix = service_prefix(command.label, width, color)
                 reader = threading.Thread(target=relay, args=(process.stdout, prefix), daemon=True)

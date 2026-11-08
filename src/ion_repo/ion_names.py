@@ -6,13 +6,16 @@ cites the old ones: its rules filed in `.claude/rules/kiln/`, a skill `/kiln:mer
 `[REPORT-TO-KILN]`, a variable `KILN_PROJECT`, a plugin `kiln@kiln`, the address
 `antoine-tena/kiln`. Each is rewritten where it stands; the project's prose about "kiln" is its
 own and stays. Nothing happens in a project that has none of them, so running it again is free.
-The `vps` plugin's skills went to ion-host the same way: `/vps:deploy` is `/host:deploy`.
+The `vps` plugin's skills went to ion-host the same way: `/vps:deploy` is `/host:deploy`. The
+waivers move from `kiln-waivers.toml` to `waivers.toml` (`git mv`, history kept).
 """
 
 import re
 import subprocess
 from collections.abc import Callable
 from pathlib import Path
+
+from ion_score.waivers import LEGACY_WAIVERS_FILE, WAIVERS_FILE
 
 from ion_repo import renames
 
@@ -37,12 +40,15 @@ REWRITES: tuple[tuple[re.Pattern[str], Replacement], ...] = (
     ),
     (re.compile(re.escape(renames.LEGACY_RULES_DIR) + r"\b"), renames.RULES_DIR),
     (re.compile(r"antoine-tena/kiln(?![\w-])"), "antoine-tena/ion-repo"),
+    (re.compile(r"(?<![\w-])" + re.escape(LEGACY_WAIVERS_FILE)), WAIVERS_FILE),
 )
 
 
 def convert_ion_names(root: Path) -> list[str]:
     """Each conversion done, in one line; nothing in a project without kiln's names."""
     done = []
+    if move_waivers(root):
+        done.append(f"{LEGACY_WAIVERS_FILE} → {WAIVERS_FILE}")
     moved, left = move_rules(root)
     if moved:
         done.append(f"{renames.LEGACY_RULES_DIR}/ → {renames.RULES_DIR}/: {', '.join(moved)}")
@@ -61,6 +67,20 @@ def rewrite(text: str) -> str:
     for pattern, replacement in REWRITES:
         text = pattern.sub(replacement, text)
     return text
+
+
+def move_waivers(root: Path) -> bool:
+    """`kiln-waivers.toml` renamed, its history kept; left alone next to a `waivers.toml`, which
+    `charter` then names as an error to settle by hand."""
+    legacy, current = root / LEGACY_WAIVERS_FILE, root / WAIVERS_FILE
+    if not legacy.is_file() or current.exists():
+        return False
+    moved = subprocess.run(
+        ["git", "mv", LEGACY_WAIVERS_FILE, WAIVERS_FILE], cwd=root, capture_output=True, check=False
+    )
+    if moved.returncode:  # not tracked yet
+        legacy.rename(current)
+    return True
 
 
 def move_rules(root: Path) -> tuple[list[str], list[str]]:

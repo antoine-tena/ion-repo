@@ -56,8 +56,8 @@ def test_dry_run_shows_the_session_count_and_starts_nothing(
     eval_skills.eval_skills(ROOT, ["pause"], dry_run=True)
 
     out = capsys.readouterr().out
-    assert "Cases: none-for-loop, none-rename, pause" in out
-    assert "Sessions: 3 opus" in out
+    assert "Cases: none-for-loop, none-rename, none-skill-question, pause" in out
+    assert "Sessions: 4 opus" in out
     assert no_launch == []
 
 
