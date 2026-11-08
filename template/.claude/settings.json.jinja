@@ -38,13 +38,15 @@
     }
 {%- set own_plugin = (claude_plugin | default(false)) and owner %}
 {#- The other Ion tools whose piece the answers bring (`pieces` in ion-repo's `copier.yml`): each
-    catalogue, on GitHub at `main` too, brings its plugin (`deploy=vps`: ion-host's `host`, to
-    deploy, read production logs, copy its database). #}
+    catalogue brings its plugin (`deploy=vps`: ion-host's `host`; a website: `design`, and in the
+    studio's repos `words` and `media`). No `ref`: their catalogues live on their default branch,
+    and `main` has none yet or the old one, which Claude Code would register under its old name. #}
 {%- set tools = namespace(brought=[], plugins=[]) %}
 {%- for piece in pieces %}
 {%- set piece_on = namespace(on=name != piece.tool) %}
 {%- for key, value in piece.when.items() %}
-{%- if _copier_answers.get(key) != value %}{% set piece_on.on = false %}{% endif %}
+{%- set is_any_of = value is sequence and value is not string %}
+{%- if (is_any_of and _copier_answers.get(key) not in value) or (not is_any_of and _copier_answers.get(key) != value) %}{% set piece_on.on = false %}{% endif %}
 {%- endfor %}
 {%- if piece_on.on %}
 {%- set tools.brought = tools.brought + [piece] %}
@@ -55,20 +57,19 @@
     "{{ piece.tool }}": {
       "source": {
         "source": "github",
-        "repo": "{{ piece.repo }}",
-        "ref": "main"
+        "repo": "{{ piece.repo }}"
       },
       "autoUpdate": true
     }
 {%- endfor %}
-{#- The repo's own plugin, from its GitHub repo at `main` too: its sessions use the released
-    plugin, the one every other repo gets. #}
+{#- The repo's own plugin, from its GitHub repo at `main`: its sessions use the released plugin,
+    the one every other repo gets. An Ion tool's catalogue is not on `main` yet: its default branch. #}
 {%- if own_plugin %},
     "{{ name }}": {
       "source": {
         "source": "github",
-        "repo": "{{ owner }}/{{ name }}",
-        "ref": "main"
+        "repo": "{{ owner }}/{{ name }}"{% if not name.startswith('ion-') %},
+        "ref": "main"{% endif %}
       },
       "autoUpdate": true
     }

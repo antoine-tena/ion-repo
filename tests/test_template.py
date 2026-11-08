@@ -448,6 +448,25 @@ def test_team_gets_kiln_marketplace_and_plugin(tmp_path: Path) -> None:
     assert settings["enabledPlugins"] == {"repo@ion-repo": True}
 
 
+def test_a_website_enables_the_plugins_of_its_crafts(tmp_path: Path) -> None:
+    settings = json.loads(
+        (generate(tmp_path / "demo", frontend="nuxt") / ".claude/settings.json").read_text()
+    )
+
+    assert settings["enabledPlugins"]["design@ion-design"] is True
+    assert settings["extraKnownMarketplaces"]["ion-design"]["source"] == {
+        "source": "github",
+        "repo": "antoine-tena/ion-design",
+    }
+
+
+def test_a_project_without_a_website_gets_no_craft_of_it(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", backend="java", frontend="none")
+
+    settings = json.loads((project_dir / ".claude/settings.json").read_text())
+    assert "design@ion-design" not in settings["enabledPlugins"]
+
+
 def test_sessions_compact_at_400k(tmp_path: Path) -> None:
     settings = json.loads(
         (generate(tmp_path / "demo") / ".claude/settings.json").read_text(encoding="utf-8")
