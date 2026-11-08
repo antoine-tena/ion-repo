@@ -3,7 +3,8 @@ the test suites only with `--tests` (a merge skips them, the release runs them a
 
 By default only what the branch changed since the integration branch: a directory's checks run
 when one of its files changed, the charter's bans on the changed files alone (`charter file`).
-`--all` checks the whole repo; the release's CI does anyway.
+`--all` checks the whole repo, as a release or hotfix branch always does: it starts level with
+the integration branch, so its changes say nothing of what it ships.
 
 A Django backend's tests run as in the CI when `ci.yml` has its Django job: against that job's
 throwaway PostgreSQL and Redis, with its variables (`env`), as `ion repo ci` replays them; never
@@ -175,12 +176,23 @@ def changed_files(root: Path) -> list[str]:
     return [line for line in diff.stdout.splitlines() if line]
 
 
+RELEASE_BRANCH_PREFIXES = ("release/", "hotfix/")
+
+
+def _is_release_branch(root: Path) -> bool:
+    completed = subprocess.run(
+        ["git", "branch", "--show-current"], cwd=root, capture_output=True, text=True, check=False
+    )
+    return completed.stdout.startswith(RELEASE_BRANCH_PREFIXES)
+
+
 def check_project(root: Path, with_tests: bool = False, is_all: bool = False) -> None:
     """Runs each check, then fails listing those that failed; the tests get their databases.
-    Only what the branch changed, unless `is_all`."""
-    changed = None if is_all else changed_files(root)
+    Only what the branch changed, unless `is_all` or on a release branch."""
+    changed = None if is_all or _is_release_branch(root) else changed_files(root)
     if changed == []:
-        ui.success("Nothing changed since the integration branch: nothing to check.")
+        ui.note("Nothing changed since the integration branch: nothing was checked.")
+        ui.note("The whole repo, tests included: ion repo check --all --tests")
         return
     if changed is not None:
         ui.note(f"{len(changed)} changed files checked (ion repo check --all: the whole repo)")

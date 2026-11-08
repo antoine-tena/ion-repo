@@ -1614,27 +1614,6 @@ breaks the rule silently or builds a whole Celery stack for three mails.
   container probe reads, so a frozen scheduler is restarted (`annski/backend/core/heartbeat.py`,
   `annski/backend/core/scheduler_health.py`).
 
-### ion-repo#T-382 · `kiln ci` doesn't replay `python.yml`, and its verdict still says success
-- **Type**: bug
-- **Status**: todo
-- **Opened**: 2026-10-30
-- **Effort**: S · **Owner**: — · **Due**: —
-- **Origin**: grog `/grog:distill` over four sessions of 29 October 2026 (Keramos session,
-  hearth's v0.1.0 release)
-
-A CLI tool's `ci.yml` calls `python.yml` (the `backend` job: pytest, mypy, ruff), which has no
-planner in `src/kiln/ci/jobs.py`: `workflow.py` lists it as "not replayed locally yet". The
-verdict then reads `kiln ci: success` on the three other jobs, the line `green-ci.sh` trusts
-before a deployment; the release of hearth v0.1.0 went through on it, its tests replayed by hand.
-- [x] A `python` planner in `jobs.py`, step for step with `python.yml` (its `DEFAULTS` compared
-  with the file by `tests/test_ci.py`), so every kiln-generated CLI is replayed in full.
-- [ ] A job of kiln's own workflows that is not replayed makes the verdict a failure, not a
-  footnote: only a third-party workflow may stay "not replayed".
-- [ ] `kiln check` on a `release/…` branch says "Nothing changed since the integration branch:
-  nothing to check" (a release starts equal to `develop`), so it cannot stand in for the missing job
-  either: on a release branch it checks the whole repo. Seen on the three releases of 30 October
-  2026 (hearth v0.1.1, grog v0.1.0, keramos v1), pytest and mypy run by hand each time.
-
 ## 🟡 Normal
 
 ### ion-repo#T-429 · `/repo:release` readies its worktrees before pushing and deploying

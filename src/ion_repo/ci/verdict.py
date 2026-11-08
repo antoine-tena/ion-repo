@@ -38,10 +38,12 @@ class Verdict:
     skipped: tuple[tuple[str, str], ...]
     started_at: datetime
     duration_seconds: float
+    own_gaps: tuple[str, ...] = ()  # jobs of ion-repo's own workflows that could not be replayed
 
     @property
     def is_success(self) -> bool:
-        return bool(self.outcomes) and all(outcome.is_success for outcome in self.outcomes)
+        is_replayed = bool(self.outcomes) and not self.own_gaps
+        return is_replayed and all(outcome.is_success for outcome in self.outcomes)
 
     def render(self) -> str:
         minutes, seconds = divmod(round(self.duration_seconds), SECONDS_PER_MINUTE)
