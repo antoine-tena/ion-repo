@@ -7,26 +7,15 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 entries before v0.4.0 quote kiln's former French names.
 
 ## v0.4.15 — 2026-11-08
-<!-- draft: rewrite for users, breaking changes first, then delete this line -->
-- **Breaking**: Ion repo update renames kiln-waivers.toml to waivers.toml
-- A website gets its crafts' plugins
-- Write prompts to a temp file
-- The license in each pyproject.toml
-- A license setting for public repos
-- A taken port moves the server to the next free one
-- The Ion logo in flight replaces the stone kiln
-- One question at session start for every update waiting
-- An ion-repo installed from its checkout installs itself again when its dependencies lag
-- Read waivers.toml through ion-score 0.1.2, kiln-waivers.toml while alone
-- /repo:prompt gives a Claude Code session's prompt as the command that opens it
-- Sharp pour les images d'Astro
-- /repo:skill takes the light path by default, the eval loop on request
-- Git keys ion-repo.update-check, ion-repo.branch-guard, ion-repo.rtk
-- Ion-repo's cache in ~/.cache/ion-repo
-- The machine's state in ~/.local/state/ion-repo
-- /repo:skill writes, tests and improves an Ion tool's skill
-- Previews of a whole sample session, one-hue palettes brightest when urgent
-- Machine settings in ~/.config/ion-repo, moved from kiln/ at the first read
+- **Breaking**: a repo's waivers file is now `waivers.toml`: `ion repo update` renames `kiln-waivers.toml` with its history and follows the project's mentions of it. If both files exist, `charter` reports it as an error to settle by hand.
+- A website gets the plugins of its crafts: `design`, and in the studio's repos `words` and `media`. `ion repo update` adds them to a repo that keeps its own settings, without removing anything. The other tools' catalogues lose their `ref: main`, which registered ion-host under its old name `hearth` and ion-learn under `grog`.
+- `ion repo set license=MIT` writes `LICENSE`, a License section in the README and the license in each `pyproject.toml`; empty by default.
+- `ion repo dev` moves a server whose port is taken to the next free one and points the other servers at it. A `Procfile.dev` line, which cannot be told a port, is still refused.
+- Session start asks one question for every update waiting (the ion-repo tool, the other Ion tools, the repo) instead of up to three.
+- `/repo:skill` writes and sharpens an Ion tool's skill, without starting a session unless you ask for its eval loop. `/repo:prompt` writes its prompts to a temp file and gives a Claude Code session's prompt as the command that opens it.
+- The Ion logo in flight replaces the stone kiln in the banner, the session-start notice and the README.
+- ion-repo keeps its files in `~/.config/ion-repo`, `~/.local/state/ion-repo` and `~/.cache/ion-repo`, and its git keys become `ion-repo.update-check`, `ion-repo.branch-guard` and `ion-repo.rtk`. kiln's folders move at the first read, and its keys are still read.
+- Fixes: Astro sites get `sharp`, without which `astro:assets` failed at build; `/repo:statusline` previews a whole sample session without wrapping, and one-hue palettes are brightest when urgent; an ion-repo installed from its checkout reinstalls itself when its dependencies lag.
 
 ## v0.4.14 — 2026-11-03
 - **Breaking**: the `kiln` and `kiln-cli` commands are gone: type `ion repo` (or `ion-repo`). The last `kiln-cli` already moved its testers; a late tester's `kiln-cli` tool is still replaced at session start.
