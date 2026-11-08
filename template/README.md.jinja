@@ -4,7 +4,11 @@
 {%- set front_url = {'nuxt': 'http://localhost:3000', 'next': 'http://localhost:3000', 'astro': 'http://localhost:4321', 'vite-react': 'http://localhost:5173', 'streamlit': 'http://localhost:8501', 'dash': 'http://localhost:8050'}.get(frontend) -%}
 {%- set open_url = front_url or ('http://localhost:2718' if backend == 'data' else 'http://localhost:8000/api/docs') -%}
 {%- set js_front = frontend in ['nuxt', 'next', 'astro', 'vite-react'] -%}
+{%- set has_app = front_url or backend != 'none' -%}
 {%- if language_docs == 'fr' -%}
+{%- set back_check = '`./mvnw verify` pour le backend Java (compilation stricte, JUnit, couverture)' ~ (', ruff, mypy et pytest pour le frontend Python' if frontend in ['streamlit', 'dash'] else '') if backend == 'java' else ('Ruff, mypy et pytest pour chaque projet Python' if python_dirs else '') -%}
+{%- set front_check = {'nuxt': 'ESLint et le contrôle des types côté frontend', 'next': 'ESLint et le contrôle des types côté frontend', 'astro': '`astro check` côté frontend', 'vite-react': 'ESLint et `tsc` côté frontend'}.get(frontend) -%}
+{%- set checks = [back_check, front_check] | select | join(', ') -%}
 {%- set back_text = {'django': "l'API, en Django + Django Ninja", 'fastapi': "l'API, en FastAPI", 'data': "la chaîne de données (polars ou NumPy, Plotly) et les notebooks marimo", 'cli': "l'outil en ligne de commande `" ~ name ~ "`", 'java': "le backend Java 25 (Maven, sans framework)"}.get(backend) -%}
 {%- set front_text = {'nuxt': "l'interface, en Nuxt 4 + Vue 3", 'next': "l'interface, en Next.js 16 + React 19", 'astro': "le site, en Astro 7", 'vite-react': "l'interface, en Vite + React 19", 'streamlit': "le tableau de bord, en Streamlit", 'dash': "le tableau de bord, en Dash"}.get(frontend) -%}
 # {{ title }}
@@ -20,7 +24,7 @@ Après le clone, depuis la racine du dépôt (prérequis : [uv](https://docs.ast
 ```sh
 uv tool install ion-sh && ion add repo   # une fois par poste
 ion repo install
-{%- if front_url or backend not in ['cli', 'java'] %}
+{%- if front_url or backend not in ['cli', 'java', 'none'] %}
 ion repo dev
 {%- endif %}
 ```
@@ -33,7 +37,7 @@ Puis lancer l'outil : `cd {{ bd }} && uv run {{ name }} --help`, ou l'installer 
 {%- endif %}
 {%- elif backend == 'java' and not front_url -%}
 Puis vérifier le backend : `cd {{ bd }} && ./mvnw verify`.
-{%- else -%}
+{%- elif has_app -%}
 Puis ouvrir {{ open_url }}.
 {%- endif %}
 
@@ -76,9 +80,9 @@ paramètre (équipe, frameworks, podman…) : `ion repo set <clé>=<valeur>`, su
 ## Installation
 
 Prérequis : ceux du démarrage rapide{% if podman %}, plus [podman](https://podman.io/){% endif %}.
-`ion repo install` installe les dépendances ({{ installed | join(', ') }})
+`ion repo install`{% if installed %} installe les dépendances ({{ installed | join(', ') }}){% endif %}
 {%- if backend in ['django', 'fastapi'] %}, crée `{{ bp }}.env`{% endif %}
-{%- if backend == 'django' %}, applique les migrations{% endif %} et active les garde-fous du
+{%- if backend == 'django' %}, applique les migrations{% endif %}{{ ' et' if installed }} active les garde-fous du
 commit (pre-commit, dont le refus de commiter sur `main` ou `develop`). On peut la relancer sans
 risque.
 
@@ -92,6 +96,8 @@ uv tool install --editable {{ bd }}   # depuis la racine : la commande sur tout 
 ```sh
 cd {{ bd }} && ./mvnw -q package -DskipTests && java -jar target/{{ name }}-0.1.0.jar
 ```
+{%- elif not has_app %}
+Rien à lancer ici : ion-repo n'apporte que la partie commune (CI, garde-fous, règles, charte).
 {%- else %}
 ```sh
 ion repo dev
@@ -131,14 +137,7 @@ terminal, jusqu'à Ctrl+C). Un processus de plus (un worker, une tâche de fond)
 ion repo check
 ```
 
-{% if backend == 'java' -%}
-`./mvnw verify` pour le backend Java (compilation stricte, JUnit, couverture)
-{%- if frontend in ['streamlit', 'dash'] %}, ruff, mypy et pytest pour le frontend Python{% endif %}
-{%- else -%}
-Ruff, mypy et pytest pour chaque projet Python
-{%- endif %}
-{%- if frontend in ['nuxt', 'next'] %}, ESLint et le contrôle des types côté frontend
-{%- elif frontend == 'astro' %}, `astro check` côté frontend{%- elif frontend == 'vite-react' %}, ESLint et `tsc` côté frontend{% endif %}, puis la charte (`charter`).
+{{ checks ~ ', puis la charte (`charter`).' if checks else 'La charte (`charter`).' }}
 
 {% if backend == 'django' and frontend == 'nuxt' -%}
 ## Contrat d'API
@@ -175,6 +174,9 @@ priorité), `done.md` (ceux qui sont faits), `rejected.md` (ce qui a été refus
 [{{ license }}](LICENSE).
 {%- endif %}
 {%- else -%}
+{%- set back_check = '`./mvnw verify` for the Java backend (strict compilation, JUnit, coverage)' ~ (', ruff, mypy and pytest for the Python frontend' if frontend in ['streamlit', 'dash'] else '') if backend == 'java' else ('Ruff, mypy and pytest for each Python project' if python_dirs else '') -%}
+{%- set front_check = {'nuxt': 'ESLint and type checks for the frontend', 'next': 'ESLint and type checks for the frontend', 'astro': '`astro check` for the frontend', 'vite-react': 'ESLint and `tsc` for the frontend'}.get(frontend) -%}
+{%- set checks = [back_check, front_check] | select | join(', ') -%}
 {%- set back_text = {'django': 'the API, in Django + Django Ninja', 'fastapi': 'the API, in FastAPI', 'data': 'the data chain (polars or NumPy, Plotly) and the marimo notebooks', 'cli': 'the command-line tool `' ~ name ~ '`', 'java': 'the Java 25 backend (Maven, no framework)'}.get(backend) -%}
 {%- set front_text = {'nuxt': 'the interface, in Nuxt 4 + Vue 3', 'next': 'the interface, in Next.js 16 + React 19', 'astro': 'the site, in Astro 7', 'vite-react': 'the interface, in Vite + React 19', 'streamlit': 'the dashboard, in Streamlit', 'dash': 'the dashboard, in Dash'}.get(frontend) -%}
 # {{ title }}
@@ -190,7 +192,7 @@ After cloning, from the root of the repo (requirements: [uv](https://docs.astral
 ```sh
 uv tool install ion-sh && ion add repo   # once per machine
 ion repo install
-{%- if front_url or backend not in ['cli', 'java'] %}
+{%- if front_url or backend not in ['cli', 'java', 'none'] %}
 ion repo dev
 {%- endif %}
 ```
@@ -203,7 +205,7 @@ Then run the tool: `cd {{ bd }} && uv run {{ name }} --help`, or install it on t
 {%- endif %}
 {%- elif backend == 'java' and not front_url -%}
 Then check the backend: `cd {{ bd }} && ./mvnw verify`.
-{%- else -%}
+{%- elif has_app -%}
 Then open {{ open_url }}.
 {%- endif %}
 
@@ -246,9 +248,9 @@ change a setting (team, frameworks, podman…): `ion repo set <key>=<value>`, on
 ## Install
 
 Requirements: those of the quick start{% if podman %}, plus [podman](https://podman.io/){% endif %}.
-`ion repo install` installs the dependencies ({{ installed | join(', ') }})
+`ion repo install`{% if installed %} installs the dependencies ({{ installed | join(', ') }}){% endif %}
 {%- if backend in ['django', 'fastapi'] %}, creates `{{ bp }}.env`{% endif %}
-{%- if backend == 'django' %}, applies the migrations{% endif %} and turns on the commit guards
+{%- if backend == 'django' %}, applies the migrations{% endif %}{{ ' and' if installed }} turns on the commit guards
 (pre-commit, which also refuses commits on `main` and `develop`). It can be run again safely.
 
 ## Run the project
@@ -261,6 +263,8 @@ uv tool install --editable {{ bd }}   # from the root: the command on the whole 
 ```sh
 cd {{ bd }} && ./mvnw -q package -DskipTests && java -jar target/{{ name }}-0.1.0.jar
 ```
+{%- elif not has_app %}
+Nothing to run here: ion-repo only brings the common part (CI, guards, rules, charter).
 {%- else %}
 ```sh
 ion repo dev
@@ -300,14 +304,7 @@ goes in its folder's `Procfile.dev`, one `name: command` line.
 ion repo check
 ```
 
-{% if backend == 'java' -%}
-`./mvnw verify` for the Java backend (strict compilation, JUnit, coverage)
-{%- if frontend in ['streamlit', 'dash'] %}, ruff, mypy and pytest for the Python frontend{% endif %}
-{%- else -%}
-Ruff, mypy and pytest for each Python project
-{%- endif %}
-{%- if frontend in ['nuxt', 'next'] %}, ESLint and type checks for the frontend
-{%- elif frontend == 'astro' %}, `astro check` for the frontend{%- elif frontend == 'vite-react' %}, ESLint and `tsc` for the frontend{% endif %}, then the charter (`charter`).
+{{ checks ~ ', then the charter (`charter`).' if checks else 'The charter (`charter`).' }}
 
 {% if backend == 'django' and frontend == 'nuxt' -%}
 ## API contract
