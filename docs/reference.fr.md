@@ -81,7 +81,7 @@ Les plugins Claude Code vivent dans [`plugins/`](../plugins/), catalogue `ion-re
   selon la stack ;
 - `stripe` (MCP en mode test), activé à la main par le repo qui en a besoin.
 - un repo déployé sur son propre serveur (`deploy=vps`) active `host@ion-host`, du catalogue
-  d'ion-host, l'outil d'hébergement de la famille (`antoine-tena/ion-host`, à `main`) : skills
+  d'ion-host, l'outil d'hébergement de la famille (`antoine-tena/ion-host`) : skills
   `/host:deploy`, `/host:prod-logs` (diagnostic en lecture seule), `/host:prod-dump` (la
   production copiée dans une base jetable). Le plugin `vps` d'où ils viennent n'existe plus :
   `ion repo update` active `host@ion-host` à la place de `vps@ion-repo` et réécrit `/vps:deploy`
@@ -278,8 +278,12 @@ modèle au format Copier dans le repo de l'outil, et `ion repo update` met à jo
 le même moteur.**
 
 - **Skills** : du catalogue de l'outil, jamais de celui d'ion-repo. Le `.claude/settings.json`
-  généré ajoute le repo de l'outil comme catalogue et active son plugin sous la condition qui
-  amène sa pièce (`deploy=vps` donne `host@ion-host`).
+  généré ajoute le repo de l'outil comme catalogue, à sa branche par défaut puisque le `main` d'un
+  outil n'a pas de catalogue ou garde l'ancien, et active son plugin sous la condition qui amène sa
+  pièce : `deploy=vps` donne `host@ion-host`, un site (`frontend` nuxt, next, astro ou vite-react)
+  `design@ion-design`, et dans les repos du studio (`owner`, ces outils étant privés)
+  `words@ion-words` et `media@ion-media`. Un repo qui garde son propre fichier de réglages (`kept`)
+  reçoit aussi ces plugins par `ion repo update` : des ajouts seulement, ses entrées restent.
 - **Fichiers** : le repo de l'outil porte un `copier.yml` à sa racine (`_subdirectory: piece`,
   `_answers_file: .copier-answers.<outil>.yml`) et le dossier `piece/`. `ion repo new` rend
   chaque pièce après le modèle, `ion repo update` met chacune à jour après lui, fusion à trois

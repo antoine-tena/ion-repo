@@ -189,7 +189,7 @@ claude plugin install repo@ion-repo
 | `stripe` | Stripe MCP in test mode. |
 | `serena` | Read-only [Serena](https://github.com/oraios/serena) MCP for symbol navigation in big repos. |
 
-A repo that deploys to a server of its own (`deploy=vps`) gets `host@ion-host` instead, from the catalogue of ion-host, the family's hosting tool (`antoine-tena/ion-host`, at `main`): skills `/host:deploy`, `/host:prod-logs` (read-only diagnosis) and `/host:prod-dump` (production copied into a throwaway database). The `vps` plugin they came from is gone: `ion repo update` enables `host@ion-host` in place of `vps@ion-repo` and rewrites `/vps:deploy` and its siblings where the project cites them.
+A repo that deploys to a server of its own (`deploy=vps`) gets `host@ion-host` instead, from the catalogue of ion-host, the family's hosting tool (`antoine-tena/ion-host`): skills `/host:deploy`, `/host:prod-logs` (read-only diagnosis) and `/host:prod-dump` (production copied into a throwaway database). The `vps` plugin they came from is gone: `ion repo update` enables `host@ion-host` in place of `vps@ion-repo` and rewrites `/vps:deploy` and its siblings where the project cites them.
 
 Generated repos enable the right plugins for their stack automatically.
 
@@ -202,8 +202,12 @@ not in ion-repo; a generated repo still needs that tool's skills and files. Deci
 in the tool's repo, and `ion repo update` updates every piece with the same engine.**
 
 - **Skills**: from the tool's own catalogue, never from ion-repo's. The generated
-  `.claude/settings.json` adds the tool's repo as a marketplace and enables its plugin under the
-  condition that brings its piece (`deploy=vps` gives `host@ion-host`).
+  `.claude/settings.json` adds the tool's repo as a marketplace, at its default branch since a
+  tool's `main` has no catalogue or its old one, and enables its plugin under the condition that
+  brings its piece: `deploy=vps` gives `host@ion-host`, a website (`frontend` nuxt, next, astro
+  or vite-react) `design@ion-design`, and in the studio's repos (`owner`, those tools being
+  private) `words@ion-words` and `media@ion-media`. A repo that keeps its own settings file
+  (`kept`) gets those plugins from `ion repo update` too: only additions, its own entries stay.
 - **Files**: the tool's repo holds a `copier.yml` at its root (`_subdirectory: piece`,
   `_answers_file: .copier-answers.<tool>.yml`) and the `piece/` folder. `ion repo new` renders
   each piece after the template, `ion repo update` updates each one after it, a three-way merge
