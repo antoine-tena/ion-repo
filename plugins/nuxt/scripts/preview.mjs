@@ -149,12 +149,22 @@ async function launchChromium(chromium) {
   }
 }
 
+function loadPlaywright() {
+  try {
+    return createRequire(join(process.cwd(), 'package.json'))('@playwright/test')
+  } catch (error) {
+    if (error.code !== 'MODULE_NOT_FOUND') throw error
+    console.error('@playwright/test is not in this project. From the frontend directory:')
+    console.error('  pnpm add -D @playwright/test && pnpm exec playwright install chromium')
+    process.exit(1)
+  }
+}
+
 async function main() {
   const options = readArguments(process.argv.slice(2))
   const root = repoRoot(process.cwd())
   const config = readConfig(root)
-  const load = createRequire(join(process.cwd(), 'package.json'))
-  const { chromium, devices } = load('@playwright/test')
+  const { chromium, devices } = loadPlaywright()
   const base = config.url ?? 'http://localhost:3000'
   const url = new URL(options.target, base).href
   const output = resolve(options.output ?? join(root, '.playwright', 'captures', 'preview'))
