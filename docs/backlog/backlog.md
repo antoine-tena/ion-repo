@@ -13,7 +13,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: ion-repo#T-446.**
+**Next free: ion-repo#T-453.**
 
 ---
 
@@ -858,6 +858,55 @@ packs (ion-repo#T-69). From here, strict semver: breaking → major, `feat` → 
 
 ## 🟠 Important
 
+### ion-repo#T-450 · Django dev server without persistent connections, watcher limited to the apps
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-09
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03 to 2026-11-09, `0c146271` 15:34, `68ba0f22` 23:33, `59e47f9e` 23:32 (`too many clients`), `7abae8b7` 20:46 (68% CPU)
+
+- [ ] `ion repo dev` runs `runserver` with `DATABASE_CONN_MAX_AGE=0`: one thread per request otherwise fills Postgres.
+- [ ] The worker's `watchfiles` watches the app folders, not all of `backend/` (caches, media); `--ignore-paths` does not reduce the load: about 12% instead of 68%.
+
+### ion-repo#T-449 · Warn when several sessions share one worktree
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-09
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03 to 2026-11-09, `b9364fc3` 07:45, `68ba0f22` 23:31: 43 files mixed in one tree, a commit impossible, one write overwritten
+
+- [ ] Session start names the other sessions in the same worktree, not only in the repo.
+- [ ] A long visual series commits as work in progress on its branch, so that a validation never waits on a pile of uncommitted files.
+
+### ion-repo#T-448 · A CI verdict belongs to the content, not the commit
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-09
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03 to 2026-11-09, `57c3cbef` 15:14-16:12, `76f22c77` 13:21: full runs of 20 to 50 minutes restarted for a note or a changelog line
+
+- [ ] Key each job's verdict on the hash of the files it reads; a job whose files did not change keeps its verdict.
+- [ ] The deployment guard accepts a green verdict for the same tree.
+
+### ion-repo#T-447 · A release reserves its version number
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-09
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03 to 2026-11-09, `57c3cbef` 16:10: two sessions shipped the same version, seen only at the merge into main
+
+- [ ] `/repo:release` fetches tags and existing release branches before choosing the number, then pushes the branch at once to hold it.
+
+### ion-repo#T-446 · The lint hook reports only the final state of a change
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-09
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03 to 2026-11-09, `ad19a4c6` 15:02, `11136d12` 15:41, `87254b65` 16:13
+
+- [ ] The post-edit lint fires between two edits of one change (an import added, its use next): false errors more than 15 times in a week.
+- [ ] Report at the end of the turn, or leave out unused-import and undefined-name findings after a single edit.
+
 ### ion-repo#T-441 · A worktree already used by another session is refused or redirected
 - **Type**: improvement
 - **Status**: todo
@@ -1649,6 +1698,27 @@ breaks the rule silently or builds a whole Celery stack for three mails.
 
 ## 🟡 Normal
 
+### ion-repo#T-452 · Nuxt template: images and code split that do not eat a free quota
+- **Type**: improvement
+- **Status**: todo
+- **Opened**: 2026-11-09
+- **Effort**: M · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03 to 2026-11-09, `fae710d4` 23:22, `abd9bcc1` 19:53
+
+- [ ] `sizes="100vw"` is read by `@nuxt/image` as a small fixed width: photos blurred on a large screen; rule or lint on it.
+- [ ] Group the small chunks at build: 207 requests per home visit became about 110 with the same weight.
+- [ ] Document the option of static files on object storage (`cdnURL`, CSP, CORS).
+
+### ion-repo#T-451 · The 10-file limit leaves out generated files
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-11-09
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: `/learn:distill` of the sessions of 2026-11-03 to 2026-11-09, `19b57b68` 13:51, `b7fe9fb2` 23:52, four regroupings in the week
+
+- [ ] The contract hook wants `openapi.json` and the types in the routes' commit; those generated files no longer count in [COMMITS]' limit.
+- [ ] The hook's message says which `.env` or environment it needs when run in a worktree.
+
 ### ion-repo#T-445 · Say which repos of the family have something to release
 - **Type**: improvement
 - **Status**: todo
@@ -1709,6 +1779,7 @@ breaks the rule silently or builds a whole Celery stack for three mails.
 - [ ] `ion repo dev stop --others`, and `--port` to choose a port.
 - [ ] The preview and `.playwright/config` take the port of this worktree's server: a capture was taken on another worktree's server.
 - [ ] A server that stopped by itself is said so, instead of `ERR_CONNECTION_REFUSED` in the middle of a capture.
+- [ ] Seen again: port 3000 changes hands between worktrees and no one knows which serves it (`e1809a16` 22:21, `0552c55c` 18:41); servers left running 24 h pushed the load to 22 on 16 cores (`7abae8b7` 20:41).
 
 ### ion-repo#T-429 · `/repo:release` readies its worktrees before pushing and deploying
 - **Type**: bug
