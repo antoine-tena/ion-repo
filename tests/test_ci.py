@@ -1,5 +1,6 @@
 """`ion repo ci` : lecture du ci.yml, plans des jobs, exécution et verdict en note git."""
 
+import os
 import shutil
 import subprocess
 from datetime import datetime
@@ -10,7 +11,7 @@ import yaml
 
 from ion_repo.ci import execution
 from ion_repo.ci.execution import Workspace, run_job
-from ion_repo.ci.jobs import BACK_LANE, DEFAULTS, plan_job
+from ion_repo.ci.jobs import BACK_LANE, DEFAULTS, Step, plan_job
 from ion_repo.ci.runner import _own_gaps
 from ion_repo.ci.verdict import (
     FAILURE_LINE,
@@ -143,8 +144,50 @@ def test_a_python_job_keeps_the_project_inputs() -> None:
 def test_a_maven_project_is_audited_by_osv_scanner() -> None:
     job = Job("security", "security", {"uv": "", "pnpm": "", "maven": "backend"})
     steps = plan_job(job).steps
-    assert [(step.label, step.directory) for step in steps] == [("OSV-Scanner (Maven)", "backend")]
+    assert ("OSV-Scanner (Maven)", "backend") in [(step.label, step.directory) for step in steps]
     assert "osv-scanner --recursive ." in steps[0].command
+
+
+def _run_cargo_audit(tmp_path: Path, step: Step, bin_dir: Path) -> subprocess.CompletedProcess[str]:
+    path = f"{bin_dir}{os.pathsep}{os.environ['PATH']}"
+    return subprocess.run(
+        ["bash", "-c", step.command],
+        cwd=tmp_path,
+        env={**os.environ, "PATH": path},
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
+def test_every_cargo_lock_of_the_repo_is_audited(tmp_path: Path) -> None:
+    _git(tmp_path, "init", "-q")
+    (tmp_path / "backend").mkdir()
+    (tmp_path / "backend" / "Cargo.lock").write_text("")
+    _git(tmp_path, "add", "-A")
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    scanner = bin_dir / "osv-scanner"
+    scanner.write_text('#!/bin/sh\necho "$@"\n')
+    scanner.chmod(0o755)
+    [step] = [
+        step
+        for step in plan_job(Job("security", "security", {"uv": "", "pnpm": ""})).steps
+        if step.label == "OSV-Scanner (Cargo)"
+    ]
+
+    completed = _run_cargo_audit(tmp_path, step, bin_dir)
+
+    assert completed.returncode == 0
+    assert "--lockfile=backend/Cargo.lock" in completed.stdout
+
+
+def test_a_repo_without_cargo_lock_needs_no_scanner(tmp_path: Path) -> None:
+    _git(tmp_path, "init", "-q")
+    job = Job("security", "security", {"uv": "", "pnpm": ""})
+    [step] = [step for step in plan_job(job).steps if step.label == "OSV-Scanner (Cargo)"]
+
+    assert _run_cargo_audit(tmp_path, step, tmp_path).returncode == 0
 
 
 def test_workflow_names_of_before_0_4_are_still_replayed() -> None:
@@ -154,7 +197,7 @@ def test_workflow_names_of_before_0_4_are_still_replayed() -> None:
     audit_steps = plan_job(old).steps
     contract_steps = plan_job(contract).steps
 
-    assert audit_steps[-1].command == "pnpm audit --prod --audit-level critical"
+    assert "pnpm audit --prod --audit-level critical" in [step.command for step in audit_steps]
     assert contract_steps[0].directory == "api"
     assert contract_steps[1].command.startswith("pnpm gen\n")
 

@@ -127,7 +127,7 @@ jobs:
 ```
 
 `django.yml`, `python.yml`, `maven.yml`, `pnpm.yml`, `charter.yml`, `security.yml` (`uv audit`,
-`pnpm audit`, OSV-Scanner for Maven), `secrets.yml` (gitleaks), `api-contract.yml`, `infra.yml` (podman build,
+`pnpm audit`, OSV-Scanner for Maven and each `Cargo.lock`), `secrets.yml` (gitleaks), `api-contract.yml`, `infra.yml` (podman build,
 actionlint, shellcheck), `sbom.yml` (CycloneDX), `mutation.yml` (mutmut), `vercel.yml`, `bot.yml` (kiln-bot) and `score.yml` (the score's change on a pull request). `charte.yml`,
 `securite.yml` and `contrat-api.yml` are their former names, kept as relays. Databases for tests run in
 podman. See [`.github/workflows/`](../.github/workflows/).
