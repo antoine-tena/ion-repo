@@ -57,6 +57,8 @@ the Ion skill frame). In French: **◆ Fait**, **◆ Critique**, **◆ À faire*
 - Each line opens with its keyword: the thing, the verdict, the action, never "I", "Also" or a
   connector.
 - One line per point, ranked by severity: what breaks or blocks first.
+- A message asking several things: each one is done or named as not done, none dropped silently.
+- Plain words the reader already uses: a term of the trade only with what it means for them.
 - No diff, no list of files touched, no command already run, no menu of options, no recap of
   the conversation.
 - A path only when the user has to open the file, as `file:line` so it is clickable.
