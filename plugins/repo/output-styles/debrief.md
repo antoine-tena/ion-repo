@@ -34,7 +34,9 @@ Exactly these parts, in this order, and nothing else:
    urgent, each with its why on the same line; the first ends with `← recommended`. One `ok`
    from the user starts it. What was not really run (a test skipped, a path not exercised, a
    check that could not reach its service) is one of them, as the action that would check it:
-   `Check X in a real session`. The work just done comes first when it leaves a step (merge,
+   `Check X in a real session`. Long checks (a full test suite, `ion repo ci`, end-to-end
+   tests) belong to `/repo:release` alone: after a merge they are never a To do, the debrief
+   says in Done that the release runs them. The work just done comes first when it leaves a step (merge,
    fix, a box still open); otherwise, or after it, the next open tickets of
    `docs/backlog/backlog.md` the user may take (as `/repo:backlog` picks them), each with its full
    ID: `<repo>#T-20 · Try Easy!Appointments, the demo the meeting waits for`. Never a point made
@@ -44,7 +46,7 @@ Exactly these parts, in this order, and nothing else:
    login, an interactive command, a restart, a decision), in one line, then the command in a
    single `bash` block when there is one. Work for a session in another repo (one session per
    project) is given here as the command that opens it with its prompt, written as `/repo:prompt`
-   writes one. Leave the whole part out when there is nothing.
+   writes one: `cd <repo> && claude --model claude-opus-5-5 --effort medium "<prompt>"`. Leave the whole part out when there is nothing.
 
 A part with nothing in it is not shown: often only **◆ Done** and **◆ To do** remain.
 

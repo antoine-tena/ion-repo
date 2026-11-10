@@ -39,10 +39,11 @@ default, the user's language when the output is for people who read it, e.g. a F
    - Show the prompt in a code block, so the user can read it, then the one line to paste in a
      single `bash` block, which opens the session in the right folder:
      ```bash
-     cd ~/code/<path>/<repo> && claude --model <model> --effort <effort> "$(cat /tmp/<repo>-<subject>-prompt.md)"
+     cd ~/code/<path>/<repo> && claude --model claude-opus-5-5 --effort medium "$(cat /tmp/<repo>-<subject>-prompt.md)"
      ```
-   - `<model>` is `claude-opus-5-5` and `<effort>` is `medium` (others: `low`, `high`, `xhigh`,
-     `max`), unless the user asks for something else.
+   - Always `--model claude-opus-5-5 --effort medium`, written out, unless the user asks for
+     another model or effort (`low`, `high`, `xhigh`, `max`). Every other command that opens a
+     session for the user (the debrief's Blocked part) is written the same way.
 
    Otherwise the prompt alone in a single code block, and where it goes (the `Agent` tool, a
    system prompt, another model). Don't run it unless the user asks.
