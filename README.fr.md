@@ -125,6 +125,7 @@ $ claude                      # Claude Code le résorbe, avec les règles, skill
 | Un tableau de bord de données (`dashboard`) | polars, marimo, Plotly | Streamlit |
 | Une analyse de données (`analysis`) | polars, marimo, Plotly | — |
 | Un outil en ligne de commande (`cli`) | Python, installable, avec son propre plugin Claude Code si on le veut | — |
+| Une app de bureau (`desktop`) | son cœur Rust | Tauri 2 + React, installeurs Windows et macOS construits par la CI |
 
 Next.js, Vite + React, Dash et Java 25 + Maven sont là aussi, et les tests d'ion-repo génèrent et vérifient chaque
 combinaison. Django et Nuxt sont complets ; les autres stacks sont figées mais entretenues : les

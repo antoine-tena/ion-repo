@@ -54,7 +54,12 @@ GITIGNORE = ".gitignore"
 COMPOSE_FILE = "compose.yaml"
 # The project type only preselects the stack: the one that fits what was found.
 PROJECT_TYPES = {"django": "app", "fastapi": "api", "data": "analysis", "cli": "cli"}
-FRONT_PROJECT_TYPES = {"astro": "site", "streamlit": "dashboard", "dash": "dashboard"}
+FRONT_PROJECT_TYPES = {
+    "astro": "site",
+    "streamlit": "dashboard",
+    "dash": "dashboard",
+    "tauri": "desktop",
+}
 _GITHUB_REMOTE = re.compile(r"github\.com[:/]([^/]+)/")
 
 

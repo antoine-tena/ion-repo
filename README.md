@@ -117,6 +117,7 @@ $ claude                     # Claude Code works it off, with ion-repo's rules, 
 | A data dashboard (`dashboard`) | polars, marimo, Plotly | Streamlit |
 | A data analysis (`analysis`) | polars, marimo, Plotly | — |
 | A command-line tool (`cli`) | Python, installable, with its own Claude Code plugin if you want one | — |
+| A desktop app (`desktop`) | its Rust core | Tauri 2 + React, Windows and macOS installers built by the CI |
 
 Next.js, Vite + React, Dash and Java 25 + Maven are there too, and ion-repo's tests generate and check every
 combination. Django and Nuxt are complete; the other stacks are frozen but maintained: new grid

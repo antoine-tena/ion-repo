@@ -8,7 +8,8 @@
 {%- set ecosystems = [] %}
 {%- if uv_dirs %}{% set _ = ecosystems.append(('uv', uv_dirs)) %}{% endif %}
 {%- if backend == 'java' %}{% set _ = ecosystems.append(('maven', [(('/' ~ bd) | replace('/.', '/'))])) %}{% endif %}
-{%- if frontend in ['nuxt', 'next', 'astro', 'vite-react'] %}{% set _ = ecosystems.append(('npm', [(('/' ~ fd) | replace('/.', '/'))])) %}{% endif %}
+{%- if frontend in ['nuxt', 'next', 'astro', 'vite-react', 'tauri'] %}{% set _ = ecosystems.append(('npm', [(('/' ~ fd) | replace('/.', '/'))])) %}{% endif %}
+{%- if frontend == 'tauri' %}{% set _ = ecosystems.append(('cargo', [(('/' ~ fp ~ 'src-tauri') | replace('/./', '/'))])) %}{% endif %}
 {%- if container_dirs %}{% set _ = ecosystems.append(('docker', container_dirs)) %}{% endif %}
 {%- set _ = ecosystems.append(('github-actions', ['/'])) -%}
 version: 2

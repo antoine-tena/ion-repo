@@ -1,0 +1,54 @@
+{%- set fd = frontend_dir | default('frontend') %}{%- set fp = '' if fd == '.' else fd ~ '/' -%}
+---
+paths:
+  - "{{ fp }}**"
+---
+<!-- Written by ion-repo and kept current by `ion repo update`: do not edit, it would be overwritten. -->
+# Desktop app: Tauri 2, Rust core and React 19
+
+`{{ fp }}src/`: the interface (`App.tsx`, entry `main.tsx`), the core's commands typed in
+`core.ts`, constants (`constants.ts`). `{{ fp }}src-tauri/`: the Rust core (`src/lib.rs`), the
+window and installers (`tauri.conf.json`), what the window may call (`capabilities/`). Read
+`{{ fp }}AGENTS.md` first. Run: `ion repo dev` (`pnpm tauri dev`); check: `ion repo check` (ESLint,
+`tsc`, rustfmt, Clippy); tests: `pnpm test` (Vitest) and `cargo test` in `src-tauri/`.
+
+## Core (Rust)
+
+- **[CORE-OWNS-SYSTEM]** Files, processes, network and secrets go through the core: the
+  interface asks with a command, never with a plugin opened wide to the webview.
+- **[TAURI-COMMANDS]** One `#[tauri::command]` per action, registered in `generate_handler!`,
+  typed both ends: its arguments and result derive `serde`, its front side lives in
+  `src/core.ts` alone. A command that can fail returns `Result<T, String>` (or an error type
+  that serializes), never a panic: `unwrap()` is refused by Clippy.
+- **[LEAST-CAPABILITY]** `capabilities/` grants the window only the permissions it uses, scoped
+  (paths, URLs); a plugin's whole default set is a decision, written in its description.
+- **[BLOCKING-OFF-MAIN]** A command that waits (process, disk, network) is `async` or runs on
+  its own thread; a long stream (a terminal's output) reaches the front by events or a
+  `Channel`, never by polling.
+- **[CROSS-PLATFORM]** Paths by `std::path`, never by `/` joined by hand; what differs on Windows
+  and macOS sits behind `#[cfg(windows)]` / `#[cfg(target_os = "macos")]`, both tested by the CI.
+- **[RUST-STYLE]** `cargo fmt`; Clippy with warnings as errors; no `unsafe` (forbidden in
+  `Cargo.toml`). Logic in plain functions tested by `cargo test`, the command a thin shell.
+
+## Interface (React)
+
+- **[STRICT-TS]** Strict TypeScript in every `.ts` and `.tsx`.
+- **[NO-ANY]** No `any`: `unknown`, then a type narrowing (ESLint rule).
+- **[ASYNC-AWAIT]** `async/await` with `try/catch` only; `.then().catch()` chains are banned.
+- **[MODERN-REACT]** React 19: function components and hooks; an effect ignores an answer
+  arriving after the component is gone, and unsubscribes from the core's events.
+- **[UI-STATES]** Every view that waits for the core handles loading, error (an understandable
+  message) and empty.
+- **[ACCESSIBILITY]** Every field has a `<label>`, every icon button an `aria-label`; everything
+  works with the keyboard, focus visible; shortcuts never take the system's own.
+- **[TEST-DENSITY]** The interface's test density never drops (floor in `charter.toml`); the core
+  is mocked in tests (`@tauri-apps/api/mocks`).
+- **[STYLE-2]** Tailwind by default; `src/index.css` is the only CSS file and holds the theme
+  tokens (`@theme`).
+
+## Shipping
+
+- **[NATIVE-BUILDS]** Installers are built on the system they are for: the CI's `desktop` job
+  (Windows `.msi`/`.exe`, macOS `.dmg`), never cross-compiled.
+- **[NO-SECRET-IN-APP]** Nothing secret in the app: its bundle and binary are on every user's
+  machine; a user's own token is kept by the system's keychain, through the core.

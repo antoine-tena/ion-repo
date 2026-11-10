@@ -30,6 +30,9 @@ def lock_dependencies(root: Path, stack: Stack) -> None:
         run(["uv", "lock"], root / directory)
     if stack.pnpm_dir is not None:
         run(["pnpm", "install", "--lockfile-only"], root / stack.pnpm_dir)
+    if stack.cargo_dir is not None:
+        # Cargo.lock only: within the bounds of Cargo.toml, without building anything.
+        run(["cargo", "generate-lockfile"], root / stack.cargo_dir)
 
 
 def sync_dependencies(root: Path, stack: Stack) -> None:
@@ -41,6 +44,8 @@ def sync_dependencies(root: Path, stack: Stack) -> None:
     if stack.pnpm_dir is not None:
         run(["pnpm", "install", PNPM_LENIENT_BUILDS], root / stack.pnpm_dir)
         run(["pnpm", "run", "--if-present", "postinstall"], root / stack.pnpm_dir)
+    if stack.cargo_dir is not None:
+        run(["cargo", "fetch", "--locked"], root / stack.cargo_dir)
 
 
 def update_dependencies(root: Path, stack: Stack, *, allow_major: bool) -> None:
@@ -52,6 +57,10 @@ def update_dependencies(root: Path, stack: Stack, *, allow_major: bool) -> None:
     if stack.pnpm_dir is not None:
         step(f"{stack.pnpm_dir}: pnpm dependencies{' (majors included)' if allow_major else ''}")
         update_pnpm(root / stack.pnpm_dir, allow_major=allow_major)
+    if stack.cargo_dir is not None:
+        # Compatible versions only: a major of a crate is raised in Cargo.toml, by hand.
+        step(f"{stack.cargo_dir}: Rust dependencies")
+        run(["cargo", "update"], root / stack.cargo_dir)
     if allow_major:
         step("pre-commit hooks")
         run(["pre-commit", "autoupdate"], root)

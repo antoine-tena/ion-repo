@@ -33,6 +33,8 @@ DEV_PORTS = {
     "next": 3000,
     "astro": 4321,
     "vite-react": 5173,
+    # Tauri's Vite, at the address `tauri.conf.json` gives the window (`devUrl`): it stays there.
+    "tauri": 1420,
     "streamlit": 8501,
     "dash": 8050,
 }

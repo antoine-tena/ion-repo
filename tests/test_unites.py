@@ -414,6 +414,27 @@ def test_adopted_repo_stack_comes_from_its_files(tmp_path: Path) -> None:
     assert load_stack(tmp_path) == Stack(backend="django", frontend="nuxt", has_podman=False)
 
 
+def test_a_tauri_app_checks_its_rust_core_with_cargo() -> None:
+    stack = Stack(backend="none", frontend="tauri", has_podman=False)
+
+    commands = {command.label: command for command in stack.check_commands(with_tests=True)}
+
+    assert stack.cargo_dir == "frontend/src-tauri"
+    assert commands["frontend/src-tauri clippy"].argv[:2] == ("cargo", "clippy")
+    assert commands["frontend/src-tauri cargo test"].directory == "frontend/src-tauri"
+    assert stack.dev_commands()[0].argv == ("pnpm", "tauri", "dev")
+
+
+def test_adopted_tauri_app_is_found_before_its_vite_front(tmp_path: Path) -> None:
+    (tmp_path / "src-tauri").mkdir()
+    (tmp_path / "src-tauri" / "tauri.conf.json").write_text("{}")
+    (tmp_path / "vite.config.ts").touch()
+
+    stack = load_stack(tmp_path)
+
+    assert (stack.frontend, stack.frontend_dir, stack.cargo_dir) == ("tauri", ".", "src-tauri")
+
+
 def test_adopted_repo_declares_its_size_in_its_charter(tmp_path: Path) -> None:
     (tmp_path / "charte.toml").write_text('envergure = "flame"\nexclus = []\n')
     assert answers_if_any(tmp_path) == {"size": "medium"}

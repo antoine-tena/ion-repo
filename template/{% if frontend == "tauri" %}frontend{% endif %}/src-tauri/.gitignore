@@ -1,0 +1,5 @@
+# Cargo's build output
+/target/
+
+# Schemas Tauri writes at each build
+/gen/schemas

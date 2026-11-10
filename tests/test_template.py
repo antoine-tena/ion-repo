@@ -18,13 +18,22 @@ ANSWERS = {
     "team": ["antoine-tena", "NathanBarrachin"],
 }
 BACKENDS = ("django", "fastapi", "data", "cli", "java", "none")
-FRONTENDS = ("nuxt", "next", "astro", "vite-react", "streamlit", "dash", "none")
+FRONTENDS = ("nuxt", "next", "astro", "vite-react", "tauri", "streamlit", "dash", "none")
+# A Tauri app carries its own core, in Rust: no backend beside it.
 STACKS = [
-    (back, front) for back in BACKENDS for front in FRONTENDS if (back, front) != ("none",) * 2
+    (back, front)
+    for back in BACKENDS
+    for front in FRONTENDS
+    if (back, front) != ("none",) * 2 and (front != "tauri" or back == "none")
 ]
-# Un outil en ligne de commande ou un backend Java seuls n'ont rien à conteneuriser : copier
-# refuse podman.
-PODMAN_STACKS = [stack for stack in STACKS if stack not in {("cli", "none"), ("java", "none")}]
+# Un outil en ligne de commande ou un backend Java seuls n'ont rien à conteneuriser, une app de
+# bureau tourne chez son utilisateur : copier refuse podman.
+PODMAN_STACKS = [
+    stack
+    for stack in STACKS
+    if stack not in {("cli", "none"), ("java", "none")} and stack[1] != "tauri"
+]
+BINARY_SUFFIXES = (".ico", ".icns", ".png")
 JSON_FILES = (".vscode/settings.json", ".vscode/extensions.json", ".claude/settings.json")
 
 
@@ -109,7 +118,8 @@ def test_every_stack_renders_valid_files(tmp_path: Path, backend: str, frontend:
         path for path in project_dir.rglob("*") if path.is_file() and ".git" not in path.parts
     ]
     assert not [path for path in rendered if path.suffix == ".jinja"]
-    assert not [path for path in rendered if path.suffix != ".ico" and "{%" in path.read_text()]
+    texts = [path for path in rendered if path.suffix not in BINARY_SUFFIXES]
+    assert not [path for path in texts if "{%" in path.read_text()]
     tomllib.loads((project_dir / "charter.toml").read_text())
     yaml.safe_load((project_dir / ".github/workflows/ci.yml").read_text())
     yaml.safe_load((project_dir / ".pre-commit-config.yaml").read_text())
@@ -758,3 +768,30 @@ def test_workflows_run_the_command_they_install() -> None:
         for job in yaml.safe_load(workflow.read_text())["jobs"].values():
             for step in job.get("steps", []):
                 assert "ion repo " not in step.get("run", ""), (workflow.name, step["run"])
+
+
+def test_a_desktop_app_is_tauri_with_its_rust_core(tmp_path: Path) -> None:
+    project_dir = generate(tmp_path / "demo", project_type="desktop", size="medium")
+
+    answers = yaml.safe_load((project_dir / ".copier-answers.yml").read_text())
+    assert (answers["backend"], answers["frontend"], answers["podman"]) == ("none", "tauri", False)
+    core = project_dir / "frontend/src-tauri"
+    cargo = tomllib.loads((core / "Cargo.toml").read_text())
+    assert cargo["lib"]["name"] == "demo_lib"
+    assert "demo_lib::run()" in (core / "src/main.rs").read_text()
+    config = json.loads((core / "tauri.conf.json").read_text())
+    assert config["identifier"] == "io.github.antoinetena.demo"
+    assert config["build"]["devUrl"] == "http://localhost:1420"
+    assert all((core / icon).is_file() for icon in config["bundle"]["icon"])
+    assert json.loads((core / "capabilities/default.json").read_text())["windows"] == ["main"]
+    ci = yaml.safe_load((project_dir / ".github/workflows/ci.yml").read_text())
+    assert "tauri.yml@" in ci["jobs"]["desktop"]["uses"]
+    updates = yaml.safe_load((project_dir / ".github/dependabot.yml").read_text())["updates"]
+    assert {"package-ecosystem": "cargo"}.items() <= updates[1].items()
+    assert updates[1]["directories"] == ["/frontend/src-tauri"]
+    assert (project_dir / ".claude/rules/ion-repo/tauri.md").is_file()
+
+
+def test_a_tauri_app_takes_no_backend(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="own core, in Rust"):
+        generate(tmp_path / "demo", backend="fastapi", frontend="tauri")

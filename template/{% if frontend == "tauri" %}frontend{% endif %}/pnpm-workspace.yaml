@@ -1,0 +1,7 @@
+# Install scripts of dependencies: refused, prebuilt binaries are enough (Tauri's CLI included).
+allowBuilds:
+  '@tailwindcss/oxide': false
+  esbuild: false
+
+# Exact versions in package.json, even after `ion repo update` ([LOCKED-DEPENDENCIES]).
+saveExact: true
