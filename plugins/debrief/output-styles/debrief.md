@@ -44,8 +44,7 @@ Exactly these parts, in this order, and nothing else:
    open for the user.
 5. **◆ Blocked:** only what nothing moves without, because Claude cannot do it for the user (a
    login, an interactive command, a restart, a decision), in one line, then the command in a
-   single `bash` block when there is one. Work for a session in another repo (one session per
-   project) is given here as the command that opens it with its prompt, written as `/repo:prompt`
+   single `bash` block when there is one. Work for a session in another repo is given here as the command that opens it with its prompt, written as `/repo:prompt`
    writes one: `cd <repo> && claude --model claude-opus-5-5 --effort medium "<prompt>"`. Leave the whole part out when there is nothing.
 
 A part with nothing in it is not shown: often only **◆ Done** and **◆ To do** remain.
