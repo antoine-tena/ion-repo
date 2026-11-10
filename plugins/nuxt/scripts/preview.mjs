@@ -91,13 +91,13 @@ function readConfig(root) {
 
 // Login through the login page, with the target page as return parameter (`next`): we land
 // there logged in without reloading, so the session the app keeps in memory stays valid.
-async function logIn(page, base, config, root, account, target) {
+async function logIn(page, config, root, account, target) {
   const key = account === 'default' || account === 'defaut' ? 'login' : `login_${account}`
   const username = config[key]
   if (!username) throw new Error(`No ${key}= in .playwright/config.`)
   const password = readFileSync(join(root, '.playwright', 'token'), 'utf8').trim()
   const portal = config.login_path ?? '/auth/portal'
-  const address = new URL(portal, base)
+  const address = new URL(portal, target.origin)
   address.searchParams.set(config.login_next ?? 'next', target.pathname + target.search)
   await page.goto(address.href, { waitUntil: 'load' })
   await waitUntilReady(page, config)
@@ -176,7 +176,7 @@ async function main() {
     const page = await context.newPage()
     const session = await context.newCDPSession(page)
     const target = new URL(url)
-    if (options.account !== null) await logIn(page, base, config, root, options.account, target)
+    if (options.account !== null) await logIn(page, config, root, options.account, target)
     else await page.goto(url, { waitUntil: 'load', timeout: WAIT_TIMEOUT_MS * 2 })
     await waitUntilReady(page, config)
     if (options.waitFor) await page.locator(options.waitFor).first().waitFor({ timeout: WAIT_TIMEOUT_MS })
