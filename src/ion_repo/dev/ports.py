@@ -175,7 +175,7 @@ def serves(port: int, leader: int) -> bool:
     if inodes is None:
         return listens(port)
     return bool(inodes) and any(
-        _group_of(process) == leader and _holds(process, inodes)
+        leader in _group_and_session(process) and _holds(process, inodes)
         for process in PROC.iterdir()
         if process.name.isdigit()
     )
@@ -197,13 +197,14 @@ def _listening_sockets(port: int) -> set[str] | None:
     return sockets
 
 
-def _group_of(process: Path) -> int | None:
+def _group_and_session(process: Path) -> tuple[int, ...]:
+    """Process group and session: pnpm 10 runs a script in a group of its own, same session."""
     try:
         stat = (process / "stat").read_text(encoding="utf-8")
     except OSError:
-        return None
-    fields = stat.rsplit(")", 1)[-1].split()  # state, parent, group
-    return int(fields[2]) if len(fields) > 2 else None
+        return ()
+    fields = stat.rsplit(")", 1)[-1].split()  # state, parent, group, session
+    return tuple(int(field) for field in fields[2:4])
 
 
 def _holds(process: Path, sockets: set[str]) -> bool:
