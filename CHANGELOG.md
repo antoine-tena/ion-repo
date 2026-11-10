@@ -6,6 +6,19 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 `release/vX.Y.Z` branch, rewritten before its first candidate. Names are those of their release:
 entries before v0.4.0 quote kiln's former French names.
 
+## v0.4.16 — 2026-11-10
+<!-- draft: rewrite for users, breaking changes first, then delete this line -->
+- See servers pnpm 10 puts in own group
+- Five habits from the week's sessions
+- Audit every committed Cargo.lock
+- No green verdict on unplayed checks
+- Nuxt ships CSP and headers
+- README and motion match the stack
+- Say how to add Playwright to preview
+- Repair a stale command on set
+- Offer ion upgrade to an ion too old
+- Replay python.yml, the tests included
+
 ## v0.4.15 — 2026-11-08
 - **Breaking**: a repo's waivers file is now `waivers.toml`: `ion repo update` renames `kiln-waivers.toml` with its history and follows the project's mentions of it. If both files exist, `charter` reports it as an error to settle by hand.
 - A website gets the plugins of its crafts: `design`, and in the studio's repos `words` and `media`. `ion repo update` adds them to a repo that keeps its own settings, without removing anything. The other tools' catalogues lose their `ref: main`, which registered ion-host under its old name `hearth` and ion-learn under `grog`.

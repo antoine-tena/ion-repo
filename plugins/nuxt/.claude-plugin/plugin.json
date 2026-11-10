@@ -1,6 +1,6 @@
 {
   "name": "nuxt",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Nuxt, Vue, Vitest, multi-device preview, visual audit and the playwright MCP server",
   "author": {
     "name": "antoine-tena"
