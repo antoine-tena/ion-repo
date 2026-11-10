@@ -790,6 +790,12 @@ def test_a_desktop_app_is_tauri_with_its_rust_core(tmp_path: Path) -> None:
     assert {"package-ecosystem": "cargo"}.items() <= updates[1].items()
     assert updates[1]["directories"] == ["/frontend/src-tauri"]
     assert (project_dir / ".claude/rules/ion-repo/tauri.md").is_file()
+    ignored = tomllib.loads((core / "osv-scanner.toml").read_text())["IgnoredVulns"]
+    assert {vuln["id"] for vuln in ignored} == {
+        "GHSA-wrw7-89jp-8q8g",
+        "RUSTSEC-2024-0429",
+        "RUSTSEC-2024-0370",
+    }
     readme = (project_dir / "README.md").read_text()
     assert "window opens by itself" in readme
     assert "open http://localhost:1420" not in readme

@@ -1,0 +1,22 @@
+# Read by OSV-Scanner next to Cargo.lock (security.yml workflow). Each ignored advisory says why,
+# and until when: ion-repo moves the date, or drops the line once the fix ships.
+
+# glib 0.18's `VariantStrIter` (RUSTSEC-2024-0429): Tauri 2 builds its Linux window on gtk-rs
+# 0.18, which pins it; the fixed glib needs gtk-rs 0.20, which Tauri does not use yet. Compiled for
+# Linux only, never for the Windows and macOS installers, and the app does not call that API.
+[[IgnoredVulns]]
+id = "GHSA-wrw7-89jp-8q8g"
+ignoreUntil = 2027-05-10
+reason = "Linux-only glib 0.18 pinned by Tauri's gtk-rs; not in Windows or macOS builds"
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2024-0429"
+ignoreUntil = 2027-05-10
+reason = "Linux-only glib 0.18 pinned by Tauri's gtk-rs; not in Windows or macOS builds"
+
+# proc-macro-error, unmaintained (RUSTSEC-2024-0370): a build-time macro of the same gtk-rs 0.18
+# (glib-macros), Linux only; it goes with it.
+[[IgnoredVulns]]
+id = "RUSTSEC-2024-0370"
+ignoreUntil = 2027-05-10
+reason = "Unmaintained build-time macro of Tauri's Linux-only gtk-rs 0.18; not in Windows or macOS builds"
