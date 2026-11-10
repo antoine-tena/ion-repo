@@ -790,6 +790,9 @@ def test_a_desktop_app_is_tauri_with_its_rust_core(tmp_path: Path) -> None:
     assert {"package-ecosystem": "cargo"}.items() <= updates[1].items()
     assert updates[1]["directories"] == ["/frontend/src-tauri"]
     assert (project_dir / ".claude/rules/ion-repo/tauri.md").is_file()
+    readme = (project_dir / "README.md").read_text()
+    assert "window opens by itself" in readme
+    assert "open http://localhost:1420" not in readme
 
 
 def test_a_tauri_app_takes_no_backend(tmp_path: Path) -> None:
