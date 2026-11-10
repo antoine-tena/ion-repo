@@ -127,7 +127,9 @@ def _ignored_pnpm_dependencies(project_dir: Path) -> set[str]:
 
 
 def update_pnpm(project_dir: Path, *, allow_major: bool) -> None:
-    """Exact versions bumped by `pnpm add`, majors only with `allow_major`."""
+    """Exact versions bumped by `pnpm add`, majors only with `allow_major`. Installed first:
+    without `node_modules` (a fresh worktree), `pnpm outdated` gives no `current` version."""
+    run(["pnpm", "install", "--frozen-lockfile"], project_dir)
     completed = subprocess.run(
         ["pnpm", "outdated", "--format", "json"],
         cwd=project_dir,
