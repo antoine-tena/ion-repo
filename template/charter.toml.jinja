@@ -6,7 +6,7 @@
 # and raise, and its own rules can be added here.
 {%- set python_files = ([(bp ~ '*.py'), (bp ~ '**/*.py')] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + ([(fp ~ '*.py'), (fp ~ '**/*.py')] if frontend in ['streamlit', 'dash'] else []) %}
 {%- set java_files = [(bp ~ 'src/**/*.java')] if backend == 'java' else [] %}
-{%- set front_files = {'nuxt': [(fp ~ 'app/**')], 'next': [(fp ~ 'app/**'), (fp ~ 'components/**'), (fp ~ 'lib/**')], 'astro': [(fp ~ 'src/**')], 'vite-react': [(fp ~ 'src/**')]}.get(frontend, []) %}
+{%- set front_files = {'nuxt': [(fp ~ 'app/**')], 'next': [(fp ~ 'app/**'), (fp ~ 'components/**'), (fp ~ 'lib/**')], 'astro': [(fp ~ 'src/**')], 'vite-react': [(fp ~ 'src/**')], 'tauri': [(fp ~ 'src/**')]}.get(frontend, []) %}
 
 size = "{{ size }}"
 exclude = ["/migrations/", "/notebooks/"]
@@ -136,7 +136,7 @@ files = {{ front_files | tojson }}
 {%- if frontend == 'next' %}
 suffixes = [".ts", ".tsx", ".mjs"]
 test_suffixes = [".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx"]
-{%- elif frontend == 'vite-react' %}
+{%- elif frontend in ['vite-react', 'tauri'] %}
 suffixes = [".ts", ".tsx"]
 test_suffixes = [".test.ts", ".test.tsx"]
 {%- elif frontend == 'astro' %}

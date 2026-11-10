@@ -35,9 +35,12 @@ MAVEN_BACKENDS = frozenset({"java"})
 # Maven goes through the project's wrapper: version and SHA-256 sum pinned in `.mvn/wrapper/`.
 MAVEN_WRAPPER = "./mvnw"
 PYTHON_FRONTENDS = frozenset({"streamlit", "dash"})
-PNPM_FRONTENDS = frozenset({"nuxt", "next", "astro", "vite-react"})
+PNPM_FRONTENDS = frozenset({"nuxt", "next", "astro", "vite-react", "tauri"})
 NO_FRAMEWORK = "none"
 VITE_REACT = "vite-react"
+# A desktop app: a Vite + React front and its Rust core in `src-tauri/`, built by Cargo.
+TAURI = "tauri"
+TAURI_CORE_DIR = "src-tauri"
 
 # Projects generated before frameworks could be chosen: Django and Nuxt, the only stack then.
 LEGACY_BACKEND = "django"
@@ -59,6 +62,8 @@ FRONTEND_MARKERS: tuple[tuple[str, str], ...] = (
     ("next.config.js", "next"),
     ("astro.config.mjs", "astro"),
     ("astro.config.ts", "astro"),
+    # Before Vite: a Tauri app's front is a Vite app too.
+    ("src-tauri/tauri.conf.json", TAURI),
     # A Vite app is taken for React only when its package.json depends on it (`detect_stack`).
     ("vite.config.ts", VITE_REACT),
     ("vite.config.js", VITE_REACT),
@@ -82,6 +87,8 @@ FRONTEND_DEV_COMMANDS: Mapping[str, tuple[str, ...]] = {
     "next": ("pnpm", "dev"),
     "astro": ("pnpm", "dev"),
     VITE_REACT: ("pnpm", "dev"),
+    # The window of the app, its front served by Vite and reloaded, its core rebuilt on change.
+    TAURI: ("pnpm", "tauri", "dev"),
     "streamlit": ("uv", "run", "streamlit", "run", "app.py"),
     "dash": ("uv", "run", "python", "app.py"),
 }
@@ -90,6 +97,7 @@ PNPM_CHECK_SCRIPTS: Mapping[str, tuple[str, ...]] = {
     "next": ("lint", "typecheck"),
     "astro": ("lint", "typecheck"),
     VITE_REACT: ("lint", "typecheck"),
+    TAURI: ("lint", "typecheck"),
 }
 # Build and install outputs of a framework, removed when switching away from it (`ion repo set`).
 # Never data nor .env: only what the tool regenerates. The lock is one: it is not in the
@@ -115,6 +123,7 @@ BUILD_ARTIFACTS: Mapping[str, tuple[str, ...]] = {
     "next": ("pnpm-lock.yaml", "node_modules", ".next", "next-env.d.ts", "tsconfig.tsbuildinfo"),
     "astro": ("pnpm-lock.yaml", "node_modules", ".astro", "dist"),
     VITE_REACT: ("pnpm-lock.yaml", "node_modules", "dist"),
+    TAURI: ("pnpm-lock.yaml", "node_modules", "dist", f"{TAURI_CORE_DIR}/target"),
 }
 PYTHON_CHECKS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("ruff", ("uv", "run", "ruff", "check", ".")),
@@ -125,6 +134,12 @@ PYTHON_CHECKS: tuple[tuple[str, tuple[str, ...]], ...] = (
 # ci`).
 PYTHON_TESTS = ("pytest", ("uv", "run", "pytest", "-q"))
 MAVEN_CHECK = ("maven", (MAVEN_WRAPPER, "-B", "-q", "verify"))
+# A Tauri app's Rust core: formatted, then Clippy with its warnings as errors. Tests on request.
+CARGO_CHECKS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("rustfmt", ("cargo", "fmt", "--check")),
+    ("clippy", ("cargo", "clippy", "--all-targets", "--", "-D", "warnings")),
+)
+CARGO_TESTS = ("cargo test", ("cargo", "test"))
 MAVEN_SKIP_TESTS = "-DskipTests"
 
 
@@ -165,6 +180,15 @@ class Stack:
     def pnpm_dir(self) -> str | None:
         return self.frontend_dir if self.frontend in PNPM_FRONTENDS else None
 
+    @property
+    def cargo_dir(self) -> str | None:
+        """The Rust core of a Tauri app, where Cargo runs."""
+        if self.frontend != TAURI:
+            return None
+        if self.frontend_dir == ROOT_DIR:
+            return TAURI_CORE_DIR
+        return f"{self.frontend_dir}/{TAURI_CORE_DIR}"
+
     def dev_commands(self) -> list[Command]:
         commands = []
         if self.backend in BACKEND_DEV_COMMANDS:
@@ -194,6 +218,12 @@ class Stack:
             commands += [
                 Command(f"{_named(self.pnpm_dir)} {script}", self.pnpm_dir, ("pnpm", script))
                 for script in PNPM_CHECK_SCRIPTS[self.frontend]
+            ]
+        if self.cargo_dir is not None:
+            cargo_checks = (*CARGO_CHECKS, CARGO_TESTS) if with_tests else CARGO_CHECKS
+            commands += [
+                Command(f"{_named(self.cargo_dir)} {label}", self.cargo_dir, argv)
+                for label, argv in cargo_checks
             ]
         return [*commands, Command("charter", ".", ("charter",))]
 

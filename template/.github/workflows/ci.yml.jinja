@@ -49,7 +49,7 @@ jobs:
     with:
       directory: {{ bd }}
 {%- endif %}
-{%- if frontend in ['nuxt', 'next', 'astro', 'vite-react'] %}
+{%- if frontend in ['nuxt', 'next', 'astro', 'vite-react', 'tauri'] %}
 
   frontend:
     uses: antoine-tena/ion-repo/.github/workflows/pnpm.yml@{{ kiln_pin }}
@@ -60,10 +60,20 @@ jobs:
       scripts: |
         lint
         typecheck
-{%- if frontend == 'vite-react' %}
+{%- if frontend in ['vite-react', 'tauri'] %}
         test
 {%- endif %}
         build
+{%- if frontend == 'tauri' %}
+
+  # The app built natively where it ships: Windows and macOS installers, as artifacts.
+  desktop:
+    uses: antoine-tena/ion-repo/.github/workflows/tauri.yml@{{ kiln_pin }}
+{%- if fd != 'frontend' %}
+    with:
+      directory: {{ fd }}
+{%- endif %}
+{%- endif %}
 {%- elif frontend in ['streamlit', 'dash'] %}
 
   frontend:
@@ -94,7 +104,7 @@ jobs:
     uses: antoine-tena/ion-repo/.github/workflows/secrets.yml@{{ kiln_pin }}
 
 {%- set uv_dirs = ([bd] if backend not in ['none', 'java'] else []) + ([fd] if frontend in ['streamlit', 'dash'] else []) %}
-{%- set pnpm_dir = fd if frontend in ['nuxt', 'next', 'astro', 'vite-react'] else '' %}
+{%- set pnpm_dir = fd if frontend in ['nuxt', 'next', 'astro', 'vite-react', 'tauri'] else '' %}
 {%- if uv_dirs or pnpm_dir or backend == 'java' %}
 
   security:

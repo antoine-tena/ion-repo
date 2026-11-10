@@ -1,16 +1,16 @@
 {%- set bd = backend_dir | default('backend') %}{%- set fd = frontend_dir | default('frontend') %}{%- set bp = '' if bd == '.' else bd ~ '/' %}{%- set fp = '' if fd == '.' else fd ~ '/' %}{%- set bdir = bd ~ '/' %}{%- set fdir = fd ~ '/' -%}
 {%- set python_dirs = ([bd] if backend in ['django', 'fastapi', 'data', 'cli'] else []) + ([fd] if frontend in ['streamlit', 'dash'] else []) -%}
-{%- set installed = python_dirs + ([bd] if backend == 'java' else []) + ([fd] if frontend in ['nuxt', 'next', 'astro', 'vite-react'] else []) -%}
-{%- set front_url = {'nuxt': 'http://localhost:3000', 'next': 'http://localhost:3000', 'astro': 'http://localhost:4321', 'vite-react': 'http://localhost:5173', 'streamlit': 'http://localhost:8501', 'dash': 'http://localhost:8050'}.get(frontend) -%}
+{%- set installed = python_dirs + ([bd] if backend == 'java' else []) + ([fd] if frontend in ['nuxt', 'next', 'astro', 'vite-react', 'tauri'] else []) -%}
+{%- set front_url = {'nuxt': 'http://localhost:3000', 'next': 'http://localhost:3000', 'astro': 'http://localhost:4321', 'vite-react': 'http://localhost:5173', 'tauri': 'http://localhost:1420', 'streamlit': 'http://localhost:8501', 'dash': 'http://localhost:8050'}.get(frontend) -%}
 {%- set open_url = front_url or ('http://localhost:2718' if backend == 'data' else 'http://localhost:8000/api/docs') -%}
-{%- set js_front = frontend in ['nuxt', 'next', 'astro', 'vite-react'] -%}
+{%- set js_front = frontend in ['nuxt', 'next', 'astro', 'vite-react', 'tauri'] -%}
 {%- set has_app = front_url or backend != 'none' -%}
 {%- if language_docs == 'fr' -%}
 {%- set back_check = '`./mvnw verify` pour le backend Java (compilation stricte, JUnit, couverture)' ~ (', ruff, mypy et pytest pour le frontend Python' if frontend in ['streamlit', 'dash'] else '') if backend == 'java' else ('Ruff, mypy et pytest pour chaque projet Python' if python_dirs else '') -%}
-{%- set front_check = {'nuxt': 'ESLint et le contrôle des types côté frontend', 'next': 'ESLint et le contrôle des types côté frontend', 'astro': '`astro check` côté frontend', 'vite-react': 'ESLint et `tsc` côté frontend'}.get(frontend) -%}
+{%- set front_check = {'nuxt': 'ESLint et le contrôle des types côté frontend', 'next': 'ESLint et le contrôle des types côté frontend', 'astro': '`astro check` côté frontend', 'vite-react': 'ESLint et `tsc` côté frontend', 'tauri': 'ESLint et `tsc` côté interface, rustfmt et Clippy côté cœur Rust'}.get(frontend) -%}
 {%- set checks = [back_check, front_check] | select | join(', ') -%}
 {%- set back_text = {'django': "l'API, en Django + Django Ninja", 'fastapi': "l'API, en FastAPI", 'data': "la chaîne de données (polars ou NumPy, Plotly) et les notebooks marimo", 'cli': "l'outil en ligne de commande `" ~ name ~ "`", 'java': "le backend Java 25 (Maven, sans framework)"}.get(backend) -%}
-{%- set front_text = {'nuxt': "l'interface, en Nuxt 4 + Vue 3", 'next': "l'interface, en Next.js 16 + React 19", 'astro': "le site, en Astro 7", 'vite-react': "l'interface, en Vite + React 19", 'streamlit': "le tableau de bord, en Streamlit", 'dash': "le tableau de bord, en Dash"}.get(frontend) -%}
+{%- set front_text = {'nuxt': "l'interface, en Nuxt 4 + Vue 3", 'next': "l'interface, en Next.js 16 + React 19", 'astro': "le site, en Astro 7", 'vite-react': "l'interface, en Vite + React 19", 'tauri': "l'app de bureau, en Tauri 2 (cœur Rust) + React 19", 'streamlit': "le tableau de bord, en Streamlit", 'dash': "le tableau de bord, en Dash"}.get(frontend) -%}
 # {{ title }}
 
 {{ description }}
@@ -19,7 +19,8 @@
 
 Après le clone, depuis la racine du dépôt (prérequis : [uv](https://docs.astral.sh/uv/)
 {%- if backend == 'java' %}, un JDK 25{{ ',' if js_front else ' et' }} `unzip`{% endif %}
-{%- if js_front %} et [pnpm](https://pnpm.io/) avec Node 24{% endif %}) :
+{%- if js_front %}{{ ',' if frontend == 'tauri' else ' et' }} [pnpm](https://pnpm.io/) avec Node 24{% endif %}
+{%- if frontend == 'tauri' %} et [Rust](https://rustup.rs/) par rustup ; sous Linux et WSL, WebKitGTK, que `ion repo install` indique{% endif %}) :
 
 ```sh
 uv tool install ion-sh && ion add repo   # une fois par poste
@@ -115,7 +116,11 @@ ion repo dev
 {%- elif backend == 'java' and front_url %}
 - API Java : son jar, reconstruit à chaque lancement ; réglages locaux dans `{{ bp }}.env`.
 {%- endif %}
-{%- if front_url %}
+{%- if frontend == 'tauri' %}
+- L'app s'ouvre dans sa fenêtre, son interface servie par Vite sur {{ front_url }}. Les installeurs
+  Windows (`.msi`, `.exe`) et macOS (`.dmg`) : `cd {{ fd }} && pnpm tauri build` sur le système
+  visé, ou la CI, qui les construit tous les deux.
+{%- elif front_url %}
 - Frontend : {{ front_url }}
 {%- if backend in ['django', 'fastapi'] and js_front %} (les appels `/api` sont relayés vers le backend){% endif %}.
 {%- endif %}
@@ -175,10 +180,10 @@ priorité), `done.md` (ceux qui sont faits), `rejected.md` (ce qui a été refus
 {%- endif %}
 {%- else -%}
 {%- set back_check = '`./mvnw verify` for the Java backend (strict compilation, JUnit, coverage)' ~ (', ruff, mypy and pytest for the Python frontend' if frontend in ['streamlit', 'dash'] else '') if backend == 'java' else ('Ruff, mypy and pytest for each Python project' if python_dirs else '') -%}
-{%- set front_check = {'nuxt': 'ESLint and type checks for the frontend', 'next': 'ESLint and type checks for the frontend', 'astro': '`astro check` for the frontend', 'vite-react': 'ESLint and `tsc` for the frontend'}.get(frontend) -%}
+{%- set front_check = {'nuxt': 'ESLint and type checks for the frontend', 'next': 'ESLint and type checks for the frontend', 'astro': '`astro check` for the frontend', 'vite-react': 'ESLint and `tsc` for the frontend', 'tauri': 'ESLint and `tsc` for the interface, rustfmt and Clippy for the Rust core'}.get(frontend) -%}
 {%- set checks = [back_check, front_check] | select | join(', ') -%}
 {%- set back_text = {'django': 'the API, in Django + Django Ninja', 'fastapi': 'the API, in FastAPI', 'data': 'the data chain (polars or NumPy, Plotly) and the marimo notebooks', 'cli': 'the command-line tool `' ~ name ~ '`', 'java': 'the Java 25 backend (Maven, no framework)'}.get(backend) -%}
-{%- set front_text = {'nuxt': 'the interface, in Nuxt 4 + Vue 3', 'next': 'the interface, in Next.js 16 + React 19', 'astro': 'the site, in Astro 7', 'vite-react': 'the interface, in Vite + React 19', 'streamlit': 'the dashboard, in Streamlit', 'dash': 'the dashboard, in Dash'}.get(frontend) -%}
+{%- set front_text = {'nuxt': 'the interface, in Nuxt 4 + Vue 3', 'next': 'the interface, in Next.js 16 + React 19', 'astro': 'the site, in Astro 7', 'vite-react': 'the interface, in Vite + React 19', 'tauri': 'the desktop app, in Tauri 2 (Rust core) + React 19', 'streamlit': 'the dashboard, in Streamlit', 'dash': 'the dashboard, in Dash'}.get(frontend) -%}
 # {{ title }}
 
 {{ description }}
@@ -187,7 +192,8 @@ priorité), `done.md` (ceux qui sont faits), `rejected.md` (ce qui a été refus
 
 After cloning, from the root of the repo (requirements: [uv](https://docs.astral.sh/uv/)
 {%- if backend == 'java' %}, a JDK 25{{ ',' if js_front else ' and' }} `unzip`{% endif %}
-{%- if js_front %} and [pnpm](https://pnpm.io/) with Node 24{% endif %}):
+{%- if js_front %}{{ ',' if frontend == 'tauri' else ' and' }} [pnpm](https://pnpm.io/) with Node 24{% endif %}
+{%- if frontend == 'tauri' %} and [Rust](https://rustup.rs/) through rustup; on Linux and WSL, WebKitGTK, which `ion repo install` names{% endif %}):
 
 ```sh
 uv tool install ion-sh && ion add repo   # once per machine
@@ -282,7 +288,11 @@ ion repo dev
 {%- elif backend == 'java' and front_url %}
 - Java API: its jar, rebuilt at each start; local settings in `{{ bp }}.env`.
 {%- endif %}
-{%- if front_url %}
+{%- if frontend == 'tauri' %}
+- The app opens in its own window, its interface served by Vite on {{ front_url }}. The Windows
+  (`.msi`, `.exe`) and macOS (`.dmg`) installers: `cd {{ fd }} && pnpm tauri build` on the target
+  system, or the CI, which builds both.
+{%- elif front_url %}
 - Frontend: {{ front_url }}
 {%- if backend in ['django', 'fastapi'] and js_front %} (`/api` calls are proxied to the backend){% endif %}.
 {%- endif %}

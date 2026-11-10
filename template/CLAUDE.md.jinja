@@ -37,6 +37,10 @@ Read before exploring; update in the commit changing a folder, domain or entry p
 {% elif frontend == 'vite-react' -%}
 - `{{ fp }}src/`: the app (`App.tsx`, entry `main.tsx`), API client (`lib/`), constants
   (`constants.ts`); `{{ fp }}index.html`: the page Vite serves.
+{% elif frontend == 'tauri' -%}
+- `{{ fp }}src/`: the app's interface (`App.tsx`, entry `main.tsx`), the core's commands
+  (`core.ts`), constants (`constants.ts`); `{{ fp }}src-tauri/`: the Rust core (`src/lib.rs`),
+  its window and installers (`tauri.conf.json`), what the window may call (`capabilities/`).
 {% elif frontend in ['streamlit', 'dash'] -%}
 - `{{ fp }}app.py`: entry point; `{{ fp }}dashboard/`: pages, layout and constants;
   `{{ fp }}tests/`: tests.

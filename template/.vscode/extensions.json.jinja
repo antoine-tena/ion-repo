@@ -22,9 +22,13 @@
 {%- if frontend == 'astro' %},
     "astro-build.astro-vscode"
 {%- endif %}
-{%- if frontend in ['nuxt', 'next', 'astro', 'vite-react'] %},
+{%- if frontend in ['nuxt', 'next', 'astro', 'vite-react', 'tauri'] %},
     "dbaeumer.vscode-eslint",
     "bradlc.vscode-tailwindcss"
+{%- endif %}
+{%- if frontend == 'tauri' %},
+    "tauri-apps.tauri-vscode",
+    "rust-lang.rust-analyzer"
 {%- endif %}
 {%- if podman %},
     "ms-azuretools.vscode-containers"

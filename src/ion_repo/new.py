@@ -46,6 +46,7 @@ FIRST_PROMPTS = {
     "dashboard": "add a chart of a sample CSV, with a date filter",
     "analysis": "load a sample CSV and plot its main trend in a notebook",
     "cli": "add a --verbose option that logs each step",
+    "desktop": "add a settings window that remembers its values between launches, with tests",
 }
 
 
@@ -87,6 +88,8 @@ def create_project(request: NewProjectRequest) -> Path:
     stack = load_stack(root)
     if stack.pnpm_dir is not None:
         require_tools("pnpm")
+    if stack.cargo_dir is not None:
+        require_tools("cargo")
     run(["git", "init", "-q", "-b", "main"], root)
     apply_statusline_settings(root)
     lock_dependencies(root, stack)

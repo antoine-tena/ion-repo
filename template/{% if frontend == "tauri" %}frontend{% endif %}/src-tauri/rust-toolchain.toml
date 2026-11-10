@@ -1,0 +1,5 @@
+# The Rust every machine and the CI build with: rustup installs it at the first `cargo`.
+[toolchain]
+channel = "1.99.1"
+components = ["rustfmt", "clippy"]
+profile = "minimal"

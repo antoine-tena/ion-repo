@@ -31,6 +31,7 @@ PROJECT_TYPE = Question(
         ("A data dashboard", "dashboard"),
         ("A data analysis (notebooks, figures)", "analysis"),
         ("A command-line tool (script, workstation utility)", "cli"),
+        ("A desktop app (Windows, macOS)", "desktop"),
     ),
     "app",
 )

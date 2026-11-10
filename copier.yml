@@ -14,6 +14,11 @@ _skip_if_exists:
   - docs/backlog/done.md
   - frontend/public/favicon.ico
   - frontend/public/favicon.svg
+  - frontend/src-tauri/icons/32x32.png
+  - frontend/src-tauri/icons/128x128.png
+  - frontend/src-tauri/icons/128x128@2x.png
+  - frontend/src-tauri/icons/icon.icns
+  - frontend/src-tauri/icons/icon.ico
   - frontend/app/favicon.ico
   - frontend/server/plugins/csp-nonce.ts
 
@@ -145,13 +150,15 @@ project_type:
     "A data dashboard": dashboard
     "A data analysis (notebooks, figures)": analysis
     "A command-line tool (script, workstation utility)": cli
+    "A desktop app (Windows, macOS)": desktop
   default: app
 
 backend:
   type: str
   help: >-
     Backend (advised for this type:
-    {% if project_type == 'app' %}Django{% elif project_type == 'api' %}FastAPI{% elif project_type in ['dashboard', 'analysis'] %}Python data{% elif project_type == 'cli' %}Python command-line tool{% else %}none{% endif %})
+    {% if project_type == 'app' %}Django{% elif project_type == 'api' %}FastAPI{% elif project_type in ['dashboard', 'analysis'] %}Python data{% elif project_type == 'cli' %}Python command-line tool{% else %}none{% endif %};
+    a desktop app's core is the Rust of its Tauri front)
   choices:
     "Django + Django Ninja (full API, admin, ORM)": django
     "FastAPI (light API, async)": fastapi
@@ -166,28 +173,29 @@ frontend:
   type: str
   help: >-
     Frontend (advised for this type:
-    {% if project_type == 'app' %}Nuxt{% elif project_type == 'site' %}Astro{% elif project_type == 'dashboard' %}Streamlit{% else %}none{% endif %})
+    {% if project_type == 'app' %}Nuxt{% elif project_type == 'site' %}Astro{% elif project_type == 'dashboard' %}Streamlit{% elif project_type == 'desktop' %}Tauri{% else %}none{% endif %})
   choices:
     "Nuxt + Vue (web app)": nuxt
     "Next.js + React (web app)": next
     "Astro (content site, static)": astro
     "Vite + React (single-page app)": vite-react
+    "Tauri + React (desktop app: Rust core, Windows and macOS)": tauri
     "Streamlit (Python dashboard)": streamlit
     "Dash (Python dashboard, interactive)": dash
     "None": none
   default: >-
-    {% if project_type == 'app' %}nuxt{% elif project_type == 'site' %}astro{% elif project_type == 'dashboard' %}streamlit{% else %}none{% endif %}
+    {% if project_type == 'app' %}nuxt{% elif project_type == 'site' %}astro{% elif project_type == 'dashboard' %}streamlit{% elif project_type == 'desktop' %}tauri{% else %}none{% endif %}
   validator: >-
-    {% if backend == 'none' and frontend == 'none' and not kept %}A backend or a frontend is needed.{% endif %}
+    {% if backend == 'none' and frontend == 'none' and not kept %}A backend or a frontend is needed.{% elif frontend == 'tauri' and backend != 'none' %}A Tauri app carries its own core, in Rust: backend none.{% endif %}
 
 podman:
   type: bool
   help: Podman containers (Containerfile, compose.yaml, PostgreSQL)? Later with `ion repo set podman=true`.
-  default: "{{ size in ['medium', 'large'] and not (backend in ['cli', 'java'] and frontend == 'none') }}"
+  default: "{{ size in ['medium', 'large'] and not (backend in ['cli', 'java'] and frontend == 'none') and frontend != 'tauri' }}"
   # A command-line tool, or a Java backend without a framework, has no server to put in a
   # container yet; its front, if any, does.
   validator: >-
-    {% if podman and backend in ['cli', 'java'] and frontend == 'none' %}{{ 'A Java backend without a framework' if backend == 'java' else 'A command-line tool' }} alone has nothing to put in podman.{% endif %}
+    {% if podman and backend in ['cli', 'java'] and frontend == 'none' %}{{ 'A Java backend without a framework' if backend == 'java' else 'A command-line tool' }} alone has nothing to put in podman.{% elif podman and frontend == 'tauri' %}A desktop app runs on the user's machine: nothing to put in podman.{% endif %}
 
 # A command-line tool that also ships its own Claude Code plugin: `plugins/<plugin_name>/` (manifest, a
 # first skill), its catalog `.claude-plugin/marketplace.json`, enabled in the repo's own sessions.
@@ -415,15 +423,15 @@ pieces:
     - tool: ion-design
       repo: antoine-tena/ion-design
       plugin: design
-      when: {frontend: [nuxt, next, astro, vite-react]}
+      when: {frontend: [nuxt, next, astro, vite-react, tauri]}
       template: ""
     - tool: ion-words
       repo: antoine-tena/ion-words
       plugin: words
-      when: {frontend: [nuxt, next, astro, vite-react], owner: [antoine-tena, emberstudio-fr]}
+      when: {frontend: [nuxt, next, astro, vite-react, tauri], owner: [antoine-tena, emberstudio-fr]}
       template: ""
     - tool: ion-media
       repo: antoine-tena/ion-media
       plugin: media
-      when: {frontend: [nuxt, next, astro, vite-react], owner: [antoine-tena, emberstudio-fr]}
+      when: {frontend: [nuxt, next, astro, vite-react, tauri], owner: [antoine-tena, emberstudio-fr]}
       template: ""

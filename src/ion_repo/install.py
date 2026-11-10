@@ -53,6 +53,12 @@ ENV_FILE_MODE = 0o600
 VENV_PYTHON = b"/bin/python"
 VENV_SHEBANG_MAX = 4096
 PNPM_LOCKFILE = "pnpm-lock.yaml"
+# What Tauri builds its window with on Linux (WebKitGTK); Windows and macOS bring their own.
+TAURI_LINUX_LIBRARY = "webkit2gtk-4.1"
+TAURI_LINUX_HINT = (
+    "sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev "
+    "libssl-dev libayatana-appindicator3-dev librsvg2-dev"
+)
 
 # Install hints by system (never pip or docker).
 SYSTEM_HINTS: dict[str, dict[str, str]] = {
@@ -71,6 +77,12 @@ SYSTEM_HINTS: dict[str, dict[str, str]] = {
         "linux": "corepack enable pnpm (Node 24, from mise or the package manager)",
         "wsl": "corepack enable pnpm (Node 24, from mise or apt)",
         "macos": "brew install node@24 && corepack enable pnpm",
+    },
+    # A Tauri app's core: rustup reads the toolchain its `rust-toolchain.toml` pins.
+    "cargo": {
+        "linux": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh",
+        "wsl": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh",
+        "macos": "brew install rustup && rustup-init",
     },
     "podman": {
         "linux": "sudo apt install podman",
@@ -104,6 +116,11 @@ def install_project(root: Path) -> None:
         command = pnpm_install_command(root / stack.pnpm_dir)
         step(f"{stack.pnpm_dir}: {command[0]} dependencies")
         run(command, root / stack.pnpm_dir)
+    if stack.cargo_dir is not None:
+        step(f"{stack.cargo_dir}: Rust dependencies (cargo)")
+        run(["cargo", "fetch", "--locked"], root / stack.cargo_dir)
+        if config.system != "macos" and not _has_webkit():
+            ui.note(f"Tauri needs WebKitGTK to build on Linux: {TAURI_LINUX_HINT}")
     step("git guards (pre-commit) and status line")
     install_git_hooks(root)
     apply_statusline_settings(root)
@@ -220,6 +237,7 @@ def _require_stack_tools(stack: Stack, config: UserConfig) -> None:
         (["pnpm"] if stack.pnpm_dir else [])
         + (["podman"] if stack.has_podman else [])
         + (["java", "unzip"] if stack.maven_dir else [])
+        + (["cargo"] if stack.cargo_dir else [])
     )
     missing = [tool for tool in needed if shutil.which(tool) is None]
     if missing:
@@ -228,6 +246,13 @@ def _require_stack_tools(stack: Stack, config: UserConfig) -> None:
         raise KilnError(f"missing tools:\n{hints}")
     if stack.has_podman and config.system == "macos":
         _require_podman_machine()
+
+
+def _has_webkit() -> bool:
+    if shutil.which("pkg-config") is None:
+        return False
+    command = ["pkg-config", "--exists", TAURI_LINUX_LIBRARY]
+    return subprocess.run(command, capture_output=True, check=False).returncode == 0
 
 
 def _require_podman_machine() -> None:

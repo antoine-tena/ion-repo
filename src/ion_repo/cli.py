@@ -23,9 +23,9 @@ EXIT_FAILURE = 1
 EXIT_INTERRUPTED = 130  # 128 + SIGINT, as shells report it
 PROJECT_NAME = re.compile(r"[a-z][a-z0-9-]*")
 SIZES = ("tiny", "small", "medium", "large")
-PROJECT_TYPES = ("app", "api", "site", "dashboard", "analysis", "cli")
+PROJECT_TYPES = ("app", "api", "site", "dashboard", "analysis", "cli", "desktop")
 BACKENDS = ("django", "fastapi", "data", "cli", "java", "none")
-FRONTENDS = ("nuxt", "next", "astro", "vite-react", "streamlit", "dash", "none")
+FRONTENDS = ("nuxt", "next", "astro", "vite-react", "tauri", "streamlit", "dash", "none")
 LANGUAGES = ("en", "fr")
 
 
