@@ -38,6 +38,8 @@ Puis lancer l'outil : `cd {{ bd }} && uv run {{ name }} --help`, ou l'installer 
 {%- endif %}
 {%- elif backend == 'java' and not front_url -%}
 Puis vérifier le backend : `cd {{ bd }} && ./mvnw verify`.
+{%- elif frontend == 'tauri' -%}
+La fenêtre de l'app s'ouvre d'elle-même.
 {%- elif has_app -%}
 Puis ouvrir {{ open_url }}.
 {%- endif %}
@@ -211,6 +213,8 @@ Then run the tool: `cd {{ bd }} && uv run {{ name }} --help`, or install it on t
 {%- endif %}
 {%- elif backend == 'java' and not front_url -%}
 Then check the backend: `cd {{ bd }} && ./mvnw verify`.
+{%- elif frontend == 'tauri' -%}
+The app's window opens by itself.
 {%- elif has_app -%}
 Then open {{ open_url }}.
 {%- endif %}
