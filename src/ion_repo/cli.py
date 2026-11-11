@@ -34,7 +34,18 @@ COMMAND_GROUPS = (
     ("Project", ("new", "adopt", "install", "publish", "update", "set", "tickets", "waive")),
     (
         "Day to day",
-        ("dev", "check", "ci", "contract", "doctor", "pause", "frame", "eval-skills", "completion"),
+        (
+            "dev",
+            "check",
+            "ci",
+            "contract",
+            "doctor",
+            "session",
+            "pause",
+            "frame",
+            "eval-skills",
+            "completion",
+        ),
     ),
     ("The grid", ("grid", "score", "fix", "bot")),
     ("All repos", ("status", "update --all", "version")),
@@ -229,6 +240,7 @@ def build_parser() -> argparse.ArgumentParser:
     tickets_parser.add_argument("paths", nargs="*", help="more files to convert")
     tickets_parser.add_argument("--yes", action="store_true", help="write without asking")
     tickets_parser.add_argument("--dry-run", action="store_true", help="show, write nothing")
+    _add_session_command(commands)
     _add_waive_command(commands)
     completion_parser = commands.add_parser(
         "completion", help="shell completion script (eval it in ~/.bashrc)"
@@ -366,6 +378,21 @@ def _add_frame_command(commands: argparse._SubParsersAction[_KilnParser]) -> Non
     frame_parser.add_argument("skill", help="its skill (summary, merge...)")
     frame_parser.add_argument(
         "--width", type=int, help="the rules' width (default: the terminal's, less 6)"
+    )
+
+
+def _add_session_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
+    session_parser = commands.add_parser(
+        "session", help="the line that opens a Claude Code session on backlog tickets"
+    )
+    session_parser.add_argument("tickets", nargs="+", help="ticket IDs (T-12, 12, <repo>#T-12)")
+    session_parser.add_argument(
+        "--effort",
+        choices=("low", "medium", "high", "xhigh", "max"),
+        help="instead of the tickets' (their Session field, else their size)",
+    )
+    session_parser.add_argument(
+        "--note", action="append", default=[], help="a line added to the prompt (repeatable)"
     )
 
 
@@ -711,6 +738,10 @@ def _dispatch_in_repo(arguments: argparse.Namespace, root: Path) -> None:
             dry_run=arguments.dry_run,
             ask=input if is_interactive() else None,
         )
+    elif command == "session":
+        from ion_repo import session
+
+        session.session(root, arguments.tickets, arguments.effort, arguments.note)
     elif command == "set":
         from ion_repo import settings
 
