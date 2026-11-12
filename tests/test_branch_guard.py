@@ -93,3 +93,26 @@ def test_commit_that_creates_the_repo_passes_on_main(tmp_path: Path) -> None:
     assert run_hook('git commit -m "chore: initial commit"', tmp_path).returncode == 0
     first_commit(tmp_path)
     assert run_hook('git commit -m "feat: x"', tmp_path).returncode == 2
+
+
+@pytest.mark.parametrize(
+    "switch",
+    [
+        "git switch -qc feat",
+        "git switch -C feat",
+        "git checkout -b feat",
+        "git checkout -qB feat",
+        "git branch feat && git switch feat",
+        "cd .. && git -C {repo} switch -c feat && cd {repo}",
+    ],
+)
+def test_commit_after_switching_off_develop_passes(tmp_path: Path, switch: str) -> None:
+    subprocess.run(["git", "init", "-q", "-b", "develop", str(tmp_path)], check=True)
+    first_commit(tmp_path)
+    command = f"{switch.format(repo=tmp_path)} && git commit -m x"
+    assert run_hook(command, tmp_path).returncode == 0
+
+
+def test_commit_after_switching_onto_develop_is_refused(repo: Path) -> None:
+    first_commit(repo)
+    assert run_hook("git switch develop && git commit -m x", repo).returncode == 2
