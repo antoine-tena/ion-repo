@@ -37,6 +37,7 @@ COMMAND_GROUPS = (
         (
             "dev",
             "check",
+            "clones",
             "ci",
             "contract",
             "doctor",
@@ -83,6 +84,7 @@ NO_RECAP_COMMANDS = frozenset(
         "frame",
         "eval-skills",
         "bot",
+        "clones",
     }
 )
 HELP_FLAGS: tuple[list[str], ...] = ([], ["-h"], ["--help"])
@@ -193,6 +195,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     check_parser.add_argument(
         "--all", action="store_true", help="the whole repo, not only the branch's changes"
+    )
+    clones_parser = commands.add_parser(
+        "clones", help="the duplicated code the branch brought, beside the original to reuse"
+    )
+    clones_parser.add_argument(
+        "--base", help="compare with this ref (default: where the branch left develop)"
     )
     _add_ci_command(commands)
     commands.add_parser("contract", help="regenerate openapi.json and the frontend types")
@@ -718,6 +726,10 @@ def _dispatch_in_repo(arguments: argparse.Namespace, root: Path) -> None:
         from ion_repo import check
 
         check.check_project(root, arguments.tests, arguments.all)
+    elif command == "clones":
+        from ion_repo import clones
+
+        clones.clones(root, arguments.base)
     elif command == "ci":
         _dispatch_ci(root, arguments)
     elif command == "contract":

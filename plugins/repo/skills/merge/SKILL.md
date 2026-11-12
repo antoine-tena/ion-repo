@@ -1,6 +1,6 @@
 ---
 name: merge
-description: Finishes work: fast linters on changed files, merge into develop, push, delete branch and worktree, update the repo's plugin. No CI. Use at end of work or when asked to merge.
+description: Finishes work: fast linters on changed files, new duplicated code judged, merge into develop, push, delete branch and worktree, update the repo's plugin. No CI. Use at end of work or when asked to merge.
 argument-hint: "[branch]"
 ---
 
@@ -8,6 +8,7 @@ Branch: `$ARGUMENTS`, else current. Integration branch: per project `CLAUDE.md`,
 
 1. `git status --porcelain` must be empty, else stop and say so. Run `/repo:review <branch>`: pushed commits are public for good. Its tidying happens before merge; what it leaves to the user: tell them, wait for their decision.
    Fast linters in the branch's worktree, only on changed files (`git diff --name-only --diff-filter=d <integration>...<branch>`): `ruff check` and `ruff format --check` on Python, `eslint` on JS/TS/Vue, the like for other languages (ion-repo: `uv run ruff check <files>`, `uv run ruff format --check <files>`). No type checker, test, `ion repo check` or `ion repo ci`: the release runs them. No such file: run nothing. Failure: fix on the branch, never merge red.
+   Then `ion repo clones` in the worktree: the duplicated code the branch brought, `copy ← original`, found without Claude (jscpd). Judge each line, the original read first: reuse it (call it instead of the copy), adapt it to serve both, or keep the copy (the two will diverge, a test's or data's repetition). A reuse or an adaptation is a commit on the branch, linters run again on what it touched; a kept copy is named in the debrief with why. Never blocks the merge.
 2. If moved into the worktree (`EnterWorktree`), leave it now with `ExitWorktree` (`action: "keep"`): an isolated session refuses to merge from the main tree. Then `git pull --ff-only origin <integration>`, then `git merge --no-ff <branch> -m "Merge branch '<branch>' into <integration>"`, from the main tree if on the integration branch, else `git -C` on a worktree that is. Never switch the main tree's branch under another session.
 3. Conflict: stop, show files, propose a resolution.
 4. `git push origin <integration>`.

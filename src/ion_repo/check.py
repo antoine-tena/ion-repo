@@ -153,6 +153,18 @@ def _touches(changed: list[str] | None, directory: str) -> bool:
 
 def changed_files(root: Path) -> list[str]:
     """Files the branch changed since it left the integration branch, committed or not."""
+    diff = subprocess.run(
+        ["git", "diff", "--name-only", branch_base(root)],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return [line for line in diff.stdout.splitlines() if line]
+
+
+def branch_base(root: Path) -> str:
+    """The commit where the branch left the integration branch (origin's, else the local one)."""
     from ion_repo.fleet import integration_branch  # fleet imports check
 
     integration = integration_branch(root)
@@ -170,10 +182,7 @@ def changed_files(root: Path) -> list[str]:
             break
     if not base:
         raise KilnError(f"no common ancestor with {integration}: ion repo check --all")
-    diff = subprocess.run(
-        ["git", "diff", "--name-only", base], cwd=root, capture_output=True, text=True, check=True
-    )
-    return [line for line in diff.stdout.splitlines() if line]
+    return base
 
 
 RELEASE_BRANCH_PREFIXES = ("release/", "hotfix/")
