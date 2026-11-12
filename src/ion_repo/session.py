@@ -19,7 +19,7 @@ from ion_repo.tickets import repo_name
 MODEL = "claude-opus-5-5"
 EFFORTS = ("low", "medium", "high", "xhigh", "max")
 EFFORT_BY_SIZE = {"XS": "low", "S": "low", "M": "medium", "L": "medium"}
-DEFAULT_EFFORT = "medium"
+DEFAULT_EFFORT = "low"
 BRANCH_TYPE = {"bug": "fix", "improvement": "feat", "idea": "feat", "task": "chore"}
 DEFAULT_BRANCH_TYPE = "chore"
 BACKLOG = "docs/backlog/backlog.md"
