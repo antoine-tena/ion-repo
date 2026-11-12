@@ -24,6 +24,12 @@ REPORT = {
             "isNew": True,
         },
         {
+            "firstFile": _side("app/refund.py", 63, 84),
+            "secondFile": _side("app/Demo.vue", 171, 190),
+            "kind": "similar",
+            "isNew": True,
+        },
+        {
             "firstFile": _side("app/old.py", 1, 9),
             "secondFile": _side("app/older.py", 3, 11),
             "kind": "exact",
@@ -56,12 +62,15 @@ def test_only_new_clones_show_the_copy_before_its_original(
     _fake_jscpd(monkeypatch, REPORT, calls)
     found = clones.new_clones(tmp_path, base="abc123")
     assert [clone.line() for clone in found] == [
-        "app/Demo.vue:2-25 ← app/Access.vue:2-25 (renamed)"
+        "app/Demo.vue:2-25 ← app/Access.vue:2-25 (renamed)",
+        "app/Demo.vue:171-190 ← app/refund.py:63-84 (similar)",
     ]
     command = calls[0]
     assert command[:4] == ["uvx", "--from", clones.JSCPD, "jscpd"]
     assert command[command.index("--baseline-from-ref") + 1] == "abc123"
     assert "--ignore-identifiers" in command
+    assert "--similarity" in command
+    assert command[command.index("--min-nodes") + 1] == clones.MIN_NODES
 
 
 def test_a_repo_config_adds_its_ignores_to_the_defaults(tmp_path: Path) -> None:
