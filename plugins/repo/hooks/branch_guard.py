@@ -50,19 +50,46 @@ cmd = data.get("tool_input", {}).get("command", "")
 cwd = data.get("cwd") or "."
 
 # Each subcommand (separated by ; && || | or a newline) is read in order: a `cd` changes the
-# current directory, a `git [-C dir] commit` at the head of a subcommand is checked in its
-# directory. The text "git commit" in an echo or a message does not count.
+# current directory, a `git [-C dir] switch|checkout` changes the branch of its directory, a
+# `git [-C dir] commit` at the head of a subcommand is checked in its directory, on the branch
+# reached by then. The text "git commit" in an echo or a message does not count.
+CREATE = {"switch": ("-c", "-C", "--create", "--force-create"), "checkout": ("-b", "-B")}
+
+
+def switched_to(verb: str, args: list[str]) -> str | None:
+    """The branch a `git switch|checkout` lands on, None when it cannot be told."""
+    for i, arg in enumerate(args):
+        for flag in CREATE[verb]:
+            if arg == flag or (flag.startswith("--") and arg.startswith(flag + "=")):
+                value = arg.partition("=")[2] or (args[i + 1] if i + 1 < len(args) else "")
+                return value.strip("'\"") or None
+            # bundled short flags: -qc feat, -cfeat
+            if len(flag) == 2 and re.fullmatch(rf"-[a-zA-Z]*{flag[1]}\S*", arg):
+                rest = arg[arg.index(flag[1]) + 1 :]
+                return (rest or (args[i + 1] if i + 1 < len(args) else "")).strip("'\"") or None
+    if verb == "switch":
+        names = [a for a in args if not a.startswith("-")]
+        if names and "--detach" not in args and "-d" not in args:
+            return names[0].strip("'\"")
+    return None
+
+
 targets = []
+branches: dict[str, str | None] = {}
 for part in re.split(r"&&|\|\||[;|\n]", cmd):
     part = part.strip().lstrip("(").strip()
     m = re.match(r"cd\s+(\S+)", part)
     if m:
         cwd = os.path.join(cwd, os.path.expanduser(m.group(1).strip("'\"")))
         continue
-    m = re.match(r"git((?:\s+-[cC]\s+\S+)*)\s+commit\b", part)
+    m = re.match(r"git((?:\s+-[cC]\s+\S+)*)\s+(commit|switch|checkout)\b(.*)", part)
     if m:
         c = re.findall(r"-C\s+(\S+)", m.group(1))
-        targets.append(os.path.join(cwd, *(p.strip("'\"") for p in c)) if c else cwd)
+        where = os.path.realpath(os.path.join(cwd, *(p.strip("'\"") for p in c)) if c else cwd)
+        if m.group(2) == "commit":
+            targets.append((where, branches.get(where)))
+        else:
+            branches[where] = switched_to(m.group(2), m.group(3).split())
 
 # The message is in the command (-m, heredoc) or in a file (-F, --file).
 SESSION = r"claude-session:"
@@ -82,14 +109,17 @@ if targets:
         )
         sys.exit(2)
 
-for target in targets:
+for target, switched in targets:
     try:
-        branch = subprocess.run(
-            ["git", "-C", target, "branch", "--show-current"],
-            capture_output=True,
-            text=True,
-            timeout=5,
-        ).stdout.strip()
+        branch = (
+            switched
+            or subprocess.run(
+                ["git", "-C", target, "branch", "--show-current"],
+                capture_output=True,
+                text=True,
+                timeout=5,
+            ).stdout.strip()
+        )
     except Exception:
         continue
     is_disabled = "false" in (
