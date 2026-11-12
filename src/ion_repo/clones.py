@@ -2,12 +2,19 @@
 
 jscpd (MIT, Rust engine, run by uvx) scans the whole repo in a second or two and compares it
 with the commit where the branch left the integration branch: only the clones absent there are
-shown, renamed copies included (`--ignore-identifiers`). Found without Claude, judged by it:
-reuse the original, adapt it to serve both, or keep the copy. A report, never a failure: the
+shown, renamed copies included (`--ignore-identifiers`), and functions of a like structure
+written apart (`--similarity`, near-miss clones the exact mode misses).
+Found without Claude, judged by it: reuse the original, adapt it to serve both, or keep the
+copy. A report, never a failure: the
 merge goes on whatever it finds.
 
 Lockfiles, migrations and JSON data are left out; a repo's own `.jscpd.json` adds its `ignore`
 patterns to those (jscpd's command line would replace them).
+
+`--min-nodes 80` keeps --similarity off the small functions already reduced to one shared call,
+which match each other by their shape alone; measured on a Django+Nuxt repo, it drops those
+and keeps the near-miss clones of 10 lines and more. `--min-lines` would have cut the small
+exact clones too.
 """
 
 import json
@@ -23,6 +30,7 @@ from ion_repo.check import branch_base, changed_files
 from ion_repo.shell import KilnError, require_tools
 
 JSCPD = "jscpd==5.4.3"
+MIN_NODES = "80"
 CONFIG = ".jscpd.json"
 REPORT = "jscpd-report.json"
 IGNORED = (
@@ -46,10 +54,11 @@ IGNORED = (
 class Clone:
     copy: str
     original: str
-    is_renamed: bool
+    kind: str
 
     def line(self) -> str:
-        return f"{self.copy} ← {self.original}{' (renamed)' if self.is_renamed else ''}"
+        mark = f" ({self.kind})" if self.kind in ("renamed", "similar") else ""
+        return f"{self.copy} ← {self.original}{mark}"
 
 
 def clones(root: Path, base: str | None = None) -> None:
@@ -79,6 +88,9 @@ def new_clones(root: Path, base: str | None = None) -> list[Clone]:
             "--baseline-from-ref",
             base,
             "--ignore-identifiers",
+            "--similarity",
+            "--min-nodes",
+            MIN_NODES,
             "--ignore",
             ",".join(ignored(root)),
             "--reporters",
@@ -112,7 +124,7 @@ def _oriented(duplicate: dict[str, Any], changed: set[str]) -> Clone:
     first, second = (_place(duplicate[side]) for side in ("firstFile", "secondFile"))
     if duplicate["secondFile"]["name"] in changed and duplicate["firstFile"]["name"] not in changed:
         first, second = second, first
-    return Clone(first, second, duplicate.get("kind") == "renamed")
+    return Clone(first, second, duplicate.get("kind", "exact"))
 
 
 def _place(side: dict[str, Any]) -> str:
