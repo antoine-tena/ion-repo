@@ -9,7 +9,7 @@
 Slow and networked (PyPI, npm, Maven Central): left out of the default run, played by
 `uv run pytest -m e2e` and by ion-repo's CI on release branches and every night. The generated
 projects take a few gigabytes: where `/tmp` is a RAM disk (WSL), add
-`--basetemp ~/.cache/kiln-e2e`.
+`--basetemp ~/.cache/kiln-e2e`; a passed test's project is removed as it ends.
 """
 
 import os
