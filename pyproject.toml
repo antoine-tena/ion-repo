@@ -91,6 +91,9 @@ markers = ["e2e: end to end, slow and networked (uv run pytest -m e2e)"]
 # A deprecation is a failure to come: it fails the tests now (an escape in copier.yml slipped
 # through as a warning).
 filterwarnings = ["error::DeprecationWarning"]
+# A passed test's folder goes at once, even under `--basetemp`: the end-to-end projects take
+# gigabytes. A failed test's stays, to be looked at.
+tmp_path_retention_policy = "failed"
 
 [tool.ruff]
 line-length = 100
