@@ -1,8 +1,9 @@
 """Dependency locks and updates, by ion-repo's policy.
 
 By default, compatible updates: uv stays within the bounds of pyproject.toml (same major
-version), pnpm only bumps the dependencies whose latest version keeps the same major.
-`--major` raises the Python bounds to the latest version, takes the latest pnpm versions and
+version), the front's manager (pnpm, or npm in an adopted npm repo) only bumps the dependencies
+whose latest version keeps the same major. `--major` raises the Python bounds to the latest
+version, takes the latest front versions and
 updates the pre-commit hooks. The checks always follow (`ion repo check`).
 """
 
@@ -28,6 +29,17 @@ LOCK_ONLY = {
     "npm": ("npm", "install", "--package-lock-only"),
     "yarn": ("yarn", "install", "--mode=update-lockfile"),
     "bun": ("bun", "install", "--lockfile-only"),
+}
+# Updates by the manager of the front's lock: install, outdated as JSON, the key of the
+# dependency type in that JSON, the command that bumps a version. yarn and bun: by hand.
+NODE_UPDATES = {
+    "pnpm": (
+        ("pnpm", "install", "--frozen-lockfile"),
+        ("pnpm", "outdated", "--format", "json"),
+        "dependencyType",
+        ("pnpm", "add"),
+    ),
+    "npm": (("npm", "ci"), ("npm", "outdated", "--json"), "type", ("npm", "install")),
 }
 
 
@@ -68,8 +80,12 @@ def update_dependencies(root: Path, stack: Stack, *, allow_major: bool) -> None:
             raise_python_bounds(root / directory)
         run(["uv", "lock", "--upgrade"], root / directory)
     if stack.pnpm_dir is not None:
-        step(f"{stack.pnpm_dir}: pnpm dependencies{' (majors included)' if allow_major else ''}")
-        update_pnpm(root / stack.pnpm_dir, allow_major=allow_major)
+        folder = root / stack.pnpm_dir
+        manager = node_manager(folder)
+        step(
+            f"{stack.pnpm_dir}: {manager} dependencies{' (majors included)' if allow_major else ''}"
+        )
+        update_node(folder, allow_major=allow_major)
     if stack.cargo_dir is not None:
         # Compatible versions only: a major of a crate is raised in Cargo.toml, by hand.
         step(f"{stack.cargo_dir}: Rust dependencies")
@@ -139,16 +155,19 @@ def _ignored_pnpm_dependencies(project_dir: Path) -> set[str]:
     return set(update_config.get("ignoreDependencies", []) or [])
 
 
-def update_pnpm(project_dir: Path, *, allow_major: bool) -> None:
-    """Exact versions bumped by `pnpm add`, majors only with `allow_major`. Installed first:
-    without `node_modules` (a fresh worktree), `pnpm outdated` gives no `current` version."""
-    run(["pnpm", "install", "--frozen-lockfile"], project_dir)
+def update_node(project_dir: Path, *, allow_major: bool) -> None:
+    """Versions bumped by the manager of the folder's lock (`pnpm add`, or `npm install` in an
+    adopted npm repo: pnpm would stop on ERR_PNPM_NO_LOCKFILE), majors only with `allow_major`.
+    Installed first: without `node_modules` (a fresh worktree), `outdated` gives no `current`."""
+    manager = node_manager(project_dir)
+    if manager not in NODE_UPDATES:
+        print(f"{manager} front: its dependencies are updated by hand ({manager} outdated)")
+        return
+    install, outdated_command, type_key, bump = NODE_UPDATES[manager]
+    run(list(install), project_dir)
+    # `npm outdated` exits 1 when something is outdated: its JSON is read all the same.
     completed = subprocess.run(
-        ["pnpm", "outdated", "--format", "json"],
-        cwd=project_dir,
-        capture_output=True,
-        text=True,
-        check=False,
+        list(outdated_command), cwd=project_dir, capture_output=True, text=True, check=False
     )
     outdated = json.loads(completed.stdout or "{}")
     ignored = _ignored_pnpm_dependencies(project_dir)
@@ -158,13 +177,11 @@ def update_pnpm(project_dir: Path, *, allow_major: bool) -> None:
         if name in ignored:
             continue
         if allow_major or _major(info["latest"]) == _major(info["current"]):
-            upgrades[info.get("dependencyType") == DEV_DEPENDENCY_TYPE].append(
-                f"{name}@{info['latest']}"
-            )
+            upgrades[info.get(type_key) == DEV_DEPENDENCY_TYPE].append(f"{name}@{info['latest']}")
         else:
             held_back.append(f"{name} {info['current']} → {info['latest']}")
     for is_dev, packages in upgrades.items():
         if packages:
-            run(["pnpm", "add", *(["--save-dev"] if is_dev else []), *packages], project_dir)
+            run([*bump, *(["--save-dev"] if is_dev else []), *packages], project_dir)
     if held_back:
         print("Majors available (ion repo update --major): " + ", ".join(held_back))
