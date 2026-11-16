@@ -13,11 +13,10 @@ from ion_score import ui
 from ion_repo.adopted_names import HOOKS_FILE
 from ion_repo.config import UserConfig, ensure_system, load_config
 from ion_repo.dev.backing import start_backing_services
-from ion_repo.dev.processes import LOCK_MANAGERS, NODE_INSTALLS, package_manager
+from ion_repo.dev.processes import PNPM_LOCKFILE, pnpm_install_command
 from ion_repo.shell import KilnError, require_tools, run, step
 from ion_repo.stack import (
     MAVEN_WRAPPER,
-    PNPM_LENIENT_BUILDS,
     ROOT_DIR,
     Stack,
     answers_if_any,
@@ -52,7 +51,6 @@ ENV_FILE_MODE = 0o600
 # A venv script starts `#!/…/.venv/bin/python`: the folder it was created in.
 VENV_PYTHON = b"/bin/python"
 VENV_SHEBANG_MAX = 4096
-PNPM_LOCKFILE = "pnpm-lock.yaml"
 # What Tauri builds its window with on Linux (WebKitGTK); Windows and macOS bring their own.
 TAURI_LINUX_LIBRARY = "webkit2gtk-4.1"
 TAURI_LINUX_HINT = (
@@ -291,18 +289,6 @@ def moved_from(venv: Path) -> Path | None:
         same_place = os.path.realpath(created_in) == os.path.realpath(venv)
         return None if same_place else created_in
     return None
-
-
-def pnpm_install_command(directory: Path) -> list[str]:
-    """Frozen to the lockfile when there is one, by the package manager that wrote it: an
-    adopted npm repo keeps its package-lock.json, where pnpm would add a pnpm-lock.yaml and
-    leave the tree dirty. Without any lock (a repo that never committed one), `--frozen-lockfile`
-    fails with ERR_PNPM_NO_LOCKFILE: a plain pnpm install creates it."""
-    if (directory / PNPM_LOCKFILE).is_file():
-        return ["pnpm", "install", "--frozen-lockfile", PNPM_LENIENT_BUILDS]
-    if any((directory / lock).is_file() for lock, _ in LOCK_MANAGERS):
-        return list(NODE_INSTALLS[package_manager(directory)][0])
-    return ["pnpm", "install", PNPM_LENIENT_BUILDS]
 
 
 def pnpm_behind(directory: Path) -> bool:

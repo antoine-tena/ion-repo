@@ -16,11 +16,19 @@ from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
 from packaging.version import Version
 
+from ion_repo.dev.processes import node_manager
 from ion_repo.shell import KilnError, run, step
 from ion_repo.stack import PNPM_LENIENT_BUILDS, Stack
 
 PNPM_WORKSPACE = "pnpm-workspace.yaml"
 DEV_DEPENDENCY_TYPE = "devDependencies"
+# The lock recomputed without installing, by the manager that wrote it.
+LOCK_ONLY = {
+    "pnpm": ("pnpm", "install", "--lockfile-only"),
+    "npm": ("npm", "install", "--package-lock-only"),
+    "yarn": ("yarn", "install", "--mode=update-lockfile"),
+    "bun": ("bun", "install", "--lockfile-only"),
+}
 
 
 def lock_dependencies(root: Path, stack: Stack) -> None:
@@ -29,7 +37,8 @@ def lock_dependencies(root: Path, stack: Stack) -> None:
     for directory in stack.python_dirs:
         run(["uv", "lock"], root / directory)
     if stack.pnpm_dir is not None:
-        run(["pnpm", "install", "--lockfile-only"], root / stack.pnpm_dir)
+        folder = root / stack.pnpm_dir
+        run(list(LOCK_ONLY[node_manager(folder)]), folder)
     if stack.cargo_dir is not None:
         # Cargo.lock only: within the bounds of Cargo.toml, without building anything.
         run(["cargo", "generate-lockfile"], root / stack.cargo_dir)
@@ -42,8 +51,12 @@ def sync_dependencies(root: Path, stack: Stack) -> None:
     for directory in stack.python_dirs:
         run(["uv", "sync"], root / directory)
     if stack.pnpm_dir is not None:
-        run(["pnpm", "install", PNPM_LENIENT_BUILDS], root / stack.pnpm_dir)
-        run(["pnpm", "run", "--if-present", "postinstall"], root / stack.pnpm_dir)
+        folder = root / stack.pnpm_dir
+        manager = node_manager(folder)
+        # An adopted npm, yarn or bun repo keeps its own lock: pnpm would add a pnpm-lock.yaml.
+        run([manager, "install", *([PNPM_LENIENT_BUILDS] if manager == "pnpm" else [])], folder)
+        if manager == "pnpm":
+            run(["pnpm", "run", "--if-present", "postinstall"], folder)
     if stack.cargo_dir is not None:
         run(["cargo", "fetch", "--locked"], root / stack.cargo_dir)
 
