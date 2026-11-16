@@ -23,7 +23,9 @@ import yaml  # brought by copier
 from ion_score.waivers import waivers_path
 
 from ion_repo import renames
+from ion_repo.dev.processes import node_manager
 from ion_repo.shell import KilnError, capture
+from ion_repo.stack import FRONTEND_DIR, NO_FRAMEWORK
 
 LEGACY_KEYS = frozenset(renames.ANSWER_KEYS)
 LEGACY_CHARTER = "charte.toml"
@@ -69,6 +71,12 @@ def answers_for_update(root: Path, changes: Mapping[str, object]) -> dict[str, o
         data["size"] = current["size"]  # a size named after the fire, before kiln 0.4.10
     if "ci_runner" not in raw and "ci_runner" not in changes:
         data["ci_runner"] = ci_runner_for(root)
+    # Adopted on npm before `node_manager` existed: its rules and CI stay on npm, as at adoption.
+    unsaid = "node_manager" not in raw and "node_manager" not in changes
+    has_front = current.get("frontend", NO_FRAMEWORK) != NO_FRAMEWORK
+    front = root / str(current.get("frontend_dir") or FRONTEND_DIR)
+    if unsaid and has_front and node_manager(front) == "npm":
+        data["node_manager"] = "npm"
     return {**data, **changes}
 
 
