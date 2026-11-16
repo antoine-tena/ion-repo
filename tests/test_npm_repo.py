@@ -13,7 +13,7 @@ from ion_repo import github, new
 from ion_repo.ci.jobs import DEFAULTS, plan_job
 from ion_repo.ci.runner import front_install_step
 from ion_repo.ci.workflow import Job
-from ion_repo.deps import lock_dependencies, sync_dependencies
+from ion_repo.deps import lock_dependencies, sync_dependencies, update_dependencies
 from ion_repo.stack import ROOT_DIR, Stack
 
 LOGGER = '#!/bin/sh\necho "$(basename "$0") $*" >> "$CALLS"\n'
@@ -101,3 +101,33 @@ def test_a_github_origin_names_its_repository(url: str) -> None:
     found = new.GITHUB_REPOSITORY.search(url)
     assert found is not None
     assert found["repository"] == "someone/cinematch"
+
+
+FAKE_NPM_OUTDATED = (
+    LOGGER
+    + """case "$1" in
+  outdated) echo '{"vite": {"current": "8.3.8", "latest": "8.4.0", "type": "devDependencies"},
+    "react": {"current": "19.3.1", "latest": "20.0.0", "type": "dependencies"}}'; exit 1 ;;
+esac
+"""
+)
+
+
+def test_an_npm_repo_updates_its_dependencies_with_npm(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # `ion repo update` on an adopted npm repo: pnpm stopped on ERR_PNPM_NO_LOCKFILE.
+    calls = _fake_bin(tmp_path, monkeypatch, npm=FAKE_NPM_OUTDATED, pnpm=LOGGER)
+    root = tmp_path / "cinematch"
+    root.mkdir()
+    (root / "package-lock.json").write_text("{}")
+    stack = Stack("none", "vite-react", has_podman=False, frontend_dir=ROOT_DIR)
+
+    update_dependencies(root, stack, allow_major=False)
+
+    assert calls.read_text().splitlines() == [
+        "npm ci",
+        "npm outdated --json",
+        "npm install --save-dev vite@8.4.0",
+        "npm install",
+    ]

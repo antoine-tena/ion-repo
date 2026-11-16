@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from ion_repo.deps import update_pnpm
+from ion_repo.deps import update_node
 
 FAKE_PNPM = """#!/bin/sh
 case "$1" in
@@ -33,6 +33,6 @@ def test_pnpm_update_installs_before_reading_outdated(
     project_dir = tmp_path / "frontend"
     project_dir.mkdir()
 
-    update_pnpm(project_dir, allow_major=False)
+    update_node(project_dir, allow_major=False)
 
     assert (project_dir / "added.txt").read_text().split() == ["add", "nuxt@4.7.0"]
