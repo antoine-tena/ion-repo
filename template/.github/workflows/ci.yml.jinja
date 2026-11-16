@@ -57,6 +57,9 @@ jobs:
 {%- if fd != 'frontend' %}
       directory: {{ fd }}
 {%- endif %}
+{%- if node_manager == 'npm' %}
+      manager: npm
+{%- endif %}
       scripts: |
         lint
         typecheck

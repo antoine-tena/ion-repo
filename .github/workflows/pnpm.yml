@@ -14,6 +14,10 @@ on:
         description: Version of pnpm (empty = the packageManager field of package.json)
         type: string
         default: ""
+      manager:
+        description: "Package manager: pnpm, or npm for an adopted repo locked by package-lock.json"
+        type: string
+        default: pnpm
       scripts:
         description: pnpm scripts to run in order, one per line (with their arguments)
         type: string
@@ -46,6 +50,7 @@ jobs:
           persist-credentials: false
 
       - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        if: inputs.manager == 'pnpm'
         with:
           version: ${{ inputs.pnpm }}
           package_json_file: ${{ inputs.directory }}/package.json
@@ -53,21 +58,27 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: ${{ inputs.directory }}/.nvmrc
-          cache: pnpm
-          cache-dependency-path: ${{ inputs.directory }}/pnpm-lock.yaml
+          cache: ${{ inputs.manager }}
+          cache-dependency-path: ${{ inputs.directory }}/${{ inputs.manager == 'npm' && 'package-lock.json' || 'pnpm-lock.yaml' }}
 
       - name: Dependencies
+        if: inputs.manager == 'pnpm'
         run: pnpm install --frozen-lockfile --config.strict-dep-builds=false
+
+      - name: Dependencies (npm)
+        if: inputs.manager == 'npm'
+        run: npm ci
 
       - name: Scripts
         env:
           SCRIPTS: ${{ inputs.scripts }}
+          RUN: ${{ inputs.manager == 'npm' && 'npm run' || 'pnpm' }}
         run: |
           while read -r script; do
             [ -n "$script" ] || continue
-            echo "::group::pnpm $script"
+            echo "::group::$RUN $script"
             # shellcheck disable=SC2086 # the script carries its arguments
-            pnpm $script
+            $RUN $script
             echo "::endgroup::"
           done <<< "$SCRIPTS"
 
