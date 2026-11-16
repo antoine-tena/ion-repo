@@ -117,6 +117,40 @@ def publish(root: Path, repository: str, team_logins: list[str]) -> None:
             _gh_put(root, f"repos/{repository}/collaborators/{login}", "permission=push")
 
 
+def protect_existing(root: Path, repository: str) -> None:
+    """A repo already on GitHub (adopted, made without ion-repo): develop made from main where it
+    is missing, made the default branch, the rulesets it lacks, Dependabot's security fixes."""
+    has_develop = subprocess.run(
+        ["git", "rev-parse", "--verify", "--quiet", "refs/heads/develop"],
+        cwd=root,
+        capture_output=True,
+        check=False,
+    )
+    if has_develop.returncode != 0:
+        step("develop made from main")
+        run(["git", "branch", "develop", "main"], root)
+    run(["git", "push", "-q", "-u", "origin", "develop"], root)
+    run(["gh", "repo", "edit", repository, "--default-branch", "develop"], root)
+    step("GitHub: protection of main and develop")
+    present = _ruleset_names(root, repository)
+    for ruleset in (MAIN_RULESET, DEVELOP_RULESET):
+        if ruleset["name"] not in present:
+            _post_ruleset(root, repository, ruleset)
+    step("GitHub: security alerts and fixes (Dependabot)")
+    _enable_security_updates(root, repository)
+
+
+def _ruleset_names(root: Path, repository: str) -> set[str]:
+    listed = subprocess.run(
+        ["gh", "api", f"repos/{repository}/rulesets", "--jq", ".[].name"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return set(listed.stdout.splitlines()) if listed.returncode == 0 else set()
+
+
 def _gh_put(root: Path, endpoint: str, *fields: str) -> None:
     field_options = [option for field in fields for option in ("-f", field)]
     run(["gh", "api", "-X", "PUT", endpoint, *field_options, "--silent"], root)

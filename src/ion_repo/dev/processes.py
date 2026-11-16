@@ -49,6 +49,7 @@ DEV_SCRIPT_PREFIXES = ("dev:", "watch:")
 # `start` often serves the build, as in production: only when nothing else is there.
 FALLBACK_SCRIPT = "start"
 # Lock file, in search order, and the package manager that wrote it.
+PNPM_LOCKFILE = "pnpm-lock.yaml"
 LOCK_MANAGERS = (
     ("pnpm-lock.yaml", "pnpm"),
     ("yarn.lock", "yarn"),
@@ -158,6 +159,24 @@ def node_installs(root: Path, commands: list[Command]) -> list[Command]:
 
 def package_manager(directory: Path) -> str:
     return next((manager for lock, manager in LOCK_MANAGERS if (directory / lock).is_file()), "npm")
+
+
+def node_manager(directory: Path) -> str:
+    """The manager of the folder's lock; pnpm, ion-repo's own, when there is none yet."""
+    has_lock = any((directory / lock).is_file() for lock, _ in LOCK_MANAGERS)
+    return package_manager(directory) if has_lock else "pnpm"
+
+
+def pnpm_install_command(directory: Path) -> list[str]:
+    """Frozen to the lockfile when there is one, by the package manager that wrote it: an
+    adopted npm repo keeps its package-lock.json, where pnpm would add a pnpm-lock.yaml and
+    leave the tree dirty. Without any lock (a repo that never committed one), `--frozen-lockfile`
+    fails with ERR_PNPM_NO_LOCKFILE: a plain pnpm install creates it."""
+    if (directory / PNPM_LOCKFILE).is_file():
+        return ["pnpm", "install", "--frozen-lockfile", PNPM_LENIENT_BUILDS]
+    if any((directory / lock).is_file() for lock, _ in LOCK_MANAGERS):
+        return list(NODE_INSTALLS[package_manager(directory)][0])
+    return ["pnpm", "install", PNPM_LENIENT_BUILDS]
 
 
 def read_env_file(path: Path) -> dict[str, str]:

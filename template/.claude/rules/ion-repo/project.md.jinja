@@ -44,7 +44,8 @@ No ion-repo stack: common part only (CI, hooks, rules, charter).
 - Python dependency: `uv add <package>` in its directory (`--dev` for a tool).
 {%- endif %}
 {%- if frontend in ['nuxt', 'next', 'astro', 'vite-react', 'tauri'] %}
-- JavaScript dependency: `pnpm add <package>` {{ 'at the root' if fd == '.' else 'in `' ~ fdir ~ '`' }} (`-D` for a tool); never npm.
+{%- set add = 'npm install' if node_manager == 'npm' else 'pnpm add' %}
+- JavaScript dependency: `{{ add }} <package>` {{ 'at the root' if fd == '.' else 'in `' ~ fdir ~ '`' }} (`-D` for a tool); never {{ 'pnpm' if node_manager == 'npm' else 'npm' }}.
 {%- endif %}
 - `ion repo update`: ion-repo improvements and compatible upgrades, on a branch, checks included. `ion repo set key=value`: change a project setting.
 

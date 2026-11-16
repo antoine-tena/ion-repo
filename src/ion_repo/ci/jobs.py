@@ -44,6 +44,7 @@ DEFAULTS: Mapping[str, Mapping[str, str]] = {
     "pnpm": {
         "directory": "frontend",
         "pnpm": "",
+        "manager": "pnpm",
         "scripts": "lint\ntypecheck\ntest\nbuild\n",
         "reports": "",
         "rapports": "",
@@ -240,7 +241,8 @@ def _charter(job: Job, inputs: Mapping[str, str]) -> Plan:
 def _pnpm(job: Job, inputs: Mapping[str, str]) -> Plan:
     directory = inputs["directory"]
     scripts = [line.strip() for line in inputs["scripts"].splitlines() if line.strip()]
-    steps = tuple(Step(f"pnpm {script}", f"pnpm {script}", directory) for script in scripts)
+    run = "npm run" if inputs["manager"] == "npm" else "pnpm"
+    steps = tuple(Step(f"{run} {script}", f"{run} {script}", directory) for script in scripts)
     return Plan(job, steps, pnpm_dirs=(directory,))
 
 

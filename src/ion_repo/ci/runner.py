@@ -8,6 +8,7 @@ window) keeps its launcher's PID file, and the next run removes it.
 """
 
 import os
+import shlex
 import shutil
 import subprocess
 import time
@@ -26,8 +27,8 @@ from ion_repo.ci.verdict import (
     record_verdict,
 )
 from ion_repo.ci.workflow import Job, load_jobs
+from ion_repo.dev.processes import pnpm_install_command
 from ion_repo.shell import KilnError, capture, require_tools
-from ion_repo.stack import PNPM_LENIENT_BUILDS
 
 CACHE_DIR = Path.home() / ".cache" / "ion-repo" / "ci"
 LEGACY_CACHE_DIR = Path.home() / ".cache" / "kiln" / "ci"  # before ion-repo 0.4.15
@@ -144,14 +145,20 @@ def _prepare(plans: list[Plan], workspace: Workspace) -> list[JobOutcome]:
     python_dirs = sorted({directory for plan in plans for directory in plan.python_dirs})
     pnpm_dirs = sorted({directory for plan in plans for directory in plan.pnpm_dirs})
     steps = [Step(f"uv sync {path}", "uv sync --locked", path) for path in python_dirs]
-    install = f"pnpm install --frozen-lockfile {PNPM_LENIENT_BUILDS}"
-    steps += [Step(f"pnpm install {path}", install, path) for path in pnpm_dirs]
+    steps += [front_install_step(workspace.root, path) for path in pnpm_dirs]
     env = base_env({})
     log_path = workspace.log_dir / f"{PREPARATION}.log"
     for step in steps:
         if not run_step(step, workspace.root, env, log_path, PREPARATION):
             return [JobOutcome(PREPARATION, is_success=False, failed_step=step.label)]
     return []
+
+
+def front_install_step(root: Path, path: str) -> Step:
+    """Frozen install by the manager of the folder's lock: `npm ci` for an adopted npm repo,
+    which `pnpm install` would leave with a pnpm-lock.yaml beside its package-lock.json."""
+    argv = pnpm_install_command(root / path)
+    return Step(f"{argv[0]} install {path}", shlex.join(argv), path)
 
 
 def require_known_jobs(root: Path, names: frozenset[str]) -> None:

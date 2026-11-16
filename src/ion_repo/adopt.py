@@ -25,6 +25,7 @@ from ion_score import ui
 
 from ion_repo import adopted
 from ion_repo.charter.config import LEGACY_CHARTER_FILE
+from ion_repo.dev.processes import node_manager
 from ion_repo.migrations import ci_runner_for
 from ion_repo.new import user_defaults
 from ion_repo.rules import write_unverified_rules
@@ -87,6 +88,8 @@ def adopt_project(root: Path, *, size: str = DEFAULT_SIZE, template: str | None 
     write_unverified_rules(root, stack)
     apply_statusline_settings(root)
     _report(added, kept)
+    if _remote_owner(root):
+        ui.note("already on GitHub: ion repo publish makes develop and protects main and develop")
     step("Debt found by the charter")
     if shutil.which("charter") is None or run_status(["charter"], root, live=True) == 0:
         ui.note("No deviation.")
@@ -129,6 +132,8 @@ def adoption_answers(root: Path, size: str, stack: Stack) -> dict[str, object]:
         answers["frontend_dir"] = stack.frontend_dir
     if owner := _remote_owner(root):
         answers["owner"] = owner
+    if stack.frontend != NO_FRAMEWORK and node_manager(root / stack.frontend_dir) == "npm":
+        answers["node_manager"] = "npm"
     return answers
 
 

@@ -138,6 +138,15 @@ frontend_dir:
   default: frontend
   when: "{{ (frontend_dir | default('frontend')) != 'frontend' }}"
 
+# Package manager of the JavaScript front: pnpm for a new repo; npm kept for an adopted repo that
+# locks with package-lock.json (`ion repo adopt` finds it), so the rules, the CI and `ion repo ci`
+# install with npm and never leave a pnpm-lock.yaml beside it. Asked of no one.
+node_manager:
+  type: str
+  default: pnpm
+  choices: [pnpm, npm]
+  when: "{{ (node_manager | default('pnpm')) != 'pnpm' }}"
+
 # The project type only advises: it preselects the backend and the frontend below, which stay
 # free. Table of advice: ion-repo's README, "What you get".
 project_type:
