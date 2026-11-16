@@ -131,3 +131,21 @@ def test_without_gh_the_ci_stays_on_the_machine(
     monkeypatch.setenv("PATH", str(tmp_path))  # no gh at all
 
     assert migrations.ci_runner_for(tmp_path) == "local"
+
+
+def test_a_repo_adopted_on_npm_before_the_answer_gets_it_at_update(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Adopted before `node_manager` existed: the update rendered pnpm rules and CI over npm.
+    monkeypatch.setattr(migrations, "ci_runner_for", lambda root: "local")
+    answers = "_commit: v0.4.15\nfrontend: vite-react\nfrontend_dir: .\nci_runner: local\n"
+    (tmp_path / ".copier-answers.yml").write_text(answers)
+    (tmp_path / "package-lock.json").write_text("{}")
+
+    assert migrations.answers_for_update(tmp_path, {})["node_manager"] == "npm"
+    # A pnpm front, or one without any front, keeps the default.
+    (tmp_path / "package-lock.json").unlink()
+    (tmp_path / "pnpm-lock.yaml").write_text("")
+    assert "node_manager" not in migrations.answers_for_update(tmp_path, {})
+    (tmp_path / ".copier-answers.yml").write_text("_commit: v0.4.15\nfrontend: none\n")
+    assert "node_manager" not in migrations.answers_for_update(tmp_path, {})
