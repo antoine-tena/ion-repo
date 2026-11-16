@@ -258,6 +258,15 @@ def test_team_accepts_a_comma_list() -> None:
     assert parse_assignments(["large_files=public/film.mp4,public/film.webm"]) == films
 
 
+def test_source_folders_can_be_set() -> None:
+    # A npm workspace keeps its front and its back in folders of its own (cinematch).
+    assert parse_assignments(["frontend_dir=frontend", "backend_dir=server"]) == {
+        "frontend_dir": "frontend",
+        "backend_dir": "server",
+    }
+    assert parse_assignments(["frontend_dir=."]) == {"frontend_dir": "."}
+
+
 def test_sentence_with_a_colon_stays_text() -> None:
     sentence = "Covoiturage : proposer un trajet"
     assert parse_assignments([f"description={sentence}"]) == {"description": sentence}

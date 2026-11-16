@@ -47,6 +47,8 @@ SETTABLE_KEYS = (
     "project_type",
     "backend",
     "frontend",
+    "backend_dir",
+    "frontend_dir",
     "podman",
     "claude_plugin",
     "plugin_name",
