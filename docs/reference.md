@@ -75,7 +75,7 @@ is re-rendered, on a work branch: `chore/ion-repo-set`, opened by ion-repo on `m
 |---|---|
 | `name`, `title`, `description` | Short name (packages' prefix), displayed title, one sentence. |
 | `project_type`, `size` | What you build (`app`, `api`, `site`, `dashboard`, `analysis`, `cli`, `desktop`: a Tauri app, `frontend=tauri`) and how big the stakes are (`tiny`, `small`, `medium`, `large`): the stack and the rules follow. |
-| `backend`, `frontend`, `podman` | The stack (see [What you get](../README.md#what-you-get)) and podman containers. |
+| `backend`, `frontend`, `backend_dir` and `frontend_dir` (the back's and front's folders, `backend` and `frontend` by default; `.` for the root), `podman` | The stack (see [What you get](../README.md#what-you-get)) and podman containers. |
 | `language`, `language_comments`, `language_commits`, `language_docs`, `language_tickets`, `language_ui` | The team's language, and per use when they differ. |
 | `owner`, `team` | GitHub account owning the repo, and the team's logins (reviewers). |
 | `claude_plugin` | A command-line tool that ships its own Claude Code plugin: `plugins/<plugin_name>/` (manifest, a first `run` skill to replace), its catalog `.claude-plugin/marketplace.json`, a test that Claude Code would load it, and the plugin enabled in the repo's sessions from its GitHub repo at `main`. Elsewhere: `claude plugin marketplace add <owner>/<name>`. |
