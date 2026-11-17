@@ -32,14 +32,14 @@ The number dates a release; the release note says what changes. From Next.js, th
   v0.5.0 public launch (ion-repo#T-03), v0.6.0 Claude works alone in the repo, v0.7.0 ion-repo for teams and
   organizations, v0.8.0 every common stack scored, v0.9.0 any CI, machine and size, v1.0.0 the
   stability promise, just before the community modules (ion-repo#T-69). Their content and the v1.0.0 bar
-  are in the backlog (`## 🚀 Releases`, `## 🧭 Vision`); `ROADMAP.md`'s two hand-written
+  are in the backlog (`docs/backlog/releases/`, `docs/backlog/vision.md`); `ROADMAP.md`'s two hand-written
   milestone tables follow them.
 - From 1.0, strict semver like Next.js: breaking → major (rare and planned), `feat` → minor, the
   rest → patch. `ion repo version` (`release.py`) proposes the number and says which candidates are
   ready.
 
 **Rhythm**: one release every two days (the session budget: the how-to of
-`docs/backlog/backlog.md`). The second day of a release absorbs overruns and lets the candidate
+`docs/backlog/how-to.md`). The second day of a release absorbs overruns and lets the candidate
 run on the `internal` channel before its promotion (promoted 45 minutes after it came out, a
 candidate has checked nothing). Breaking changes stay grouped at the milestones; a security fix
 ships at once. What spares users is grouping the question: `ion repo update` crosses every late

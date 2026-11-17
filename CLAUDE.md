@@ -13,7 +13,7 @@ Copier template, `ion-repo` command, `charter` engine, Claude Code plugins, reus
 - `.github/workflows/`: reusable workflows (actions and `charter` at `job.workflow_sha`); own: `kiln.yml` (checks, score 100, zizmor; `.github/zizmor.yml`), `pypi.yml` (`ion-repo` at promoted tag, provenance), `scorecard.yml`. `actions/`: `charter` (old `charte`), `services`. `.github/dependabot.yml` (uv, actions, after 7 days).
 - `.claude/rules/`: `releases.md`, `docs.md`.
 - Showcase: READMEs, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `LICENSE`, `.github/ISSUE_TEMPLATE/`, `.github/pull_request_template.md`. `docs/assets/`: drawn by `scripts/screenshots.py` (checked by `test_docs.py`); VHS demos `kiln-new`, `kiln-rescue` (on public `antoine-tena/kiln-demo-legacy`, old on purpose); `social-preview.png` (uploaded by hand).
-- `docs/backlog/` (English, `/repo:backlog`): `backlog.md` (`## 🚀 Releases`, `## 📖` how-to, `## 🧭 Vision`, `## 💡` score thesis), `done.md`, `rejected.md`, `urgent.md`.
+- `docs/backlog/` (English, `/repo:backlog`, `ion repo backlog`): `README.md` (index: north star, next free ID, releases), `tickets/` (a file per open ticket), `releases/` (a file per planned release; `README.md` the plan's notes, what shipped), `how-to.md`, `vision.md`, `kiln-score-the-thesis.md`, `done.md`, `rejected.md`, `urgent.md`.
 - `ROADMAP.md`/`.fr.md`: milestones by hand, releases from backlog via `scripts/roadmap.py`; rerun after each plan change (`test_docs.py` fails otherwise).
 - `scripts/`: `screenshots.py`, `social_preview.py`, `demo_shell.sh`, `shrink_demo.sh` (<5 MB), `refresh_images.py` (pin base images, before each candidate).
 - `tests/`: `test_<module>.py`, plus `test_template.py` (each stack), `test_e2e.py` (`-m e2e`: every release since v0.3.0, witness `antoine-tena/ion-repo-rehearsal` frozen at v0.3.3-rc.2: never update it), `test_plugins.py` (cited skills exist; rule paths match), `test_docs.py` (`.claude/rules/docs.md`), `conftest.py` (git config aside, test identity).
@@ -26,12 +26,12 @@ Trains on the association's repo (Django+Nuxt reference, grid ground; path in gl
 
 - A name changes through `ion repo set` or a conversion in `ion repo update`, never find-and-replace in a generated repo (conflicts at next update).
 - **Breaking** = public API: CLI commands/options, `copier.yml` questions, generated tree, workflow/action inputs, skill and hook names, charter rule IDs. Mark `feat!:`/`BREAKING CHANGE`, ship its conversion in `ion repo update`; opens the `CHANGELOG.md` note.
-- User-only post-update step: commit body line `After updating: …`; `version cut` copies it to the note, `ion repo update` makes a 🔴 "Finish the ion-repo update to vX.Y.Z" ticket in `docs/backlog/backlog.md` (not `urgent.md`), worked by `/repo:update` right after merge.
+- User-only post-update step: commit body line `After updating: …`; `version cut` copies it to the note, `ion repo update` makes a 🔴 "Finish the ion-repo update to vX.Y.Z" ticket in `docs/backlog/tickets/` (not `urgent.md`), worked by `/repo:update` right after merge.
 - Docs update in the same branch: every command, option, setting, plugin, skill, hook, workflow in both references; READMEs follow. `test_docs.py` runs at release only, a forgotten doc blocks the candidate (`.claude/rules/docs.md`).
 
 ## Releases
 
-0.x: each release bumps patch, even features/breaking; minor about every ten (`version cut --minor`), at a themed milestone. One release per two days. Plan: `backlog.md`, shown by `ROADMAP.md`; public launch ion-repo#T-03. Candidates, promotion, channels: `.claude/rules/releases.md`, read before `/repo:release`.
+0.x: each release bumps patch, even features/breaking; minor about every ten (`version cut --minor`), at a themed milestone. One release per two days. Plan: `docs/backlog/releases/`, shown by `ROADMAP.md`; public launch ion-repo#T-03. Candidates, promotion, channels: `.claude/rules/releases.md`, read before `/repo:release`.
 
 ## Checks
 
