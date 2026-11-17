@@ -108,6 +108,9 @@ def _check_commands(
     commands: list[Command] = []
     for command in stack.check_commands(with_tests):
         if command.label == "charter":
+            if charter_config.charter_path(root) is None:
+                ui.note("charter: no charter.toml, check skipped")
+                continue
             if changed is not None:
                 files = [path for path in changed if (root / path).is_file()]
                 if files:
