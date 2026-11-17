@@ -9,10 +9,12 @@ changed: its content is read back from the last commit (`ion repo update` starts
 
 import re
 import shutil
+from collections.abc import Callable
 from pathlib import Path
 
+from ion_repo import tracker
 from ion_repo.shell import KilnError, capture
-from ion_repo.tickets import NEXT_FREE, ticket_id
+from ion_repo.tickets import NEXT_FREE, repo_name
 from ion_repo.versions import ReleaseNotes
 
 LEGACY_DIR = Path("docs/a-faire")
@@ -44,6 +46,23 @@ LEGACY_INTROS = (
 )
 
 
+# The header a converted `a-faire.md` gets: the template no longer has a single `backlog.md`.
+LEGACY_HEADER = """# Backlog
+
+Everything left to do, in a single list ordered by priority. Started on **—**. How to write a
+ticket: [README.md](README.md); closed tickets are in [done.md](done.md), what was turned down in
+[rejected.md](rejected.md). **Nothing else is open.**
+
+North star: **—**.
+
+**Next free: T-01.**
+
+---
+
+## 🔴 Critical
+"""
+
+
 def migrate_legacy_backlog(root: Path) -> bool:
     """Converts `docs/a-faire/` to `docs/backlog/` if it still exists; says whether it did."""
     old_backlog = read_legacy(root, "a-faire.md")
@@ -52,7 +71,7 @@ def migrate_legacy_backlog(root: Path) -> bool:
     backlog = root / BACKLOG_DIR
     backlog.mkdir(parents=True, exist_ok=True)
     fresh = backlog / "backlog.md"
-    template_text = fresh.read_text() if fresh.exists() else ""
+    template_text = fresh.read_text() if fresh.exists() else LEGACY_HEADER
     dates = opened(root, (LEGACY_DIR / "a-faire.md").as_posix())
     fresh.write_text(convert_backlog(old_backlog, template_text, dates))
     if (rejected := read_legacy(root, "ecarte.md")) is not None:
@@ -271,39 +290,245 @@ def _open_backlog(text: str) -> str:
 
 # A line of a changelog entry: what each repo crossing that release must do after updating.
 AFTER_UPDATING = "- **After updating**: "
-CRITICAL_HEADING = "## 🔴 Critical\n"
 
 
 def add_after_update_ticket(root: Path, notes: list[ReleaseNotes], *, today: str) -> str | None:
     """A 🔴 ticket that gathers the `After updating` lines of the releases crossed: what only the
     team knows, to fill in right after the update. Its ID, or None when there is nothing to do
-    (or no backlog to put it in)."""
-    path = root / BACKLOG_DIR / "backlog.md"
+    (or no backlog folder to put it in)."""
     actions = [
         f"- [ ] {line.removeprefix(AFTER_UPDATING)} ({release.tag})"
         for release in reversed(notes)
         for line in release.lines
         if line.startswith(AFTER_UPDATING)
     ]
-    text = path.read_text() if path.exists() else ""
-    next_free = NEXT_FREE.search(text)
     title = f"Finish the ion-repo update to {notes[0].tag}" if notes else ""
-    if not actions or next_free is None or CRITICAL_HEADING not in text or title in text:
+    if not actions or not tracker.is_folder(root) or tracker.next_free(root) is None:
         return None
-    number = int(next_free[1])
-    written_id = ticket_id(root, number)
-    ticket = "\n".join([
-        f"### {written_id} · {title}",
-        "- **Type**: task",
-        "- **Status**: todo",
-        f"- **Opened**: {today}",
-        "- **Effort**: XS · **Owner**: — · **Due**: —",
-        "- **Origin**: release notes of the ion-repo releases crossed (`ion repo update`)",
-        "",
+    if any(one.title == title for one in tracker.open_tickets(root)):
+        return None
+    fields = {
+        "Type": "task",
+        "Priority": "critical",
+        "Status": "todo",
+        "Opened": today,
+        "Effort": "XS · **Owner**: — · **Due**: —",
+        "Origin": "release notes of the ion-repo releases crossed (`ion repo update`)",
+    }
+    details = "\n".join([
         "What ion-repo cannot guess, to fill in right after the update (`/repo:update`):",
         *actions,
     ])  # fmt: skip
-    text = NEXT_FREE.sub(f"Next free: {ticket_id(root, number + 1)}", text, count=1)
-    text = text.replace(CRITICAL_HEADING, f"{CRITICAL_HEADING}\n{ticket}\n", 1)
-    path.write_text(text)
-    return written_id
+    ticket_id, _ = tracker.add_ticket(root, repo_name(root), title, fields, details)
+    return ticket_id
+
+
+# The single `backlog.md` split into a folder (ion-repo#T-453).
+RELEASES_MARK = "🚀"
+HOW_TO_TITLE = "How to use"
+SINGLE_LIST = re.compile(r"in a single\s+list ordered by\s+priority")
+# The how-to was the folder's README; the README is the index now.
+HOW_TO_LINK = re.compile(r"\[README\.md\]\(README\.md\)")
+RELATIVE_LINK = re.compile(r"\]\((?!https?:|mailto:|#|/)([^)\s]+)\)")
+ANCHOR_LINK = re.compile(r"\]\(#([^)\s]+)\)")
+TEMPLATE_README = "What is left to do on"
+GOOD_FIRST_ISSUES = "- **Good first issues**:"
+
+
+def split_into_folder(root: Path) -> bool:
+    """The single `backlog.md` (on disk, else in the last commit: Copier may have deleted it)
+    becomes `tickets/`, `releases/`, an index `README.md` and a file per other section; no line
+    lost, links still pointing where they did. Says whether it split."""
+    from ion_repo import session  # session needs shipping, which needs this module
+
+    path = root / tracker.LEGACY
+    text = path.read_text("utf-8") if path.is_file() else _from_head(root, tracker.LEGACY)
+    if text is None:
+        return False
+    name = repo_name(root)
+    parts = re.split(r"^(?=## )", text, flags=re.M)
+    header, sections = _without_rule(parts[0]), parts[1:]
+    tickets: dict[int, tuple[str, str]] = {}  # number: (priority, block)
+    release_blocks: list[str] = []
+    plan_notes: list[str] = []
+    loose: list[str] = []
+    extras: dict[str, tuple[str, str]] = {}  # file: (title, body)
+    for section in sections:
+        title, _, body = section.partition("\n")
+        title, body = title.removeprefix("## ").strip(), _without_rule(body)
+        if RELEASES_MARK in title:
+            blocks = re.split(r"^(?=### )", body, flags=re.M)
+            plan_notes += [blocks[0].strip()] if blocks[0].strip() else []
+            for block in blocks[1:]:
+                if tracker.RELEASE_HEADING.match(block):
+                    release_blocks.append(block)
+                else:
+                    plan_notes.append(re.sub(r"^### ", "## ", block.strip()))
+        elif _is_priority(title):
+            _collect_tickets(body, tracker.priority_of(title), title, tickets, loose)
+        else:
+            extras[_extra_file(root, title, extras)] = (title, body)
+    anchors = {_anchor(title): file for file, (title, _) in extras.items()}
+    anchors[_anchor("🚀 Releases")] = "README.md#releases"
+    written: dict[Path, str] = {}
+    open_tickets: dict[int, tracker.Ticket] = {}
+    for number, (priority, block) in tickets.items():
+        file = root / tracker.TICKETS_DIR / tracker.ticket_name(name, number)
+        written[file] = _links(_ticket_file(block, priority), anchors, 1)
+        if ticket := tracker.read_ticket_text(written[file], file):
+            open_tickets[number] = ticket
+    releases = []
+    for block in release_blocks:
+        heading = tracker.RELEASE_HEADING.match(block)
+        assert heading is not None
+        version, title = heading[1], heading[2].strip()
+        body = block.rstrip().splitlines()[1:]
+        while body and not body[0].strip():
+            body.pop(0)
+        lines = [_release_line(line, name, open_tickets, session.effort_of) for line in body]
+        content = "\n".join([f"# v{version} · {title}", "", *lines]).rstrip() + "\n"
+        written[root / tracker.RELEASES_DIR / f"v{version}.md"] = _links(content, anchors, 1)
+        releases.append(f"- [v{version} · {title}](releases/v{version}.md)")
+    if plan_notes:
+        notes = "\n\n".join(["# Releases", *plan_notes]) + "\n"
+        written[root / tracker.RELEASES_DIR / "README.md"] = _links(notes, anchors, 1)
+    for file, (title, body) in extras.items():
+        promoted = re.sub(r"^#(#{2,}) ", r"\1 ", body, flags=re.M)
+        written[root / tracker.BACKLOG_DIR / file] = f"# {title}\n{promoted.rstrip()}\n"
+    index = _index(header, releases, bool(plan_notes), extras, loose)
+    written[root / tracker.INDEX] = _links(index, anchors, 0) + _former_readme(root)
+    for file, content in written.items():
+        file.parent.mkdir(parents=True, exist_ok=True)
+        file.write_text(content, encoding="utf-8")
+    path.unlink(missing_ok=True)
+    return True
+
+
+def _from_head(root: Path, relative: Path) -> str | None:
+    try:
+        return capture(["git", "show", f"HEAD:{relative.as_posix()}"], root) + "\n"
+    except KilnError:
+        return None
+
+
+def _without_rule(text: str) -> str:
+    """A part of the former file without its closing `---` separator."""
+    return re.sub(r"\n---\s*$", "\n", text.rstrip()) + "\n"
+
+
+def _is_priority(title: str) -> bool:
+    first = title.split()[0] if title.split() else ""
+    return first in tracker.PRIORITIES.values() or first.lower() in tracker.PRIORITIES
+
+
+def _collect_tickets(
+    body: str,
+    priority: str,
+    title: str,
+    tickets: dict[int, tuple[str, str]],
+    loose: list[str],
+) -> None:
+    last = None
+    for block in re.split(r"^(?=### )", body, flags=re.M):
+        if heading := tracker.HEADING.match(block):
+            last = int(heading[2])
+            if last in tickets:
+                raise KilnError(f"T-{last}: two tickets under that number, split by hand first.")
+            tickets[last] = (priority, block)
+        elif last is not None:  # a `###` inside a ticket stays in it
+            tickets[last] = (priority, tickets[last][1] + block)
+        elif block.strip():
+            loose.append(f"## {title}\n\n{block.strip()}")
+
+
+def _ticket_file(block: str, priority: str) -> str:
+    """A former `### ` ticket as its own file: `# ` heading, the priority as a field."""
+    lines = block.rstrip().splitlines()
+    lines[0] = "# " + lines[0].removeprefix("### ")
+    field = f"- **Priority**: {tracker.PRIORITIES[priority]} {priority}"
+    after = next((i for i, line in enumerate(lines) if line.startswith("- **Type**:")), None)
+    before = next((i for i, line in enumerate(lines) if line.startswith("- **")), 1)
+    lines.insert(after + 1 if after is not None else before, field)
+    return "\n".join(lines) + "\n"
+
+
+def _release_line(
+    line: str,
+    name: str,
+    tickets: dict[int, tracker.Ticket],
+    effort_of: Callable[[tracker.Ticket], str],
+) -> str:
+    """A release's ticket line, with its session's effort and the command that opens it."""
+    found = tracker.RELEASE_TICKET.match(line)
+    if not found or tracker.SESSION_SUFFIX.search(line):
+        return line
+    ticket = tickets.get(int(found[1]))
+    if ticket is None or not re.match(rf"- (?:{re.escape(name)}#)?T-", line):
+        return line
+    return tracker.release_line(ticket, effort_of(ticket), line.removeprefix("- "))
+
+
+def _extra_file(root: Path, title: str, taken: dict[str, tuple[str, str]]) -> str:
+    """The file of a section that is neither tickets nor releases (a vision, a how-to)."""
+    how_to = tracker.HOW_TO.name
+    if HOW_TO_TITLE in title and not (root / tracker.HOW_TO).exists() and how_to not in taken:
+        return how_to
+    slug = _anchor(title).strip("-") or "notes"
+    return f"{slug}.md" if f"{slug}.md" not in taken else f"{slug}-{len(taken)}.md"
+
+
+def _anchor(title: str) -> str:
+    """GitHub's anchor of a heading: lower case, punctuation and emoji dropped, spaces dashed."""
+    return re.sub(r"[^\w\- ]", "", title.lower()).replace(" ", "-")
+
+
+def _links(text: str, anchors: dict[str, str], depth: int) -> str:
+    """Links of a text moved `depth` folders down: relative ones climb back, anchors to a former
+    section point to its file."""
+    up = "../" * depth
+    if depth:
+        text = RELATIVE_LINK.sub(lambda found: f"]({up}{found[1]})", text)
+    return ANCHOR_LINK.sub(
+        lambda found: f"]({up}{anchors[found[1]]})" if found[1] in anchors else found[0], text
+    )
+
+
+def _index(
+    header: str,
+    releases: list[str],
+    has_notes: bool,
+    extras: dict[str, tuple[str, str]],
+    loose: list[str],
+) -> str:
+    """The short index: the former header, the releases in order, the other files."""
+    header = SINGLE_LIST.sub(
+        "one file per ticket in [tickets/](tickets/), one per planned release in\n"
+        "[releases/](releases/)",
+        header,
+    )
+    header = HOW_TO_LINK.sub("[how-to.md](how-to.md)", header)
+    lines = [header.rstrip(), "", "Open tickets, one line each: `ion repo backlog`.", ""]
+    lines += ["## Releases", ""]
+    lines += releases or ["None planned yet (`/repo:backlog plan`)."]
+    if has_notes:
+        lines += ["", "The plan's notes and what shipped: [releases/](releases/README.md)."]
+    if extras:
+        lines += ["", "## More", ""]
+        lines += [f"- [{title}]({file})" for file, (title, _) in extras.items()]
+    for block in loose:
+        lines += ["", block]
+    return "\n".join(lines) + "\n"
+
+
+def _former_readme(root: Path) -> str:
+    """What a former `README.md` of the folder holds beyond the template's how-to (an adopted
+    repo's own), kept under the index."""
+    path = root / tracker.INDEX
+    if not path.is_file():
+        return ""
+    text = path.read_text("utf-8")
+    if TEMPLATE_README in text[:300] or tracker.NEXT_FREE.search(text):
+        # The template's former how-to, or its fresh index: only the repo's own setting stays.
+        found = re.search(rf"^{re.escape(GOOD_FIRST_ISSUES)}.*(?:\n  .*)*", text, re.M)
+        return f"\n{found[0]}\n" if found else ""
+    return "\n---\n\n" + re.sub(r"^#(?= )", "##", text, count=1, flags=re.M)

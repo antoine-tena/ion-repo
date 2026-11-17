@@ -190,6 +190,8 @@ def test_an_adopted_repo_moves_its_a_faire_to_the_backlog(tmp_path: Path) -> Non
 
     adopted._move_legacy_backlog(tmp_path)
 
-    assert "### T-07 · Payer" in (tmp_path / "docs/backlog/backlog.md").read_text()
+    (ticket,) = (tmp_path / "docs/backlog/tickets").glob("*-T-07.md")
+    assert ticket.read_text().startswith("# T-07 · Payer\n- **Type**: task\n- **Priority**: 🔴")
+    assert not (tmp_path / "docs/backlog/backlog.md").exists()
     assert not (tmp_path / "docs/a-faire").exists()
     assert adopted_names.ticket_mentions(tmp_path) == ["notes.py"]

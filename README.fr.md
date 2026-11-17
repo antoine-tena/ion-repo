@@ -133,7 +133,7 @@ nouvelles règles de la grille vont d'abord à Django et Nuxt.
 
 Chaque repo reçoit aussi uv, pnpm et podman (jamais pip, npm ni docker), une CI qui appelle les
 workflows réutilisables d'ion-repo, des branches `main` et `develop` protégées, un `docs/backlog/`
-de tickets typés, et une taille (`tiny`, `small`, `medium` ou `large`) qui règle le cérémonial
+de tickets typés, un fichier chacun, et une taille (`tiny`, `small`, `medium` ou `large`) qui règle le cérémonial
 qu'il porte. Une application Django peut partir sur un VPS durci (Caddy, conteneurs en lecture
 seule, retour arrière automatique, sauvegardes restaurées), un front Nuxt sur Vercel.
 

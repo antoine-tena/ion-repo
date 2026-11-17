@@ -2,41 +2,34 @@
 
     uv run python scripts/roadmap.py
 
-The plan lives in the `## 🚀 Releases` section of `docs/backlog/backlog.md` (`/repo:backlog
-plan`); the roadmap shows it to people who never open the backlog: each release with what it
+The plan lives in `docs/backlog/releases/`, a file per release (`/repo:backlog plan`); the
+roadmap shows it to people who never open the backlog: each release with what it
 brings and why its work goes together, grouped by milestone. Only the part between the markers
 is drawn, the same in both languages (the backlog is written in English); the words around it are
 written by hand. `tests/test_docs.py` fails when the roadmap no longer shows the plan.
 """
 
-import re
 from pathlib import Path
 
+from ion_repo import tracker
+
 ROOT = Path(__file__).resolve().parent.parent
-BACKLOG = ROOT / "docs/backlog/backlog.md"
 ROADMAPS = (ROOT / "ROADMAP.md", ROOT / "ROADMAP.fr.md")
-START = "<!-- roadmap:start: drawn from docs/backlog/backlog.md by scripts/roadmap.py -->"
+START = "<!-- roadmap:start: drawn from docs/backlog/releases/ by scripts/roadmap.py -->"
 END = "<!-- roadmap:end -->"
 # The milestones whose releases are shown open; the later ones fold, for a page that reads.
 OPEN = 2
-TICKET = re.compile(r"- (?:[a-z][a-z0-9-]*#)?T-\d+")
-RELEASE = re.compile(r"^### (v(\d+)\.(\d+)\.\d+) · (.+)$")
 
 
 def releases() -> list[tuple[str, str, str, str, int]]:
     """Each planned release: version, milestone, title, why, tickets."""
-    text = BACKLOG.read_text(encoding="utf-8")
-    section = text[text.index("## 🚀 Releases") : text.index("## 🔴 Critical")]
     found = []
-    for block in section.split("\n### ")[1:]:
-        heading, *lines = ("### " + block).strip().splitlines()
-        release = RELEASE.match(heading)
-        if release is None:  # what shipped is in the changelog
-            continue
-        version, major, minor, title = release.groups()
-        why = " ".join(line for line in lines if not line.startswith(("- ", "  ")))
-        tickets = sum(1 for line in lines if TICKET.match(line))
-        found.append((version, f"v{major}.{minor}", title, why, tickets))
+    for release in tracker.releases(ROOT):
+        major, minor, _ = release.version.split(".")
+        milestone = f"v{major}.{minor}"
+        found.append(
+            (f"v{release.version}", milestone, release.title, release.why, len(release.tickets))
+        )
     return found
 
 

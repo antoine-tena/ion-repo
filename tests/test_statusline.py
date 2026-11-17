@@ -504,6 +504,25 @@ def test_tickets_are_counted_in_both_forms(tmp_path: Path) -> None:
     assert labels(items) == ["2 tasks", f"crit{X}1"]
 
 
+def test_backlog_counts_the_files_of_the_folder(tmp_path: Path) -> None:
+    tickets = tmp_path / "docs/backlog/tickets"
+    tickets.mkdir(parents=True)
+    (tickets / "acme-T-01.md").write_text(
+        "# acme#T-01 · Ship it\n- **Type**: task\n- **Priority**: 🔴 critical\n"
+        "- **Status**: in progress — branch feat/ship, since 2026-10-16\n\n## Details\n"
+        "- **Status**: todo\n"
+    )
+    (tickets / "acme-T-02.md").write_text(
+        "# acme#T-02 · Try an idea\n- **Priority**: 🟡 normal\n"
+        "- **Status**: blocked — waiting for antoine\n"
+    )
+    (tmp_path / "docs/backlog/urgent.md").write_text("# Urgent\n\n- [ ] Pay — antoine\n")
+
+    items = load_script().backlog_items(str(tmp_path))
+
+    assert labels(items) == ["2 tasks", f"urgent{X}1", f"crit{X}1", f"doing{X}1", f"blocked{X}1"]
+
+
 def test_statusline_palette_is_a_machine_key() -> None:
     assert only_machine_keys(["statusline_palette=nord"])
     assert apply_machine(UserConfig(), ["statusline_palette=nord"]).statusline_palette == "nord"

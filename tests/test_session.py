@@ -96,3 +96,26 @@ def test_unknown_ticket_or_id_refused(shop: Path) -> None:
         session.find_ticket(shop, "T-99")
     with pytest.raises(KilnError, match="not a ticket ID"):
         session.find_ticket(shop, "coaches")
+
+
+@pytest.fixture
+def shop_folder(shop: Path) -> Path:
+    """The same backlog, split into a folder: one file per ticket."""
+    from ion_repo.backlog import split_into_folder
+
+    (shop / ".copier-answers.yml").write_text("name: shop\n")
+    assert split_into_folder(shop)
+    return shop
+
+
+def test_a_ticket_file_is_read_and_cited_by_the_prompt(shop_folder: Path) -> None:
+    ticket = session.find_ticket(shop_folder, "T-05")
+    assert (ticket.effort, ticket.branch) == ("high", "fix/two-coaches")
+    assert session.find_ticket(shop_folder, "T-07").effort == "medium"
+
+    line = session.command(shop_folder, ["T-06"])
+
+    assert "Work on shop#T-06 (Free registrations can be cancelled) from" in line
+    assert " docs/backlog/tickets/shop-T-06.md." in line
+    with pytest.raises(KilnError, match=r"closed, see docs/backlog/done\.md"):
+        session.find_ticket(shop_folder, "T-04")

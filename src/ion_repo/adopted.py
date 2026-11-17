@@ -20,7 +20,13 @@ from ion_score import ui
 from ion_score.fixers import resolve
 
 from ion_repo.adopted_names import convert_legacy_names, remaining_mentions, ticket_mentions
-from ion_repo.backlog import BACKLOG_DIR, LEGACY_DIR, migrate_legacy_backlog
+from ion_repo.backlog import (
+    BACKLOG_DIR,
+    LEGACY_DIR,
+    migrate_legacy_backlog,
+    split_backlog,
+    split_into_folder,
+)
 from ion_repo.ion_names import convert_ion_names
 from ion_repo.shell import KilnError, step
 from ion_repo.versions import is_beta, latest_release
@@ -131,6 +137,8 @@ def _move_legacy_backlog(root: Path) -> None:
     if not (root / BACKLOG_DIR).exists():
         copy_backlog(root, None)
     migrate_legacy_backlog(root)
+    split_backlog(root, from_disk=True)
+    split_into_folder(root)
     ui.success("tickets AF-NN are T-NN now, same numbers (`ion repo tickets` writes them whole)")
     cited = ticket_mentions(root)
     if cited:

@@ -359,6 +359,8 @@ def test_the_rehearsal_repo_updates_on_a_clone_and_stays_untouched(
     assert_succeeded(updated)
     assert_updated_cleanly(project, "v0.3.3-rc.2", name="kiln-rehearsal")
     assert "## Notes du projet" in (project / "CLAUDE.md").read_text()
-    assert "T-02 · Annuler une réservation" in (project / "docs/backlog/backlog.md").read_text()
+    ticket = project / "docs/backlog/tickets/kiln-rehearsal-T-02.md"  # the backlog split
+    assert "T-02 · Annuler une réservation" in ticket.read_text()
+    assert not (project / "docs/backlog/backlog.md").exists()
     assert "Bash(./backend/mvnw -q test)" in (project / ".claude/settings.json").read_text()
     assert (project / "backend/src/main/java/fr/kilnrehearsal/trip/Seats.java").is_file()

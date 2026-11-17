@@ -48,7 +48,8 @@ def test_adoption_lays_what_kiln_new_writes_and_keeps_the_repo_s_files(repo: Pat
         ".claude/settings.json",
         ".pre-commit-config.yaml",
         ".github/workflows/ci.yml",
-        "docs/backlog/backlog.md",
+        "docs/backlog/README.md",
+        "docs/backlog/how-to.md",
     ):
         assert (repo / laid).is_file(), laid
     assert 'size = "medium"' in (repo / "charter.toml").read_text()
