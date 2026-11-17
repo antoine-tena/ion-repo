@@ -435,7 +435,7 @@ def _add_waive_command(commands: argparse._SubParsersAction[_KilnParser]) -> Non
     waive_parser.add_argument("--reason", default="", help="why (required)")
     waive_parser.add_argument("--paths", nargs="+", default=[], help="git patterns covered")
     waive_parser.add_argument(
-        "--renew", action="store_true", help="renew: next step, reason asked again"
+        "--renew", action="store_true", help="renew: next step, reason asked again, paths kept"
     )
     waive_parser.add_argument("--permanent", action="store_true", help="waiver with no deadline")
     waive_parser.add_argument("--upstream", default="", help="issue or PR opened on ion-repo")
