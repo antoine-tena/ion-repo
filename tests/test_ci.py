@@ -11,7 +11,7 @@ import yaml
 
 from ion_repo.ci import execution
 from ion_repo.ci.execution import Workspace, run_job
-from ion_repo.ci.jobs import BACK_LANE, DEFAULTS, Step, plan_job
+from ion_repo.ci.jobs import BACK_LANE, DEFAULTS, PLANNERS, Step, plan_job
 from ion_repo.ci.runner import _own_gaps
 from ion_repo.ci.verdict import (
     FAILURE_LINE,
@@ -306,3 +306,11 @@ def test_wsl_chrome_launcher_translates_the_windows_profile(
 
     assert printed[0] == "--headless"
     assert printed[1].startswith("--user-data-dir=/")
+
+
+def test_the_api_contract_checks_routes_broken_against_production() -> None:
+    job = Job("api-contract", "api-contract", {})
+    labels = [step.label for step in PLANNERS["api-contract"](job, DEFAULTS["api-contract"]).steps]
+    assert labels[-1] == "no route broken against the base branch"
+    without = {**DEFAULTS["api-contract"], "breaking-base": ""}
+    assert len(PLANNERS["api-contract"](job, without).steps) == len(labels) - 1

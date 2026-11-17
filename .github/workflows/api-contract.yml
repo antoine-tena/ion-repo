@@ -3,6 +3,8 @@ name: API contract
 # The front calls the API through a client typed from openapi.json: this job generates the schema
 # again from the Django code (django-ninja), then the types from the schema, and fails if one of
 # the committed files drifted. Generated files are those of .gitattributes (linguist-generated).
+# A second job compares the schema with the one production serves (oasdiff, run by podman) and
+# fails on a broken route: one removed, a field made required, a type changed.
 on:
   workflow_call:
     inputs:
@@ -22,6 +24,14 @@ on:
         description: Command that generates the front's types, from the front
         type: string
         default: pnpm generate:api
+      schema:
+        description: The committed schema, from the root
+        type: string
+        default: openapi.json
+      breaking-base:
+        description: Branch whose schema a change may not break (production's); empty = no check
+        type: string
+        default: main
       env:
         description: Project variables, one per line (KEY=value)
         type: string
@@ -81,3 +91,26 @@ jobs:
           git diff --exit-code -- ':(top,attr:linguist-generated=true)' \
             || (echo "::error::Generated files drifted from the schema. Run '$GENERATE'." && exit 1)
         working-directory: ./${{ inputs.frontend }}
+
+  breaking:
+    if: inputs.breaking-base != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: No route broken against the base branch
+        env:
+          BASE: ${{ inputs.breaking-base }}
+          SCHEMA: ${{ inputs.schema }}
+        run: |
+          if ! git show "origin/$BASE:$SCHEMA" > "$RUNNER_TEMP/base.json" 2>/dev/null; then
+            echo "::notice::No $SCHEMA on $BASE yet: nothing to compare."
+            exit 0
+          fi
+          podman run --rm -v "$RUNNER_TEMP/base.json:/specs/base.json:ro" \
+            -v "$PWD/$SCHEMA:/specs/head.json:ro" \
+            docker.io/tufin/oasdiff:v1.39.0@sha256:d552b750fa6adcc7787c7d8f656d4a9c2a9768a46cfcd9b68ec7191ca583ea1e \
+            breaking /specs/base.json /specs/head.json --fail-on ERR
