@@ -13,6 +13,10 @@ from ion_repo.ci.workflow import INLINE_KIND, Job
 
 GENERATED_DIFF = "git diff --exit-code -- ':(top,attr:linguist-generated=true)'"
 EXPORT_OPENAPI = "uv run python manage.py export_openapi --check --output ../openapi.json"
+OASDIFF = (
+    "docker.io/tufin/oasdiff:v1.39.0"
+    "@sha256:d552b750fa6adcc7787c7d8f656d4a9c2a9768a46cfcd9b68ec7191ca583ea1e"
+)
 DEFAULTS: Mapping[str, Mapping[str, str]] = {
     "django": {
         "directory": "backend",
@@ -37,6 +41,8 @@ DEFAULTS: Mapping[str, Mapping[str, str]] = {
         "frontend": "frontend",
         "export": EXPORT_OPENAPI,
         "generate": "pnpm generate:api",
+        "schema": "openapi.json",
+        "breaking-base": "main",
         "env": "",
     },
     "charter": {},
@@ -216,7 +222,28 @@ def _python(job: Job, inputs: Mapping[str, str]) -> Plan:
     )
 
 
+def _breaking(schema: str, base: str) -> str:
+    """The `breaking` job of api-contract.yml: the schema against the base branch's, by oasdiff."""
+    return (
+        f'base="$(mktemp)"; if ! git show "origin/{base}:{schema}" > "$base" 2>/dev/null; then\n'
+        f'  echo "No {schema} on {base} yet: nothing to compare."; exit 0\nfi\n'
+        f'podman run --rm -v "$base:/specs/base.json:ro" -v "$PWD/{schema}:/specs/head.json:ro" '
+        f"{OASDIFF} breaking /specs/base.json /specs/head.json --fail-on ERR"
+    )
+
+
 def _contract(job: Job, inputs: Mapping[str, str]) -> Plan:
+    base = inputs.get("breaking-base", "main")
+    breaking = (
+        (
+            Step(
+                "no route broken against the base branch",
+                _breaking(inputs.get("schema", "openapi.json"), base),
+            ),
+        )
+        if base
+        else ()
+    )
     steps = (
         Step("openapi.json matches the code", inputs["export"], inputs["backend"]),
         Step(
@@ -224,6 +251,7 @@ def _contract(job: Job, inputs: Mapping[str, str]) -> Plan:
             f"{inputs['generate']}\n{GENERATED_DIFF}",
             inputs["frontend"],
         ),
+        *breaking,
     )
     return Plan(
         job,

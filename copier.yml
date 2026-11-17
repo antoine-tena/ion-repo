@@ -391,6 +391,15 @@ large_files:
   default: "[]"
   when: "{{ large_files | length > 0 }}"
 
+# Integration branches guarded beside main (always guarded), `develop` by default (an empty list); a team that
+# integrates elsewhere (`dev` and `prerelease`, a fork's own branch) names its own: pre-commit's
+# `no-commit-to-branch` and Claude's branch guard refuse a commit on them. Set with
+# `ion repo set protected_branches=dev,prerelease`, never asked; kept in the answers when set.
+protected_branches:
+  type: yaml
+  default: "[]"
+  when: "{{ protected_branches | length > 0 }}"
+
 # Claude Code's status line (ion-repo plugin): settings set as `git config statusline.*` by
 # `ion repo install`, `ion repo new` and `ion repo set`, never by hand.
 statusline_ci:

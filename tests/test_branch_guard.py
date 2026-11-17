@@ -78,6 +78,25 @@ def test_commit_on_develop_is_refused(tmp_path: Path) -> None:
     assert run_hook('git commit -m "feat: x"', tmp_path).returncode == 2
 
 
+@pytest.mark.parametrize(
+    "answers",
+    [
+        "protected_branches:\n- dev\n- prerelease\nsize: medium\n",
+        "protected_branches: [dev, prerelease]\n",
+    ],
+)
+def test_the_repo_protected_branches_are_refused_too(tmp_path: Path, answers: str) -> None:
+    """`ion repo set protected_branches=dev,prerelease`, as copier writes it: block or flow list."""
+    subprocess.run(["git", "init", "-q", "-b", "dev", str(tmp_path)], check=True)
+    first_commit(tmp_path)
+    (tmp_path / ".copier-answers.yml").write_text(answers)
+    assert run_hook('git commit -m "feat: x"', tmp_path).returncode == 2
+    subprocess.run(["git", "-C", str(tmp_path), "switch", "-q", "-c", "devops"], check=True)
+    assert run_hook('git commit -m "feat: x"', tmp_path).returncode == 0
+    subprocess.run(["git", "-C", str(tmp_path), "switch", "-q", "-c", "develop"], check=True)
+    assert run_hook('git commit -m "feat: x"', tmp_path).returncode == 0
+
+
 @pytest.mark.parametrize("key", ["ion-repo.branch-guard", "kiln.branch-guard"])
 def test_a_repo_that_opted_out_commits_on_develop(tmp_path: Path, key: str) -> None:
     """Today's key, and kiln's of before ion-repo 0.4.15."""

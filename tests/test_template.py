@@ -742,6 +742,22 @@ def test_large_files_kept_on_purpose_pass_the_size_ceiling(tmp_path: Path) -> No
     assert "large_files:" in (project / ".copier-answers.yml").read_text()
 
 
+def test_protected_branches_replace_develop_beside_main_in_pre_commit(tmp_path: Path) -> None:
+    def guarded(project: Path) -> list[str]:
+        config = yaml.safe_load((project / ".pre-commit-config.yaml").read_text())
+        hook = next(
+            hook for hook in config["repos"][0]["hooks"] if hook["id"] == "no-commit-to-branch"
+        )
+        return hook["args"][1::2]
+
+    default = generate(tmp_path / "default")
+    assert guarded(default) == ["main", "develop"]
+    assert "protected_branches" not in (default / ".copier-answers.yml").read_text()
+    project = generate(tmp_path / "fork", protected_branches=["dev", "prerelease"])
+    assert guarded(project) == ["main", "dev", "prerelease"]
+    assert "protected_branches:" in (project / ".copier-answers.yml").read_text()
+
+
 @pytest.mark.parametrize(("bot", "cron"), [("weekly", "0 6 * * 1"), ("monthly", "0 6 1 * *")])
 def test_kiln_bot_runs_on_its_schedule_and_is_off_by_default(
     tmp_path: Path, bot: str, cron: str

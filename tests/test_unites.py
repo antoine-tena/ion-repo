@@ -114,10 +114,17 @@ def test_a_docs_only_change_runs_the_charter_on_its_files_alone(tmp_path: Path) 
     stack = Stack(backend="django", frontend="nuxt", has_podman=False)
     (tmp_path / "docs").mkdir()
     (tmp_path / "docs/notes.md").write_text("notes\n")
+    (tmp_path / "charter.toml").touch()
 
     commands = _check_commands(tmp_path, stack, changed=["docs/notes.md", "docs/gone.md"])
 
     assert [command.argv for command in commands] == [("charter", "file", "docs/notes.md")]
+
+
+def test_a_repo_without_charter_toml_skips_the_charter(tmp_path: Path) -> None:
+    stack = Stack(backend="aucun", frontend="aucun", has_podman=False)
+
+    assert "charter" not in [command.label for command in _check_commands(tmp_path, stack)]
 
 
 def test_a_backend_change_runs_the_backend_checks_not_the_frontend_ones(tmp_path: Path) -> None:
@@ -132,6 +139,7 @@ def test_an_npm_front_is_checked_by_npm_and_only_with_its_own_scripts(tmp_path: 
     stack = Stack(backend="aucun", frontend="vite-react", has_podman=False, frontend_dir=".")
     (tmp_path / "package.json").write_text('{"scripts": {"lint": "eslint ."}}')
     (tmp_path / "package-lock.json").write_text("{}")
+    (tmp_path / "charter.toml").touch()
 
     commands = _check_commands(tmp_path, stack)
 
@@ -145,6 +153,7 @@ def test_a_python_tool_the_repo_lacks_is_skipped_not_spawned(tmp_path: Path) -> 
     venv_bin.mkdir(parents=True)
     (venv_bin / "ruff").touch()
     (tmp_path / "backend" / "pyproject.toml").write_text('[dependency-groups]\ndev = ["ruff"]\n')
+    (tmp_path / "charter.toml").touch()
 
     labels = [command.label for command in _check_commands(tmp_path, stack)]
 

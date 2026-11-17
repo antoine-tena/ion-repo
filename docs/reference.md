@@ -93,6 +93,7 @@ is re-rendered, on a work branch: `chore/ion-repo-set`, opened by ion-repo on `m
 | `update_bot` | kiln-bot: `off` (the default: a private repo pays its GitHub minutes), `weekly` or `monthly`; see [kiln-bot](#kiln-bot). |
 | `statusline_ci`, `prod_health_url` | Claude Code's status line: CI state, and production's health probe. |
 | `large_files` | Heavy files the repo keeps on purpose (a site's film), by their exact path from the root, as a list or `a,b`: pre-commit's 1 MB ceiling (`check-added-large-files`) lets them through, and only them. |
+| `protected_branches` | Integration branches guarded beside `main` (always guarded), `develop` by default; a team that integrates elsewhere names its own (`dev,prerelease`), as a list or `a,b`: pre-commit's `no-commit-to-branch` and Claude's branch guard refuse a commit on them. |
 
 ## What a generated repo holds
 
@@ -130,7 +131,7 @@ jobs:
 ```
 
 `django.yml`, `python.yml`, `maven.yml`, `pnpm.yml`, `tauri.yml` (a Tauri app on Windows and macOS runners: rustfmt, Clippy, `cargo test`, then its installers as artifacts), `charter.yml`, `security.yml` (`uv audit`,
-`pnpm audit`, OSV-Scanner for Maven and each `Cargo.lock`), `secrets.yml` (gitleaks), `api-contract.yml`, `infra.yml` (podman build,
+`pnpm audit`, OSV-Scanner for Maven and each `Cargo.lock`), `secrets.yml` (gitleaks), `api-contract.yml` (schema and front types in step with the code, no route broken against `main`'s schema by oasdiff: `breaking-base`, empty to skip), `infra.yml` (podman build,
 actionlint, shellcheck), `sbom.yml` (CycloneDX), `mutation.yml` (mutmut), `vercel.yml`, `bot.yml` (kiln-bot) and `score.yml` (the score's change on a pull request). `charte.yml`,
 `securite.yml` and `contrat-api.yml` are their former names, kept as relays. Databases for tests run in
 podman. See [`.github/workflows/`](../.github/workflows/).

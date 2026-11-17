@@ -72,8 +72,9 @@ SETTABLE_KEYS = (
     "update_bot",
     "prod_health_url",
     "large_files",
+    "protected_branches",
 )
-LIST_KEYS = frozenset({"team", "large_files"})
+LIST_KEYS = frozenset({"team", "large_files", "protected_branches"})
 # The demo of a new project's front (a backend health badge, its typed client): it leans on the
 # template's constants and generated API types, which a front already built has replaced.
 STARTER_FILES = (
