@@ -93,7 +93,7 @@ is re-rendered, on a work branch: `chore/ion-repo-set`, opened by ion-repo on `m
 | `update_bot` | kiln-bot: `off` (the default: a private repo pays its GitHub minutes), `weekly` or `monthly`; see [kiln-bot](#kiln-bot). |
 | `statusline_ci`, `prod_health_url` | Claude Code's status line: CI state, and production's health probe. |
 | `large_files` | Heavy files the repo keeps on purpose (a site's film), by their exact path from the root, as a list or `a,b`: pre-commit's 1 MB ceiling (`check-added-large-files`) lets them through, and only them. |
-| `protected_branches` | Branches guarded like `main` and `develop`, for a team that integrates elsewhere (`dev`, a fork's own branch), as a list or `a,b`: pre-commit's `no-commit-to-branch` and Claude's branch guard refuse a commit on them. |
+| `protected_branches` | Integration branches guarded beside `main` (always guarded), `develop` by default; a team that integrates elsewhere names its own (`dev,prerelease`), as a list or `a,b`: pre-commit's `no-commit-to-branch` and Claude's branch guard refuse a commit on them. |
 
 ## What a generated repo holds
 

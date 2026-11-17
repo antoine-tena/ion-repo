@@ -391,10 +391,10 @@ large_files:
   default: "[]"
   when: "{{ large_files | length > 0 }}"
 
-# Branches guarded like main and develop, for a repo whose team integrates elsewhere (`dev`, a
-# fork's own branch): pre-commit's `no-commit-to-branch` and Claude's branch guard refuse a
-# commit on them. Set with `ion repo set protected_branches=dev,prerelease`, never asked; kept in
-# the answers when set.
+# Integration branches guarded beside main (always guarded), `develop` by default (an empty list); a team that
+# integrates elsewhere (`dev` and `prerelease`, a fork's own branch) names its own: pre-commit's
+# `no-commit-to-branch` and Claude's branch guard refuse a commit on them. Set with
+# `ion repo set protected_branches=dev,prerelease`, never asked; kept in the answers when set.
 protected_branches:
   type: yaml
   default: "[]"

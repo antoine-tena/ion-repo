@@ -93,6 +93,8 @@ def test_the_repo_protected_branches_are_refused_too(tmp_path: Path, answers: st
     assert run_hook('git commit -m "feat: x"', tmp_path).returncode == 2
     subprocess.run(["git", "-C", str(tmp_path), "switch", "-q", "-c", "devops"], check=True)
     assert run_hook('git commit -m "feat: x"', tmp_path).returncode == 0
+    subprocess.run(["git", "-C", str(tmp_path), "switch", "-q", "-c", "develop"], check=True)
+    assert run_hook('git commit -m "feat: x"', tmp_path).returncode == 0
 
 
 @pytest.mark.parametrize("key", ["ion-repo.branch-guard", "kiln.branch-guard"])

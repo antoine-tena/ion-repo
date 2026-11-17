@@ -742,7 +742,7 @@ def test_large_files_kept_on_purpose_pass_the_size_ceiling(tmp_path: Path) -> No
     assert "large_files:" in (project / ".copier-answers.yml").read_text()
 
 
-def test_protected_branches_join_main_and_develop_in_pre_commit(tmp_path: Path) -> None:
+def test_protected_branches_replace_develop_beside_main_in_pre_commit(tmp_path: Path) -> None:
     def guarded(project: Path) -> list[str]:
         config = yaml.safe_load((project / ".pre-commit-config.yaml").read_text())
         hook = next(
@@ -754,7 +754,7 @@ def test_protected_branches_join_main_and_develop_in_pre_commit(tmp_path: Path) 
     assert guarded(default) == ["main", "develop"]
     assert "protected_branches" not in (default / ".copier-answers.yml").read_text()
     project = generate(tmp_path / "fork", protected_branches=["dev", "prerelease"])
-    assert guarded(project) == ["main", "develop", "dev", "prerelease"]
+    assert guarded(project) == ["main", "dev", "prerelease"]
     assert "protected_branches:" in (project / ".copier-answers.yml").read_text()
 
 
