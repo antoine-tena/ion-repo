@@ -70,7 +70,7 @@ def load() -> State:
     for path in (STATE_PATH, LEGACY_STATE_PATH):
         try:
             loaded = json.loads(path.read_text())
-        except OSError, ValueError:
+        except (OSError, ValueError):
             continue
         return migrate(loaded if isinstance(loaded, dict) else {})
     return {"questions": {}}

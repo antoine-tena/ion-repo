@@ -100,6 +100,9 @@ line-length = 100
 target-version = "py314"
 # Les fichiers du modèle sont vérifiés dans les projets générés (tests et kiln check).
 extend-exclude = ["template"]
+# Plugin scripts run under whatever `python3` the PATH holds (a pyenv pin, a venv, macOS):
+# kept valid from 3.11 (tomllib), so no 3.14-only syntax there (issue #90).
+per-file-target-version = { "plugins/**/*.py" = "py311" }
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "RUF", "ANN"]

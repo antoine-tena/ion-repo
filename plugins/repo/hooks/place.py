@@ -30,7 +30,7 @@ def inside_repo(cwd: Path) -> bool:
             text=True,
             timeout=3,
         )
-    except OSError, subprocess.SubprocessError:
+    except (OSError, subprocess.SubprocessError):
         return True
     return result.returncode == 0 and result.stdout.strip() == "true"
 

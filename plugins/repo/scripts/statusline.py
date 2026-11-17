@@ -618,7 +618,7 @@ def machine_settings() -> dict:
     try:
         with open(path, "rb") as file:
             return tomllib.load(file)
-    except OSError, tomllib.TOMLDecodeError:
+    except (OSError, tomllib.TOMLDecodeError):
         return {}
 
 
@@ -652,7 +652,7 @@ def json_file(path: str) -> dict:
     try:
         with open(os.path.expanduser(path), "rb") as file:
             loaded = json.load(file)
-    except OSError, ValueError:
+    except (OSError, ValueError):
         return {}
     return loaded if isinstance(loaded, dict) else {}
 
@@ -975,7 +975,7 @@ def compaction_point(window: int, project: str, model: str) -> int:
             break
         try:
             settings = json.loads(read(path))
-        except OSError, ValueError:
+        except (OSError, ValueError):
             continue
         if isinstance(settings, dict):
             own = ((settings.get("modelSettings") or {}).get(model) or {}).get("autoCompactWindow")
@@ -1237,7 +1237,7 @@ def collect_repo(status: Status, cwd: str, top: str) -> str:
         prod.append(deployed(front, front_sha, ("frontend",)))
         if paused == "True":
             prod.append(Item("paused", 2))
-    except OSError, ValueError, KeyError:
+    except (OSError, ValueError, KeyError):
         pass
     if prod:
         status.env.append([Item("prod"), *prod])
@@ -1393,7 +1393,7 @@ def sweep_hint() -> str:
             cached("sweep", 30, f"{shlex.quote(sweep)} --json", os.path.expanduser("~")) or "null"
         )
         candidates = report["candidates"]
-    except ValueError, TypeError, KeyError:
+    except (ValueError, TypeError, KeyError):
         return " → sweep"  # no verdict yet: the first run is in the background
     certain = [c for c in candidates if c.get("is_certain")]
     if certain:
@@ -1475,7 +1475,7 @@ def collect_session(status: Status, d: dict, main: str) -> None:
             machine.append(Item(text, 3, f"RAM {ram:.0f}%"))
         else:
             machine.append(Item(f"RAM {ram:.0f}%", 1 if ram >= 75 else 0))
-    except OSError, KeyError, ValueError, ZeroDivisionError:
+    except (OSError, KeyError, ValueError, ZeroDivisionError):
         pass
     cores = os.cpu_count() or 0
     if cores:
@@ -1672,7 +1672,7 @@ def terminal_columns() -> int:
                     size = fcntl.ioctl(tty, termios.TIOCGWINSZ, b"\0" * 8)
                     return int(struct.unpack("hhhh", size)[1])
             pid = int(read(f"/proc/{pid}/stat").rsplit(")", 1)[1].split()[1])
-        except OSError, ValueError, IndexError:
+        except (OSError, ValueError, IndexError):
             return 0
     return 0
 

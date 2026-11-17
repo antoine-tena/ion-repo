@@ -55,7 +55,7 @@ def outdated(include_own: bool = False) -> Late:
         if done.returncode == USAGE_ERROR and "invalid choice" in done.stderr:
             return [TOO_OLD]
         rows = json.loads(done.stdout) if done.returncode == 0 else []
-    except OSError, subprocess.TimeoutExpired, ValueError:
+    except (OSError, subprocess.TimeoutExpired, ValueError):
         return []
     if not isinstance(rows, list):
         return []

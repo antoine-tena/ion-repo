@@ -75,7 +75,7 @@ def _running_sessions() -> set[str]:
             os.kill(int(record.stem), 0)
         except PermissionError:
             running.add(session)
-        except OSError, ValueError, KeyError, TypeError:
+        except (OSError, ValueError, KeyError, TypeError):
             continue
         else:
             running.add(session)

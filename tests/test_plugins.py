@@ -1,3 +1,4 @@
+import ast
 import json
 import re
 from pathlib import Path
@@ -100,6 +101,13 @@ def test_the_debrief_plugin_carries_the_repo_plugins_style() -> None:
     assert (ROOT / "plugins/debrief" / style).read_text() == (
         ROOT / "plugins/repo" / style
     ).read_text()
+
+
+def test_plugin_scripts_parse_on_python_3_11() -> None:
+    # Hooks and the status line run under the `python3` the PATH holds, often older than 3.14
+    # (a pyenv pin, a venv, macOS): issue #90.
+    for script in (ROOT / "plugins").rglob("*.py"):
+        ast.parse(script.read_text(), str(script), feature_version=(3, 11))
 
 
 def test_hooks_point_at_existing_files() -> None:
