@@ -49,8 +49,8 @@ LEGACY_INTROS = (
 # The header a converted `a-faire.md` gets: the template no longer has a single `backlog.md`.
 LEGACY_HEADER = """# Backlog
 
-Everything left to do, in a single list ordered by priority. How to write a ticket:
-[README.md](README.md); closed tickets are in [done.md](done.md), what was turned down in
+Everything left to do, in a single list ordered by priority. Started on **—**. How to write a
+ticket: [README.md](README.md); closed tickets are in [done.md](done.md), what was turned down in
 [rejected.md](rejected.md). **Nothing else is open.**
 
 North star: **—**.
@@ -327,7 +327,8 @@ def add_after_update_ticket(root: Path, notes: list[ReleaseNotes], *, today: str
 RELEASES_MARK = "🚀"
 HOW_TO_TITLE = "How to use"
 SINGLE_LIST = re.compile(r"in a single\s+list ordered by\s+priority")
-HOW_TO_LINK = re.compile(r"How to write a\s+ticket:\s+\[README\.md\]\(README\.md\)")
+# The how-to was the folder's README; the README is the index now.
+HOW_TO_LINK = re.compile(r"\[README\.md\]\(README\.md\)")
 RELATIVE_LINK = re.compile(r"\]\((?!https?:|mailto:|#|/)([^)\s]+)\)")
 ANCHOR_LINK = re.compile(r"\]\(#([^)\s]+)\)")
 TEMPLATE_README = "What is left to do on"
@@ -504,7 +505,7 @@ def _index(
         "[releases/](releases/)",
         header,
     )
-    header = HOW_TO_LINK.sub("How to write a ticket: [how-to.md](how-to.md)", header)
+    header = HOW_TO_LINK.sub("[how-to.md](how-to.md)", header)
     lines = [header.rstrip(), "", "Open tickets, one line each: `ion repo backlog`.", ""]
     lines += ["## Releases", ""]
     lines += releases or ["None planned yet (`/repo:backlog plan`)."]

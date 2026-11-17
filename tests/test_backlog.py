@@ -1,15 +1,21 @@
-"""Suivi du travail : conversion de l'ancien `docs/a-faire/` en `docs/backlog/`, et de l'ancien
-`backlog.md` unique en tickets ouverts et `done.md`."""
+"""Suivi du travail : conversion de l'ancien `docs/a-faire/` en `docs/backlog/`, de l'ancien
+`backlog.md` unique en tickets ouverts et `done.md`, puis en un dossier (un fichier par ticket, un
+par version)."""
 
 import subprocess
 from pathlib import Path
 
-from ion_repo.backlog import add_after_update_ticket, migrate_legacy_backlog, split_backlog
+from ion_repo.backlog import (
+    LEGACY_HEADER,
+    add_after_update_ticket,
+    migrate_legacy_backlog,
+    split_backlog,
+    split_into_folder,
+)
 from ion_repo.versions import ReleaseNotes
 
-TEMPLATE_BACKLOG = (
-    Path(__file__).parent.parent / "template/docs/backlog/backlog.md.jinja"
-).read_text()
+# What a former template's `backlog.md` began with.
+TEMPLATE_BACKLOG = LEGACY_HEADER
 
 LEGACY = """# À faire
 
@@ -86,7 +92,7 @@ def test_legacy_tracker_becomes_an_english_backlog(tmp_path: Path) -> None:
 
     text = (backlog / "backlog.md").read_text()
     assert "North star: **la démo en ligne**." in text
-    assert "#T-04.**" in text
+    assert "Next free: T-04.**" in text
     assert "**2026-01-02**" in text
     assert "### T-01 · Livrer la démo" in text
     assert "- **Status**: in progress — branch feat/demo, since 3 janvier" in text
@@ -127,13 +133,11 @@ def test_tracker_deleted_by_copier_is_read_back_from_the_last_commit(tmp_path: P
     assert "### T-01 · Livrer la démo" in (tmp_path / "docs/backlog/backlog.md").read_text()
 
 
-BACKLOG_WITH_CRITICAL = """# Backlog
+INDEX = """# Backlog
 
-- **ID** `T-NN`: stable. **Next free: T-07.**
+North star: **the demo**.
 
-## 🔴 Critical
-
-### T-03 · Something else
+**Next free: acme#T-07.**
 """
 NOTES = [
     ReleaseNotes("v0.4.1", "", ["- **After updating**: give each owner's @login"]),
@@ -141,34 +145,38 @@ NOTES = [
 ]
 
 
-def test_after_updating_lines_become_one_critical_ticket(tmp_path: Path) -> None:
-    backlog = tmp_path / "docs/backlog/backlog.md"
-    backlog.parent.mkdir(parents=True)
-    backlog.write_text(BACKLOG_WITH_CRITICAL)
+def folder_repo(root: Path) -> Path:
+    folder = root / "docs/backlog"
+    (folder / "tickets").mkdir(parents=True)
+    (folder / "README.md").write_text(INDEX)
+    (root / ".copier-answers.yml").write_text("name: acme\n")
+    return folder
 
-    (tmp_path / ".copier-answers.yml").write_text("name: acme\n")
+
+def test_after_updating_lines_become_one_critical_ticket(tmp_path: Path) -> None:
+    folder = folder_repo(tmp_path)
+
     assert add_after_update_ticket(tmp_path, NOTES, today="2026-10-19") == "acme#T-07"
     assert add_after_update_ticket(tmp_path, NOTES, today="2026-10-20") is None
 
-    text = backlog.read_text()
-    assert "**Next free: acme#T-08.**" in text
-    assert text.index("### acme#T-07 · Finish the ion-repo update to v0.4.1") < text.index(
-        "### T-03"
-    )
-    assert "- **Opened**: 2026-10-19" in text
-    assert "- [ ] rename the bucket (v0.4.0)\n- [ ] give each owner's @login (v0.4.1)" in text
+    assert "**Next free: acme#T-08.**" in (folder / "README.md").read_text()
+    ticket = (folder / "tickets/acme-T-07.md").read_text()
+    assert ticket.startswith("# acme#T-07 · Finish the ion-repo update to v0.4.1\n")
+    assert "- **Priority**: 🔴 critical\n" in ticket
+    assert "- **Opened**: 2026-10-19" in ticket
+    assert "- **Effort**: XS · **Owner**: — · **Due**: —" in ticket
+    assert "- [ ] rename the bucket (v0.4.0)\n- [ ] give each owner's @login (v0.4.1)" in ticket
 
 
 def test_nothing_to_do_no_ticket(tmp_path: Path) -> None:
-    backlog = tmp_path / "docs/backlog/backlog.md"
-    backlog.parent.mkdir(parents=True)
-    backlog.write_text(BACKLOG_WITH_CRITICAL)
+    folder = folder_repo(tmp_path)
 
     assert (
         add_after_update_ticket(tmp_path, [ReleaseNotes("v0.4.1", "", ["- x"])], today="d") is None
     )
     assert add_after_update_ticket(tmp_path / "elsewhere", NOTES, today="d") is None
-    assert backlog.read_text() == BACKLOG_WITH_CRITICAL
+    assert (folder / "README.md").read_text() == INDEX
+    assert not any((folder / "tickets").iterdir())
 
 
 def test_a_hand_kept_tracker_keeps_its_compass_its_numbers_and_its_notes(tmp_path: Path) -> None:
@@ -191,7 +199,7 @@ def test_a_hand_kept_tracker_keeps_its_compass_its_numbers_and_its_notes(tmp_pat
 
     text = (backlog / "backlog.md").read_text()
     assert "North star: **première sortie**." in text
-    assert "#T-04.**" in text  # AF-03 is taken: the stale AF-02 is not reused
+    assert "Next free: T-04.**" in text  # AF-03 is taken: the stale AF-02 is not reused
     assert "La production tourne la **v1.1** (voir T-03)." in text
     assert text.index("La production tourne") < text.index("## 🔴")
     assert "- **Status**: todo (T-01)" in text
@@ -286,3 +294,129 @@ def test_a_kept_readme_receives_the_how_to_of_the_split(tmp_path: Path) -> None:
     (folder / "backlog.md").write_text(FORMER_BACKLOG)
     assert split_backlog(tmp_path, from_disk=True)
     assert (folder / "README.md").read_text() == readme
+
+
+SINGLE_BACKLOG = """# Backlog
+
+Everything left to do on Demo, in a single list ordered by priority. Started on
+**2026-01-02**. How to write a ticket: [README.md](README.md); see the [🧭 Vision](#-vision).
+
+North star: **the demo online**.
+
+**Next free: acme#T-12.**
+
+---
+
+## 🚀 Releases
+
+A release every two days.
+
+### Shipped: v0.1.0
+- v0.1.0 · The first one.
+
+### v0.2.0 · The demo online
+Why: one outcome.
+- acme#T-08 · Ship the demo (S)
+- acme#T-09 · Rewrite the API (L)
+- other#T-01 · Theirs (S)
+
+## 🔴 Critical
+
+### acme#T-08 · Ship the demo
+- **Type**: bug
+- **Status**: todo
+- **Opened**: 2026-01-03
+- **Effort**: S · **Owner**: — · **Due**: —
+- **Origin**: [the call](../calls.md), see [🧭 Vision](#-vision)
+
+#### A sub-heading
+### Not a ticket heading, still the demo's
+- [ ] Ship.
+
+## 🟠 Important
+
+## ⚪ Background — long-running work, debt and ideas
+
+### acme#T-09 · Rewrite the API
+- **Type**: idea
+- **Status**: in progress — branch feat/api, since 2026-01-04
+- **Opened**: 2026-01-04
+- **Effort**: L · **Owner**: @ann · **Due**: — · **Session**: high, feat/api
+- **Origin**: —
+
+---
+
+## 🧭 Vision
+
+Why the tickets exist.
+
+### A part of it
+"""
+
+
+def test_the_single_backlog_becomes_a_folder_no_line_lost(tmp_path: Path) -> None:
+    folder = tmp_path / "docs/backlog"
+    folder.mkdir(parents=True)
+    (folder / "backlog.md").write_text(SINGLE_BACKLOG)
+    (folder / "README.md").write_text("# Backlog\n\nWhat is left to do on Demo.\n")
+    (tmp_path / ".copier-answers.yml").write_text("name: acme\n")
+
+    assert split_into_folder(tmp_path)
+
+    assert not (folder / "backlog.md").exists()
+    demo = (folder / "tickets/acme-T-08.md").read_text()
+    assert demo.startswith(
+        "# acme#T-08 · Ship the demo\n- **Type**: bug\n- **Priority**: 🔴 critical\n"
+    )
+    assert "[the call](../../calls.md), see [🧭 Vision](../vision.md)" in demo
+    assert "#### A sub-heading\n### Not a ticket heading, still the demo's\n- [ ] Ship." in demo
+    api = (folder / "tickets/acme-T-09.md").read_text()
+    assert "- **Priority**: ⚪ background" in api
+    release = (folder / "releases/v0.2.0.md").read_text()
+    assert release.startswith("# v0.2.0 · The demo online\n\nWhy: one outcome.\n")
+    assert "- acme#T-08 · Ship the demo (S) · low · `ion repo session acme#T-08`" in release
+    assert "- acme#T-09 · Rewrite the API (L) · high · `ion repo session acme#T-09`" in release
+    assert "- other#T-01 · Theirs (S)\n" in release
+    notes = (folder / "releases/README.md").read_text()
+    assert "A release every two days." in notes and "## Shipped: v0.1.0" in notes
+    index = (folder / "README.md").read_text()
+    assert "one file per ticket in [tickets/](tickets/)" in index
+    assert "[how-to.md](how-to.md); see the [🧭 Vision](vision.md)" in index
+    assert "**Next free: acme#T-12.**" in index
+    assert "- [v0.2.0 · The demo online](releases/v0.2.0.md)" in index
+    assert "What is left to do on" not in index and "---" not in index
+    assert (
+        folder / "vision.md"
+    ).read_text() == "# 🧭 Vision\n\nWhy the tickets exist.\n\n## A part of it\n"
+
+
+def test_the_split_reads_a_backlog_copier_deleted_from_the_last_commit(tmp_path: Path) -> None:
+    folder = tmp_path / "docs/backlog"
+    folder.mkdir(parents=True)
+    (folder / "backlog.md").write_text(SINGLE_BACKLOG)
+    (tmp_path / ".copier-answers.yml").write_text("name: acme\n")
+    git(tmp_path, "init", "-q")
+    git(tmp_path, "add", ".")
+    git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "init")
+    (folder / "backlog.md").unlink()
+
+    assert split_into_folder(tmp_path)
+    assert (folder / "tickets/acme-T-09.md").is_file()
+
+    git(tmp_path, "add", ".")
+    git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "split")
+    assert not split_into_folder(tmp_path)
+
+
+def test_a_repo_s_own_readme_stays_under_the_index(tmp_path: Path) -> None:
+    folder = tmp_path / "docs/backlog"
+    folder.mkdir(parents=True)
+    (folder / "backlog.md").write_text(SINGLE_BACKLOG)
+    (folder / "README.md").write_text("# Our tracking\n\nThe repo's own words.\n")
+    (tmp_path / ".copier-answers.yml").write_text("name: acme\n")
+
+    assert split_into_folder(tmp_path)
+
+    index = (folder / "README.md").read_text()
+    assert index.startswith("# Backlog\n")
+    assert index.endswith("---\n\n## Our tracking\n\nThe repo's own words.\n")

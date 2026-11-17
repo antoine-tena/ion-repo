@@ -240,13 +240,13 @@ def test_vue_templates_keep_their_mustaches(tmp_path: Path) -> None:
 def test_backlog_is_always_there(tmp_path: Path) -> None:
     project_dir = generate(tmp_path / "demo", north_star="the demo online", backend="fastapi")
 
-    backlog = (project_dir / "docs/backlog/backlog.md").read_text()
-    assert "North star: **the demo online**." in backlog
-    assert "- **Type**: task" in backlog
-    assert "**Next free: demo#T-02.**" in backlog
-    assert "Done" not in backlog
-    how_to = (project_dir / "docs/backlog/README.md").read_text()
+    index = (project_dir / "docs/backlog/README.md").read_text()
+    assert "North star: **the demo online**." in index
+    assert "**Next free: demo#T-01.**" in index
+    assert not (project_dir / "docs/backlog/backlog.md").exists()
+    how_to = (project_dir / "docs/backlog/how-to.md").read_text()
     assert "**Each member writes only their own login**" in how_to
+    assert "- **Priority**: 🟡 normal" in how_to
     assert (project_dir / "docs/backlog/done.md").read_text().startswith("# Done")
     assert "docs/backlog/" in (project_dir / "CLAUDE.md").read_text()
     assert not (project_dir / "docs/a-faire").exists()

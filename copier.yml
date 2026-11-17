@@ -10,7 +10,7 @@ _min_copier_version: "9.4"
 # binary: an update cannot merge the project's own one, it would put ion-repo's back.
 _skip_if_exists:
   - CLAUDE.md
-  - docs/backlog/backlog.md
+  - docs/backlog/README.md
   - docs/backlog/done.md
   - frontend/public/favicon.ico
   - frontend/public/favicon.svg

@@ -139,6 +139,22 @@ def test_a_rename_moves_the_own_prefix_only(tmp_path: Path) -> None:
     assert text == "new.name#T-01, other-shop#T-02, ion-host#T-07, new.name#T-1\n"
 
 
+def test_a_renamed_repo_renames_its_ticket_files(tmp_path: Path) -> None:
+    root = repo(tmp_path, "shop", backlog="")
+    (root / "docs/backlog/backlog.md").unlink()
+    (root / "docs/backlog/README.md").write_text("**Next free: shop#T-03.**\n")
+    (root / "docs/backlog/tickets").mkdir()
+    (root / "docs/backlog/tickets/shop-T-02.md").write_text("# shop#T-02 · Two\nSee T-01.\n")
+
+    assert tickets.rename_prefix(root, "shop", "store") == 2
+    renamed = root / "docs/backlog/tickets/store-T-02.md"
+    assert renamed.read_text() == "# store#T-02 · Two\nSee T-01.\n"
+    assert not (root / "docs/backlog/tickets/shop-T-02.md").exists()
+    # A bare ID of a ticket file is one this repo gave out.
+    (root / ".copier-answers.yml").write_text("name: store\n")
+    assert "store#T-01" in tickets.plan(root).writes[renamed]
+
+
 def test_the_name_is_never_a_worktree_folder(tmp_path: Path) -> None:
     (tmp_path / "pyproject.toml").write_text('[project]\nname = "from-pyproject"\n')
     assert tickets.repo_name(tmp_path) == "from-pyproject"
@@ -160,12 +176,11 @@ def test_ion_repo_new_writes_the_name_given(tmp_path: Path) -> None:
     assert created.returncode == 0, created.stdout[-3000:] + created.stderr[-3000:]
 
     folder = tmp_path / name / "docs/backlog"
-    backlog = (folder / "backlog.md").read_text()
-    assert f"**Next free: {name}#T-02.**" in backlog
-    assert f"### {name}#T-01 · Ticket title" in backlog
+    index = (folder / "README.md").read_text()
+    assert f"**Next free: {name}#T-01.**" in index
     assert f"· {name}#T-NN · Title" in (folder / "done.md").read_text()
-    how_to = (folder / "README.md").read_text()
-    assert f"`{name}#T-NN`" in how_to
-    for text in (backlog, how_to):
+    how_to = (folder / "how-to.md").read_text()
+    assert f"`{name}#T-NN`" in how_to and f"tickets/{name}-T-NN.md" in how_to
+    for text in (index, how_to):
         assert "ion-repo#" not in text and "ion-host#" not in text
     assert tickets.plan(tmp_path / name).writes == {}
