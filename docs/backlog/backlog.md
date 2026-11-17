@@ -1336,7 +1336,7 @@ here and 36k in the reference repo, and Claude read it nearly 500 times in three
 
 ### ion-repo#T-453 · The backlog as a folder: a file per ticket, a file per release
 - **Type**: improvement
-- **Status**: todo
+- **Status**: in progress — branch feat/backlog-folder, since 2026-11-17
 - **Opened**: 2026-11-17
 - **Effort**: L · **Owner**: @antoine-tena · **Due**: — · **Session**: medium, feat/backlog-folder
 - **Origin**: antoine, 17 November 2026, while planning a refactor of a university repo in
