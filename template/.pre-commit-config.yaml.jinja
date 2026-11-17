@@ -13,10 +13,11 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
-      # [NO-COMMIT-ON-MAIN]: refuses any commit made on main or develop. GitHub also refuses a
-      # force-push of develop and any push on main (rulesets).
+      # [NO-COMMIT-ON-MAIN]: refuses any commit made on main, develop and the branches set by
+      # `ion repo set protected_branches=…`. GitHub also refuses a force-push of develop and any
+      # push on main (rulesets).
       - id: no-commit-to-branch
-        args: [--branch, main, --branch, develop]
+        args: [--branch, main, --branch, develop{% for branch in protected_branches | default([]) %}, --branch, {{ branch }}{% endfor %}]
       - id: check-added-large-files
         args: [--maxkb=1024]
 {%- if large_files | default([]) %}

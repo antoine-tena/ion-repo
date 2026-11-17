@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""PreToolUse (Bash): refuses a `git commit` on a main branch (main, master, develop), a
-`Claude-Session:` line (a link nobody else can open), and a `Co-Authored-By: Claude` line on a
-machine set to `ion repo set ai_trailers=never`: once pushed to the integration branch, it cannot be
-erased.
+"""PreToolUse (Bash): refuses a `git commit` on a main branch (main, master, develop, and the
+repo's `protected_branches`), a `Claude-Session:` line (a link nobody else can open), and a
+`Co-Authored-By: Claude` line on a machine set to `ion repo set ai_trailers=never`: once pushed to
+the integration branch, it cannot be erased.
 
 Two exceptions: the commit that creates the repo (no commit anywhere yet), the one `ion repo new`
 makes on main; the commit that concludes a merge in progress (MERGE_HEAD present), for example
@@ -23,6 +23,36 @@ import tomllib
 from pathlib import Path
 
 PROTECTED_BRANCHES = {"main", "master", "develop"}
+ANSWERS_FILE = ".copier-answers.yml"
+LIST_ITEM = re.compile(r"\s*-\s*(\S+)")
+
+
+def answered_branches(directory: str) -> set[str]:
+    """The repo's `protected_branches` (`ion repo set protected_branches=dev,…`), read without a
+    YAML parser: a block list (`- dev`) or a flow one (`[dev, prerelease]`)."""
+    root = subprocess.run(
+        ["git", "-C", directory, "rev-parse", "--show-toplevel"],
+        capture_output=True,
+        text=True,
+        timeout=5,
+    ).stdout.strip()
+    try:
+        lines = Path(root, ANSWERS_FILE).read_text().splitlines()
+    except OSError:
+        return set()
+    branches: set[str] = set()
+    for index, line in enumerate(lines):
+        key, _, inline = line.partition(":")
+        if key != "protected_branches":
+            continue
+        if inline.strip():
+            return {name.strip(" '\"") for name in inline.strip(" []").split(",") if name.strip()}
+        for item in lines[index + 1 :]:
+            match = LIST_ITEM.fullmatch(item)
+            if not match:
+                break
+            branches.add(match.group(1).strip("'\""))
+    return branches
 
 
 def git_config(directory: str, key: str) -> str:
@@ -140,7 +170,8 @@ for target, switched in targets:
         text=True,
         timeout=5,
     ).stdout.strip()
-    if branch in PROTECTED_BRANCHES and not is_disabled and not is_merging and not is_first:
+    is_protected = branch in PROTECTED_BRANCHES | answered_branches(target)
+    if is_protected and not is_disabled and not is_merging and not is_first:
         print(
             f"Commit refused: never commit on {branch}. Create a branch (worktree) first.",
             file=sys.stderr,
