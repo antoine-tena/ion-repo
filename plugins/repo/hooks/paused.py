@@ -30,7 +30,7 @@ def listing(current: str = "", now: datetime.datetime | None = None) -> str:
         try:
             record = json.loads(path.read_text(encoding="utf-8"))
             paused = datetime.datetime.fromisoformat(record["paused"])
-        except OSError, ValueError, KeyError, TypeError:
+        except (OSError, ValueError, KeyError, TypeError):
             path.unlink(missing_ok=True)
             continue
         if record.get("id") == current:

@@ -2,7 +2,6 @@
 name: debrief
 description: End-of-work report read in five seconds - the real git state first, then what was done, what is broken, what Claude does next, what waits on the user
 keep-coding-instructions: true
-force-for-plugin: true
 ---
 
 # Debrief

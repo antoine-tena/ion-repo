@@ -5,13 +5,20 @@
 // its `others` renames what came from elsewhere, each under its own name by default. The color
 // of what came from elsewhere is `others` in ~/.claude/chat-colors.json (`/repo:color`), a
 // #rrggbb outside the theme: the theme has no key of its own for it, and `inactive` grays all
-// of Claude Code.
+// of Claude Code. Its `person_side`, `"right"`, moves the person's messages to the right, bar on
+// the right and text aligned right, as in a messenger app; Claude's and the gray ones stay left.
 // The time beside the name is when the message was first drawn: neither the props nor
 // `$.session.messages` carry the message's own time, so a resumed session shows the resume's.
 import type { Register } from 'claude-code'
 
 type Origin = { kind: string; server?: string; plugin?: string }
-type Names = { person: string; claude: string; others: Record<string, string>; othersColor: string }
+type Names = {
+  person: string
+  claude: string
+  others: Record<string, string>
+  othersColor: string
+  personRight: boolean
+}
 type Run = { exitCode: number; stdout: string }
 
 const PERSON_KINDS = new Set(['unclassified', 'composer', 'bridge', 'sdk'])
@@ -73,12 +80,14 @@ const renamed = (value: unknown): Record<string, string> =>
 
 const toNames = (file: string, colors: string, gitName: string): Names => {
   const choice = chosen(file)
-  const color = chosen(colors).others
+  const look = chosen(colors)
+  const color = look.others
   return {
     person: named(choice.person, gitName),
     claude: named(choice.claude, 'Claude'),
     others: renamed(choice.others),
     othersColor: typeof color === 'string' && HEX.test(color.trim()) ? color.trim() : OTHERS_COLOR,
+    personRight: look.person_side === 'right',
   }
 }
 
@@ -116,20 +125,39 @@ export const register: Register = on => {
     )
     const label = name === null ? chosenNames.person : (chosenNames.others[name] ?? name)
     const color = name === null ? 'professionalBlue' : chosenNames.othersColor
+    const right = name === null && chosenNames.personRight
+    const bar = <Box width={1} backgroundColor={color} />
+    const nameText = label === '' ? null : (
+      <Text bold color={color}>{label}</Text>
+    )
+    const timeText = <Text dimColor>{time}</Text>
 
     return (
       <Box flexDirection="row" marginTop={1}>
-        <Box width={1} backgroundColor={color} />
-        <Box flexDirection="column" flexGrow={1} marginLeft={1}>
+        {right ? null : bar}
+        <Box
+          flexDirection="column"
+          flexGrow={1}
+          marginLeft={right ? 0 : 1}
+          marginRight={right ? 1 : 0}
+        >
           <Box flexDirection="row">
-            {label === '' ? null : (
-              <Text bold color={color}>{label}</Text>
-            )}
+            {right ? timeText : nameText}
             <Box flexGrow={1} />
-            <Text dimColor>{time}</Text>
+            {right ? nameText : timeText}
           </Box>
-          <Text dimColor={name !== null}>{e.props.text}</Text>
+          {right ? (
+            // Each line pushed right on its own: Text has no alignment of its own.
+            e.props.text.split('\n').map((line, index) => (
+              <Box key={index} flexDirection="row" justifyContent="flex-end">
+                <Text>{line === '' ? ' ' : line}</Text>
+              </Box>
+            ))
+          ) : (
+            <Text dimColor={name !== null}>{e.props.text}</Text>
+          )}
         </Box>
+        {right ? bar : null}
       </Box>
     )
   })

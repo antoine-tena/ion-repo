@@ -1,3 +1,4 @@
+import ast
 import json
 import re
 from pathlib import Path
@@ -38,6 +39,8 @@ def test_every_cited_skill_exists() -> None:
         for path in citing_files()
         for match in cited.finditer(path.read_text(errors="ignore"))
         if not (ROOT / "plugins" / match[1] / "skills" / match[2] / "SKILL.md").is_file()
+        # An output style is named the same way (`repo:debrief`).
+        and not (ROOT / "plugins" / match[1] / "output-styles" / f"{match[2]}.md").is_file()
     }
     assert sorted(missing) == []
 
@@ -100,6 +103,13 @@ def test_the_debrief_plugin_carries_the_repo_plugins_style() -> None:
     assert (ROOT / "plugins/debrief" / style).read_text() == (
         ROOT / "plugins/repo" / style
     ).read_text()
+
+
+def test_plugin_scripts_parse_on_python_3_11() -> None:
+    # Hooks and the status line run under the `python3` the PATH holds, often older than 3.14
+    # (a pyenv pin, a venv, macOS): issue #90.
+    for script in (ROOT / "plugins").rglob("*.py"):
+        ast.parse(script.read_text(), str(script), feature_version=(3, 11))
 
 
 def test_hooks_point_at_existing_files() -> None:

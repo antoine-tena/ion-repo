@@ -1,6 +1,6 @@
 ---
 name: color
-description: Change the color of the bar beside the person's messages in the chat, or of the gray one of a task or another session - a palette, more on request, any color named. Use when the user wants another color for their messages or the gray ones, or from `/repo:look`.
+description: Change the color of the bar beside the person's messages in the chat, or of the gray one of a task or another session, or move the person's messages to the right. Use when the user wants other colors for their messages or the gray ones, theirs on the right, or from `/repo:look`.
 argument-hint: "[a color, by name or #rrggbb]"
 ---
 
@@ -42,6 +42,11 @@ A theme is a JSON file in `~/.claude/themes/<slug>.json` (`name`, `base`, `overr
    would gray all of Claude Code), so it goes to `~/.claude/chat-colors.json` as `{"others":
    "#rrggbb"}`, other keys kept; gray chosen: the key removed, the file too once empty. The mod
    reads it within ten seconds; skip 3.
+
+   The side of the person's messages, only when the user asks for it: `"person_side": "right"`
+   in the same `~/.claude/chat-colors.json` puts their messages on the right, bar on the right and
+   each line pushed right, like a messenger app; Claude's and the gray ones stay on the left.
+   Left chosen: the key removed, the file too once empty. Within ten seconds, skip 3.
 3. Write the theme with both overrides (other keys of an existing theme kept), then set `theme` to
    `custom:<slug>` in `~/.claude/settings.json`, every other key unchanged (`python3 -I` with
    `json`, indent 2). When `chezmoi source-path <file>` answers for one of the two files, update its

@@ -36,7 +36,7 @@ TOOL_KEY = "tool"
 LOOK_KEY = "look"
 ION_TOOLS_KEY = "ion-tools"
 # Questions of taste, by version of what they offer: asked again only when it grows.
-NEWS = {LOOK_KEY: 1}
+NEWS = {LOOK_KEY: 2}
 
 State = dict[str, Any]
 Question = dict[str, Any]
@@ -70,7 +70,7 @@ def load() -> State:
     for path in (STATE_PATH, LEGACY_STATE_PATH):
         try:
             loaded = json.loads(path.read_text())
-        except OSError, ValueError:
+        except (OSError, ValueError):
             continue
         return migrate(loaded if isinstance(loaded, dict) else {})
     return {"questions": {}}

@@ -160,3 +160,49 @@ test("the person's name stays when reading it again fails", async ($, on) => {
   expect(await barColor(second)).toBe('professionalBlue')
   await second.unmount()
 })
+
+test("the person's messages move to the right when chosen, Claude's stay on the left", async ($, on) => {
+  // Later than the names read by the tests above, so they are read again.
+  on('clock.now', () => ({ value: NOON + 14_400_000 }))
+  on('process.run', (_, e: { argv: string[] }) => {
+    const command = e.argv.join(' ')
+    if (command.includes('chat-colors.json')) {
+      return ran('{"person_side": "right"}')
+    }
+    return ran(e.argv[0] === 'git' ? 'antoine-tena' : '')
+  })
+  const mine = await $.ui.mount(userMessage('m10', { kind: 'composer' }))
+  const row = await mine.find({ type: 'Box' })
+  const children = row?.children ?? []
+  // The bar is the last child, on the right; the text box before it.
+  expect(children.at(-1)?.props?.backgroundColor).toBe('professionalBlue')
+  expect(children[0]?.props?.backgroundColor).toBeUndefined()
+  await mine.unmount()
+  // Another session's message keeps its bar on the left.
+  const peer = await $.ui.mount(userMessage('m11', { kind: 'peer' }, { name: 'ion-host' }))
+  expect(await barColor(peer)).toBe('inactive')
+  await peer.unmount()
+  const reply = await $.ui.mount({
+    plugin: 'repo',
+    component: 'AssistantMessage',
+    requestId: 'r5',
+    surface: 'terminal',
+    props: { text: 'done', isFirstOfReply: true },
+  })
+  expect(await barColor(reply)).toBe('claude')
+  await reply.unmount()
+})
+
+test("each line of the person's message is pushed right on its own", async ($, on) => {
+  on('clock.now', () => ({ value: NOON + 14_400_000 }))
+  on('process.run', (_, e: { argv: string[] }) =>
+    ran(e.argv.join(' ').includes('chat-colors.json') ? '{"person_side": "right"}' : 'antoine-tena'),
+  )
+  const ui = await $.ui.mount({
+    ...userMessage('m12', { kind: 'composer' }),
+    props: { text: 'first line\nsecond', origin: { kind: 'composer' }, isExpanded: false },
+  })
+  expect((await ui.find({ type: 'Text', text: /^first line$/ }))?.text).toBe('first line')
+  expect((await ui.find({ type: 'Text', text: /^second$/ }))?.text).toBe('second')
+  await ui.unmount()
+})

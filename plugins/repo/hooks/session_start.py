@@ -120,7 +120,7 @@ def machine_settings() -> dict[str, Any]:
     try:
         path = CONFIG_PATH if CONFIG_PATH.exists() else LEGACY_CONFIG_PATH
         return tomllib.loads(path.read_text(encoding="utf-8"))
-    except OSError, ValueError:
+    except (OSError, ValueError):
         return {}
 
 
@@ -214,7 +214,7 @@ def recorded_build(site_packages: Path) -> str:
             build = site_packages / package / "_build.json"
             if build.is_file():
                 return str(json.loads(build.read_text()).get("describe", ""))
-    except OSError, ValueError, AttributeError:
+    except (OSError, ValueError, AttributeError):
         return ""
     return ""
 
@@ -374,7 +374,7 @@ def red_ci(root: Path) -> str:
             "gh", "run", "list", "--branch", branch, "--limit", "20", "--json", fields, cwd=root
         )
         runs = json.loads(listed.stdout) if listed.returncode == 0 else []
-    except OSError, ValueError, subprocess.TimeoutExpired:
+    except (OSError, ValueError, subprocess.TimeoutExpired):
         return ""
     latest: dict[str, dict[str, str]] = {}
     for found in runs:
@@ -413,7 +413,7 @@ def never_started(root: Path, found: dict[str, str]) -> bool:
             "gh", "run", "view", str(found.get("databaseId", "")), "--json", "jobs", cwd=root
         )
         jobs = json.loads(viewed.stdout).get("jobs", []) if viewed.returncode == 0 else []
-    except OSError, ValueError, AttributeError, subprocess.TimeoutExpired:
+    except (OSError, ValueError, AttributeError, subprocess.TimeoutExpired):
         return False
     return bool(jobs) and all(not job.get("steps") for job in jobs)
 
@@ -496,7 +496,7 @@ def fetch_changelog(tag: str) -> str:
     try:
         with urllib.request.urlopen(CHANGELOG_URL.format(tag=tag), timeout=TIMEOUT_SECONDS) as r:
             return str(r.read().decode("utf-8"))
-    except OSError, ValueError:
+    except (OSError, ValueError):
         return ""
 
 

@@ -16,6 +16,7 @@ YES, NO, NEVER = "Change the look", "Not now", "Never ask again"
 WHATS_NEW = {
     1: "their color, their name and Claude's above the messages, the status line in the chat's "
     "colors",
+    2: "their messages on the right, like a messenger app",
 }
 
 
