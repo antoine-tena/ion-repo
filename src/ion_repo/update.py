@@ -15,7 +15,12 @@ from ion_score.fix import convert_in_place
 from plumbum import ProcessExecutionError
 
 from ion_repo import migrations
-from ion_repo.backlog import add_after_update_ticket, migrate_legacy_backlog, split_backlog
+from ion_repo.backlog import (
+    add_after_update_ticket,
+    migrate_legacy_backlog,
+    split_backlog,
+    split_into_folder,
+)
 from ion_repo.check import check_project
 from ion_repo.contract import generate_api_contract
 from ion_repo.craft_plugins import add_craft_plugins
@@ -202,6 +207,10 @@ def apply_template(root: Path, answers: Mapping[str, object] | None = None) -> N
         split_backlog(root, from_disk=True)
     elif split_backlog(root):
         ui.note("Closed tickets moved from docs/backlog/backlog.md to docs/backlog/done.md.")
+    if split_into_folder(root):
+        ui.note(
+            "docs/backlog/backlog.md split: a file per ticket (tickets/), per release (releases/)."
+        )
     # Shown first, written on a yes; kiln-bot and CI have nobody to ask and write nothing.
     migrate_tickets(root, ask=input if sys.stdin.isatty() and sys.stdout.isatty() else None)
 
@@ -335,7 +344,7 @@ def show_release_notes(root: Path, previous: str, current: str) -> None:
         lines += [f"{release.tag}  {release.date}".rstrip(), *release.lines, ""]
     ui.panel(f"What's new in ion-repo: {previous or '?'} → {current}", lines[:-1])
     if ticket := add_after_update_ticket(root, notes, today=datetime.date.today().isoformat()):
-        ui.note(f"to do right after this update: {ticket} in docs/backlog/backlog.md")
+        ui.note(f"to do right after this update: {ticket} in docs/backlog/tickets/")
 
 
 def check_working_branch(root: Path, work_branch: str = UPDATE_BRANCH) -> None:

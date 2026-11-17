@@ -27,10 +27,7 @@ from ion_repo import renames
 from ion_repo.shell import KilnError
 from ion_repo.stack import read_answers
 
-BACKLOG_FILES = tuple(
-    f"docs/backlog/{name}.md" for name in ("backlog", "done", "rejected", "urgent")
-)
-TICKET_FILES = (*BACKLOG_FILES, "CLAUDE.md")
+BACKLOG_DIR = "docs/backlog"
 REPO_PREFIX = r"[a-z][a-z0-9-]*#"
 NEXT_FREE = re.compile(rf"Next free: (?:{REPO_PREFIX})?T-(\d+)")
 # Not `NT-01`, `MIT-0`, a path, a branch, an option's value, `x-T-1`, nor a prefixed one.
@@ -40,7 +37,8 @@ COUNTDOWN = re.compile(r"\s(?:days?|hours?|minutes?|min|h|d|jours?|heures?|j)\b"
 OWNER = re.compile("([A-Za-z][\\w-]*)(['\u2019]s)?(\\s?:)?\\s+`?$")
 GOES_ON = re.compile(r"`?(?:,| and| et)\s+`?")
 DECLARED = re.compile(
-    rf"^(?:### |- (?:\*\*\d{{4}}-\d\d-\d\d\*\* · )?)((?:(?:{REPO_PREFIX})?T-\d+(?:, )?)+) ·", re.M
+    rf"^(?:#{{1,3}} |- (?:\*\*\d{{4}}-\d\d-\d\d\*\* · )?)((?:(?:{REPO_PREFIX})?T-\d+(?:, )?)+) ·",
+    re.M,
 )
 LOOK_BACK = 60
 FENCE = re.compile(r"^ {0,3}```.*?^ {0,3}```[^\n]*$", re.M | re.S)
@@ -77,6 +75,16 @@ def repo_name(root: Path) -> str:
     return project_name(root)
 
 
+def backlog_files(root: Path) -> list[str]:
+    """Every file of the backlog folder (tickets, releases, index, done…), relative to the root."""
+    folder = root / BACKLOG_DIR
+    return sorted(path.relative_to(root).as_posix() for path in folder.rglob("*.md"))
+
+
+def ticket_files(root: Path) -> list[str]:
+    return [*backlog_files(root), "CLAUDE.md"]
+
+
 def ticket_id(root: Path, number: int) -> str:
     return f"{repo_name(root)}#T-{number:02d}"
 
@@ -85,7 +93,7 @@ def plan(root: Path, also: Iterable[str] = ()) -> Plan:
     """The whole conversion, nothing written."""
     name = repo_name(root)
     result = Plan(name)
-    texts = _read_all(root, (*TICKET_FILES, *also), result)
+    texts = _read_all(root, (*ticket_files(root), *also), result)
     given = _given_out(root)
     aliases = _aliases(name)
     for path, text in texts.items():
@@ -115,7 +123,7 @@ def _given_out(root: Path) -> tuple[set[int], int | None]:
     """The numbers declared by a heading or a closing line, and the next free one."""
     declared: set[int] = set()
     next_free = None
-    for relative in BACKLOG_FILES:
+    for relative in backlog_files(root):
         path = root / relative
         if not path.is_file():
             continue
@@ -241,7 +249,11 @@ def rename_prefix(root: Path, old: str, new: str) -> int:
     """The repo's own prefix follows its new name in its own files; says how many moved."""
     pattern = re.compile(rf"(?<![\w-]){re.escape(old)}#(T-\d+)")
     moved = 0
-    for relative in TICKET_FILES:
+    for path in sorted((root / BACKLOG_DIR / "tickets").glob(f"{old}-T-*.md")):
+        number = path.name.removeprefix(f"{old}-")
+        if re.fullmatch(r"T-\d+\.md", number):
+            path.rename(path.with_name(f"{new}-{number}"))
+    for relative in ticket_files(root):
         path = root / relative
         if not path.is_file():
             continue

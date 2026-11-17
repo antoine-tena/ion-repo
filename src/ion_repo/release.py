@@ -22,7 +22,7 @@ from pathlib import Path
 from ion_score import ui
 from packaging.version import Version
 
-from ion_repo import github_ci
+from ion_repo import github_ci, tracker
 from ion_repo.config import load_config
 from ion_repo.fleet import find_repos
 from ion_repo.shell import KilnError, capture
@@ -34,9 +34,6 @@ FIX_ONLY_SUBJECT = re.compile(r"^(fix|docs|test|chore|ci|build|style)(\([^)]*\))
 INTEGRATION_REF = "origin/develop"
 SOAK = datetime.timedelta(hours=24)
 FIX_SOAK = datetime.timedelta(hours=2)
-BACKLOG = Path("docs") / "backlog" / "backlog.md"
-PLANNED_TICKET = re.compile(r"- (?:[a-z][a-z0-9-]*#)?T-\d+")
-PLANNED_RELEASE = re.compile(r"^### v(\d+\.\d+\.\d+) · (.+)$")
 VERSION_MODULE = Path("src") / "ion_repo" / "versions.py"
 
 
@@ -106,24 +103,14 @@ def show_release_status(root: Path, *, milestone: bool = False) -> None:
 
 
 def planned_release(root: Path, cut: set[Version]) -> tuple[str, str, list[str]] | None:
-    """The first release of the backlog's `🚀 Releases` plan not cut yet: its number, its
-    title and the tickets still listed under it (a closed ticket leaves the plan)."""
-    backlog = root / BACKLOG
-    if not backlog.is_file():
+    """The first planned release of the backlog not cut yet: its number, its title and the
+    tickets still listed under it (a closed ticket leaves the plan)."""
+    if not (root / tracker.BACKLOG_DIR).is_dir():
         return None
-    section = backlog.read_text("utf-8").split("\n## 🚀 Releases\n", 1)
-    if len(section) < 2:
-        return None
-    current: tuple[str, str, list[str]] | None = None
-    for line in section[1].split("\n## ", 1)[0].splitlines():
-        if match := PLANNED_RELEASE.match(line):
-            if current:
-                return current
-            if Version(match.group(1)) not in cut:
-                current = (match.group(1), match.group(2), [])
-        elif current and PLANNED_TICKET.match(line):
-            current[2].append(line.removeprefix("- "))
-    return current
+    for release in tracker.releases(root):
+        if Version(release.version) not in cut:
+            return release.version, release.title, release.tickets
+    return None
 
 
 def read_tags(root: Path) -> list[Tag]:

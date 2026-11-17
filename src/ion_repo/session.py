@@ -12,6 +12,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+from ion_repo import tracker
 from ion_repo.shell import KilnError
 from ion_repo.shipping import main_tree
 from ion_repo.tickets import repo_name
@@ -22,8 +23,7 @@ EFFORT_BY_SIZE = {"XS": "low", "S": "low", "M": "medium", "L": "medium"}
 DEFAULT_EFFORT = "low"
 BRANCH_TYPE = {"bug": "fix", "improvement": "feat", "idea": "feat", "task": "chore"}
 DEFAULT_BRANCH_TYPE = "chore"
-BACKLOG = "docs/backlog/backlog.md"
-DONE = "docs/backlog/done.md"
+DONE = tracker.DONE.as_posix()
 NUMBER = re.compile(r"^(?:[a-z][a-z0-9-]*#)?T-(\d+)$")
 FIELD = r"- \*\*{}\*\*: *([^\n·]*)"
 SESSION = re.compile(rf"\*\*Session\*\*: *({'|'.join(EFFORTS)})(?:, *([a-z]+/[a-z0-9./-]+))?")
@@ -40,25 +40,23 @@ class Ticket:
     title: str
     effort: str
     branch: str
+    path: str
 
 
 def find_ticket(root: Path, wanted: str) -> Ticket:
     """The open ticket `wanted` (`T-12`, `12` or `<repo>#T-12`) read from the backlog."""
     number = _number(wanted)
     name = repo_name(root)
-    backlog = root / BACKLOG
-    if not backlog.is_file():
-        raise KilnError(f"No {BACKLOG} here.")
-    text = backlog.read_text(encoding="utf-8")
-    heading = re.search(rf"^### (?:{re.escape(name)}#)?T-0*{number} · (.+)$", text, re.M)
-    if heading is None:
+    if not (root / tracker.BACKLOG_DIR).is_dir():
+        raise KilnError(f"No {tracker.BACKLOG_DIR.as_posix()}/ here.")
+    found = tracker.find(root, number)
+    if found is None:
         done = root / DONE
         closed = done.is_file() and re.search(rf"#T-0*{number} ·", done.read_text("utf-8"))
-        why = f"closed, see {DONE}" if closed else f"not an open ticket of {BACKLOG}"
+        why = f"closed, see {DONE}" if closed else "not an open ticket of the backlog"
         raise KilnError(f"{name}#T-{number:02d}: {why}.")
-    following = re.search(r"^##", text[heading.end() :], re.M)
-    block = text[heading.end() : heading.end() + following.start() if following else None]
-    return _ticket(f"{name}#T-{number:02d}", number, heading[1].strip(), block)
+    path = found.path.relative_to(root).as_posix()
+    return _ticket(f"{name}#T-{number:02d}", number, found.title, found.body, path)
 
 
 def _number(wanted: str) -> int:
@@ -68,14 +66,19 @@ def _number(wanted: str) -> int:
     return int(found[1])
 
 
-def _ticket(ticket_id: str, number: int, title: str, block: str) -> Ticket:
+def _ticket(ticket_id: str, number: int, title: str, block: str, path: str = "") -> Ticket:
     kind = re.search(FIELD.format("Type"), block)
     branch_type = BRANCH_TYPE.get(kind[1].strip() if kind else "", DEFAULT_BRANCH_TYPE)
     session = SESSION.search(block)
     size = SIZE.search(block)
     effort = session[1] if session else EFFORT_BY_SIZE.get(size[1] if size else "", DEFAULT_EFFORT)
     branch = session[2] if session and session[2] else f"{branch_type}/t{number:02d}"
-    return Ticket(ticket_id, number, title, effort, branch)
+    return Ticket(ticket_id, number, title, effort, branch, path)
+
+
+def effort_of(ticket: tracker.Ticket) -> str:
+    """The effort of the session that works a ticket: its `Session` field, else its size."""
+    return _ticket(ticket.ticket_id, ticket.number, ticket.title, ticket.body).effort
 
 
 def command(
@@ -98,7 +101,7 @@ def _name(tickets: list[Ticket]) -> str:
 
 def prompt(tickets: list[Ticket], notes: list[str]) -> str:
     """Sends the session to its tickets, which hold the brief; the notes add what holds now."""
-    named = ", then ".join(f"{one.ticket_id} ({one.title})" for one in tickets)
+    named = ", then ".join(f"{one.ticket_id} ({one.title}) from {one.path}" for one in tickets)
     order = " in that order, one worktree and one merge per ticket" if len(tickets) > 1 else ""
     steps = "; ".join(
         f"for {one.ticket_id}: /repo:worktree {one.branch},"
@@ -106,7 +109,7 @@ def prompt(tickets: list[Ticket], notes: list[str]) -> str:
         for one in tickets
     )
     lines = [
-        f"Work on {named} from {BACKLOG}{order}. The ticket is the brief: read it whole and its"
+        f"Work on {named}{order}. The ticket is the brief: read it whole and its"
         " Origin before coding.",
         f"Start {steps}.",
         "A bug starts with a failing test that reproduces it. Tick each box as it is done.",

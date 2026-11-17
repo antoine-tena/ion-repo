@@ -16,7 +16,7 @@ from pathlib import Path
 
 from ion_score import ui
 
-from ion_repo import config
+from ion_repo import config, tracker
 from ion_repo.shell import KilnError
 
 SESSIONS_DIR = Path("sessions")  # in `config.state_dir()`
@@ -26,8 +26,6 @@ SESSION_VARIABLE = "CLAUDE_CODE_SESSION_ID"
 
 # Branches whose name says nothing of the work.
 SHARED_BRANCHES = {"main", "master", "develop", "trunk"}
-BACKLOG_FILE = Path("docs") / "backlog" / "backlog.md"
-TICKET_HEADING = re.compile(r"^### ((?:[a-z][a-z0-9-]*#)?T-\d+) · (.+?)(?:\.\.\.)?$")
 
 
 def pause(cwd: Path, name: str, next_step: str) -> Path | None:
@@ -79,24 +77,21 @@ def suggested_names(cwd: Path) -> list[str]:
     if branch and branch not in SHARED_BRANCHES:
         names.append(re.sub(r"[-_/]+", " ", branch.split("/", 1)[-1]).strip())
     root = Path(_git(cwd, "rev-parse", "--show-toplevel") or cwd)
-    names += _tickets_in_progress(root / BACKLOG_FILE)
+    names += _tickets_in_progress(root)
     subject = _git(cwd, "log", "-1", "--no-merges", "--format=%s")
     if subject:
         names.append(subject)
     return list(dict.fromkeys(name for name in names if name))[:5]
 
 
-def _tickets_in_progress(backlog: Path) -> list[str]:
-    if not backlog.is_file():
+def _tickets_in_progress(root: Path) -> list[str]:
+    if not (root / tracker.BACKLOG_DIR).is_dir():
         return []
-    found, ticket = [], ""
-    for line in backlog.read_text(encoding="utf-8").splitlines():
-        if heading := TICKET_HEADING.match(line):
-            ticket = f"{heading[1]}: {heading[2]}"
-        elif ticket and line.startswith("- **Status**: in progress"):
-            found.append(ticket)
-            ticket = ""
-    return found
+    return [
+        f"{one.ticket_id}: {one.title.removesuffix('...')}"
+        for one in tracker.open_tickets(root)
+        if one.field("Status").startswith("in progress")
+    ]
 
 
 def _git(cwd: Path, *arguments: str) -> str:

@@ -1018,17 +1018,34 @@ def unmerged_branches(cwd: str, integ: str) -> int:
     return sum(1 for n in names if n and n != integ)
 
 
+def ticket_files_lines(folder: str) -> list[str]:
+    """The heading and fields of each ticket of the backlog folder (one file per ticket), its
+    priority written back as the section it once lived in, for the reader of `backlog.md`."""
+    lines: list[str] = []
+    for name in sorted(os.listdir(folder)) if os.path.isdir(folder) else []:
+        if not name.endswith(".md"):
+            continue
+        head = read(os.path.join(folder, name)).split("\n\n", 1)[0].splitlines()
+        priority = next((line for line in head if line.startswith("- **Priority**:")), "")
+        lines.append("## 🔴" if "🔴" in priority else "## open")
+        lines += [("##" + line) if line.startswith("# ") else line for line in head]
+    return lines
+
+
 def backlog_items(top: str) -> Group:
-    """Tickets of docs/backlog/backlog.md (`### <repo>#T-NN ·`, or `### T-NN ·` not yet converted),
-    or else of the former
-    docs/a-faire/a-faire.md (`### AF-NN ·`, French fields): those before the "Done" ("Fait")
-    section, critical ones included (🔴 section); or else the former `N. **Title**` format;
+    """Tickets of docs/backlog/tickets/ (one file each), or of the former single
+    docs/backlog/backlog.md (`### <repo>#T-NN ·`, or `### T-NN ·` not yet converted), or else of
+    the former docs/a-faire/a-faire.md (`### AF-NN ·`, French fields): those before the "Done"
+    ("Fait") section, critical ones included (🔴 section); or else the former `N. **Title**` format;
     then the boxes of urgent.md, what only the user can do."""
     tasks: Group = []
     folder = "docs/backlog" if os.path.isdir(os.path.join(top, "docs/backlog")) else "docs/a-faire"
     tracker = "backlog.md" if folder == "docs/backlog" else "a-faire.md"
     try:
-        lines = read(os.path.join(top, folder, tracker)).splitlines()
+        if folder == "docs/backlog" and not os.path.isfile(os.path.join(top, folder, tracker)):
+            lines = ticket_files_lines(os.path.join(top, folder, "tickets"))
+        else:
+            lines = read(os.path.join(top, folder, tracker)).splitlines()
         entries, critical, section, states = 0, 0, "", {}
         for line in lines:
             if line.startswith("## "):

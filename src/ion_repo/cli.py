@@ -41,6 +41,7 @@ COMMAND_GROUPS = (
             "ci",
             "contract",
             "doctor",
+            "backlog",
             "session",
             "pause",
             "frame",
@@ -390,6 +391,7 @@ def _add_frame_command(commands: argparse._SubParsersAction[_KilnParser]) -> Non
 
 
 def _add_session_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
+    commands.add_parser("backlog", help="the open tickets of docs/backlog/, one line each")
     session_parser = commands.add_parser(
         "session", help="the line that opens a Claude Code session on backlog tickets"
     )
@@ -750,6 +752,10 @@ def _dispatch_in_repo(arguments: argparse.Namespace, root: Path) -> None:
             dry_run=arguments.dry_run,
             ask=input if is_interactive() else None,
         )
+    elif command == "backlog":
+        from ion_repo import tracker
+
+        print("\n".join(tracker.overview(root)))
     elif command == "session":
         from ion_repo import session
 

@@ -39,7 +39,7 @@ Each release in the order it ships: what it brings, why its work goes together, 
 the backlog it takes (its tickets). Something missing, or wanted sooner?
 [Open an issue](https://github.com/antoine-tena/ion-repo/issues): the plan moves with what people ask for.
 
-<!-- roadmap:start: drawn from docs/backlog/backlog.md by scripts/roadmap.py -->
+<!-- roadmap:start: drawn from docs/backlog/releases/ by scripts/roadmap.py -->
 
 ### v0.4.x · 8 releases
 

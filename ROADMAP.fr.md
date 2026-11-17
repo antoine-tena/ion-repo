@@ -42,7 +42,7 @@ et ce qu'elle prend du backlog (ses tickets). Le détail est repris tel quel du 
 anglais. Il manque quelque chose, ou vous le voulez plus tôt ?
 [Ouvrez une issue](https://github.com/antoine-tena/ion-repo/issues) : le plan bouge avec ce qu'on lui demande.
 
-<!-- roadmap:start: drawn from docs/backlog/backlog.md by scripts/roadmap.py -->
+<!-- roadmap:start: drawn from docs/backlog/releases/ by scripts/roadmap.py -->
 
 ### v0.4.x · 8 releases
 
