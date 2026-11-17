@@ -11,10 +11,12 @@ messages), `/repo:names` (the names above the messages), `/repo:statusline` (the
 style and palette). This one asks all of them at once.
 
 1. Read the current state as those skills do: the theme and its `professionalBlue`
-   (`/repo:color` step 1), `~/.claude/chat-names.json` and `git config user.name`
+   (`/repo:color` step 1) and `person_side` in `~/.claude/chat-colors.json`, `~/.claude/chat-names.json` and `git config user.name`
    (`/repo:names` step 1), `cd ~ && ion repo set` (`/repo:statusline` step 1).
 2. One AskUserQuestion call, four questions, each with "Keep <current>" first:
-   - their color: keep, then three colors of `/repo:color`'s palette that stand apart;
+   - their color: keep, then their messages on the other side ("Keep <color>, my messages on the
+     right", or "on the left" when `person_side` of `~/.claude/chat-colors.json` is `right`),
+     then two colors of `/repo:color`'s palette that stand apart;
    - their name: keep, then their git name if it is not the current one, then the first name
      it holds (`antoine-tena` gives `Antoine`);
    - Claude's name: keep, then `Claude` if it is not the current one;

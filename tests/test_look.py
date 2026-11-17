@@ -42,8 +42,9 @@ def test_an_answer_keeps_it_quiet_until_something_new(
 
     assert [look.context() for _ in range(3000)] == [""] * 3000
 
-    monkeypatch.setitem(look.reminders.NEWS, "look", 2)
-    monkeypatch.setitem(look.WHATS_NEW, 2, "a fourth status line style")
+    following = look.reminders.NEWS["look"] + 1
+    monkeypatch.setitem(look.reminders.NEWS, "look", following)
+    monkeypatch.setitem(look.WHATS_NEW, following, "a fourth status line style")
     question = look.context()
     assert "new: a fourth status line style" in question
     assert "their name and Claude's above the messages, the status line in" not in question
@@ -53,7 +54,7 @@ def test_never_closes_it_even_for_something_new(
     look: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     answer(look, "never")
-    monkeypatch.setitem(look.reminders.NEWS, "look", 2)
+    monkeypatch.setitem(look.reminders.NEWS, "look", look.reminders.NEWS["look"] + 1)
 
     assert look.context() == ""
 

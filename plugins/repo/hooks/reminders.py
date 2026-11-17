@@ -36,7 +36,7 @@ TOOL_KEY = "tool"
 LOOK_KEY = "look"
 ION_TOOLS_KEY = "ion-tools"
 # Questions of taste, by version of what they offer: asked again only when it grows.
-NEWS = {LOOK_KEY: 1}
+NEWS = {LOOK_KEY: 2}
 
 State = dict[str, Any]
 Question = dict[str, Any]
