@@ -68,23 +68,15 @@ def waive(root: Path, request: WaiveRequest, today: datetime.date | None = None)
     text = path.read_text("utf-8") if path.exists() else HEADER
     blocks = _split(text)
     key = "rule" if is_rule else "file"
-    index = next(
-        (
-            i
-            for i, block in enumerate(blocks[1:], start=1)
-            if _matches(block, key, request.target, request.paths)
-        ),
-        None,
-    )
-    if request.renew and index is None:
-        raise KilnError(f"no waiver to renew for {request.target}")
-    if not request.renew and index is not None:
-        raise KilnError(f"{request.target} is already waived: --renew to extend it")
+    index = _find(blocks, key, request)
     renewals = 0 if index is None else _renewals(blocks[index]) + 1
     until = NEVER if request.permanent else today + datetime.timedelta(days=max_days(renewals))
+    # A renewal without --paths keeps the waived paths: dropping them would widen the waiver
+    # to the whole repo.
+    paths = request.paths or (() if index is None else _paths(blocks[index]))
     entry = {
         key: request.target,
-        "paths": list(request.paths),
+        "paths": list(paths),
         "reason": request.reason.strip(),
         "by": _git_user(root),
         "since": today,
@@ -129,6 +121,22 @@ def _join(blocks: list[str]) -> str:
     )
 
 
+def _find(blocks: list[str], key: str, request: WaiveRequest) -> int | None:
+    """Index of the block the request renews; refuses a missing or ambiguous one."""
+    found = [
+        i
+        for i, block in enumerate(blocks[1:], start=1)
+        if _matches(block, key, request.target, request.paths)
+    ]
+    if request.renew and not found:
+        raise KilnError(f"no waiver to renew for {request.target}")
+    if not request.renew and found:
+        raise KilnError(f"{request.target} is already waived: --renew to extend it")
+    if len(found) > 1:
+        raise KilnError(f"{request.target} is waived several times: --paths to pick one")
+    return found[0] if found else None
+
+
 def _matches(block: str, key: str, target: str, paths: tuple[str, ...]) -> bool:
     try:
         entries = tomllib.loads(block).get("waiver", [])
@@ -141,6 +149,10 @@ def _matches(block: str, key: str, target: str, paths: tuple[str, ...]) -> bool:
 
 def _renewals(block: str) -> int:
     return int(tomllib.loads(block)["waiver"][0].get("renewals", 0))
+
+
+def _paths(block: str) -> tuple[str, ...]:
+    return tuple(tomllib.loads(block)["waiver"][0].get("paths", []))
 
 
 def _block(entry: dict[str, object]) -> str:

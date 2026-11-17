@@ -57,6 +57,23 @@ def test_renewal_moves_to_the_next_tier_and_keeps_comments(repo: Path) -> None:
     assert (repo / "waivers.toml").read_text().startswith("# à moi\n")
 
 
+def test_renewal_without_paths_keeps_the_waived_paths(repo: Path) -> None:
+    waive(repo, WaiveRequest("TAILLE-FICHIER", "repris", paths=("ci.yml",)), TODAY)
+
+    waive(repo, WaiveRequest("TAILLE-FICHIER", "toujours", renew=True), TODAY)
+
+    [entry] = entries(repo)
+    assert entry["paths"] == ["ci.yml"] and entry["renewals"] == 1
+
+
+def test_renewal_without_paths_refuses_an_ambiguous_rule(repo: Path) -> None:
+    waive(repo, WaiveRequest("TAILLE-FICHIER", "a", paths=("ci.yml",)), TODAY)
+    waive(repo, WaiveRequest("TAILLE-FICHIER", "b", paths=("charter.toml",)), TODAY)
+
+    with pytest.raises(KilnError, match="--paths"):
+        waive(repo, WaiveRequest("TAILLE-FICHIER", "x", renew=True), TODAY)
+
+
 def test_file_is_frozen(repo: Path) -> None:
     waive(repo, WaiveRequest("ci.yml", "hébergeur maison", permanent=True), TODAY)
 
