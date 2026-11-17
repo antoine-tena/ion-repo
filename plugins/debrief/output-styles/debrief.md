@@ -37,7 +37,7 @@ Exactly these parts, in this order, and nothing else:
    tests) belong to `/repo:release` alone: after a merge they are never a To do, the debrief
    says in Done that the release runs them. The work just done comes first when it leaves a step (merge,
    fix, a box still open); otherwise, or after it, the next open tickets of
-   `docs/backlog/backlog.md` the user may take (as `/repo:backlog` picks them), each with its full
+   `docs/backlog/` the user may take (as `/repo:backlog` picks them), each with its full
    ID: `<repo>#T-20 · Try Easy!Appointments, the demo the meeting waits for`. Never a point made
    up to reach three; leave the whole part out when nothing follows and the backlog has nothing
    open for the user.

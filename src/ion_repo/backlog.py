@@ -332,6 +332,7 @@ HOW_TO_LINK = re.compile(r"\[README\.md\]\(README\.md\)")
 RELATIVE_LINK = re.compile(r"\]\((?!https?:|mailto:|#|/)([^)\s]+)\)")
 ANCHOR_LINK = re.compile(r"\]\(#([^)\s]+)\)")
 TEMPLATE_README = "What is left to do on"
+GOOD_FIRST_ISSUES = "- **Good first issues**:"
 
 
 def split_into_folder(root: Path) -> bool:
@@ -527,5 +528,7 @@ def _former_readme(root: Path) -> str:
         return ""
     text = path.read_text("utf-8")
     if TEMPLATE_README in text[:300] or tracker.NEXT_FREE.search(text):
-        return ""  # the template's former how-to, or its fresh index
+        # The template's former how-to, or its fresh index: only the repo's own setting stays.
+        found = re.search(rf"^{re.escape(GOOD_FIRST_ISSUES)}.*(?:\n  .*)*", text, re.M)
+        return f"\n{found[0]}\n" if found else ""
     return "\n---\n\n" + re.sub(r"^#(?= )", "##", text, count=1, flags=re.M)

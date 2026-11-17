@@ -420,3 +420,19 @@ def test_a_repo_s_own_readme_stays_under_the_index(tmp_path: Path) -> None:
     index = (folder / "README.md").read_text()
     assert index.startswith("# Backlog\n")
     assert index.endswith("---\n\n## Our tracking\n\nThe repo's own words.\n")
+
+
+def test_the_good_first_issues_setting_survives_the_former_how_to(tmp_path: Path) -> None:
+    folder = tmp_path / "docs/backlog"
+    folder.mkdir(parents=True)
+    (folder / "backlog.md").write_text(SINGLE_BACKLOG)
+    setting = (
+        "- **Good first issues**: keep 3 open on GitHub, reserved for outside contributors (skill\n"
+        "  `/repo:good-first-issues`).\n"
+    )
+    (folder / "README.md").write_text(f"# Backlog\n\nWhat is left to do on Demo.\n\n{setting}- x\n")
+    (tmp_path / ".copier-answers.yml").write_text("name: acme\n")
+
+    assert split_into_folder(tmp_path)
+
+    assert (folder / "README.md").read_text().endswith(f"\n{setting}")

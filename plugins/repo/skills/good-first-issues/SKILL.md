@@ -11,7 +11,7 @@ than left as a sign of a project nobody follows.
 
 ## The setting
 
-It lives in the "How to use" section of `docs/backlog/backlog.md`, one line:
+It lives in the backlog's index, `docs/backlog/README.md`, one line:
 
     - **Good first issues**: keep 3 open on GitHub, reserved for outside contributors (skill
       `/repo:good-first-issues`); their tickets have **Owner**: `contributor — #NN`.
@@ -20,7 +20,7 @@ It lives in the "How to use" section of `docs/backlog/backlog.md`, one line:
   user's yes to 3); the line goes in on the work branch with the first issues.
 - `$ARGUMENTS` a number: change the target in the line. `off`: remove the line; the open issues
   stay, their tickets go back to `**Owner**: —` only if the user says so.
-- A repo without `docs/backlog/backlog.md`: skill `/repo:backlog` first.
+- A repo without `docs/backlog/`: skill `/repo:backlog` first.
 
 ## 1. Count what is open
 
@@ -37,8 +37,9 @@ An issue someone asked for or is assigned to still counts: it is taken, not done
 
 ## 2. Pick the tickets that fill the gap
 
-Missing = target − open. Pick that many tickets from `docs/backlog/backlog.md`, all sections,
-that a stranger can do without knowing the project:
+Missing = target − open. Pick that many tickets from `docs/backlog/tickets/` (`ion repo backlog`,
+then the files of the likely ones), all priorities, that a stranger can do without knowing the
+project:
 - effort `XS` or `S`, one subject, a clear notion of done;
 - the files to touch are few and can be named; no design decision left open;
 - no secret, server, account or access only the user has; nothing urgent (🔴 critical stays
