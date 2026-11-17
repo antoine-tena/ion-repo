@@ -27,6 +27,9 @@
 {#- Plans written in plan mode stay with the repo, reviewed and committed with the branch
     (Claude Code's default, `~/.claude/plans/`, is outside every repo). #}
   "plansDirectory": ".claude/plans",
+{#- The repo plugin's end-of-work report, chosen for the repo rather than forced by the plugin:
+    `/output-style` writes `.claude/settings.local.json`, which wins, so each person keeps theirs. #}
+  "outputStyle": "repo:debrief",
   "extraKnownMarketplaces": {
     "ion-repo": {
       "source": {

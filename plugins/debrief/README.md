@@ -9,5 +9,5 @@ left out.
 /plugin install debrief --marketplace antoine-tena/ion-repo
 ```
 
-It is forced: it replaces the `outputStyle` of your settings while the plugin is on; disable the
-plugin to get yours back. With ion-repo's `repo` plugin installed, you already have it.
+Pick it with `/output-style` (`debrief:debrief`); it never replaces the style you chose. With
+ion-repo's `repo` plugin installed, you already have it as `repo:debrief`.

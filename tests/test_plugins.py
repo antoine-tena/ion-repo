@@ -39,6 +39,8 @@ def test_every_cited_skill_exists() -> None:
         for path in citing_files()
         for match in cited.finditer(path.read_text(errors="ignore"))
         if not (ROOT / "plugins" / match[1] / "skills" / match[2] / "SKILL.md").is_file()
+        # An output style is named the same way (`repo:debrief`).
+        and not (ROOT / "plugins" / match[1] / "output-styles" / f"{match[2]}.md").is_file()
     }
     assert sorted(missing) == []
 
