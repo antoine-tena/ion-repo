@@ -32,7 +32,7 @@ One file, `tickets/{{ name }}-T-NN.md`: a heading, six fixed lines, then the det
     Why, what to do (as a `- [ ]` checklist when there are several steps), where to look.
 
 - **ID** `{{ name }}#T-NN`: stable, never reused, always written whole, in this repo too, and
-  quoted as is in commits and pull requests (a branch keeps the number alone: `fix/t07`). The
+  quoted as is in commits and pull requests (a branch carries the number without the prefix, then what it holds: `fix/t07-season-guide`). The
   prefix is this repo's name; a ticket of another repo carries that repo's name
   (`other-repo#T-07`). The next free one is written in [README.md](README.md)
   (`Next free: {{ name }}#T-NN`), moved on by each new ticket. If the repo is renamed,

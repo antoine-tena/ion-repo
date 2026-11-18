@@ -27,8 +27,8 @@ be checked** against the current code; they are never edited.
     Why, what to do (as a `- [ ]` checklist when there are several steps), where to look.
 
 - **ID** `ion-repo#T-NN`: stable, never reused, always written whole, here too, and quoted as is
-  in commits and pull requests (decision of antoine, 1 November 2026; a branch keeps the number
-  alone, `fix/t07`; tickets opened before 16 October 2026 were `AF-NN`, same number). A ticket of
+  in commits and pull requests (decision of antoine, 1 November 2026; a branch carries the number
+  without the prefix, then what it holds, `fix/t07-season-guide`, since 18 November 2026; tickets opened before 16 October 2026 were `AF-NN`, same number). A ticket of
   another repo carries that repo's name (`ion-learn#T-03`). The next free one is in the index
   (`Next free: ion-repo#T-NN`), moved on by each new ticket. A renamed repo: `ion repo set name=…`
   moves its own prefix in its own tracking, file names included, same numbers; citations in other
