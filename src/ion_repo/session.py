@@ -24,10 +24,49 @@ EFFORT_BY_SIZE = {"XS": "low", "S": "low", "M": "medium", "L": "medium"}
 DEFAULT_EFFORT = "low"
 BRANCH_TYPE = {"bug": "fix", "improvement": "feat", "idea": "feat", "task": "chore"}
 DEFAULT_BRANCH_TYPE = "chore"
-# A branch says what it holds: `fix/t15-intitules-de-modules-abimes-dans`, never `fix/t15` alone,
-# which reads as nothing in `git branch` or a merge commit.
+# A branch says what it holds (`fix/t15-intitules-modules-abimes-jeux-donnees`), never `fix/t15`
+# alone, which reads as nothing in `git branch` or a merge commit.
 BRANCH_WORDS = 5
 NOT_SLUG = re.compile(r"[^a-z0-9]+")
+# Words that carry nothing in a branch name, French and English; single letters too.
+STOP_WORDS = frozenset(
+    [
+        "le",
+        "la",
+        "les",
+        "de",
+        "des",
+        "du",
+        "un",
+        "une",
+        "et",
+        "en",
+        "au",
+        "aux",
+        "dans",
+        "sur",
+        "pour",
+        "par",
+        "est",
+        "sont",
+        "ne",
+        "pas",
+        "the",
+        "an",
+        "of",
+        "to",
+        "in",
+        "on",
+        "for",
+        "and",
+        "or",
+        "is",
+        "are",
+        "be",
+        "by",
+        "with",
+    ]
+)
 DONE = tracker.DONE.as_posix()
 NUMBER = re.compile(r"^(?:[a-z][a-z0-9-]*#)?T-(\d+)$")
 FIELD = r"- \*\*{}\*\*: *([^\n·]*)"
@@ -84,8 +123,13 @@ def _ticket(ticket_id: str, number: int, title: str, block: str, path: str = "")
 def _branch(branch_type: str, number: int, title: str) -> str:
     """`<type>/tNN-<first words of the title>`, in lowercase ASCII."""
     ascii_title = unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode()
-    words = NOT_SLUG.sub(" ", ascii_title.lower()).split()[:BRANCH_WORDS]
+    words = [w for w in NOT_SLUG.sub(" ", ascii_title.lower()).split() if _carries(w)]
+    words = words[:BRANCH_WORDS]
     return "-".join([f"{branch_type}/t{number:02d}", *words])
+
+
+def _carries(word: str) -> bool:
+    return len(word) > 1 and word not in STOP_WORDS
 
 
 def effort_of(ticket: tracker.Ticket) -> str:
