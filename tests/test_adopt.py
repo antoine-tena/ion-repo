@@ -200,3 +200,16 @@ def test_a_vite_app_is_taken_for_react_only_when_it_depends_on_it(
     (tmp_path / "frontend/package.json").write_text(f'{{"dependencies": {{"{dependency}": "1"}}}}')
 
     assert detect_stack(tmp_path).frontend == frontend
+
+
+def test_the_project_protected_branches_get_a_work_branch_too(repo: Path) -> None:
+    (repo / ".copier-answers.yml").write_text("protected_branches:\n- dev\n- prerelease\n")
+    subprocess.run(["git", "-C", str(repo), "switch", "-q", "-c", "dev"], check=True)
+    update.leave_protected_branch(repo, "chore/ion-repo-update")
+    current = subprocess.run(
+        ["git", "-C", str(repo), "branch", "--show-current"],
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+    assert current == "chore/ion-repo-update"
