@@ -7,7 +7,8 @@ port (`http://localhost:8000/api`) names the new one; a front without one gets t
 address in the variables the template's configs read (`NUXT_BACKEND_URL`, `BACKEND_URL`,
 `API_URL`), and in those its own config reads with a default on the old port
 (`process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000/api'`). A server that cannot be told
-its port (a `Procfile.dev` line) is not moved.
+its port (a `Procfile.dev` line) is not moved; the port its line declares (`--port 8016`,
+`--port ${PORT:-8016}`, `runserver 8016`) is the one checked and waited on, not the stack's.
 
 A server is ready once its own process group listens on its port, read in `/proc` (#60):
 another process answering there is not taken for it. Without `/proc` (macOS), anyone answering.
@@ -55,6 +56,12 @@ _CONFIG_DEFAULT = re.compile(
     r"process\.env\.([A-Z][A-Z0-9_]*)\s*(?:\|\||\?\?)\s*(['\"`])(https?://[^'\"`\s]+)\2"
 )
 _LOCAL_PORT = re.compile(r"\b(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\]):(\d+)\b")
+# The port a `Procfile.dev` line names: `--port 8016`, `--port=${VAR:-8016}`, `runserver
+# [host:]8016`, `--server.port 8016`.
+_DECLARED_PORT = re.compile(
+    r"(?:--port|--server\.port)[= ]+(?:\$\{(?P<var>\w+):-(?P<default>\d+)\}|(?P<port>\d+))"
+    r"|\brunserver\s+(?:[\w.\[\]:]+:)?(?P<runserver>\d+)\b"
+)
 POLL_SECONDS = 0.25
 # Both loopbacks: a server bound to `localhost` may listen on IPv6 only (Nuxt on macOS).
 LOOPBACKS = (
@@ -114,6 +121,16 @@ class Ports:
 
 def _moved(label: str, port: int | None) -> bool:
     return port is not None and port != DEV_PORTS.get(label)
+
+
+def declared_port(command: Command) -> int | None:
+    """The port a `Procfile.dev` line declares, its variable read from the environment; None for
+    a stack command or a line that names none."""
+    if command.argv[0] != "sh" or not (found := _DECLARED_PORT.search(command.argv[-1])):
+        return None
+    if found["var"]:
+        return int(os.environ.get(found["var"]) or found["default"])
+    return int(found["port"] or found["runserver"])
 
 
 def with_port(command: Command, port: int) -> tuple[str, ...] | None:

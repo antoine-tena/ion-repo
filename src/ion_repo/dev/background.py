@@ -20,7 +20,16 @@ from typing import Any
 from ion_score import ui
 
 from ion_repo.dev.foreground import PREFIX_COLORS, service_prefix, stop_all
-from ion_repo.dev.ports import DEV_PORTS, PORT_TRIES, Ports, listener, listens, serves, with_port
+from ion_repo.dev.ports import (
+    DEV_PORTS,
+    PORT_TRIES,
+    Ports,
+    declared_port,
+    listener,
+    listens,
+    serves,
+    with_port,
+)
 from ion_repo.dev.processes import runs_beyond_front, signal_group, spawn
 from ion_repo.shell import KilnError, capture, spinner_line
 from ion_repo.stack import Command, load_stack
@@ -72,7 +81,7 @@ def choose_ports(root: Path, commands: list[Command]) -> Ports:
     chosen: dict[str, int] = {}
     refused = []
     for command in commands:
-        own = DEV_PORTS.get(command.label)
+        own = declared_port(command) or DEV_PORTS.get(command.label)
         if own is None:
             continue
         if not _is_taken(own, reserved | set(chosen.values())):
