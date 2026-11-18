@@ -59,8 +59,17 @@ def test_session_field_gives_effort_and_branch(shop: Path) -> None:
 
 def test_without_field_size_and_type_decide(shop: Path) -> None:
     assert session.find_ticket(shop, "6").effort == "low"
-    assert session.find_ticket(shop, "shop#T-07").branch == "chore/t07"
+    assert session.find_ticket(shop, "shop#T-07").branch == "chore/t07-write-the-season-s-guide"
     assert session.find_ticket(shop, "T-07").effort == "medium"
+
+
+def test_branch_says_what_it_is_in_ascii_and_short() -> None:
+    block = "- **Type**: bug\n- **Effort**: XS"
+    title = "Intitulés de modules abîmés dans les jeux de données"
+
+    branch = session._ticket("learnagement#T-15", 15, title, block).branch
+
+    assert branch == "fix/t15-intitules-de-modules-abimes-dans"
 
 
 def test_line_names_the_session_and_sends_it_to_the_ticket(shop: Path) -> None:
@@ -70,7 +79,8 @@ def test_line_names_the_session_and_sends_it_to_the_ticket(shop: Path) -> None:
         "cd ~/code/shop && claude --model claude-opus-5-5 --effort low"
         " --name 'T-06 Free registrations can be cancelled' 'Work on shop#T-06"
     )
-    assert "/repo:worktree fix/t06, then /repo:backlog start shop#T-06" in line
+    worktree = "/repo:worktree fix/t06-free-registrations-can-be-cancelled,"
+    assert f"{worktree} then /repo:backlog start shop#T-06" in line
     assert "/repo:merge" in line
 
 

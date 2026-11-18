@@ -9,6 +9,7 @@ from its size and type. What only holds at launch (another session on the same f
 """
 
 import re
+import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -23,6 +24,10 @@ EFFORT_BY_SIZE = {"XS": "low", "S": "low", "M": "medium", "L": "medium"}
 DEFAULT_EFFORT = "low"
 BRANCH_TYPE = {"bug": "fix", "improvement": "feat", "idea": "feat", "task": "chore"}
 DEFAULT_BRANCH_TYPE = "chore"
+# A branch says what it holds: `fix/t15-intitules-de-modules-abimes-dans`, never `fix/t15` alone,
+# which reads as nothing in `git branch` or a merge commit.
+BRANCH_WORDS = 5
+NOT_SLUG = re.compile(r"[^a-z0-9]+")
 DONE = tracker.DONE.as_posix()
 NUMBER = re.compile(r"^(?:[a-z][a-z0-9-]*#)?T-(\d+)$")
 FIELD = r"- \*\*{}\*\*: *([^\n·]*)"
@@ -72,8 +77,15 @@ def _ticket(ticket_id: str, number: int, title: str, block: str, path: str = "")
     session = SESSION.search(block)
     size = SIZE.search(block)
     effort = session[1] if session else EFFORT_BY_SIZE.get(size[1] if size else "", DEFAULT_EFFORT)
-    branch = session[2] if session and session[2] else f"{branch_type}/t{number:02d}"
+    branch = session[2] if session and session[2] else _branch(branch_type, number, title)
     return Ticket(ticket_id, number, title, effort, branch, path)
+
+
+def _branch(branch_type: str, number: int, title: str) -> str:
+    """`<type>/tNN-<first words of the title>`, in lowercase ASCII."""
+    ascii_title = unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode()
+    words = NOT_SLUG.sub(" ", ascii_title.lower()).split()[:BRANCH_WORDS]
+    return "-".join([f"{branch_type}/t{number:02d}", *words])
 
 
 def effort_of(ticket: tracker.Ticket) -> str:
