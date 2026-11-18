@@ -353,6 +353,14 @@ def check_working_branch(root: Path, work_branch: str = UPDATE_BRANCH) -> None:
     leave_protected_branch(root, work_branch)
 
 
+def protected_branches(root: Path) -> set[str]:
+    """The fixed ones, plus the project's (`ion repo set protected_branches=…`)."""
+    declared = (
+        read_answers(root).get("protected_branches") if (root / ANSWERS_FILE).exists() else None
+    )
+    return set(PROTECTED_BRANCHES) | {str(branch) for branch in declared or []}
+
+
 def require_under_kiln(root: Path) -> None:
     if not (root / ANSWERS_FILE).exists() and not is_adopted(root):
         raise KilnError(
@@ -362,10 +370,11 @@ def require_under_kiln(root: Path) -> None:
 
 
 def leave_protected_branch(root: Path, work_branch: str) -> None:
-    """On `main`, `master` or `develop`, the work branch is opened in place (clean tree checked
-    first): ion-repo never writes on an integration branch, and the user has nothing to type."""
+    """On `main`, `master`, `develop` or a branch of `protected_branches`, the work branch is
+    opened in place (clean tree checked first): ion-repo never writes on an integration branch,
+    and the user has nothing to type."""
     current = capture(["git", "branch", "--show-current"], root)
-    if current not in PROTECTED_BRANCHES:
+    if current not in protected_branches(root):
         return
     branch = work_branch
     if _branch_exists(root, branch):
