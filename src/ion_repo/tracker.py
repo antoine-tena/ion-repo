@@ -1,7 +1,8 @@
 """The backlog folder `docs/backlog/`: one file per ticket, one file per release (ion-repo#T-453).
 
-- `tickets/<repo>-T-NN.md`: a `# <repo>#T-NN · Title` heading, the fixed fields (`Type`,
-  `Priority`, `Status`, `Opened`, `Effort`, `Origin`), then the details;
+- `tickets/<repo>-T-NN-<slug>.md` (slug from the title, `ticket_names`): a `# <repo>#T-NN ·
+  Title` heading, the fixed fields (`Type`, `Priority`, `Status`, `Opened`, `Effort`, `Origin`),
+  then the details;
 - `releases/vX.Y.Z.md`: a `# vX.Y.Z · Title` heading, why its tickets go together, then one line
   per ticket with the command that opens its session;
 - `README.md`: the short index (north star, next free ID, releases in order), the project's own;
@@ -16,6 +17,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from packaging.version import InvalidVersion, Version
+
+from ion_repo import ticket_names
 
 BACKLOG_DIR = Path("docs/backlog")
 TICKETS_DIR = BACKLOG_DIR / "tickets"
@@ -64,9 +67,9 @@ def is_folder(root: Path) -> bool:
     return not (root / LEGACY).is_file()
 
 
-def ticket_name(name: str, number: int) -> str:
-    """File name of a ticket: `<repo>-T-NN.md`."""
-    return f"{name}-T-{number:02d}.md"
+def ticket_name(name: str, number: int, title: str = "") -> str:
+    """File name of a ticket: `<repo>-T-NN-<slug>.md`, `<repo>-T-NN.md` without a title."""
+    return ticket_names.file_name(name, number, title)
 
 
 def priority_of(text: str) -> str:
@@ -133,7 +136,9 @@ def overview(root: Path) -> list[str]:
 def find(root: Path, number: int) -> Ticket | None:
     """The open ticket of that number."""
     if is_folder(root):
-        for path in (root / TICKETS_DIR).glob(f"*-T-{number:02d}.md"):
+        folder = root / TICKETS_DIR
+        named = [*folder.glob(f"*-T-{number:02d}.md"), *folder.glob(f"*-T-{number:02d}-*.md")]
+        for path in named:
             ticket = read_ticket(path)
             if ticket and ticket.number == number:
                 return ticket
@@ -164,7 +169,7 @@ def add_ticket(
         if key == "Priority" and value in PRIORITIES:
             value = f"{PRIORITIES[value]} {value}"
         lines.append(f"- **{key}**: {value}")
-    path = root / TICKETS_DIR / ticket_name(name, number)
+    path = root / TICKETS_DIR / ticket_name(name, number, title)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join([*lines, "", details.strip(), ""]), encoding="utf-8")
     index = root / INDEX

@@ -41,6 +41,7 @@ from ion_repo.shell import (
 )
 from ion_repo.stack import ANSWERS_FILE, kept_of, load_stack, read_answers
 from ion_repo.template import DEFAULT_TEMPLATE_SOURCE, template_revision
+from ion_repo.ticket_names import name_ticket_files
 from ion_repo.tickets import migrate as migrate_tickets
 from ion_repo.versions import (
     follows_candidates,
@@ -211,6 +212,8 @@ def apply_template(root: Path, answers: Mapping[str, object] | None = None) -> N
         ui.note(
             "docs/backlog/backlog.md split: a file per ticket (tickets/), per release (releases/)."
         )
+    if named := name_ticket_files(root):
+        ui.note(f"{named} ticket files named after their title (<repo>-T-NN-<slug>.md).")
     # Shown first, written on a yes; kiln-bot and CI have nobody to ask and write nothing.
     migrate_tickets(root, ask=input if sys.stdin.isatty() and sys.stdout.isatty() else None)
 
