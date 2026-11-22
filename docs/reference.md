@@ -131,7 +131,7 @@ jobs:
 ```
 
 `django.yml`, `python.yml`, `maven.yml`, `pnpm.yml`, `tauri.yml` (a Tauri app on Windows and macOS runners: rustfmt, Clippy, `cargo test`, then its installers as artifacts), `charter.yml`, `security.yml` (`uv audit`,
-`pnpm audit`, OSV-Scanner for Maven and each `Cargo.lock`), `secrets.yml` (gitleaks), `api-contract.yml` (schema and front types in step with the code, no route broken against `main`'s schema by oasdiff: `breaking-base`, empty to skip), `infra.yml` (podman build,
+`pnpm audit`, OSV-Scanner for Maven and each `Cargo.lock`), `secrets.yml` (gitleaks), `api-contract.yml` (schema and front types in step with the code, no route broken against `main`'s schema by oasdiff: `breaking-base`, empty to skip; `oasdiff-levels.txt` and `oasdiff-ignore.txt` at the root tune its severities and list accepted breaks), `infra.yml` (podman build,
 actionlint, shellcheck), `sbom.yml` (CycloneDX), `mutation.yml` (mutmut), `vercel.yml`, `bot.yml` (kiln-bot) and `score.yml` (the score's change on a pull request). `charte.yml`,
 `securite.yml` and `contrat-api.yml` are their former names, kept as relays. Databases for tests run in
 podman. See [`.github/workflows/`](../.github/workflows/).
