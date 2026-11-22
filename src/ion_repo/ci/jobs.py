@@ -222,13 +222,27 @@ def _python(job: Job, inputs: Mapping[str, str]) -> Plan:
     )
 
 
+# The project's own oasdiff settings, read when present at its root: `oasdiff-levels.txt` sets a
+# check's severity (`response-property-enum-value-added INFO` for an error code list meant to
+# grow), `oasdiff-ignore.txt` lists the breaks the project accepted (oasdiff's `--err-ignore`).
+OASDIFF_CONFIG = (
+    'mounts=""; options=""\n'
+    "for pair in oasdiff-levels.txt:--severity-levels oasdiff-ignore.txt:--err-ignore; do\n"
+    '  file="${pair%%:*}"; [ -f "$file" ] || continue\n'
+    '  mounts="$mounts -v $PWD/$file:/specs/$file:ro"; options="$options ${pair#*:} /specs/$file"\n'
+    "done\n"
+)
+
+
 def _breaking(schema: str, base: str) -> str:
     """The `breaking` job of api-contract.yml: the schema against the base branch's, by oasdiff."""
     return (
         f'base="$(mktemp)"; if ! git show "origin/{base}:{schema}" > "$base" 2>/dev/null; then\n'
         f'  echo "No {schema} on {base} yet: nothing to compare."; exit 0\nfi\n'
+        f"{OASDIFF_CONFIG}"
         f'podman run --rm -v "$base:/specs/base.json:ro" -v "$PWD/{schema}:/specs/head.json:ro" '
-        f"{OASDIFF} breaking /specs/base.json /specs/head.json --fail-on ERR"
+        "$mounts "
+        f"{OASDIFF} breaking /specs/base.json /specs/head.json --fail-on ERR $options"
     )
 
 

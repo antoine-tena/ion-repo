@@ -4,7 +4,8 @@ name: API contract
 # again from the Django code (django-ninja), then the types from the schema, and fails if one of
 # the committed files drifted. Generated files are those of .gitattributes (linguist-generated).
 # A second job compares the schema with the one production serves (oasdiff, run by podman) and
-# fails on a broken route: one removed, a field made required, a type changed.
+# fails on a broken route: one removed, a field made required, a type changed. The project tunes
+# it with oasdiff-levels.txt (severities) and oasdiff-ignore.txt (accepted breaks) at its root.
 on:
   workflow_call:
     inputs:
@@ -110,7 +111,15 @@ jobs:
             echo "::notice::No $SCHEMA on $BASE yet: nothing to compare."
             exit 0
           fi
+          # The project's oasdiff settings, when present at its root: severities
+          # (oasdiff-levels.txt) and breaks it accepted (oasdiff-ignore.txt).
+          mounts=""; options=""
+          for pair in oasdiff-levels.txt:--severity-levels oasdiff-ignore.txt:--err-ignore; do
+            file="${pair%%:*}"; [ -f "$file" ] || continue
+            mounts="$mounts -v $PWD/$file:/specs/$file:ro"; options="$options ${pair#*:} /specs/$file"
+          done
+          # shellcheck disable=SC2086 # mounts and options split into words on purpose
           podman run --rm -v "$RUNNER_TEMP/base.json:/specs/base.json:ro" \
-            -v "$PWD/$SCHEMA:/specs/head.json:ro" \
+            -v "$PWD/$SCHEMA:/specs/head.json:ro" $mounts \
             docker.io/tufin/oasdiff:v1.39.0@sha256:d552b750fa6adcc7787c7d8f656d4a9c2a9768a46cfcd9b68ec7191ca583ea1e \
-            breaking /specs/base.json /specs/head.json --fail-on ERR
+            breaking /specs/base.json /specs/head.json --fail-on ERR $options

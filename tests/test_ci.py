@@ -314,3 +314,12 @@ def test_the_api_contract_checks_routes_broken_against_production() -> None:
     assert labels[-1] == "no route broken against the base branch"
     without = {**DEFAULTS["api-contract"], "breaking-base": ""}
     assert len(PLANNERS["api-contract"](job, without).steps) == len(labels) - 1
+
+
+def test_the_broken_route_check_reads_the_project_oasdiff_settings() -> None:
+    job = Job("api-contract", "api-contract", {})
+    command = PLANNERS["api-contract"](job, DEFAULTS["api-contract"]).steps[-1].command
+    assert "oasdiff-levels.txt:--severity-levels" in command
+    assert "oasdiff-ignore.txt:--err-ignore" in command
+    podman = command.splitlines()[-1]
+    assert podman.index("$mounts") < podman.index(" breaking ") < podman.index("$options")

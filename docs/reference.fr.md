@@ -476,7 +476,7 @@ Python, podman pour les conteneurs (bases de test comprises), podman-compose ins
 | `charter.yml` | Règles de `charter.toml`. |
 | `security.yml` | `uv audit`, `pnpm audit` et OSV-Scanner pour un projet Maven et chaque `Cargo.lock`. |
 | `secrets.yml` | Secrets commités (gitleaks, version figée et vérifiée). |
-| `api-contract.yml` | `openapi.json` et types du front à jour du code ; aucune route cassée par rapport au schéma de la production (`breaking-base`, `main` par défaut, vide pour sauter ; oasdiff lancé par podman). |
+| `api-contract.yml` | `openapi.json` et types du front à jour du code ; aucune route cassée par rapport au schéma de la production (`breaking-base`, `main` par défaut, vide pour sauter ; oasdiff lancé par podman, réglé par `oasdiff-levels.txt` (sévérités) et `oasdiff-ignore.txt` (ruptures acceptées) à la racine du projet). |
 | `infra.yml` | Images (`podman build`), actionlint, shellcheck, Caddyfile, compose (podman-compose). |
 | `sbom.yml` | Nomenclatures CycloneDX du back et du front. |
 | `mutation.yml` | Tests par mutation (mutmut), jamais bloquants. |
