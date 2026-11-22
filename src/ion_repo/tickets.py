@@ -251,7 +251,7 @@ def rename_prefix(root: Path, old: str, new: str) -> int:
     moved = 0
     for path in sorted((root / BACKLOG_DIR / "tickets").glob(f"{old}-T-*.md")):
         number = path.name.removeprefix(f"{old}-")
-        if re.fullmatch(r"T-\d+\.md", number):
+        if re.fullmatch(r"T-\d+(?:-[a-z0-9-]+)?\.md", number):
             path.rename(path.with_name(f"{new}-{number}"))
     for relative in ticket_files(root):
         path = root / relative

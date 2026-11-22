@@ -160,7 +160,7 @@ def test_after_updating_lines_become_one_critical_ticket(tmp_path: Path) -> None
     assert add_after_update_ticket(tmp_path, NOTES, today="2026-10-20") is None
 
     assert "**Next free: acme#T-08.**" in (folder / "README.md").read_text()
-    ticket = (folder / "tickets/acme-T-07.md").read_text()
+    ticket = (folder / "tickets/acme-T-07-finish-ion-repo-update-v0-4-1.md").read_text()
     assert ticket.startswith("# acme#T-07 · Finish the ion-repo update to v0.4.1\n")
     assert "- **Priority**: 🔴 critical\n" in ticket
     assert "- **Opened**: 2026-10-19" in ticket

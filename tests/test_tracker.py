@@ -87,7 +87,7 @@ def test_a_new_ticket_takes_the_next_free_number(tmp_path: Path) -> None:
         tmp_path, "acme", "Do it", {"Type": "task", "Priority": "important"}, "Why."
     )
 
-    assert ticket_id == "acme#T-09" and path.name == "acme-T-09.md"
+    assert ticket_id == "acme#T-09" and path.name == "acme-T-09-do-it.md"
     assert (
         path.read_text()
         == "# acme#T-09 · Do it\n- **Type**: task\n- **Priority**: 🟠 important\n\nWhy.\n"

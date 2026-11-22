@@ -180,7 +180,7 @@ def test_ion_repo_new_writes_the_name_given(tmp_path: Path) -> None:
     assert f"**Next free: {name}#T-01.**" in index
     assert f"· {name}#T-NN · Title" in (folder / "done.md").read_text()
     how_to = (folder / "how-to.md").read_text()
-    assert f"`{name}#T-NN`" in how_to and f"tickets/{name}-T-NN.md" in how_to
+    assert f"`{name}#T-NN`" in how_to and f"tickets/{name}-T-NN-<slug>.md" in how_to
     for text in (index, how_to):
         assert "ion-repo#" not in text and "ion-host#" not in text
     assert tickets.plan(tmp_path / name).writes == {}

@@ -6,7 +6,7 @@ argument-hint: "[<repo>#T-NN | new <what> | start <repo>#T-NN | done <repo>#T-NN
 
 No `docs/backlog/`: say so, offer setup (`ion repo update` brings it, moves old `docs/a-faire/`; elsewhere copy ion-repo's `template/docs/backlog/`). A `docs/backlog/backlog.md` still there: the single file of before, `ion repo update` splits it into the folder; until then, work in it as one file (sections by priority, `### ` headings).
 
-The folder: `tickets/<repo>-T-NN.md`, one open ticket each; `releases/vX.Y.Z.md`, one planned release each; `README.md`, the index (north star, `Next free: <repo>#T-NN`, releases in order); `how-to.md`, the format, wins on conflict (read if unsure). `done.md`, `rejected.md`: open only to write or when asked about past work. Overview: `ion repo backlog` (one line per open ticket: ID, priority, status, size, owner, title); then read only the files of the tickets involved, never the whole folder.
+The folder: `tickets/<repo>-T-NN-<slug>.md` (slug: a few lowercase words of the title, never renamed after), one open ticket each; `releases/vX.Y.Z.md`, one planned release each; `README.md`, the index (north star, `Next free: <repo>#T-NN`, releases in order); `how-to.md`, the format, wins on conflict (read if unsure). `done.md`, `rejected.md`: open only to write or when asked about past work. Overview: `ion repo backlog` (one line per open ticket: ID, priority, status, size, owner, title); then read only the files of the tickets involved, never the whole folder.
 
 IDs: every ticket is written `<repo>#T-NN`, in its own repo too (`acme-shop#T-07`), in headings, text, commits and PR bodies. `<repo>` is the repo's `name` (`.copier-answers.yml`), never its folder; another repo's ticket carries that repo's name. A branch carries the number without the prefix, then what it holds: `fix/t07-season-guide`, never `fix/t07` alone (unreadable in `git branch` and merge commits). Numbers never change and are never reused. A renamed repo: `ion repo set name=…` moves its own prefix in its own tracking, file names included; other repos' citations of the old name stay, the forge redirects it; git history is never rewritten. A bare `T-NN` is an unconverted one: `ion repo tickets` shows and converts them.
 
@@ -20,7 +20,7 @@ Ticket file: `# <repo>#T-NN · Title`, then `- **Type**:`, `- **Priority**:`, `-
 
 **ID**: other owner: stop, show ticket, say whose (they take it or hand over). Else show its file whole and cited archive lines, find files in current code, propose a short plan, create the branch (`/repo:worktree`), set `in progress — branch …`.
 
-**`new <what>`**: the index's `Next free` ID (then increment it), a new file `tickets/<repo>-T-NN.md`, fitting type (`idea` if undecided), priority (⚪ for an idea to explore), `todo`, today as `Opened`. If `releases/` has files, add its line to the best-fitting release **whatever its position**; new release only if none fits, per `plan`.
+**`new <what>`**: the index's `Next free` ID (then increment it), a new file `tickets/<repo>-T-NN-<slug>.md`, fitting type (`idea` if undecided), priority (⚪ for an idea to explore), `todo`, today as `Opened`. If `releases/` has files, add its line to the best-fitting release **whatever its position**; new release only if none fits, per `plan`.
 
 **`start <repo>#T-NN`**: refused if other owner; else set `in progress — branch <name>, since YYYY-MM-DD` in its file, free **Owner** becomes the user's `@login`.
 

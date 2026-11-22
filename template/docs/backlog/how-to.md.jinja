@@ -6,7 +6,7 @@ only up-to-date source.**
 | File | Content |
 |---|---|
 | [README.md](README.md) | The index: north star, next free ID, releases in order |
-| [tickets/](tickets/) | **Everything open**: one file per ticket, `{{ name }}-T-NN.md` |
+| [tickets/](tickets/) | **Everything open**: one file per ticket, `{{ name }}-T-NN-<slug>.md` |
 | [releases/](releases/) | One file per planned release, `vX.Y.Z.md`: why, then its tickets |
 | [done.md](done.md) | The closed tickets, one line each, most recent first |
 | [rejected.md](rejected.md) | What was turned down, dropped, or ruled out for good |
@@ -19,7 +19,9 @@ be checked** against the current code; they are never edited.
 
 ## A ticket
 
-One file, `tickets/{{ name }}-T-NN.md`: a heading, six fixed lines, then the details:
+One file, `tickets/{{ name }}-T-NN-<slug>.md` (`<slug>`: a few lowercase words of the title, set
+when the ticket is written and kept if the title changes): a heading, six fixed lines, then the
+details:
 
     # {{ name }}#T-NN · Short title that says what to achieve
     - **Type**: task

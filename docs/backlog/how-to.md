@@ -14,7 +14,8 @@ runs, copies its open findings into tickets (with a pointer to their lines), the
 `docs/_archive/YYYY-MM-DD-topic/`. Archives **can be read, but everything in them is old and must
 be checked** against the current code; they are never edited.
 
-**A ticket** = one file, `tickets/ion-repo-T-NN.md`: a heading, six fixed lines, then the details:
+**A ticket** = one file, `tickets/ion-repo-T-NN-<slug>.md` (a few lowercase words of the title,
+kept if it changes): a heading, six fixed lines, then the details:
 
     # ion-repo#T-NN · Short title that says what to achieve
     - **Type**: task
