@@ -122,14 +122,17 @@ def _legacy_tickets(path: Path) -> list[Ticket]:
 
 
 def overview(root: Path) -> list[str]:
-    """One line per open ticket, by priority: ID, priority, status, size, owner, title."""
-    lines = []
+    """One line per open ticket, by priority: ID, priority, status, size, owner, planned release,
+    title."""
+    lines, versions = [], release_by_ticket(root)
     for one in open_tickets(root):
         status = one.field("Status").split(" — ")[0]
         size = one.field("Effort") or "?"
         owner = one.field("Owner") or "—"
         mark = PRIORITIES[one.priority]
-        lines.append(f"{one.ticket_id} · {mark} {status} · {size} · {owner} · {one.title}")
+        version = versions.get(one.number, "—")
+        head = f"{one.ticket_id} · {mark} {status} · {size} · {owner}"
+        lines.append(f"{head} · {version} · {one.title}")
     return lines
 
 
@@ -191,6 +194,25 @@ def releases(root: Path) -> list[Release]:
     section = text.split("\n## 🚀 Releases\n", 1)[1].split("\n## ", 1)[0]
     blocks = re.split(r"^(?=### )", section, flags=re.M)
     return [one for block in blocks if (one := _release(block, path))]
+
+
+def release_by_ticket(root: Path) -> dict[int, str]:
+    """Each planned ticket's release (`v3.3.0`), by ticket number; the earliest if named twice."""
+    planned: dict[int, str] = {}
+    for one in releases(root):
+        for line in one.tickets:
+            found = RELEASE_TICKET.match(f"- {line}")
+            if found:
+                planned.setdefault(int(found[1]), f"v{one.version}")
+    return planned
+
+
+def display_name(root: Path, name: str, number: int, title: str) -> str:
+    """`<repo>#T-NN_vX.Y.Z_<slug>`, computed and never stored: the release may change, the ID
+    stays. Without a planned release, `<repo>#T-NN_<slug>`."""
+    version = release_by_ticket(root).get(number, "")
+    parts = [f"{name}#T-{number:02d}", version, ticket_names.slug(title)]
+    return "_".join(part for part in parts if part)
 
 
 def read_release(path: Path) -> Release | None:
