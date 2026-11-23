@@ -10,6 +10,7 @@ import ast
 import re
 from collections.abc import Callable
 
+from ion_repo.charter.constants import constant_homonyms, constant_names, constant_units
 from ion_repo.charter.repo import Params, Repo, outside_tests
 
 Counter = Callable[[Repo, Params], tuple[int, list[str]]]
@@ -118,4 +119,7 @@ COUNTERS: dict[str, Counter] = {
     "django-locks": django_locks,
     "occurrences": occurrences,
     "test-density": test_density,
+    "constant-names": constant_names,
+    "constant-units": constant_units,
+    "constant-homonyms": constant_homonyms,
 }

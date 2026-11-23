@@ -434,7 +434,8 @@ uv run ruff check . && uv run mypy src tests
 `audit-references`, `forbidden-files`, `identical-copies`, `compose-profiles`,
 `forbidden-tools` : jamais pip ni docker, ni leurs fichiers), cliquets et planchers
 (`[ratchets]`, `[floors]` : `file-size`, `long-routes`, `django-locks`, `occurrences`,
-`test-density`), `[types]` (mypy en cliquet) et `[coverage]` (planchers de pytest-cov) ;
+`test-density`, `constant-names`, `constant-units`, `constant-homonyms`), `[types]` (mypy en
+cliquet) et `[coverage]` (planchers de pytest-cov) ;
 paramètres dans la docstring de chaque règle. Règle propre à un repo : un module listé dans
 `local_rules`, avec `check(repo, params) -> list[str]`. La liste des règles non vérifiées
 (`scripts/ci/unverified-rules.txt`) est recalculée par ion-repo à chaque `set` et `update`.
