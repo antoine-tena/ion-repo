@@ -111,7 +111,7 @@ the backlog it takes (its tickets). Something missing, or wanted sooner?
 | v0.6.27 | The score explained like a senior engineer would | The denominator, the weakest themes, the effort to 100 in session hours, a verdict in plain words, `--explain` with this repo's numbers. | 1 ticket |
 | v0.6.28 | A report you can share | Every format a CI or a tool reads, a one-file HTML report, links to each rule's page and to the line on the forge, nothing personal left in it. | 1 ticket |
 | v0.6.29 | Code that can be attacked | Injection, unsafe deserialization, weak crypto, open redirects, SSRF and the rest, with taint followed inside a function. | 2 tickets |
-| v0.6.30 | Sizes and names, measured in any language | A metrics pass for every language feeds the size and complexity ratchets; names, cases and misspellings judged from symbol tables. | 3 tickets |
+| v0.6.30 | Sizes and names, measured in any language | A metrics pass for every language feeds the size and complexity ratchets; names, cases and misspellings judged from symbol tables. | 2 tickets |
 | v0.6.31 | Code standards from the syntax tree | What a regex can't tell: modern Vue, explicit imports, floating promises, debug prints, TODOs without a ticket, barrel files, with oxlint or Biome where they decide. | 2 tickets |
 | v0.6.32 | API, contracts and typing | The schema committed and checked for breaking changes, front types generated from it, typing read through its inheritance and counted as ratchets. | 3 tickets |
 | v0.6.33 | Architecture you can see | An import graph per language: cycles, layers, sealed domains, god modules, files that always change together. | 3 tickets |
