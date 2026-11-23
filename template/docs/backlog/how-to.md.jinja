@@ -41,6 +41,9 @@ details:
   `ion repo set name=…` moves its own prefix here, file names included, same numbers; citations
   in other repos keep the old name, which the forge redirects, and git history is never
   rewritten.
+- **Display name** `{{ name }}#T-NN_vX.Y.Z_<slug>` (no `_vX.Y.Z` without a planned release): the
+  name of a session, computed by `ion repo session` from `releases/`. Never written in a file name,
+  a commit or a link: a ticket changes release, its ID does not.
 - **Type**, one of: `bug` (something is broken); `improvement` (it works, it could work
   better); `idea` (nothing exists yet, to be explored); `task` (work that is neither: a release,
   a decision, a check).
@@ -67,7 +70,7 @@ details:
   finding is there in full; it is old, check it against the current code.
 - **Locations quoted are hints, not addresses.**
 - **Overview**: `ion repo backlog`, one line per open ticket (ID, priority, status, size, owner,
-  title); then read only the files of the tickets involved.
+  planned release, title); then read only the files of the tickets involved.
 
 ## A release
 

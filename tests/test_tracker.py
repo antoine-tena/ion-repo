@@ -59,8 +59,8 @@ def test_both_forms_read_the_same(acme: Path) -> None:
     assert tracker.find(acme, 2) is None
     assert tracker.next_free(acme) == 4
     assert tracker.overview(acme) == [
-        "acme#T-01 · 🔴 in progress · S · @ann · First",
-        "acme#T-03 · 🟡 todo · M · — · Third",
+        "acme#T-01 · 🔴 in progress · S · @ann · v0.1.9 · First",
+        "acme#T-03 · 🟡 todo · M · — · v0.1.10 · Third",
     ]
 
 
@@ -77,6 +77,11 @@ def test_releases_come_in_version_order_with_their_tickets(acme: Path) -> None:
         "Later",
         ["acme#T-03 · Third (M)"],
     )
+
+
+def test_display_name_follows_the_plan(acme: Path) -> None:
+    assert tracker.display_name(acme, "acme", 1, "First") == "acme#T-01_v0.1.9_first"
+    assert tracker.display_name(acme, "acme", 9, "Not planned") == "acme#T-09_not-planned"
 
 
 def test_a_new_ticket_takes_the_next_free_number(tmp_path: Path) -> None:

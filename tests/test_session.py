@@ -77,7 +77,7 @@ def test_line_names_the_session_and_sends_it_to_the_ticket(shop: Path) -> None:
 
     assert line.startswith(
         "cd ~/code/shop && claude --model claude-opus-5-5 --effort low"
-        " --name 'T-06 Free registrations can be cancelled' 'Work on shop#T-06"
+        " --name 'shop#T-06_free-registrations-can-cancelled' 'Work on shop#T-06"
     )
     worktree = "/repo:worktree fix/t06-free-registrations-can-cancelled,"
     assert f"{worktree} then /repo:backlog start shop#T-06" in line
@@ -87,7 +87,7 @@ def test_line_names_the_session_and_sends_it_to_the_ticket(shop: Path) -> None:
 def test_several_tickets_take_the_highest_effort_and_the_notes(shop: Path) -> None:
     line = session.command(shop, ["T-06", "T-05"], notes=["Leave the buyer's cart alone."])
 
-    assert "--effort high --name 'T-06 T-05' " in line
+    assert "--effort high --name 'shop#T-06 shop#T-05' " in line
     assert "in that order, one worktree and one merge per ticket" in line
     assert line.endswith("Leave the buyer\u2019s cart alone.'")
 

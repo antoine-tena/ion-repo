@@ -146,13 +146,16 @@ def command(
     folder = _home_relative(main_tree(root))
     return (
         f"cd {folder} && claude --model {MODEL} --effort {chosen}"
-        f" --name {_quote(_name(tickets))} {_quote(prompt(tickets, notes or []))}"
+        f" --name {_quote(_name(root, tickets))} {_quote(prompt(tickets, notes or []))}"
     )
 
 
-def _name(tickets: list[Ticket]) -> str:
-    numbers = " ".join(f"T-{one.number:02d}" for one in tickets)
-    return f"{numbers} {tickets[0].title}" if len(tickets) == 1 else numbers
+def _name(root: Path, tickets: list[Ticket]) -> str:
+    """One ticket by its display name, several by their IDs."""
+    if len(tickets) > 1:
+        return " ".join(one.ticket_id for one in tickets)
+    one = tickets[0]
+    return tracker.display_name(root, repo_name(root), one.number, one.title)
 
 
 def prompt(tickets: list[Ticket], notes: list[str]) -> str:
