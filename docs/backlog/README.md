@@ -14,7 +14,7 @@ repo scored in seconds against a sourced grid of today's best practices, brought
 script, the rest handed to Claude Code as a short list** (vision of 17 October 2026: "kiln
 keeps a repo up to date with the best of the world, and easy for Claude to read").
 
-**Next free: ion-repo#T-455.**
+**Next free: ion-repo#T-456.**
 
 Open tickets, one line each: `ion repo backlog`.
 
