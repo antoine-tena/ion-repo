@@ -40,6 +40,13 @@ Norm for new code, humans and agents. Stack rules sit beside this file, loaded o
 {%- if back_py or front_py %} Python functions/variables snake_case;{% endif %}
 {%- if java %} Java methods/variables camelCase, packages lowercase;{% endif %}
 {%- if front_js %} components PascalCase prefixed by domain (`ChartLegend`, `MapTooltip`);{% endif %} files per language convention.
+- **[CONSTANTS]** Understood where read, definition closed; the further away it is read, the more the name says.
+  - `UPPER_SNAKE_CASE`: module value fixed when written, never changed. Not: state, run-time value, name a framework imposes, generated code. Name it only if the name teaches something; closed set of codes: enum.
+  - Read in its own file: subject + qualifier (`SWIPE_MIN_PX`). Read elsewhere: domain first (`RANKING_PODIUM_SIZE`), never two shared homonyms (checked). Front and back: one source, through the contract.
+  - New code: `DOMAIN_SUBJECT_BOUND_UNIT` (`CART_HOLD_MAX_MINUTES`; `MIN`, `MAX`, `DEFAULT`, `FALLBACK` after the subject), except imposed keys, `…_MAX_LENGTH`.
+  - Unit last unless the type carries it: `_MS`, `_SECONDS`, `_DAYS`, `_CENTS`, `_PX`, `_BYTES`, `_PERCENT` (0-100), `_RATIO` (0-1), `_AT` instant, `_DATE` day, `_COUNT` (durations checked).
+  - Suffix tells the shape: plural collection, `X_BY_Y` table, `_PATTERN`, `_PATH`, `_URL`, `_KEY`, `_CLASS`, `_MESSAGE`, `_LABEL`; never the technical type (`_LIST`), never a bare word (`LABEL`, `W`), even private (checked).
+  - Role, not value (`ERROR_COLOR`, not `RED`), except palettes, physical facts. A switch is named after its effect (`IS_…`, `…_STARTS_AT`, `…_ENDS_AT`). Same meaning: one definition; values equal by chance stay apart. Renaming never changes a stored value.
 
 ## Values
 - **[NO-MAGIC-VALUES]** No business literal (status, role, threshold, delay, price, colour, repeated column name):

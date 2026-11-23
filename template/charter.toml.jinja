@@ -55,6 +55,24 @@ id = "FILE-SIZE"
 files = {{ (python_files + java_files + front_files) | tojson }}
 suffixes = [".py", {{ '".java", ' if java_files }}".ts", ".tsx", ".vue", ".astro", ".css", ".mjs"]
 budget = 0
+{%- if python_files or front_files %}
+
+# Names of module constants: no bare word, durations with their unit, no two shared homonyms.
+[ratchets.constant-names]
+id = "CONSTANTS"
+files = {{ (python_files + front_files) | tojson }}
+budget = 0
+
+[ratchets.constant-units]
+id = "CONSTANTS"
+files = {{ (python_files + front_files) | tojson }}
+budget = 0
+
+[ratchets.constant-homonyms]
+id = "CONSTANTS"
+files = {{ (python_files + front_files) | tojson }}
+budget = 0
+{%- endif %}
 {%- if backend in ['django', 'fastapi'] %}
 
 [ratchets.long-routes]
