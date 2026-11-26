@@ -108,7 +108,7 @@ def planned_release(root: Path, cut: set[Version]) -> tuple[str, str, list[str]]
     if not (root / tracker.BACKLOG_DIR).is_dir():
         return None
     for release in tracker.releases(root):
-        if Version(release.version) not in cut:
+        if release.version and Version(release.version) not in cut:
             return release.version, release.title, release.tickets
     return None
 

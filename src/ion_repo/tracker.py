@@ -3,9 +3,12 @@
 - `tickets/<repo>-T-NN-<slug>.md` (slug from the title, `ticket_names`): a `# <repo>#T-NN ·
   Title` heading, the fixed fields (`Type`, `Priority`, `Status`, `Opened`, `Effort`, `Origin`),
   then the details;
-- `releases/vX.Y.Z.md`: a `# vX.Y.Z · Title` heading, why its tickets go together, then one line
-  per ticket with the command that opens its session;
-- `README.md`: the short index (north star, next free ID, releases in order), the project's own;
+- `releases/<release-name>.md` (stable slug of the title, ion-repo#T-456): a `# Title` heading, a
+  `- **Version**: vX.Y.Z` line (renumbering edits that line alone), why its tickets go together,
+  a `## Handoff`. It does not list its tickets: each ticket names its release in a `Release` line,
+  and `ion repo backlog` draws the map. A release not migrated yet (`# vX.Y.Z · Title`, ticket
+  lines in the file) is still read;
+- `README.md`: the short index (north star, next free ID, pointers), the project's own;
 - `how-to.md`: the format, ion-repo's; `done.md`, `rejected.md`, `urgent.md` stay single files.
 
 Every command reads tickets and releases here. A repo not converted yet (a single `backlog.md`,
@@ -13,7 +16,7 @@ Every command reads tickets and releases here. A repo not converted yet (a singl
 """
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 from packaging.version import InvalidVersion, Version
@@ -33,6 +36,8 @@ REPO_PREFIX = r"[a-z][a-z0-9-]*#"
 NEXT_FREE = re.compile(rf"Next free: (?:{REPO_PREFIX})?T-(\d+)")
 HEADING = re.compile(rf"^#{{1,3}} ((?:{REPO_PREFIX})?T-(\d+)) · (.+)$", re.M)
 RELEASE_HEADING = re.compile(r"^#{1,3} v(\d+\.\d+\.\d+) · (.+)$", re.M)
+ANY_HEADING = re.compile(r"^#{1,3} (.+)$", re.M)
+VERSION_LINE = re.compile(r"^- \*\*Version\*\*: *v?(\d+\.\d+\.\d+)[ \t]*$", re.M)
 RELEASE_TICKET = re.compile(rf"- (?:{REPO_PREFIX})?T-(\d+)\b")
 # What a release line adds after the ticket: its session's effort and the command that opens it.
 SESSION_SUFFIX = re.compile(r" · (?:low|medium|high|xhigh|max) · `ion repo session [^`]+`$")
@@ -52,9 +57,23 @@ class Ticket:
         found = re.search(rf"\*\*{name}\*\*: *([^\n·]*)", self.body)
         return found[1].strip() if found else ""
 
+    def line(self, name: str) -> str:
+        """A fixed line's whole text (`Touches`, which may hold a `·`); empty when absent."""
+        found = re.search(rf"^- \*\*{name}\*\*: *(.*)$", self.body, re.M)
+        return found[1].strip() if found else ""
+
+    @property
+    def release(self) -> str:
+        """The name of the release the ticket is planned in (its `Release` line), or empty."""
+        return self.field("Release")
+
 
 @dataclass(frozen=True)
 class Release:
+    """`name` is the file's stem (`unified-front`, or `v3.0.0` before migration), what a ticket's
+    `Release` line says; `version` is empty for a release with no number yet."""
+
+    name: str
     version: str
     title: str
     why: str
@@ -121,21 +140,6 @@ def _legacy_tickets(path: Path) -> list[Ticket]:
     return tickets
 
 
-def overview(root: Path) -> list[str]:
-    """One line per open ticket, by priority: ID, priority, status, size, owner, planned release,
-    title."""
-    lines, versions = [], release_by_ticket(root)
-    for one in open_tickets(root):
-        status = one.field("Status").split(" — ")[0]
-        size = one.field("Effort") or "?"
-        owner = one.field("Owner") or "—"
-        mark = PRIORITIES[one.priority]
-        version = versions.get(one.number, "—")
-        head = f"{one.ticket_id} · {mark} {status} · {size} · {owner}"
-        lines.append(f"{head} · {version} · {one.title}")
-    return lines
-
-
 def find(root: Path, number: int) -> Ticket | None:
     """The open ticket of that number."""
     if is_folder(root):
@@ -182,28 +186,65 @@ def add_ticket(
 
 
 def releases(root: Path) -> list[Release]:
-    """Every planned release, by version: the folder's files, or the former `## 🚀 Releases`
-    section (its other headings, what shipped, are not releases)."""
-    if is_folder(root):
-        found = [one for path in (root / RELEASES_DIR).glob("v*.md") if (one := read_release(path))]
-        return sorted(found, key=lambda one: Version(one.version))
+    """Every planned release, by version (those with no number last, by name): the folder's
+    files, or the former `## 🚀 Releases` section (its other headings, what shipped, are not
+    releases). A release holds the tickets that name it in their `Release` line, then those its
+    own file still lists (not migrated yet) and no ticket names elsewhere."""
+    found = _release_files(root) if is_folder(root) else _legacy_releases(root)
+    tickets = open_tickets(root)
+    named = {one.number: one.release for one in tickets if one.release}
+    planned = []
+    for release in sorted(found, key=_order):
+        own = [
+            f"{one.ticket_id} · {one.title} ({_size(one)})"
+            for one in tickets
+            if one.release == release.name
+        ]
+        listed = [line for line in release.tickets if _number_of(line) not in named]
+        planned.append(replace(release, tickets=[*own, *listed]))
+    return planned
+
+
+def _order(release: Release) -> tuple[int, Version, str]:
+    version = Version(release.version) if release.version else Version("0")
+    return (0 if release.version else 1, version, release.name)
+
+
+def _size(ticket: Ticket) -> str:
+    return ticket.field("Effort").split()[0] if ticket.field("Effort") else "?"
+
+
+def _number_of(line: str) -> int | None:
+    found = RELEASE_TICKET.match(f"- {line}")
+    return int(found[1]) if found else None
+
+
+def _release_files(root: Path) -> list[Release]:
+    folder = root / RELEASES_DIR
+    paths = [path for path in folder.glob("*.md") if path.name != "README.md"]
+    return [one for path in paths if (one := read_release(path))]
+
+
+def _legacy_releases(root: Path) -> list[Release]:
     path = root / LEGACY
     text = path.read_text(encoding="utf-8")
     if "\n## 🚀 Releases\n" not in text:
         return []
     section = text.split("\n## 🚀 Releases\n", 1)[1].split("\n## ", 1)[0]
     blocks = re.split(r"^(?=### )", section, flags=re.M)
-    return [one for block in blocks if (one := _release(block, path))]
+    found = [block for block in blocks if RELEASE_HEADING.match(block)]
+    return [one for block in found if (one := _release(block, path))]
 
 
 def release_by_ticket(root: Path) -> dict[int, str]:
-    """Each planned ticket's release (`v3.3.0`), by ticket number; the earliest if named twice."""
+    """Each planned ticket's release (`v3.3.0`, its name when it has no number), by ticket
+    number."""
     planned: dict[int, str] = {}
     for one in releases(root):
         for line in one.tickets:
-            found = RELEASE_TICKET.match(f"- {line}")
-            if found:
-                planned.setdefault(int(found[1]), f"v{one.version}")
+            number = _number_of(line)
+            if number is not None:
+                planned.setdefault(number, f"v{one.version}" if one.version else one.name)
     return planned
 
 
@@ -220,21 +261,33 @@ def read_release(path: Path) -> Release | None:
 
 
 def _release(text: str, path: Path) -> Release | None:
-    heading = RELEASE_HEADING.search(text)
+    """A release file: `# Title` and a `Version` line, or the former `# vX.Y.Z · Title` with its
+    ticket lines. None for a text with no heading or a version that is not one."""
+    old = RELEASE_HEADING.search(text)
+    heading = old or ANY_HEADING.search(text)
     if heading is None:
         return None
-    try:
-        Version(heading[1])
-    except InvalidVersion:
-        return None
+    stated = VERSION_LINE.search(text)
+    version = old[1] if old else (stated[1] if stated else "")
+    title = (old[2] if old else heading[1]).strip()
+    if version:
+        try:
+            Version(version)
+        except InvalidVersion:
+            return None
     lines = text[heading.end() :].strip("\n").splitlines()
-    why = " ".join(line for line in lines if line and not line.startswith(("- ", "  ")))
+    why = " ".join(
+        line
+        for line in lines
+        if line and not line.startswith(("- ", "  ", "#")) and not VERSION_LINE.match(line)
+    )
     tickets = [
         SESSION_SUFFIX.sub("", line.removeprefix("- "))
         for line in lines
         if RELEASE_TICKET.match(line)
     ]
-    return Release(heading[1], heading[2].strip(), why, tickets, path)
+    name = f"v{version}" if path.name == LEGACY.name else path.stem
+    return Release(name, version, title, why, tickets, path)
 
 
 def release_line(ticket: Ticket, effort: str, text: str = "") -> str:

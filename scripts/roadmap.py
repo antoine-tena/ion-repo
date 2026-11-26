@@ -25,6 +25,8 @@ def releases() -> list[tuple[str, str, str, str, int]]:
     """Each planned release: version, milestone, title, why, tickets."""
     found = []
     for release in tracker.releases(ROOT):
+        if not release.version:
+            continue
         major, minor, _ = release.version.split(".")
         milestone = f"v{major}.{minor}"
         found.append(

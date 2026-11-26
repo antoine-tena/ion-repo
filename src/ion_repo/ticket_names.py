@@ -22,14 +22,14 @@ BARE_NAME = re.compile(r"^(?P<stem>[a-z][a-z0-9-]*-T-\d+)\.md$")
 LINKED_SUFFIXES = (".md", ".jinja")
 
 
-def slug(title: str) -> str:
+def slug(title: str, words: int = SLUG_WORDS) -> str:
     """Lowercase ASCII words of the title, fillers dropped, short enough for a file name."""
     ascii_title = unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode()
     # A version (`v0.4.1`) counts as one word.
     found = re.findall(r"[a-z0-9]+(?:\.[0-9]+)*", ascii_title.lower())
-    words = [word.replace(".", "-") for word in found if word not in FILLERS]
+    meaningful = [word.replace(".", "-") for word in found if word not in FILLERS]
     kept: list[str] = []
-    for word in words[:SLUG_WORDS]:
+    for word in meaningful[:words]:
         if len("-".join([*kept, word])) > SLUG_LENGTH:
             break
         kept.append(word)
@@ -39,8 +39,8 @@ def slug(title: str) -> str:
 def file_name(name: str, number: int, title: str) -> str:
     """`<repo>-T-NN-<slug>.md`, or `<repo>-T-NN.md` for a title with no word left."""
     stem = f"{name}-T-{number:02d}"
-    words = slug(title)
-    return f"{stem}-{words}.md" if words else f"{stem}.md"
+    subject = slug(title)
+    return f"{stem}-{subject}.md" if subject else f"{stem}.md"
 
 
 def name_ticket_files(root: Path) -> int:
