@@ -17,7 +17,7 @@ project without `@playwright/test` gets the command that adds it, to run with th
    node <scripts>/preview.mjs /account/profile --account member --wait-for '[role=dialog]' --name whats-new
    ```
    - `--account <name>`: log in with `login_<name>` of `.playwright/config` (password:
-     `.playwright/token`); `--account default` takes `login=`. Without `--account`: visitor.
+     `.playwright/token`, else `secrets get .playwright/token` from Bitwarden); `--account default` takes `login=`. Without `--account`: visitor.
      Each device starts from a fresh browser (empty localStorage): a "seen once" dialog reopens.
    - `--wait-for <selector>`: wait for an element (a dialog, a loaded table) before the
      screenshot; `--full-page`: the whole height; `--output`: another directory than
