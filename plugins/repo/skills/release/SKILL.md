@@ -63,9 +63,9 @@ cd "$dir"                                              # then the backend direct
 uv version --frozen X.Y.Z
 uv build --out-dir dist
 uvx --isolated --from dist/*.whl <command> --version   # and --help of each area
-UV_PUBLISH_TOKEN="$(cat <repo root>/.pypi/token)" uv publish dist/*
+UV_PUBLISH_TOKEN="$(cat <repo root>/.pypi/token 2>/dev/null || secrets get <repo>/.pypi/token)" uv publish dist/*
 ```
-Then check the project's page as above and delete `$dir`. Token: only the repo's own `.pypi/`, never printed. None: stop, `/repo:token`; another repo's only with the user's yes. Say in the report that this upload has no build provenance (`attest-build-provenance` runs only on GitHub). `pypi.yml` stays: budget back, the next tag publishes with provenance; meanwhile a failed run per tag is the only cost.
+Then check the project's page as above and delete `$dir`. Token: only the repo's own `.pypi/` (its file, else Bitwarden by `secrets get`), never printed. None: stop, `/repo:token`; another repo's only with the user's yes. Say in the report that this upload has no build provenance (`attest-build-provenance` runs only on GitHub). `pypi.yml` stays: budget back, the next tag publishes with provenance; meanwhile a failed run per tag is the only cost.
 
 ## 9. Merge back, tidy
 ```bash

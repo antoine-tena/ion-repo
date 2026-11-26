@@ -89,13 +89,24 @@ function readConfig(root) {
   return config
 }
 
+// A secret of the repo: its file, else Bitwarden through the machine's `secrets get` command.
+function readSecret(root, relativePath) {
+  const file = join(root, relativePath)
+  if (existsSync(file)) return readFileSync(file, 'utf8').trim()
+  try {
+    return execFileSync('secrets', ['get', relativePath], { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()
+  } catch (error) {
+    throw new Error(`No ${relativePath}, nor in Bitwarden (${error.message.split('\n')[0]}).`)
+  }
+}
+
 // Login through the login page, with the target page as return parameter (`next`): we land
 // there logged in without reloading, so the session the app keeps in memory stays valid.
 async function logIn(page, config, root, account, target) {
   const key = account === 'default' || account === 'defaut' ? 'login' : `login_${account}`
   const username = config[key]
   if (!username) throw new Error(`No ${key}= in .playwright/config.`)
-  const password = readFileSync(join(root, '.playwright', 'token'), 'utf8').trim()
+  const password = readSecret(root, '.playwright/token')
   const portal = config.login_path ?? '/auth/portal'
   const address = new URL(portal, target.origin)
   address.searchParams.set(config.login_next ?? 'next', target.pathname + target.search)
