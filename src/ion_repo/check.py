@@ -20,6 +20,7 @@ import yaml
 from ion_score import ui
 
 from ion_repo.charter import config as charter_config
+from ion_repo.check_scope import scope_of
 from ion_repo.ci.execution import base_env
 from ion_repo.ci.jobs import RELAYS, Plan, plan_job
 from ion_repo.ci.services import remove_orphan_containers, running_services
@@ -81,6 +82,14 @@ def _run_check(root: Path, command: Command) -> int:
         return 1
 
 
+def _needs_compose_databases(root: Path) -> bool:
+    """Whether a test suite runs on the compose file's databases, shared with the dev servers
+    and the other worktrees: only without a Django job in `ci.yml`, whose throwaway services
+    each run gets for itself."""
+    stack = load_stack(root)
+    return any(_ci_django_job(root, directory) is None for directory in stack.python_dirs)
+
+
 def _ci_django_job(root: Path, directory: str) -> Plan | None:
     """The plan of the `ci.yml` job that tests `directory` with ion-repo's Django workflow."""
     if not (root / CI_WORKFLOW).exists():
@@ -116,6 +125,11 @@ def _check_commands(
                 if files:
                     commands.append(Command("charter", ".", ("charter", "file", *files)))
                 continue
+        elif command.label == f"{command.directory} pytest" and changed is not None:
+            scoped = _scoped_tests(root, command, changed)
+            if scoped is None:
+                continue
+            command = scoped
         elif not _touches(changed, command.directory):
             continue
         if command.label == f"{typed_directory} mypy":
@@ -125,6 +139,18 @@ def _check_commands(
             continue
         commands.append(through_lock_manager(root, command))
     return commands
+
+
+def _scoped_tests(root: Path, command: Command, changed: list[str]) -> Command | None:
+    """The pytest command limited to the tests the branch's changes reach, with a line saying
+    which and why; None when none is reached."""
+    scope = scope_of(root / command.directory, changed, command.directory)
+    ui.note(f"{command.label}: {scope.describe()} (ion repo check --all --tests: all)")
+    if scope.is_empty:
+        return None
+    if scope.is_whole:
+        return command
+    return Command(command.label, command.directory, (*command.argv, *scope.paths))
 
 
 def _missing_from_repo(root: Path, command: Command) -> str | None:
@@ -208,7 +234,7 @@ def check_project(root: Path, with_tests: bool = False, is_all: bool = False) ->
         return
     if changed is not None:
         ui.note(f"{len(changed)} changed files checked (ion repo check --all: the whole repo)")
-    if with_tests:
+    if with_tests and _needs_compose_databases(root):
         start_backing_services(root)
     failed_checks = run_checks(root, with_tests, changed)
     if failed_checks:
