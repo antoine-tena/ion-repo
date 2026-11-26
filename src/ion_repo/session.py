@@ -2,10 +2,14 @@
 
 The ticket is the brief, so the command only carries what launching needs: the repo's main tree,
 the model, the effort, a session name, and a short prompt that sends the session to the ticket,
-its worktree, its start in the backlog and its merge. Effort and branch come from the ticket's
-optional `**Session**` field (`· **Session**: medium, fix/two-coaches` on the Effort line), else
-from its size and type. What only holds at launch (another session on the same files) is a
-`--note`, never written in the ticket: it would go stale.
+its worktree, its start in the backlog and its merge. Model, effort and branch come from the
+ticket's optional `- **Session**: <model> <effort>[, <branch>]` line (`sonnet` by default; the
+former `· **Session**: medium, fix/two-coaches` on the Effort line is still read), else from its
+size and type. What only holds at launch (another session on the same files) is a `--note`, never
+written in the ticket: it would go stale.
+
+`--subagent` prints instead the brief an orchestrator gives the `ticket` agent (a Sonnet subagent
+that starts cold): no merge, no question to the user, the report the agent defines at the end.
 """
 
 import re
@@ -18,7 +22,9 @@ from ion_repo.shell import KilnError
 from ion_repo.shipping import main_tree
 from ion_repo.tickets import repo_name
 
-MODEL = "claude-opus-5-5"
+# `claude --model` takes these aliases: the command never pins a model's ID.
+MODELS = ("sonnet", "opus")
+DEFAULT_MODEL = "sonnet"
 EFFORTS = ("low", "medium", "high", "xhigh", "max")
 EFFORT_BY_SIZE = {"XS": "low", "S": "low", "M": "medium", "L": "medium"}
 DEFAULT_EFFORT = "low"
@@ -70,7 +76,11 @@ STOP_WORDS = frozenset(
 DONE = tracker.DONE.as_posix()
 NUMBER = re.compile(r"^(?:[a-z][a-z0-9-]*#)?T-(\d+)$")
 FIELD = r"- \*\*{}\*\*: *([^\n·]*)"
-SESSION = re.compile(rf"\*\*Session\*\*: *({'|'.join(EFFORTS)})(?:, *([a-z]+/[a-z0-9./-]+))?")
+SESSION = re.compile(
+    rf"(?:^- | · )\*\*Session\*\*: *(?:({'|'.join(MODELS)}) +)?({'|'.join(EFFORTS)})"
+    r"(?:, *([a-z]+/[a-z0-9./-]+))?",
+    re.M,
+)
 SIZE = re.compile(r"\*\*Effort\*\*: *(XS|S|M|L)\b")
 # Single quotes hold the prompt whole in bash (no `$`, `!` nor backtick read); an apostrophe
 # inside becomes a typographic one, which a model reads the same.
@@ -85,6 +95,7 @@ class Ticket:
     effort: str
     branch: str
     path: str
+    model: str = DEFAULT_MODEL
 
 
 def find_ticket(root: Path, wanted: str) -> Ticket:
@@ -115,9 +126,10 @@ def _ticket(ticket_id: str, number: int, title: str, block: str, path: str = "")
     branch_type = BRANCH_TYPE.get(kind[1].strip() if kind else "", DEFAULT_BRANCH_TYPE)
     session = SESSION.search(block)
     size = SIZE.search(block)
-    effort = session[1] if session else EFFORT_BY_SIZE.get(size[1] if size else "", DEFAULT_EFFORT)
-    branch = session[2] if session and session[2] else _branch(branch_type, number, title)
-    return Ticket(ticket_id, number, title, effort, branch, path)
+    effort = session[2] if session else EFFORT_BY_SIZE.get(size[1] if size else "", DEFAULT_EFFORT)
+    branch = session[3] if session and session[3] else _branch(branch_type, number, title)
+    model = session[1] if session and session[1] else DEFAULT_MODEL
+    return Ticket(ticket_id, number, title, effort, branch, path, model)
 
 
 def _branch(branch_type: str, number: int, title: str) -> str:
@@ -137,15 +149,23 @@ def effort_of(ticket: tracker.Ticket) -> str:
     return _ticket(ticket.ticket_id, ticket.number, ticket.title, ticket.body).effort
 
 
+def session_of(ticket: tracker.Ticket) -> str:
+    """`<model> <effort>` of the session that works a ticket, as its `Session` line or its size
+    says."""
+    one = _ticket(ticket.ticket_id, ticket.number, ticket.title, ticket.body)
+    return f"{one.model} {one.effort}"
+
+
 def command(
     root: Path, wanted: list[str], *, effort: str | None = None, notes: list[str] | None = None
 ) -> str:
     """The line to paste: `cd` to the main tree, then `claude` with name, effort and prompt."""
     tickets = [find_ticket(root, one) for one in wanted]
     chosen = effort or max((one.effort for one in tickets), key=EFFORTS.index)
+    model = max((one.model for one in tickets), key=MODELS.index)
     folder = _home_relative(main_tree(root))
     return (
-        f"cd {folder} && claude --model {MODEL} --effort {chosen}"
+        f"cd {folder} && claude --model {model} --effort {chosen}"
         f" --name {_quote(_name(root, tickets))} {_quote(prompt(tickets, notes or []))}"
     )
 
@@ -190,7 +210,46 @@ def _quote(text: str) -> str:
     return "'" + text.replace("'", APOSTROPHE) + "'"
 
 
+def brief(
+    root: Path, wanted: str, *, effort: str | None = None, notes: list[str] | None = None
+) -> str:
+    """What an orchestrator gives the `ticket` agent for one ticket: where it is, which session
+    works it, what to leave alone, and the report to end with. The agent's own rules
+    (`~/.claude/agents/ticket.md`) hold the rest; nothing here merges or asks."""
+    ticket = find_ticket(root, wanted)
+    tree = main_tree(root)
+    lines = [
+        f"Work the ticket {ticket.ticket_id} · {ticket.title}, and no other.",
+        f"Session: {ticket.model}, effort {effort or ticket.effort}.",
+        f"File: {tree / ticket.path}. Read it whole, then its Origin; its Files section lists the"
+        " paths to open: go straight to them and explore no further than you must.",
+        f"Branch {ticket.branch}, in its own worktree (/repo:worktree {ticket.branch}), then mark"
+        f" the ticket started (/repo:backlog start {ticket.ticket_id}).",
+        "Tick each box as it is done, commit each step on the branch. A bug starts with a failing"
+        " test that reproduces it. The ticket's Done when section is what is checked after you.",
+        "What the ticket leaves open (a value, a wording, a behaviour users see) you do not guess:"
+        " stop and report it as a question.",
+        "The merge, the release and every deploy are not yours: leave the branch committed and"
+        " clean.",
+        *(f"Note: {note}" for note in notes or []),
+        "End with `ion repo check` in the worktree, then your report in at most 15 lines: status"
+        " (done, partial or blocked), branch and last commit, check verdict, tests added,"
+        " deviations from the ticket, questions for the user.",
+    ]
+    return "\n".join(lines)
+
+
 def session(
-    root: Path, wanted: list[str], effort: str | None = None, notes: list[str] | None = None
+    root: Path,
+    wanted: list[str],
+    effort: str | None = None,
+    notes: list[str] | None = None,
+    *,
+    subagent: bool = False,
 ) -> None:
+    if subagent:
+        if len(wanted) != 1:
+            raise KilnError("--subagent takes one ticket: a subagent never works a second.")
+        print(brief(root, wanted[0], effort=effort, notes=notes))
+        return
     print(command(root, wanted, effort=effort, notes=notes))
