@@ -115,6 +115,9 @@ jobs:
     with:
       uv: "{{ uv_dirs | join(' ') }}"
       pnpm: "{{ pnpm_dir }}"
+{%- if pnpm_dir and node_manager == 'npm' %}
+      manager: npm
+{%- endif %}
 {%- if backend == 'java' %}
       maven: {{ bd }}
 {%- endif %}
