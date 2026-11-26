@@ -190,6 +190,15 @@ def test_a_repo_without_cargo_lock_needs_no_scanner(tmp_path: Path) -> None:
     assert _run_cargo_audit(tmp_path, step, tmp_path).returncode == 0
 
 
+def test_an_npm_front_is_audited_by_npm() -> None:
+    job = Job("security", "security", {"uv": "", "pnpm": ".", "manager": "npm"})
+
+    commands = [step.command for step in plan_job(job).steps]
+
+    assert "npm audit --omit=dev --audit-level high" in commands
+    assert not any(command.startswith("pnpm audit") for command in commands)
+
+
 def test_workflow_names_of_before_0_4_are_still_replayed() -> None:
     old = Job("audit", "securite", {"niveau": "critical", "version-pnpm": "10"})
     contract = Job("contract", "contrat-api", {"back": "api", "generation": "pnpm gen"})

@@ -59,6 +59,7 @@ DEFAULTS: Mapping[str, Mapping[str, str]] = {
         "uv": "backend",
         "pnpm": "frontend",
         "pnpm-version": "",
+        "manager": "pnpm",
         "maven": "",
         "audit-level": "high",
     },
@@ -295,8 +296,12 @@ def _security(job: Job, inputs: Mapping[str, str]) -> Plan:
         for directory in inputs["uv"].split()
     ]
     if inputs["pnpm"]:
-        audit = f"pnpm audit --prod --audit-level {inputs['audit-level']}"
-        steps.append(Step("pnpm audit", audit, inputs["pnpm"], should_always_run=True))
+        level = inputs["audit-level"]
+        if inputs.get("manager") == "npm":
+            name, audit = "npm audit", f"npm audit --omit=dev --audit-level {level}"
+        else:
+            name, audit = "pnpm audit", f"pnpm audit --prod --audit-level {level}"
+        steps.append(Step(name, audit, inputs["pnpm"], should_always_run=True))
     if inputs["maven"]:
         steps.append(Step("OSV-Scanner (Maven)", OSV_SCAN, inputs["maven"], should_always_run=True))
     steps.append(Step("OSV-Scanner (Cargo)", CARGO_SCAN, should_always_run=True))
