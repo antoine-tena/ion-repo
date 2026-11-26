@@ -54,10 +54,10 @@ default, the user's language when the output is for people who read it, e.g. a F
    - Show the prompt in a code block, so the user can read it, then the one line to paste in a
      single `bash` block, which opens the session in the right folder:
      ```bash
-     cd ~/code/<path>/<repo> && claude --model claude-opus-5-5 --effort low --name "<subject>" "$(cat /tmp/<repo>-<subject>-prompt.md)"
+     cd ~/code/<path>/<repo> && claude --model sonnet --effort low --name "<subject>" "$(cat /tmp/<repo>-<subject>-prompt.md)"
      ```
-   - Always `--model claude-opus-5-5`, an effort chosen as above (`low` by default) and a
-     `--name` that says the subject, written out. When the work needs a branch, the prompt's
+   - `--model sonnet` unless the work needs `opus` (never an ID pinned in the text), an effort
+     chosen as above (`low` by default) and a `--name` that says the subject, written out. When the work needs a branch, the prompt's
      first step is `/repo:worktree <type>/<subject>`, the branch named by [BRANCHES]. Every other
      command that opens a session for the user (the debrief's Blocked part) is written the same
      way.

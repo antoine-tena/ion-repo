@@ -14,7 +14,7 @@ from ion_score import ui
 from ion_score.fix import convert_in_place
 from plumbum import ProcessExecutionError
 
-from ion_repo import migrations
+from ion_repo import migrations, release_files
 from ion_repo.backlog import (
     add_after_update_ticket,
     migrate_legacy_backlog,
@@ -214,6 +214,8 @@ def apply_template(root: Path, answers: Mapping[str, object] | None = None) -> N
         )
     if named := name_ticket_files(root):
         ui.note(f"{named} ticket files named after their title (<repo>-T-NN-<slug>.md).")
+    for moved in release_files.migrate(root):
+        ui.note(f"backlog: {moved}.")
     # Shown first, written on a yes; kiln-bot and CI have nobody to ask and write nothing.
     migrate_tickets(root, ask=input if sys.stdin.isatty() and sys.stdout.isatty() else None)
 

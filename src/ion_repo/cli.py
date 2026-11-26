@@ -391,7 +391,12 @@ def _add_frame_command(commands: argparse._SubParsersAction[_KilnParser]) -> Non
 
 
 def _add_session_command(commands: argparse._SubParsersAction[_KilnParser]) -> None:
-    commands.add_parser("backlog", help="the open tickets of docs/backlog/, one line each")
+    backlog_parser = commands.add_parser(
+        "backlog", help="the map of docs/backlog/: production, each release's tickets, the rest"
+    )
+    backlog_parser.add_argument(
+        "--release", help="one release only, by its name or version (`v3.2.0`)"
+    )
     session_parser = commands.add_parser(
         "session", help="the line that opens a Claude Code session on backlog tickets"
     )
@@ -403,6 +408,11 @@ def _add_session_command(commands: argparse._SubParsersAction[_KilnParser]) -> N
     )
     session_parser.add_argument(
         "--note", action="append", default=[], help="a line added to the prompt (repeatable)"
+    )
+    session_parser.add_argument(
+        "--subagent",
+        action="store_true",
+        help="print the brief for the `ticket` subagent (one ticket) instead of a line to paste",
     )
 
 
@@ -753,13 +763,15 @@ def _dispatch_in_repo(arguments: argparse.Namespace, root: Path) -> None:
             ask=input if is_interactive() else None,
         )
     elif command == "backlog":
-        from ion_repo import tracker
+        from ion_repo import backlog_map
 
-        print("\n".join(tracker.overview(root)))
+        print("\n".join(backlog_map.draw(root, arguments.release)))
     elif command == "session":
         from ion_repo import session
 
-        session.session(root, arguments.tickets, arguments.effort, arguments.note)
+        session.session(
+            root, arguments.tickets, arguments.effort, arguments.note, subagent=arguments.subagent
+        )
     elif command == "set":
         from ion_repo import settings
 

@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from packaging.version import Version
 
-from ion_repo import tracker
+from ion_repo import backlog_map, tracker
 from ion_repo.backlog import split_into_folder
 from ion_repo.release import planned_release
 
@@ -58,9 +58,14 @@ def test_both_forms_read_the_same(acme: Path) -> None:
     assert first is not None and first.priority == "critical" and first.field("Owner") == "@ann"
     assert tracker.find(acme, 2) is None
     assert tracker.next_free(acme) == 4
-    assert tracker.overview(acme) == [
-        "acme#T-01 · 🔴 in progress · S · @ann · v0.1.9 · First",
-        "acme#T-03 · 🟡 todo · M · — · v0.1.10 · Third",
+    assert backlog_map.draw(acme) == [
+        "Production: unknown (no tag on main)",
+        "",
+        "v0.1.9 · First",
+        "  acme#T-01 · 🔴 in progress · S · sonnet low · — · First",
+        "",
+        "v0.1.10 · Later",
+        "  acme#T-03 · 🟡 todo · M · sonnet medium · — · Third",
     ]
 
 
