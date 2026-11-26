@@ -22,7 +22,9 @@ an argument, propose one from the task.
    `.claude/worktree-setup.sh`, run it next with the same argument.
 4. Move the session into it with Claude Code's `EnterWorktree` tool (`path` = the worktree):
    the status line, the hooks and the relative paths then describe the branch being worked on,
-   not the main tree's integration branch. Without that tool, work only in the worktree
-   (absolute paths). Give its path. Claude Code's isolation then refuses a command it cannot read
+   not the main tree's integration branch. Without that tool, or when it refuses (a subagent
+   launched from the main tree: "is the repository root, not an isolated worktree"), do not
+   retry it: work only in the worktree, absolute paths for files, each Bash command started with
+   `cd <worktree> &&` so git and the branch guard see the branch. Give its path. Claude Code's isolation then refuses a command it cannot read
    (a variable even in a plain path, a heredoc, `cd`, a loop, `$(…)`, `git -C`, several commands chained around git): send git commands plain
    and one by one, and put the rest in a script.
