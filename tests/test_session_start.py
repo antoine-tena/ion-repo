@@ -820,3 +820,22 @@ def test_outside_a_repo_nothing_is_told(monkeypatch: pytest.MonkeyPatch, tmp_pat
     monkeypatch.setenv("GIT_CEILING_DIRECTORIES", str(tmp_path))
 
     assert others.context(str(outside), "mine") == ""
+
+
+def test_on_the_beta_channel_a_tag_outside_develop_never_makes_the_repo_late(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    hook = load_hook()
+    checkout = beta_machine(hook, tmp_path, monkeypatch)
+    git = ["git", "-C", str(checkout), "-c", "user.name=t", "-c", "user.email=t@t"]
+    subprocess.run([*git, "init", "-q", "-b", "develop"], check=True)
+    subprocess.run([*git, "commit", "-q", "--allow-empty", "-m", "a"], check=True)
+    subprocess.run([*git, "tag", "v0.4.15"], check=True)
+    subprocess.run([*git, "switch", "-q", "-c", "release"], check=True)
+    subprocess.run([*git, "commit", "-q", "--allow-empty", "-m", "rc"], check=True)
+    subprocess.run([*git, "tag", "v0.4.16-rc.1"], check=True)
+    subprocess.run([*git, "switch", "-q", "develop"], check=True)
+
+    assert not hook.is_repo_late("v0.4.15-106-gfb15db0", "v0.4.16-rc.1")
+    subprocess.run([*git, "merge", "-q", "release"], check=True)
+    assert hook.is_repo_late("v0.4.15-106-gfb15db0", "v0.4.16-rc.1")

@@ -299,7 +299,20 @@ def is_beta_tool_outdated(install: tuple[str, str] | None) -> bool:
 
 def is_repo_late(commit: str, tag: str) -> bool:
     current, latest = release_key(commit), release_key(tag)
-    return latest is not None and (current is None or current < latest)
+    if latest is None or (current is not None and current >= latest):
+        return False
+    return not is_beta() or is_in_beta_template(tag)
+
+
+def is_in_beta_template(tag: str) -> bool:
+    """On the beta channel, `ion repo update` takes the template at the checkout's commit: a tag
+    cut on a release branch that `develop` does not contain is out of its reach, and asking
+    would come back at every session."""
+    checkout = kiln_checkout()
+    if checkout is None:
+        return True
+    contains = run("git", "-C", str(checkout), "merge-base", "--is-ancestor", tag, "HEAD")
+    return contains.returncode == 0
 
 
 def tool_update_command(install: tuple[str, str] | None, tag: str) -> str:
