@@ -103,7 +103,7 @@ Un nouveau repo :
 ```console
 $ ion repo new mon-app            # trois questions, puis un dépôt GitHub privé (--no-github : local)
 $ cd mon-app && ion repo dev      # serveurs en arrière-plan, bases d'abord, journaux proposés
-$ ion repo check                  # ruff, mypy, ESLint, types, puis charter (--tests : les suites)
+$ ion repo check                  # ruff, mypy, ESLint, types, puis charter (--tests : les suites de ce qui a changé)
 $ claude                      # Claude Code, avec les règles, skills et hooks d'ion-repo
 ```
 

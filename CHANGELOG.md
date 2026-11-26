@@ -6,6 +6,9 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 `release/vX.Y.Z` branch, rewritten before its first candidate. Names are those of their release:
 entries before v0.4.0 quote kiln's former French names.
 
+## Unreleased
+- `ion repo check --tests` on a branch runs only the tests the change reaches: the tests of each Python package holding a changed file, and of the packages whose tests import a changed module, one line saying which and why. A change to the settings, `conftest.py`, the lockfile or a shared `core/` runs the whole suite, as `--all` and a release branch do. A repo whose `ci.yml` has a Django job no longer starts the compose file's shared databases: each run uses its own throwaway PostgreSQL and Redis, so two worktrees can check at once. The front's unit tests are not part of the check, so nothing changes there.
+
 ## v0.4.15 — 2026-11-08
 - **Breaking**: a repo's waivers file is now `waivers.toml`: `ion repo update` renames `kiln-waivers.toml` with its history and follows the project's mentions of it. If both files exist, `charter` reports it as an error to settle by hand.
 - A website gets the plugins of its crafts: `design`, and in the studio's repos `words` and `media`. `ion repo update` adds them to a repo that keeps its own settings, without removing anything. The other tools' catalogues lose their `ref: main`, which registered ion-host under its old name `hearth` and ion-learn under `grog`.
