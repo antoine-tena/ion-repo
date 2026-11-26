@@ -1,7 +1,7 @@
 # ion-repo#T-457 · `ion repo check --tests` on a branch runs only the touched apps' tests, each run on its own services
 - **Type**: improvement
 - **Priority**: 🟠 important
-- **Status**: todo
+- **Status**: in progress — branch feat/t457-targeted-tests, since 2026-11-26
 - **Opened**: 2026-11-26
 - **Effort**: M · **Owner**: — · **Due**: —
 - **Session**: sonnet high

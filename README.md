@@ -95,7 +95,7 @@ A new repo:
 ```console
 $ ion repo new my-app            # three questions, then a private GitHub repo (--no-github: local)
 $ cd my-app && ion repo dev      # dev servers in the background, databases first, logs offered
-$ ion repo check                 # ruff, mypy, ESLint, type checks, then charter (--tests: the suites)
+$ ion repo check                 # ruff, mypy, ESLint, type checks, then charter (--tests: the suites of what changed)
 $ claude                     # Claude Code, with ion-repo's rules, skills and hooks loaded
 ```
 
