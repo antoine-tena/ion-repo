@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import os
 import re
 import subprocess
@@ -57,6 +58,11 @@ def types(repo: Repo) -> int:
     return 0
 
 
+def truncated(percentage: float) -> str:
+    """The percentage floored to two decimals, so a value under a floor never reads as equal."""
+    return f"{math.floor(round(percentage * 100, 6)) / 100:.2f}"
+
+
 def coverage(repo: Repo) -> int:
     """`[coverage]`: `report` (coverage.xml of `pytest --cov --cov-report=xml`), `floors`
     (percentage of covered lines for the `TOTAL` and for critical modules, which only goes up),
@@ -77,10 +83,10 @@ def coverage(repo: Repo) -> int:
         if measured is None:
             problems.append(f"{name}: missing from the report (renamed? see [coverage.floors]).")
         elif measured < floor:
-            problems.append(f"{name}: {measured:.1f} % of lines covered, under {floor} %.")
+            problems.append(f"{name}: {truncated(measured)} % of lines covered, under {floor} %.")
         elif measured >= floor + margin:
             raised = f"raise [coverage.floors] {name!r} to {int(measured)}"
-            to_raise.append(f"{name}: {measured:.1f} %: {raised}.")
+            to_raise.append(f"{name}: {truncated(measured)} %: {raised}.")
     if to_raise:
         print("Coverage going up, floors to raise (the check stays green):")
         print("\n".join(f"  {line}" for line in to_raise))
