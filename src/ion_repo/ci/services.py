@@ -67,6 +67,14 @@ def is_alive(pid: int) -> bool:
     return True
 
 
+# A throwaway database lives in memory and never waits for the disk. The data directory is set
+# explicitly because the image's own path differs by major (18 moved it under a versioned folder).
+POSTGRES_DATA_DIR = "/pgdata"
+POSTGRES_NON_DURABLE_ARGS = [
+    "-c", "fsync=off", "-c", "synchronous_commit=off", "-c", "full_page_writes=off",
+]  # fmt: skip
+
+
 def _start_postgres(services: Services, container: str) -> str:
     port = free_port()
     base = services.database
@@ -74,8 +82,17 @@ def _start_postgres(services: Services, container: str) -> str:
         container,
         port,
         5432,
-        ["-e", f"POSTGRES_USER={base}", "-e", f"POSTGRES_PASSWORD={base}_password"],
-        ["-e", f"POSTGRES_DB={base}", services.postgres],
+        [
+            "-e",
+            f"POSTGRES_USER={base}",
+            "-e",
+            f"POSTGRES_PASSWORD={base}_password",
+            "-e",
+            f"PGDATA={POSTGRES_DATA_DIR}",
+            "--tmpfs",
+            POSTGRES_DATA_DIR,
+        ],
+        ["-e", f"POSTGRES_DB={base}", services.postgres, *POSTGRES_NON_DURABLE_ARGS],
     )
     _wait_until_ready(container, ["pg_isready", "-U", base])
     return f"postgres://{base}:{base}_password@localhost:{port}/{base}"

@@ -7,6 +7,7 @@ releases a project crosses; `kiln version cut` drafts the entry of the release i
 entries before v0.4.0 quote kiln's former French names.
 
 ## Unreleased
+- The throwaway PostgreSQL of `ion repo check --tests` runs without durability (`fsync`, `synchronous_commit` and `full_page_writes` off) on a memory-backed data directory, so test databases are created and written faster. Only that container changes.
 - `ion repo check --tests` on a branch runs only the tests the change reaches: the tests of each Python package holding a changed file, and of the packages whose tests import a changed module, one line saying which and why. A change to the settings, `conftest.py`, the lockfile or a shared `core/` runs the whole suite, as `--all` and a release branch do. A repo whose `ci.yml` has a Django job no longer starts the compose file's shared databases: each run uses its own throwaway PostgreSQL and Redis, so two worktrees can check at once. The front's unit tests are not part of the check, so nothing changes there.
 
 ## v0.4.15 — 2026-11-08
