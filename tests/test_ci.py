@@ -332,3 +332,32 @@ def test_the_broken_route_check_reads_the_project_oasdiff_settings() -> None:
     assert "oasdiff-ignore.txt:--err-ignore" in command
     podman = command.splitlines()[-1]
     assert podman.index("$mounts") < podman.index(" breaking ") < podman.index("$options")
+
+
+def test_throwaway_postgres_runs_in_memory_without_durability(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from ion_repo.ci import services as services_module
+
+    started: list[list[str]] = []
+
+    def fake_run(command: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+        started.append(command)
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(services_module.subprocess, "run", fake_run)
+    monkeypatch.setattr(services_module, "_wait_until_ready", lambda *_args: None)
+    plan = services_module.Services(database="demo", postgres="postgres:18-alpine", redis="")
+    services_module._start_postgres(plan, "demo-postgres")
+    command = started[-1]
+    assert command[command.index("--tmpfs") + 1] == "/pgdata"
+    assert "PGDATA=/pgdata" in command
+    image_at = command.index("postgres:18-alpine")
+    assert command[image_at + 1 :] == [
+        "-c",
+        "fsync=off",
+        "-c",
+        "synchronous_commit=off",
+        "-c",
+        "full_page_writes=off",
+    ]
