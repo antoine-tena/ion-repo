@@ -55,22 +55,27 @@ def logging(repo: Repo, params: Params) -> list[str]:
 
 def django_migrations(repo: Repo, params: Params) -> list[str]:
     """Migrations named `NNNN_name.py`, numbered without gaps; a migration already on the
-    integration branch is neither changed nor deleted (production may have applied it)."""
+    integration branch is neither changed nor deleted (production may have applied it).
+
+    Two branches merged with the same next number stay as they are (renaming one would rewrite a
+    merged migration): a number may repeat when the next one is Django's merge migration
+    (`NNNN_merge_…`)."""
     pattern = params.get("files", "backend/**/migrations/*.py")
-    name = re.compile(r"^(\d{4})_\w+\.py$")
-    numbers: dict[str, list[int]] = defaultdict(list)
+    name = re.compile(r"^(\d{4})_(\w+)\.py$")
+    migrations: dict[str, list[tuple[int, str]]] = defaultdict(list)
     misnamed = []
     for path in repo.tracked(pattern, excluded=False):
         if path.name == "__init__.py":
             continue
         rel = repo.rel(path)
         if match := name.match(path.name):
-            numbers[rel.rsplit("/migrations/", 1)[0]].append(int(match.group(1)))
+            app = rel.rsplit("/migrations/", 1)[0]
+            migrations[app].append((int(match.group(1)), match.group(2)))
         else:
             misnamed.append(rel)
-    for app, found in numbers.items():
-        if sorted(found) != list(range(1, len(found) + 1)):
-            misnamed.append(f"{app}/migrations: numbers {sorted(found)}")
+    for app, found in migrations.items():
+        if not _numbered_in_sequence(found):
+            misnamed.append(f"{app}/migrations: numbers {sorted(number for number, _ in found)}")
     rule = params.get("id", "MIGRATIONS")
     failures = []
     if misnamed:
@@ -86,6 +91,16 @@ def django_migrations(repo: Repo, params: Params) -> list[str]:
             message = "a merged migration is never changed: add a new one"
             failures.append(failure(rule, message, rewritten))
     return failures
+
+
+def _numbered_in_sequence(found: list[tuple[int, str]]) -> bool:
+    """1, 2, 3… without gaps; a repeated number only right before a merge migration."""
+    numbers = sorted(number for number, _ in found)
+    if sorted(set(numbers)) != list(range(1, numbers[-1] + 1)):
+        return False
+    merged = {number for number, label in found if label.startswith("merge")}
+    repeated = {number for number in numbers if numbers.count(number) > 1}
+    return all(number + 1 in merged for number in repeated)
 
 
 SECRET = re.compile(r"token|secret|digest|signature|hash|otp|api_?key|verification_code", re.I)
